@@ -1,0 +1,236 @@
+import type { Metadata } from "next"
+export const metadata: Metadata = { title: "Settings — Arc Treasury" }
+
+import { Key, Webhook, Shield, Globe, Settings, Copy, RotateCcw, Plus, Check } from "lucide-react"
+import { PageHeader } from "@/components/dashboard/PageHeader"
+import { ArcButton } from "@/components/ui/ArcButton"
+import { ArcProgress } from "@/components/ui/ArcProgress"
+
+const arcCard = {
+  background: "linear-gradient(160deg, #263a52 0%, #1e3247 100%)",
+  border: "1px solid rgba(255,255,255,0.07)",
+  borderRadius: 16,
+}
+
+function SectionCard({ title, icon: Icon, children }: {
+  title: string
+  icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>
+  children: React.ReactNode
+}) {
+  return (
+    <div className="rounded-2xl overflow-hidden" style={arcCard}>
+      <div
+        className="flex items-center gap-2.5 px-4 py-3"
+        style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+      >
+        <div
+          className="size-7 rounded-lg flex items-center justify-center"
+          style={{ background: "rgba(77,142,233,0.12)", border: "1px solid rgba(77,142,233,0.2)" }}
+        >
+          <Icon className="size-3.5" style={{ color: "#5FBFFF" }} />
+        </div>
+        <span className="text-sm font-semibold text-white">{title}</span>
+      </div>
+      <div className="p-4">{children}</div>
+    </div>
+  )
+}
+
+// ✅ `apiKey` instead of `key` — `key` is reserved by React and never forwarded as a prop
+function ApiKeyRow({ name, apiKey, active }: { name: string; apiKey: string; active: boolean }) {
+  const keyStr = apiKey
+  return (
+    <div
+      className="flex items-center justify-between p-3 rounded-xl"
+      style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)" }}
+    >
+      <div className="flex items-center gap-3">
+        <div
+          className="size-8 rounded-lg flex items-center justify-center"
+          style={{ background: "rgba(77,142,233,0.1)", border: "1px solid rgba(77,142,233,0.15)" }}
+        >
+          <Key className="size-3.5" style={{ color: "#5FBFFF" }} />
+        </div>
+        <div>
+          <p className="text-sm font-medium text-white">{name}</p>
+          <p className="text-[11px] font-mono mt-0.5" style={{ color: "#7a8fa8" }}>{keyStr}</p>
+        </div>
+      </div>
+      <div className="flex items-center gap-2">
+        <span
+          className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+          style={
+            active
+              ? { background: "rgba(52,211,153,0.12)", color: "#34d399", border: "1px solid rgba(52,211,153,0.25)" }
+              : { background: "rgba(122,143,168,0.1)", color: "#7a8fa8", border: "1px solid rgba(122,143,168,0.2)" }
+          }
+        >
+          {active ? "Active" : "Inactive"}
+        </span>
+        <ArcButton variant="ghost" size="icon" icon={Copy} />
+        <ArcButton variant="ghost" size="icon" icon={RotateCcw} />
+      </div>
+    </div>
+  )
+}
+
+function SettingRow({ label, value, action }: { label: string; value: string; action?: string }) {
+  return (
+    <div
+      className="flex items-center justify-between py-3"
+      style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
+    >
+      <span className="text-sm" style={{ color: "#C7C5D1" }}>{label}</span>
+      <div className="flex items-center gap-3">
+        <span className="text-sm font-semibold text-white">{value}</span>
+        {action && <ArcButton variant="ghost" size="sm">{action}</ArcButton>}
+      </div>
+    </div>
+  )
+}
+
+export default function SettingsPage() {
+  return (
+    <div className="flex flex-col min-h-full">
+      <PageHeader
+        title="Settings"
+        subtitle="API keys, webhooks, networks and security"
+        icon={Settings}
+        glow
+      />
+
+      <div className="p-6 grid grid-cols-2 gap-5 max-w-4xl">
+        {/* API Keys */}
+        <div className="col-span-2">
+          <SectionCard title="API Keys" icon={Key}>
+            <div className="space-y-3">
+              <ApiKeyRow name="Circle API Key" apiKey="sk_live_••••••••••••••••••••••3f9a" active={true} />
+              <ApiKeyRow name="Treasury Dashboard Key" apiKey="atk_••••••••••••••••••••••7b2c" active={true} />
+              <ApiKeyRow name="Webhook Signing Secret" apiKey="whsec_••••••••••••••••••••4e1d" active={false} />
+              <ArcButton variant="outline" size="sm" icon={Plus} className="w-full justify-center mt-2">
+                Generate new key
+              </ArcButton>
+            </div>
+          </SectionCard>
+        </div>
+
+        {/* Webhooks */}
+        <SectionCard title="Webhooks" icon={Webhook}>
+          <div className="space-y-3">
+            {[
+              { name: "Slack alerts", url: "https://hooks.slack.com/••••", events: ["alert.critical", "budget.exceeded"], ok: true },
+              { name: "PagerDuty", url: "https://events.pagerduty.com/••••", events: ["alert.critical"], ok: true },
+            ].map((hook) => (
+              <div
+                key={hook.name}
+                className="p-3 rounded-xl"
+                style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)" }}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-white">{hook.name}</span>
+                  <div className="flex items-center gap-1.5">
+                    {hook.ok && <Check className="size-3.5" style={{ color: "#34d399" }} />}
+                    <span className="text-[10px] font-medium" style={{ color: hook.ok ? "#34d399" : "#f87171" }}>
+                      {hook.ok ? "Connected" : "Error"}
+                    </span>
+                  </div>
+                </div>
+                <p className="text-[10px] font-mono mb-2" style={{ color: "#7a8fa8" }}>{hook.url}</p>
+                <div className="flex gap-1">
+                  {hook.events.map((e) => (
+                    <span
+                      key={e}
+                      className="text-[9px] px-1.5 py-0.5 rounded-full font-medium"
+                      style={{ background: "rgba(77,142,233,0.12)", color: "#5FBFFF", border: "1px solid rgba(77,142,233,0.2)" }}
+                    >
+                      {e}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+            <ArcButton variant="outline" size="sm" icon={Plus} className="w-full justify-center">
+              Add webhook
+            </ArcButton>
+          </div>
+        </SectionCard>
+
+        {/* Networks */}
+        <SectionCard title="Networks" icon={Globe}>
+          <div className="space-y-3">
+            {[
+              { name: "Arc Testnet",     rpc: "https://rpc.testnet.arc.io",   connected: true,  chainId: "6532" },
+              { name: "Ethereum Sepolia",rpc: "https://sepolia.infura.io/v3/••••", connected: true,  chainId: "11155111" },
+              { name: "Arc Mainnet",     rpc: "Not configured",               connected: false, chainId: "6533" },
+            ].map((net) => (
+              <div
+                key={net.name}
+                className="flex items-center justify-between p-3 rounded-xl"
+                style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)" }}
+              >
+                <div className="flex items-center gap-2.5">
+                  <div
+                    className="size-2 rounded-full"
+                    style={{
+                      background: net.connected ? "#34d399" : "#7a8fa8",
+                      boxShadow: net.connected ? "0 0 6px rgba(52,211,153,0.8)" : "none",
+                    }}
+                  />
+                  <div>
+                    <p className="text-sm font-medium text-white">{net.name}</p>
+                    <p className="text-[10px] font-mono" style={{ color: "#7a8fa8" }}>
+                      {net.rpc} · chain {net.chainId}
+                    </p>
+                  </div>
+                </div>
+                <span
+                  className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                  style={
+                    net.connected
+                      ? { background: "rgba(52,211,153,0.1)", color: "#34d399", border: "1px solid rgba(52,211,153,0.2)" }
+                      : { background: "rgba(122,143,168,0.08)", color: "#7a8fa8", border: "1px solid rgba(122,143,168,0.15)" }
+                  }
+                >
+                  {net.connected ? "Connected" : "Disabled"}
+                </span>
+              </div>
+            ))}
+          </div>
+        </SectionCard>
+
+        {/* Security */}
+        <div className="col-span-2">
+          <SectionCard title="Security & Limits" icon={Shield}>
+            <div className="grid grid-cols-2 gap-6">
+              <div>
+                <SettingRow label="Require approval for tx over" value="$50.00" action="Edit" />
+                <SettingRow label="Auto-pause on budget breach" value="Enabled" action="Toggle" />
+                <SettingRow label="IP whitelist" value="3 addresses" action="Manage" />
+                <SettingRow label="Audit log retention" value="90 days" action="Edit" />
+                <SettingRow label="2FA for withdrawals" value="Enabled" />
+              </div>
+
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "#7a8fa8" }}>
+                  Global Limits
+                </p>
+                {[
+                  { label: "Daily global cap",   used: 120, limit: 300,  color: "#4d8ee9" },
+                  { label: "Monthly global cap",  used: 1527, limit: 4400, color: "#5FBFFF" },
+                ].map(({ label, used, limit, color }) => (
+                  <div key={label} className="mb-4">
+                    <div className="flex items-center justify-between text-xs mb-1.5">
+                      <span style={{ color: "#7a8fa8" }}>{label}</span>
+                      <span style={{ color }}>${used.toLocaleString()} / ${limit.toLocaleString()}</span>
+                    </div>
+                    <ArcProgress value={Math.round((used / limit) * 100)} showLabel />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </SectionCard>
+        </div>
+      </div>
+    </div>
+  )
+}

@@ -1,0 +1,173 @@
+import type { Metadata } from "next"
+export const metadata: Metadata = { title: "Budgets — Arc Treasury" }
+
+import { AlertTriangle, Shield, Bot, Settings2, Plus, BellRing } from "lucide-react"
+import { PageHeader } from "@/components/dashboard/PageHeader"
+import { ArcProgress } from "@/components/ui/ArcProgress"
+import { ArcButton } from "@/components/ui/ArcButton"
+import { AgentStatusBadge } from "@/components/agents/AgentStatusBadge"
+import { AGENTS, ALERTS } from "@/data/mock"
+import { formatUSDC, pctUsed } from "@/lib/utils"
+
+const arcCard = {
+  background: "linear-gradient(160deg, #263a52 0%, #1e3247 100%)",
+  border: "1px solid rgba(255,255,255,0.07)",
+  borderRadius: 16,
+}
+
+export default function BudgetsPage() {
+  const unresolvedAlerts = ALERTS.filter((a) => !a.resolved)
+
+  return (
+    <div className="flex flex-col min-h-full">
+      <PageHeader
+        title="Budgets & Controls"
+        subtitle="Set spending limits, alerts and auto-pause rules for each agent"
+        icon={Shield}
+        glow
+        actions={<ArcButton variant="primary" size="sm" icon={Plus}>New Rule</ArcButton>}
+      />
+
+      <div className="p-6 space-y-5">
+        {/* Active Alerts */}
+        <div
+          className="rounded-2xl overflow-hidden"
+          style={{
+            background: "linear-gradient(135deg, rgba(248,113,113,0.08) 0%, rgba(31,47,68,0.8) 100%)",
+            border: "1px solid rgba(248,113,113,0.2)",
+          }}
+        >
+          <div
+            className="flex items-center gap-2 px-4 py-3"
+            style={{ borderBottom: "1px solid rgba(248,113,113,0.1)" }}
+          >
+            <AlertTriangle className="size-4" style={{ color: "#f87171" }} />
+            <span className="text-sm font-semibold" style={{ color: "#f87171" }}>
+              Active Alerts ({unresolvedAlerts.length})
+            </span>
+          </div>
+
+          <div className="p-4 space-y-3">
+            {unresolvedAlerts.map((alert) => (
+              <div
+                key={alert.id}
+                className="flex items-start justify-between p-3 rounded-xl"
+                style={{
+                  background: alert.severity === "critical"
+                    ? "rgba(248,113,113,0.06)"
+                    : "rgba(245,158,11,0.06)",
+                  border: `1px solid ${alert.severity === "critical" ? "rgba(248,113,113,0.2)" : "rgba(245,158,11,0.2)"}`,
+                }}
+              >
+                <div className="flex items-start gap-3">
+                  <AlertTriangle
+                    className="size-4 mt-0.5 shrink-0"
+                    style={{ color: alert.severity === "critical" ? "#f87171" : "#f59e0b" }}
+                  />
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-semibold text-white">{alert.agentName}</span>
+                      <span
+                        className="text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider"
+                        style={
+                          alert.severity === "critical"
+                            ? { background: "rgba(248,113,113,0.15)", color: "#f87171", border: "1px solid rgba(248,113,113,0.3)" }
+                            : { background: "rgba(245,158,11,0.15)", color: "#f59e0b", border: "1px solid rgba(245,158,11,0.3)" }
+                        }
+                      >
+                        {alert.severity}
+                      </span>
+                    </div>
+                    <p className="text-xs mt-0.5" style={{ color: "#7a8fa8" }}>{alert.message}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <ArcButton variant="danger" size="sm">Pause agent</ArcButton>
+                  <ArcButton variant="outline" size="sm">Resolve</ArcButton>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Budget controls per agent */}
+        <div style={arcCard} className="overflow-hidden">
+          <div
+            className="flex items-center justify-between px-4 py-3"
+            style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+          >
+            <div className="flex items-center gap-2">
+              <Shield className="size-4" style={{ color: "#5FBFFF" }} />
+              <span className="text-sm font-semibold text-white">Budget Controls by Agent</span>
+            </div>
+            <ArcButton variant="outline" size="sm" icon={BellRing}>Configure alerts</ArcButton>
+          </div>
+
+          <div className="divide-y" style={{ borderColor: "rgba(255,255,255,0.04)" }}>
+            {AGENTS.map((agent) => {
+              const mPct = pctUsed(agent.monthlySpent, agent.monthlyBudget)
+              const dPct = pctUsed(agent.dailySpent, agent.dailyLimit)
+
+              return (
+                <div key={agent.id} className="p-4">
+                  {/* Agent header row */}
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div
+                        className="size-9 rounded-xl flex items-center justify-center"
+                        style={{ background: "rgba(77,142,233,0.12)", border: "1px solid rgba(77,142,233,0.2)" }}
+                      >
+                        <Bot className="size-4" style={{ color: "#5FBFFF" }} />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-white">{agent.name}</p>
+                        <p className="text-[10px] font-mono" style={{ color: "#7a8fa8" }}>{agent.address}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <AgentStatusBadge status={agent.status} />
+                      <ArcButton variant="outline" size="sm" icon={Settings2}>Edit limits</ArcButton>
+                    </div>
+                  </div>
+
+                  {/* Two budget bars side by side */}
+                  <div className="grid grid-cols-2 gap-4">
+                    {[
+                      { label: "Monthly budget", spent: agent.monthlySpent, limit: agent.monthlyBudget, pct: mPct },
+                      { label: "Daily limit",    spent: agent.dailySpent,   limit: agent.dailyLimit,    pct: dPct },
+                    ].map(({ label, spent, limit, pct }) => (
+                      <div
+                        key={label}
+                        className="p-3 rounded-xl space-y-2"
+                        style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)" }}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="text-[11px]" style={{ color: "#7a8fa8" }}>{label}</span>
+                          <span
+                            className="text-[11px] font-semibold"
+                            style={{ color: pct > 90 ? "#f87171" : pct > 70 ? "#f59e0b" : "#C7C5D1" }}
+                          >
+                            {pct}%
+                          </span>
+                        </div>
+                        <ArcProgress value={pct} />
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-medium" style={{ color: "#5FBFFF" }}>
+                            {formatUSDC(spent)}
+                          </span>
+                          <span className="text-[10px]" style={{ color: "#7a8fa8" }}>
+                            of {formatUSDC(limit)}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}

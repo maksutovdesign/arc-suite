@@ -1,0 +1,18 @@
+{
+  "name": "arc-suite",
+  "private": true,
+  "workspaces": [
+    "treasury",
+    "reputation",
+    "marketplace"
+  ],
+  "scripts": {
+    "treasury": "npm run dev --workspace=treasury",
+    "reputation": "npm run dev --workspace=reputation",
+    "marketplace": "npm run dev --workspace=marketplace",
+    "dev:all": "concurrently \"npm run treasury\" \"npm run reputation\" \"npm run marketplace\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  }
+}

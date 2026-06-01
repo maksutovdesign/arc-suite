@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "treasury",
+      "runtimeExecutable": "/Users/maksutovdesign/Desktop/Github/arc/node_modules/.bin/next",
+      "runtimeArgs": ["dev", "--port", "3000"],
+      "port": 3000
+    }
+  ]
+}
