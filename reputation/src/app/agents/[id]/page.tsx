@@ -3,8 +3,11 @@ import { ShieldCheck, CheckCircle, Activity, TrendingUp, TrendingDown, Clock, Ar
 import { ArcProgress } from "@/components/ui/ArcProgress"
 import { ArcButton } from "@/components/ui/ArcButton"
 import { AGENTS, EVENTS, TIER_CONFIG } from "@/data/mock"
+import { getReputationData } from "@/lib/arc-api"
 import { scoreColor, formatUSDC, formatTimestamp } from "@/lib/utils"
 import Link from "next/link"
+
+export const dynamic = "force-dynamic"
 
 export async function generateStaticParams() {
   return AGENTS.map(a => ({ id: a.id }))
@@ -12,13 +15,15 @@ export async function generateStaticParams() {
 
 export default async function AgentDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const agent = AGENTS.find(a => a.id === id)
+  const { agents, source } = await getReputationData()
+  const agent = agents.find(a => a.id === id)
   if (!agent) notFound()
 
   const tier = TIER_CONFIG[agent.tier]
   const col = scoreColor(agent.score)
-  const agentEvents = EVENTS.filter(e => e.agentId === agent.id)
+  const agentEvents = EVENTS.filter(e => e.agentId === agent.id || e.agentName === agent.name)
   const scorePct = Math.round(agent.score / 10)
+  const sourceLabel = source === "api" ? "Live Arc API" : "Mock fallback"
 
   const SCORE_DIMS = [
     { key: "paymentHistory",    label: "Payment History",    max: 250, icon: Zap },
@@ -50,6 +55,7 @@ export default async function AgentDetailPage({ params }: { params: Promise<{ id
               {agent.verified && <CheckCircle className="size-4 shrink-0" style={{ color: "#34d399" }} />}
             </div>
             <p className="text-xs font-mono" style={{ color: "#3d5a74" }}>{agent.address}</p>
+            <p className="text-[10px] mt-1" style={{ color: "#5FBFFF" }}>{sourceLabel}</p>
           </div>
         </div>
 
@@ -200,7 +206,7 @@ export default async function AgentDetailPage({ params }: { params: Promise<{ id
             <pre className="px-5 py-3.5 text-[11px] leading-relaxed overflow-x-auto"
               style={{ color: "#94a3b8", fontFamily: "'Space Mono', monospace" }}>
 {`// Arc MCP — query agent reputation
-GET https://reputation.arc.io/v1/agents/${agent.id}
+GET https://arcsuite-app.vercel.app/api/reputation/${agent.id}
 
 // Response
 {
