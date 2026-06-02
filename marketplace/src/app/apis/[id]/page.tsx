@@ -5,7 +5,10 @@ import { ArcProgress } from "@/components/ui/ArcProgress"
 import { ArcButton } from "@/components/ui/ArcButton"
 import { RequestAccessButton } from "@/components/browse/RequestAccessButton"
 import { APIS_ALL, REVIEWS } from "@/data/mock"
+import { getMarketplaceData } from "@/lib/arc-api"
 import { formatPrice, formatCount, statusColor } from "@/lib/utils"
+
+export const dynamic = "force-dynamic"
 
 export async function generateStaticParams() {
   return APIS_ALL.map(a => ({ id: a.id }))
@@ -27,7 +30,8 @@ const PRICING_LABEL: Record<string, string> = {
 
 export default async function ApiDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const api = APIS_ALL.find(a => a.id === id)
+  const { apis, source } = await getMarketplaceData()
+  const api = apis.find(a => a.id === id)
   if (!api) notFound()
 
   const reviews = REVIEWS.filter(r => r.apiId === api.id)
@@ -68,6 +72,7 @@ export default async function ApiDetailPage({ params }: { params: Promise<{ id: 
                 </div>
                 <p className="text-sm" style={{ color: "#7a8fa8" }}>{api.provider}</p>
                 <p className="text-xs font-mono mt-0.5" style={{ color: "#3d5a74" }}>{api.providerAddress}</p>
+                <p className="text-[10px] mt-1" style={{ color: "#5FBFFF" }}>{source === "api" ? "Live Arc API" : "Mock fallback"}</p>
               </div>
             </div>
 
