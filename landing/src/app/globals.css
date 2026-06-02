@@ -1226,6 +1226,87 @@ h3 {
   background: linear-gradient(90deg, var(--cyan), var(--yellow));
 }
 
+.api-section {
+  border-top: 1px solid var(--line);
+}
+
+.api-panel {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.35fr) minmax(0, 1fr);
+  gap: 18px;
+  padding: 22px;
+  border: 1px solid rgba(232, 230, 240, 0.12);
+  border-radius: 8px;
+  background: rgba(8, 13, 19, 0.88);
+}
+
+.api-status {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(3, 6, 10, 0.42);
+}
+
+.api-status strong,
+.api-status small {
+  display: block;
+}
+
+.api-status small {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  margin-top: 5px;
+  border-radius: 50%;
+  background: var(--yellow);
+}
+
+.status-dot.live {
+  background: var(--green);
+}
+
+.endpoint-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.endpoint-row {
+  display: grid;
+  grid-template-columns: 58px minmax(160px, 0.7fr) minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  min-height: 48px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(3, 6, 10, 0.32);
+}
+
+.endpoint-row span {
+  color: var(--green);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.endpoint-row code {
+  color: var(--cyan);
+  font-family: "Space Mono", "SFMono-Regular", "Roboto Mono", monospace;
+  font-size: 12px;
+}
+
+.endpoint-row small {
+  color: var(--muted);
+  line-height: 1.4;
+}
+
 .loop-section {
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
@@ -1584,6 +1665,8 @@ h3 {
   .architecture-map,
   .score-row,
   .score-bar,
+  .api-panel,
+  .endpoint-row,
   .category-chart div {
     grid-template-columns: 1fr;
   }

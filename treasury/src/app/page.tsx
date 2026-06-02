@@ -22,9 +22,11 @@ import { ArcButton } from "@/components/ui/ArcButton"
 import { SpendChart } from "@/components/charts/SpendChart"
 import { CategoryChart } from "@/components/charts/CategoryChart"
 import { AgentStatusBadge } from "@/components/agents/AgentStatusBadge"
-import { AGENTS, ALERTS, TRANSACTIONS, STATS } from "@/data/mock"
+import { getTreasuryDashboardData } from "@/lib/arc-api"
 import { CAT_STYLE } from "@/lib/styles"
 import { formatUSDC, pctUsed, formatTimestamp } from "@/lib/utils"
+
+export const dynamic = "force-dynamic"
 
 // Arc card wrapper style
 const arcCard = {
@@ -47,16 +49,17 @@ function SectionTitle({ children, actionLabel, actionHref }: { children: string;
   )
 }
 
-export default function DashboardPage() {
-  const recentTxs = TRANSACTIONS.slice(0, 6)
-  const topAgents = AGENTS.slice(0, 5)
+export default async function DashboardPage() {
+  const { agents, alerts, transactions, stats, source } = await getTreasuryDashboardData()
+  const recentTxs = transactions.slice(0, 6)
+  const topAgents = agents.slice(0, 5)
 
   return (
     <div className="flex flex-col min-h-full">
       {/* Arc-style header */}
       <PageHeader
         title="Dashboard"
-        subtitle="Overview of all AI agent spending · Arc Testnet"
+        subtitle={`Overview of all AI agent spending · ${source === "api" ? "Live pilot API" : "Mock fallback"}`}
         icon={LayoutDashboard}
         glow
         actions={
@@ -81,30 +84,30 @@ export default function DashboardPage() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 px-6 pt-5">
         <StatCard
           title="Total USDC Managed"
-          value={formatUSDC(STATS.totalUSDCManaged)}
+          value={formatUSDC(stats.totalUSDCManaged)}
           sub="Across all wallets"
           icon={DollarSign}
           trend={{ value: "+12.4% this week", up: true }}
         />
         <StatCard
           title="Active Agents"
-          value={`${STATS.activeAgents} / ${STATS.totalAgents}`}
-          sub={`${AGENTS.filter(a => a.status === "paused" || a.status === "idle").length} paused or idle`}
+          value={`${stats.activeAgents} / ${stats.totalAgents}`}
+          sub={`${agents.filter(a => a.status === "paused" || a.status === "idle").length} paused or idle`}
           icon={Bot}
           accent="success"
         />
         <StatCard
           title="Monthly Spend"
-          value={formatUSDC(STATS.monthlySpent)}
-          sub={`of ${formatUSDC(STATS.monthlyBudget)} budget`}
+          value={formatUSDC(stats.monthlySpent)}
+          sub={`of ${formatUSDC(stats.monthlyBudget)} budget`}
           icon={TrendingUp}
-          accent={pctUsed(STATS.monthlySpent, STATS.monthlyBudget) > 80 ? "warning" : "default"}
-          trend={{ value: `${pctUsed(STATS.monthlySpent, STATS.monthlyBudget)}% used`, up: false }}
+          accent={pctUsed(stats.monthlySpent, stats.monthlyBudget) > 80 ? "warning" : "default"}
+          trend={{ value: `${pctUsed(stats.monthlySpent, stats.monthlyBudget)}% used`, up: false }}
         />
         <StatCard
           title="Active Alerts"
-          value={String(ALERTS.filter(a => !a.resolved).length)}
-          sub={`${ALERTS.filter(a => !a.resolved && a.severity === "critical").length} critical · ${ALERTS.filter(a => !a.resolved && a.severity === "warning").length} warning`}
+          value={String(alerts.filter(a => !a.resolved).length)}
+          sub={`${alerts.filter(a => !a.resolved && a.severity === "critical").length} critical · ${alerts.filter(a => !a.resolved && a.severity === "warning").length} warning`}
           icon={AlertTriangle}
           accent="danger"
         />

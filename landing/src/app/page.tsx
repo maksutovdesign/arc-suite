@@ -1,7 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { BrandMark } from "./BrandMark"
+import type { PilotSummary } from "@/lib/backend/schema"
 
 const productDetails = [
   {
@@ -96,6 +97,20 @@ const categoryMix = [
   ["Oracles", 15],
 ]
 
+const formatUsd = (value: number) =>
+  new Intl.NumberFormat("en-US", {
+    currency: "USD",
+    maximumFractionDigits: 2,
+    minimumFractionDigits: 2,
+    style: "currency",
+  }).format(value)
+
+const formatCompact = (value: number) =>
+  new Intl.NumberFormat("en-US", {
+    maximumFractionDigits: 1,
+    notation: "compact",
+  }).format(value)
+
 const story = [
   {
     title: "Operators set policy",
@@ -117,7 +132,97 @@ const story = [
 
 export default function ProductLanding() {
   const [activeProductKey, setActiveProductKey] = useState(productDetails[0].key)
-  const activeProduct = productDetails.find((product) => product.key === activeProductKey) ?? productDetails[0]
+  const [pilotSummary, setPilotSummary] = useState<PilotSummary | null>(null)
+  const [apiStatus, setApiStatus] = useState<"loading" | "live" | "fallback">("loading")
+  const liveProductDetails = useMemo(() => {
+    if (!pilotSummary) return productDetails
+    return productDetails.map((product) => {
+      if (product.key === "treasury") {
+        return {
+          ...product,
+          stats: [
+            [formatUsd(pilotSummary.treasury.managedUsdc), "managed USDC"],
+            [formatUsd(pilotSummary.treasury.monthlySpentUsdc), "monthly spend"],
+            [String(pilotSummary.treasury.activeAlerts), "active alerts"],
+          ],
+        }
+      }
+
+      if (product.key === "reputation") {
+        return {
+          ...product,
+          stats: [
+            [String(pilotSummary.reputation.topScore), "top score"],
+            [String(pilotSummary.reputation.agentsScored), "scored agents"],
+            [String(pilotSummary.reputation.dimensions), "risk dimensions"],
+          ],
+        }
+      }
+
+      return {
+        ...product,
+        stats: [
+          [String(pilotSummary.marketplace.apisListed), "APIs listed"],
+          [String(pilotSummary.marketplace.providers), "providers"],
+          [`${pilotSummary.marketplace.avgUptimePct}%`, "avg uptime"],
+        ],
+      }
+    })
+  }, [pilotSummary])
+  const activeProduct = liveProductDetails.find((product) => product.key === activeProductKey) ?? liveProductDetails[0]
+  const liveMetrics = pilotSummary
+    ? [
+        ["3", "connected products"],
+        [formatCompact(pilotSummary.marketplace.requests), "marketplace request volume"],
+        [`${pilotSummary.marketplace.avgUptimePct}%`, "average uptime from API"],
+        [apiStatus === "live" ? "Live" : "Fallback", "pilot API status"],
+      ]
+    : metrics
+  const liveTreasuryResults = pilotSummary
+    ? [
+        ["Managed USDC", formatUsd(pilotSummary.treasury.managedUsdc), "Across pilot wallets"],
+        ["Monthly spend", formatUsd(pilotSummary.treasury.monthlySpentUsdc), `of ${formatUsd(pilotSummary.treasury.monthlyBudgetUsdc)} total budget`],
+        ["Active alerts", String(pilotSummary.treasury.activeAlerts), `${pilotSummary.treasury.criticalAlerts} critical`],
+        ["Avg tx cost", formatUsd(pilotSummary.treasury.avgTxCostUsdc), "Across completed agent activity"],
+      ]
+    : treasuryResults
+  const liveReputationScores = pilotSummary
+    ? pilotSummary.reputation.leaderboard.map((item) => [item.name, item.score, item.delta, item.tier] as const)
+    : reputationScores
+  const liveMarketplaceResults = pilotSummary
+    ? [
+        ["APIs listed", String(pilotSummary.marketplace.apisListed), "Marketplace stat"],
+        ["Providers", String(pilotSummary.marketplace.providers), "Verified and unverified"],
+        ["Requests", formatCompact(pilotSummary.marketplace.requests), "Total request volume"],
+        ["Avg uptime", `${pilotSummary.marketplace.avgUptimePct}%`, "Across API catalog"],
+      ]
+    : marketplaceResults
+  const liveCategoryMix = pilotSummary
+    ? pilotSummary.marketplace.categoryMix.map((item) => [item.label, item.value] as const)
+    : categoryMix
+  const tradeBotBudget = pilotSummary?.treasury.tradeBotBudget
+
+  useEffect(() => {
+    let cancelled = false
+    fetch("/api/pilot/summary")
+      .then((response) => {
+        if (!response.ok) throw new Error(`API returned ${response.status}`)
+        return response.json() as Promise<PilotSummary>
+      })
+      .then((summary) => {
+        if (!cancelled) {
+          setPilotSummary(summary)
+          setApiStatus("live")
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setApiStatus("fallback")
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   return (
     <main>
@@ -195,7 +300,7 @@ export default function ProductLanding() {
       </section>
 
       <section className="metrics" id="proof" aria-label="Product proof metrics">
-        {metrics.map(([value, label]) => (
+        {liveMetrics.map(([value, label]) => (
           <div className="metric" key={label}>
             <strong>{value}</strong>
             <span>{label}</span>
@@ -238,7 +343,7 @@ export default function ProductLanding() {
 
         <div className="product-switcher">
           <div className="product-tabs" role="tablist" aria-label="Arc Suite products">
-            {productDetails.map((product) => (
+            {liveProductDetails.map((product) => (
               <button
                 aria-controls={`panel-${product.key}`}
                 aria-selected={activeProduct.key === product.key}
@@ -392,7 +497,7 @@ export default function ProductLanding() {
               <h3>Spend under management</h3>
             </div>
             <div className="result-metric-grid">
-              {treasuryResults.map(([label, value, sub]) => (
+              {liveTreasuryResults.map(([label, value, sub]) => (
                 <div key={label}>
                   <strong>{value}</strong>
                   <span>{label}</span>
@@ -403,10 +508,18 @@ export default function ProductLanding() {
             <div className="budget-visual" aria-label="TradeBot budget usage">
               <div>
                 <span>TradeBot monthly budget</span>
-                <strong>$476.89 / $500</strong>
+                <strong>
+                  {tradeBotBudget
+                    ? `${formatUsd(tradeBotBudget.spentUsdc)} / ${formatUsd(tradeBotBudget.limitUsdc)}`
+                    : "$476.89 / $500"}
+                </strong>
               </div>
-              <i><b style={{ width: "95%" }} /></i>
-              <small>95% used · wallet balance $23.11 · daily cap $29.80 / $30</small>
+              <i><b style={{ width: `${tradeBotBudget?.usedPct ?? 95}%` }} /></i>
+              <small>
+                {tradeBotBudget
+                  ? `${tradeBotBudget.usedPct}% used · wallet balance ${formatUsd(tradeBotBudget.walletBalanceUsdc)} · daily cap ${formatUsd(tradeBotBudget.dailySpentUsdc)} / ${formatUsd(tradeBotBudget.dailyLimitUsdc)}`
+                  : "95% used · wallet balance $23.11 · daily cap $29.80 / $30"}
+              </small>
             </div>
           </article>
 
@@ -416,7 +529,7 @@ export default function ProductLanding() {
               <h3>Agent trust leaderboard</h3>
             </div>
             <div className="score-bars">
-              {reputationScores.map(([name, score, delta, tier]) => (
+              {liveReputationScores.map(([name, score, delta, tier]) => (
                 <div className="score-bar" key={name}>
                   <div>
                     <span>{name}</span>
@@ -435,7 +548,7 @@ export default function ProductLanding() {
               <h3>x402 API catalog</h3>
             </div>
             <div className="result-metric-grid">
-              {marketplaceResults.map(([label, value, sub]) => (
+              {liveMarketplaceResults.map(([label, value, sub]) => (
                 <div key={label}>
                   <strong>{value}</strong>
                   <span>{label}</span>
@@ -444,7 +557,7 @@ export default function ProductLanding() {
               ))}
             </div>
             <div className="category-chart" aria-label="Marketplace category mix">
-              {categoryMix.map(([label, value]) => (
+              {liveCategoryMix.map(([label, value]) => (
                 <div key={label}>
                   <span>{label}</span>
                   <i><b style={{ width: `${(Number(value) / 31) * 100}%` }} /></i>
@@ -453,6 +566,41 @@ export default function ProductLanding() {
               ))}
             </div>
           </article>
+        </div>
+      </section>
+
+      <section className="section api-section">
+        <div className="section-heading compact">
+          <p className="kicker">Pilot API</p>
+          <h2>The landing is now connected to a backend contract.</h2>
+          <p>
+            The same pilot schema can move from seeded data to Postgres or Supabase.
+            Today it exposes agents, transactions, reputation, and access checks over HTTP.
+          </p>
+        </div>
+
+        <div className="api-panel">
+          <div className="api-status">
+            <span className={apiStatus === "live" ? "status-dot live" : "status-dot"} />
+            <div>
+              <strong>{apiStatus === "live" ? "Live API connected" : apiStatus === "loading" ? "Connecting to API" : "Using static fallback"}</strong>
+              <small>{pilotSummary ? pilotSummary.workspace.updatedAt : "Waiting for /api/pilot/summary"}</small>
+            </div>
+          </div>
+
+          <div className="endpoint-grid">
+            {(pilotSummary?.endpoints ?? [
+              { method: "GET", path: "/api/health", description: "API health and schema version" },
+              { method: "GET", path: "/api/pilot/summary", description: "Landing-ready pilot metrics" },
+              { method: "POST", path: "/api/access/check", description: "x402 access decision" },
+            ]).map((endpoint) => (
+              <div className="endpoint-row" key={`${endpoint.method}-${endpoint.path}`}>
+                <span>{endpoint.method}</span>
+                <code>{endpoint.path}</code>
+                <small>{endpoint.description}</small>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
