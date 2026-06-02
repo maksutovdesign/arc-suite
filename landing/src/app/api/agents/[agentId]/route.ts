@@ -7,7 +7,7 @@ type RouteContext = {
 }
 
 export async function PATCH(request: NextRequest, context: RouteContext) {
-  const unauthorized = requireArcApiKey(request)
+  const unauthorized = await requireArcApiKey(request, ["write"])
   if (unauthorized) return unauthorized
 
   const { agentId } = await context.params

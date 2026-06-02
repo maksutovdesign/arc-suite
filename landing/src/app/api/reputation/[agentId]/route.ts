@@ -7,7 +7,7 @@ type RouteContext = {
 }
 
 export async function GET(_request: Request, context: RouteContext) {
-  const unauthorized = requireArcApiKey(_request)
+  const unauthorized = await requireArcApiKey(_request, ["read"])
   if (unauthorized) return unauthorized
 
   const { agentId } = await context.params

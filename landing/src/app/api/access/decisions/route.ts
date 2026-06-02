@@ -3,7 +3,7 @@ import { requireArcApiKey } from "@/lib/backend/auth"
 import { listAccessDecisions } from "@/lib/backend/service"
 
 export async function GET(request: NextRequest) {
-  const unauthorized = requireArcApiKey(request)
+  const unauthorized = await requireArcApiKey(request, ["read"])
   if (unauthorized) return unauthorized
 
   const limit = Number(request.nextUrl.searchParams.get("limit") ?? 20)

@@ -1,4 +1,17 @@
-import type { AccessDecisionLog, Agent, ApiListing, ApiProvider, BudgetAlert, ReputationProfile, Transaction } from "./schema"
+import { createHash, randomBytes, randomUUID } from "crypto"
+import type {
+  AccessDecisionLog,
+  Agent,
+  ApiKeyScope,
+  ApiListing,
+  ApiProvider,
+  BudgetAlert,
+  ReputationProfile,
+  Transaction,
+  WorkspaceApiKey,
+  WorkspaceApiKeyCreated,
+  WorkspaceMember,
+} from "./schema"
 
 type WorkspaceRow = {
   id: string
@@ -95,6 +108,30 @@ type AccessDecisionRow = {
   monthly_budget_used_pct: number
   daily_budget_used_pct: number
   created_at: string
+}
+
+type WorkspaceMemberRow = {
+  id: string
+  workspace_id: string
+  email: string
+  name: string
+  role: WorkspaceMember["role"]
+  created_at: string
+  last_active_at: string | null
+}
+
+type WorkspaceApiKeyRow = {
+  id: string
+  workspace_id: string
+  name: string
+  key_hash: string
+  key_prefix: string
+  scopes: ApiKeyScope[] | null
+  created_by: string | null
+  created_at: string
+  last_used_at: string | null
+  rotated_at: string | null
+  revoked_at: string | null
 }
 
 export type BackendDataset = {
@@ -234,6 +271,108 @@ export async function listSupabaseAccessDecisions(limit = 20): Promise<AccessDec
       `select=*&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&order=created_at.desc&limit=${limit}`,
     )
     return rows.map(mapAccessDecision)
+  } catch {
+    return null
+  }
+}
+
+export async function listSupabaseWorkspaceMembers(): Promise<WorkspaceMember[] | null> {
+  if (!isSupabaseConfigured()) return null
+
+  try {
+    const rows = await getRows<WorkspaceMemberRow>(
+      "workspace_members",
+      `select=*&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&order=created_at.asc`,
+    )
+    return rows.map(mapWorkspaceMember)
+  } catch {
+    return null
+  }
+}
+
+export async function listSupabaseWorkspaceApiKeys(): Promise<WorkspaceApiKey[] | null> {
+  if (!isSupabaseConfigured()) return null
+
+  try {
+    const rows = await getRows<WorkspaceApiKeyRow>(
+      "workspace_api_keys",
+      `select=*&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&order=created_at.desc`,
+    )
+    return rows.map(mapWorkspaceApiKey)
+  } catch {
+    return null
+  }
+}
+
+export async function createSupabaseWorkspaceApiKey(input: {
+  name: string
+  scopes: ApiKeyScope[]
+  createdBy?: string
+}): Promise<WorkspaceApiKeyCreated | null> {
+  if (!isSupabaseConfigured()) return null
+
+  const secret = generateApiKeySecret()
+  const rows = await postRows<WorkspaceApiKeyRow>("workspace_api_keys", [
+    {
+      id: `key_${randomUUID()}`,
+      workspace_id: WORKSPACE_ID,
+      name: input.name,
+      key_hash: hashApiKey(secret),
+      key_prefix: maskApiKey(secret),
+      scopes: normalizeScopes(input.scopes),
+      created_by: input.createdBy ?? "mem_arc_owner",
+    },
+  ])
+
+  return rows[0] ? { ...mapWorkspaceApiKey(rows[0]), secret } : null
+}
+
+export async function rotateSupabaseWorkspaceApiKey(keyId: string): Promise<WorkspaceApiKeyCreated | null> {
+  if (!isSupabaseConfigured()) return null
+
+  const secret = generateApiKeySecret()
+  const rows = await patchRows<WorkspaceApiKeyRow>(
+    "workspace_api_keys",
+    `id=eq.${encodeURIComponent(keyId)}&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}`,
+    {
+      key_hash: hashApiKey(secret),
+      key_prefix: maskApiKey(secret),
+      rotated_at: new Date().toISOString(),
+      revoked_at: null,
+    },
+  )
+
+  return rows[0] ? { ...mapWorkspaceApiKey(rows[0]), secret } : null
+}
+
+export async function revokeSupabaseWorkspaceApiKey(keyId: string): Promise<WorkspaceApiKey | null> {
+  if (!isSupabaseConfigured()) return null
+
+  const rows = await patchRows<WorkspaceApiKeyRow>(
+    "workspace_api_keys",
+    `id=eq.${encodeURIComponent(keyId)}&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}`,
+    { revoked_at: new Date().toISOString() },
+  )
+
+  return rows[0] ? mapWorkspaceApiKey(rows[0]) : null
+}
+
+export async function verifySupabaseApiKey(secret: string): Promise<WorkspaceApiKey | null> {
+  if (!isSupabaseConfigured() || !secret.startsWith("arc_live_")) return null
+
+  try {
+    const rows = await getRows<WorkspaceApiKeyRow>(
+      "workspace_api_keys",
+      `select=*&key_hash=eq.${encodeURIComponent(hashApiKey(secret))}&revoked_at=is.null&limit=1`,
+    )
+    const key = rows[0]
+    if (!key) return null
+
+    await patchRows<WorkspaceApiKeyRow>("workspace_api_keys", `id=eq.${encodeURIComponent(key.id)}`, {
+      last_used_at: new Date().toISOString(),
+    }).catch(() => null)
+
+    return mapWorkspaceApiKey(key)
   } catch {
     return null
   }
@@ -394,6 +533,33 @@ function mapAccessDecision(row: AccessDecisionRow): AccessDecisionLog {
   }
 }
 
+function mapWorkspaceMember(row: WorkspaceMemberRow): WorkspaceMember {
+  return {
+    id: row.id,
+    workspaceId: row.workspace_id,
+    email: row.email,
+    name: row.name,
+    role: row.role,
+    createdAt: row.created_at,
+    lastActiveAt: row.last_active_at,
+  }
+}
+
+function mapWorkspaceApiKey(row: WorkspaceApiKeyRow): WorkspaceApiKey {
+  return {
+    id: row.id,
+    workspaceId: row.workspace_id,
+    name: row.name,
+    keyPrefix: row.key_prefix,
+    scopes: normalizeScopes(row.scopes ?? ["read"]),
+    createdBy: row.created_by,
+    createdAt: row.created_at,
+    lastUsedAt: row.last_used_at,
+    rotatedAt: row.rotated_at,
+    revokedAt: row.revoked_at,
+  }
+}
+
 function toAgentRow(agent: Agent): AgentRow {
   return {
     id: agent.id,
@@ -416,4 +582,22 @@ function toAgentRow(agent: Agent): AgentRow {
 
 function toNumber(value: string | number) {
   return typeof value === "number" ? value : Number(value)
+}
+
+function generateApiKeySecret() {
+  return `arc_live_${randomBytes(24).toString("hex")}`
+}
+
+function hashApiKey(secret: string) {
+  return createHash("sha256").update(secret).digest("hex")
+}
+
+function maskApiKey(secret: string) {
+  return `${secret.slice(0, 12)}...${secret.slice(-4)}`
+}
+
+function normalizeScopes(scopes: string[]): ApiKeyScope[] {
+  const allowed = new Set<ApiKeyScope>(["read", "write", "admin"])
+  const normalized = scopes.filter((scope): scope is ApiKeyScope => allowed.has(scope as ApiKeyScope))
+  return normalized.length > 0 ? Array.from(new Set(normalized)) : ["read"]
 }

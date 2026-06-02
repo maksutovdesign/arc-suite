@@ -1,10 +1,12 @@
 import type { Metadata } from "next"
 export const metadata: Metadata = { title: "Settings — Arc Treasury" }
 
-import { Key, Webhook, Shield, Globe, Settings, Copy, RotateCcw, Plus, Check } from "lucide-react"
+import { Key, Webhook, Shield, Globe, Settings, Plus, Check } from "lucide-react"
 import { PageHeader } from "@/components/dashboard/PageHeader"
 import { ArcButton } from "@/components/ui/ArcButton"
 import { ArcProgress } from "@/components/ui/ArcProgress"
+import { WorkspaceSecurityPanel } from "@/components/settings/WorkspaceSecurityPanel"
+import { getWorkspaceSecurity } from "@/lib/arc-api"
 
 const arcCard = {
   background: "linear-gradient(160deg, #263a52 0%, #1e3247 100%)",
@@ -36,44 +38,6 @@ function SectionCard({ title, icon: Icon, children }: {
   )
 }
 
-// ✅ `apiKey` instead of `key` — `key` is reserved by React and never forwarded as a prop
-function ApiKeyRow({ name, apiKey, active }: { name: string; apiKey: string; active: boolean }) {
-  const keyStr = apiKey
-  return (
-    <div
-      className="flex items-center justify-between p-3 rounded-xl"
-      style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)" }}
-    >
-      <div className="flex items-center gap-3">
-        <div
-          className="size-8 rounded-lg flex items-center justify-center"
-          style={{ background: "rgba(77,142,233,0.1)", border: "1px solid rgba(77,142,233,0.15)" }}
-        >
-          <Key className="size-3.5" style={{ color: "#5FBFFF" }} />
-        </div>
-        <div>
-          <p className="text-sm font-medium text-white">{name}</p>
-          <p className="text-[11px] font-mono mt-0.5" style={{ color: "#7a8fa8" }}>{keyStr}</p>
-        </div>
-      </div>
-      <div className="flex items-center gap-2">
-        <span
-          className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
-          style={
-            active
-              ? { background: "rgba(52,211,153,0.12)", color: "#34d399", border: "1px solid rgba(52,211,153,0.25)" }
-              : { background: "rgba(122,143,168,0.1)", color: "#7a8fa8", border: "1px solid rgba(122,143,168,0.2)" }
-          }
-        >
-          {active ? "Active" : "Inactive"}
-        </span>
-        <ArcButton variant="ghost" size="icon" icon={Copy} />
-        <ArcButton variant="ghost" size="icon" icon={RotateCcw} />
-      </div>
-    </div>
-  )
-}
-
 function SettingRow({ label, value, action }: { label: string; value: string; action?: string }) {
   return (
     <div
@@ -89,7 +53,9 @@ function SettingRow({ label, value, action }: { label: string; value: string; ac
   )
 }
 
-export default function SettingsPage() {
+export default async function SettingsPage() {
+  const security = await getWorkspaceSecurity()
+
   return (
     <div className="flex flex-col min-h-full">
       <PageHeader
@@ -102,15 +68,8 @@ export default function SettingsPage() {
       <div className="p-6 grid grid-cols-2 gap-5 max-w-4xl">
         {/* API Keys */}
         <div className="col-span-2">
-          <SectionCard title="API Keys" icon={Key}>
-            <div className="space-y-3">
-              <ApiKeyRow name="Circle API Key" apiKey="sk_live_••••••••••••••••••••••3f9a" active={true} />
-              <ApiKeyRow name="Treasury Dashboard Key" apiKey="atk_••••••••••••••••••••••7b2c" active={true} />
-              <ApiKeyRow name="Webhook Signing Secret" apiKey="whsec_••••••••••••••••••••4e1d" active={false} />
-              <ArcButton variant="outline" size="sm" icon={Plus} className="w-full justify-center mt-2">
-                Generate new key
-              </ArcButton>
-            </div>
+          <SectionCard title="Workspace Access" icon={Key}>
+            <WorkspaceSecurityPanel initialSecurity={security} />
           </SectionCard>
         </div>
 

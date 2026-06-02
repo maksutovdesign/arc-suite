@@ -3,7 +3,7 @@ import { requireArcApiKey } from "@/lib/backend/auth"
 import { checkAccess } from "@/lib/backend/service"
 
 export async function POST(request: NextRequest) {
-  const unauthorized = requireArcApiKey(request)
+  const unauthorized = await requireArcApiKey(request, ["write"])
   if (unauthorized) return unauthorized
 
   const body = await request.json().catch(() => null)

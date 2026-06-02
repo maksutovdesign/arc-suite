@@ -3,6 +3,8 @@ export type TransactionCategory = "api_call" | "data_feed" | "compute" | "storag
 export type TransactionStatus = "completed" | "pending" | "failed"
 export type AlertSeverity = "warning" | "critical"
 export type ReputationTier = "Platinum" | "Gold" | "Silver" | "New"
+export type WorkspaceRole = "owner" | "admin" | "operator" | "viewer"
+export type ApiKeyScope = "read" | "write" | "admin"
 
 export type Agent = {
   id: string
@@ -172,4 +174,31 @@ export type PilotSummary = {
     path: string
     description: string
   }>
+}
+
+export type WorkspaceMember = {
+  id: string
+  workspaceId: string
+  email: string
+  name: string
+  role: WorkspaceRole
+  createdAt: string
+  lastActiveAt: string | null
+}
+
+export type WorkspaceApiKey = {
+  id: string
+  workspaceId: string
+  name: string
+  keyPrefix: string
+  scopes: ApiKeyScope[]
+  createdBy: string | null
+  createdAt: string
+  lastUsedAt: string | null
+  rotatedAt: string | null
+  revokedAt: string | null
+}
+
+export type WorkspaceApiKeyCreated = WorkspaceApiKey & {
+  secret: string
 }

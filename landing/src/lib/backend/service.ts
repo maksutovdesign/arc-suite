@@ -1,10 +1,27 @@
 import { agents, alerts, apiListings, providers, reputationProfiles, transactions, WORKSPACE } from "./seed"
-import type { AccessCheckRequest, AccessDecision, AccessDecisionLog, Agent, PilotSummary, ReputationEvent, Transaction } from "./schema"
+import type {
+  AccessCheckRequest,
+  AccessDecision,
+  AccessDecisionLog,
+  Agent,
+  ApiKeyScope,
+  PilotSummary,
+  ReputationEvent,
+  Transaction,
+  WorkspaceApiKey,
+  WorkspaceApiKeyCreated,
+  WorkspaceMember,
+} from "./schema"
 import {
+  createSupabaseWorkspaceApiKey,
   insertAccessDecision,
   insertSupabaseAgent,
   listSupabaseAccessDecisions,
+  listSupabaseWorkspaceApiKeys,
+  listSupabaseWorkspaceMembers,
   loadSupabaseDataset,
+  revokeSupabaseWorkspaceApiKey,
+  rotateSupabaseWorkspaceApiKey,
   updateSupabaseAgent,
   type BackendDataset,
 } from "./supabase"
@@ -239,6 +256,34 @@ export async function listAccessDecisions(limit = 20): Promise<AccessDecisionLog
   return (await listSupabaseAccessDecisions(limit)) ?? []
 }
 
+export async function getWorkspaceSecurity() {
+  const dataset = await getDataset()
+  const [members, apiKeys] = await Promise.all([
+    listSupabaseWorkspaceMembers(),
+    listSupabaseWorkspaceApiKeys(),
+  ])
+
+  return {
+    workspace: dataset.workspace,
+    members: members ?? fallbackMembers(dataset.workspace.id),
+    apiKeys: apiKeys ?? fallbackApiKeys(dataset.workspace.id),
+  }
+}
+
+export async function createWorkspaceApiKey(input: { name?: string; scopes?: string[] }): Promise<WorkspaceApiKeyCreated | null> {
+  const name = typeof input.name === "string" && input.name.trim() ? input.name.trim().slice(0, 80) : "Workspace API key"
+  const scopes = normalizeKeyScopes(input.scopes)
+  return createSupabaseWorkspaceApiKey({ name, scopes })
+}
+
+export async function rotateWorkspaceApiKey(keyId: string): Promise<WorkspaceApiKeyCreated | null> {
+  return rotateSupabaseWorkspaceApiKey(keyId)
+}
+
+export async function revokeWorkspaceApiKey(keyId: string): Promise<WorkspaceApiKey | null> {
+  return revokeSupabaseWorkspaceApiKey(keyId)
+}
+
 export async function getPilotSummary(): Promise<PilotSummary> {
   const dataset = await getDataset()
   const activeAlerts = dataset.alerts.filter((alert) => !alert.resolvedAt)
@@ -315,6 +360,9 @@ export async function getPilotSummary(): Promise<PilotSummary> {
       { method: "GET", path: "/api/reputation/events", description: "Live reputation timeline from transactions and access decisions" },
       { method: "POST", path: "/api/access/check", description: "x402 access decision from score and budget policy" },
       { method: "GET", path: "/api/access/decisions", description: "Access decision audit log" },
+      { method: "GET", path: "/api/workspace/security", description: "Workspace members and scoped API keys" },
+      { method: "POST", path: "/api/workspace/security", description: "Create a scoped workspace API key" },
+      { method: "POST", path: "/api/workspace/security/keys/:keyId/rotate", description: "Rotate a workspace API key" },
     ],
   }
 }
@@ -353,6 +401,52 @@ function getSeedDataset(): BackendDataset {
     providers,
     apiListings,
   }
+}
+
+function fallbackMembers(workspaceId: string): WorkspaceMember[] {
+  return [
+    {
+      id: "mem_arc_owner",
+      workspaceId,
+      email: "founder@arcsuite.dev",
+      name: "Arc Suite Founder",
+      role: "owner",
+      createdAt: "2026-06-02T01:40:00Z",
+      lastActiveAt: "2026-06-02T18:00:00Z",
+    },
+    {
+      id: "mem_arc_ops",
+      workspaceId,
+      email: "ops@arcsuite.dev",
+      name: "Pilot Ops",
+      role: "operator",
+      createdAt: "2026-06-02T01:42:00Z",
+      lastActiveAt: null,
+    },
+  ]
+}
+
+function fallbackApiKeys(workspaceId: string): WorkspaceApiKey[] {
+  return [
+    {
+      id: "key_arc_master_env",
+      workspaceId,
+      name: "Production server key",
+      keyPrefix: "env:ARC_API_KEY",
+      scopes: ["admin"],
+      createdBy: "mem_arc_owner",
+      createdAt: "2026-06-02T18:00:00Z",
+      lastUsedAt: null,
+      rotatedAt: null,
+      revokedAt: null,
+    },
+  ]
+}
+
+function normalizeKeyScopes(scopes: string[] | undefined): ApiKeyScope[] {
+  const allowed = new Set<ApiKeyScope>(["read", "write", "admin"])
+  const normalized = (scopes ?? ["read"]).filter((scope): scope is ApiKeyScope => allowed.has(scope as ApiKeyScope))
+  return normalized.length > 0 ? Array.from(new Set(normalized)) : ["read"]
 }
 
 function round2(value: number) {

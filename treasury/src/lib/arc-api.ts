@@ -70,6 +70,44 @@ export type AccessDecision = {
   createdAt: string
 }
 
+export type WorkspaceMember = {
+  id: string
+  workspaceId: string
+  email: string
+  name: string
+  role: "owner" | "admin" | "operator" | "viewer"
+  createdAt: string
+  lastActiveAt: string | null
+}
+
+export type WorkspaceApiKey = {
+  id: string
+  workspaceId: string
+  name: string
+  keyPrefix: string
+  scopes: Array<"read" | "write" | "admin">
+  createdBy: string | null
+  createdAt: string
+  lastUsedAt: string | null
+  rotatedAt: string | null
+  revokedAt: string | null
+}
+
+export type WorkspaceApiKeyCreated = WorkspaceApiKey & {
+  secret: string
+}
+
+export type WorkspaceSecurity = {
+  workspace: {
+    id: string
+    name: string
+    mode: "pilot"
+    updatedAt: string
+  }
+  members: WorkspaceMember[]
+  apiKeys: WorkspaceApiKey[]
+}
+
 type TreasuryDashboardData = {
   agents: Agent[]
   alerts: BudgetAlert[]
@@ -159,6 +197,27 @@ export async function runAccessCheck(input: { agentId: string; apiId: string; am
     body: JSON.stringify(input),
     method: "POST",
   })
+}
+
+export async function getWorkspaceSecurity(): Promise<WorkspaceSecurity | null> {
+  const response = await fetch(`${API_BASE_URL}/api/workspace/security`, { cache: "no-store", headers: arcApiHeaders() })
+  if (!response.ok) return null
+  return response.json() as Promise<WorkspaceSecurity>
+}
+
+export async function createWorkspaceApiKey(input: { name: string; scopes: string[] }) {
+  return arcApiRequest("/api/workspace/security", {
+    body: JSON.stringify(input),
+    method: "POST",
+  }) as Promise<{ apiKey: WorkspaceApiKeyCreated }>
+}
+
+export async function rotateWorkspaceApiKey(keyId: string) {
+  return arcApiRequest(`/api/workspace/security/keys/${keyId}/rotate`, { method: "POST" }) as Promise<{ apiKey: WorkspaceApiKeyCreated }>
+}
+
+export async function revokeWorkspaceApiKey(keyId: string) {
+  return arcApiRequest(`/api/workspace/security/keys/${keyId}/revoke`, { method: "POST" }) as Promise<{ apiKey: WorkspaceApiKey }>
 }
 
 async function fetchAccessDecisions(): Promise<AccessDecision[]> {
