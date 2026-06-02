@@ -18,6 +18,7 @@ import { ArcProgress } from "@/components/ui/ArcProgress"
 import { ArcButton } from "@/components/ui/ArcButton"
 import { AgentSparkline } from "@/components/charts/AgentSparkline"
 import { AgentPolicyActions } from "@/components/agents/AgentPolicyActions"
+import { AccessCheckSimulator } from "@/components/agents/AccessCheckSimulator"
 
 function StatusIcon({ status }: { status: "completed" | "pending" | "failed" }) {
   if (status === "completed") return <CheckCircle2 className="size-3.5 shrink-0" style={{ color: "#34d399" }} />
@@ -30,7 +31,7 @@ export const dynamic = "force-dynamic"
 
 export default async function AgentDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const { agents, transactions, accessDecisions } = await getTreasuryDashboardData()
+  const { agents, transactions, accessDecisions, apiListings } = await getTreasuryDashboardData()
   const agentIndex = agents.findIndex((a) => a.id === id)
   const agent = agents[agentIndex]
   if (!agent) notFound()
@@ -165,6 +166,8 @@ export default async function AgentDetailPage({ params }: { params: Promise<{ id
 
               <AgentPolicyActions agent={agent} />
             </div>
+
+            <AccessCheckSimulator agent={agent} apiListings={apiListings} />
 
             {/* Agent info */}
             <div className="p-4 rounded-2xl space-y-3" style={arcCard}>

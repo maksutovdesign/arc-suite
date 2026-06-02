@@ -22,6 +22,14 @@ export async function listTransactions() {
   }))
 }
 
+export async function listApiListings() {
+  const dataset = await getDataset()
+  return dataset.apiListings.map((api) => ({
+    ...api,
+    providerName: dataset.providers.find((provider) => provider.id === api.providerId)?.name ?? api.providerId,
+  }))
+}
+
 export async function getReputationProfile(agentId: string) {
   const dataset = await getDataset()
   const profile = dataset.reputationProfiles.find((item) => item.agentId === agentId)

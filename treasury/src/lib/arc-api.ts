@@ -42,6 +42,19 @@ type ApiSummary = {
   }
 }
 
+export type ApiListing = {
+  id: string
+  providerId: string
+  providerName: string
+  name: string
+  category: "Finance" | "AI / LLM" | "Data feeds" | "Compute" | "Oracles"
+  priceUsdc: number
+  pricingUnit: string
+  uptimePct: number
+  requestCount: number
+  minReputationScore: number
+}
+
 export type AccessDecision = {
   id: string
   workspaceId: string
@@ -62,6 +75,7 @@ type TreasuryDashboardData = {
   alerts: BudgetAlert[]
   transactions: Transaction[]
   accessDecisions: AccessDecision[]
+  apiListings: ApiListing[]
   stats: typeof STATS
   source: "api" | "mock"
 }
@@ -71,20 +85,22 @@ const API_BASE_URL = process.env.ARC_SUITE_API_URL ?? process.env.NEXT_PUBLIC_AR
 
 export async function getTreasuryDashboardData(): Promise<TreasuryDashboardData> {
   try {
-    const [summaryRes, agentsRes, transactionsRes] = await Promise.all([
+    const [summaryRes, agentsRes, transactionsRes, apisRes] = await Promise.all([
       fetch(`${API_BASE_URL}/api/pilot/summary`, { cache: "no-store" }),
       fetch(`${API_BASE_URL}/api/agents`, { cache: "no-store" }),
       fetch(`${API_BASE_URL}/api/transactions`, { cache: "no-store" }),
+      fetch(`${API_BASE_URL}/api/apis`, { cache: "no-store" }),
     ])
 
-    if (!summaryRes.ok || !agentsRes.ok || !transactionsRes.ok) {
+    if (!summaryRes.ok || !agentsRes.ok || !transactionsRes.ok || !apisRes.ok) {
       throw new Error("Arc API request failed")
     }
 
     const summary = (await summaryRes.json()) as ApiSummary
     const agentsPayload = (await agentsRes.json()) as { agents: ApiAgent[] }
-    const [transactionsPayload, decisionsPayload] = await Promise.all([
+    const [transactionsPayload, apisPayload, decisionsPayload] = await Promise.all([
       transactionsRes.json() as Promise<{ transactions: ApiTransaction[] }>,
+      apisRes.json() as Promise<{ apis: ApiListing[] }>,
       fetchAccessDecisions(),
     ])
 
@@ -96,6 +112,7 @@ export async function getTreasuryDashboardData(): Promise<TreasuryDashboardData>
       alerts: ALERTS,
       transactions,
       accessDecisions: decisionsPayload,
+      apiListings: apisPayload.apis,
       stats: {
         totalAgents: agents.length,
         activeAgents: agents.filter((agent) => agent.status === "active").length,
@@ -114,6 +131,7 @@ export async function getTreasuryDashboardData(): Promise<TreasuryDashboardData>
       alerts: ALERTS,
       transactions: TRANSACTIONS,
       accessDecisions: [],
+      apiListings: [],
       stats: STATS,
       source: "mock",
     }
@@ -133,6 +151,13 @@ export async function pauseAgent(agentId: string) {
 
 export async function resumeAgent(agentId: string) {
   return arcApiRequest(`/api/agents/${agentId}/resume`, { method: "POST" })
+}
+
+export async function runAccessCheck(input: { agentId: string; apiId: string; amountUsdc?: number }) {
+  return arcApiRequest("/api/access/check", {
+    body: JSON.stringify(input),
+    method: "POST",
+  })
 }
 
 async function fetchAccessDecisions(): Promise<AccessDecision[]> {
