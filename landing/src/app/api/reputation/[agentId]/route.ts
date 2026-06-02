@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { requireArcApiKey } from "@/lib/backend/auth"
 import { getReputationProfile } from "@/lib/backend/service"
 
 type RouteContext = {
@@ -6,6 +7,9 @@ type RouteContext = {
 }
 
 export async function GET(_request: Request, context: RouteContext) {
+  const unauthorized = requireArcApiKey(_request)
+  if (unauthorized) return unauthorized
+
   const { agentId } = await context.params
   const reputation = await getReputationProfile(agentId)
   if (!reputation) {

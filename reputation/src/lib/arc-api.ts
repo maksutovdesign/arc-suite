@@ -42,22 +42,23 @@ export type ReputationData = {
 
 const DEFAULT_API_BASE_URL = process.env.NODE_ENV === "production" ? "https://arcsuite-app.vercel.app" : "http://127.0.0.1:3100"
 const API_BASE_URL = process.env.ARC_SUITE_API_URL ?? process.env.NEXT_PUBLIC_ARC_SUITE_API_URL ?? DEFAULT_API_BASE_URL
+const ARC_API_KEY = process.env.ARC_API_KEY
 
 export async function getReputationData(): Promise<ReputationData> {
   try {
-    const agentsResponse = await fetch(`${API_BASE_URL}/api/agents`, { cache: "no-store" })
+    const agentsResponse = await fetch(`${API_BASE_URL}/api/agents`, { cache: "no-store", headers: arcApiHeaders() })
     if (!agentsResponse.ok) throw new Error("Agents request failed")
     const agentsPayload = (await agentsResponse.json()) as { agents: ApiAgent[] }
 
     const reputationProfiles = await Promise.all(
       agentsPayload.agents.map(async (agent) => {
-        const response = await fetch(`${API_BASE_URL}/api/reputation/${agent.id}`, { cache: "no-store" })
+        const response = await fetch(`${API_BASE_URL}/api/reputation/${agent.id}`, { cache: "no-store", headers: arcApiHeaders() })
         if (!response.ok) throw new Error("Reputation request failed")
         const payload = (await response.json()) as { reputation: ApiReputation }
         return payload.reputation
       }),
     )
-    const eventsResponse = await fetch(`${API_BASE_URL}/api/reputation/events?limit=40`, { cache: "no-store" })
+    const eventsResponse = await fetch(`${API_BASE_URL}/api/reputation/events?limit=40`, { cache: "no-store", headers: arcApiHeaders() })
     if (!eventsResponse.ok) throw new Error("Reputation events request failed")
     const eventsPayload = (await eventsResponse.json()) as { events: ReputationEvent[] }
 
@@ -76,6 +77,10 @@ export async function getReputationData(): Promise<ReputationData> {
       source: "mock",
     }
   }
+}
+
+function arcApiHeaders(): Record<string, string> {
+  return ARC_API_KEY ? { "x-arc-api-key": ARC_API_KEY } : {}
 }
 
 function mapAgent(agent: ApiAgent, profile?: ApiReputation): Agent {

@@ -2,6 +2,7 @@ import { APIS_ALL, type ApiCategory, type ApiListing, type PricingModel } from "
 
 const DEFAULT_API_BASE_URL = process.env.NODE_ENV === "production" ? "https://arcsuite-app.vercel.app" : "http://127.0.0.1:3100"
 const API_BASE_URL = process.env.ARC_SUITE_API_URL ?? process.env.NEXT_PUBLIC_ARC_SUITE_API_URL ?? DEFAULT_API_BASE_URL
+const ARC_API_KEY = process.env.ARC_API_KEY
 
 type BackendApiListing = {
   id: string
@@ -35,7 +36,7 @@ export type AccessDecision = {
 export async function runAccessCheck(input: { agentId: string; apiId: string; amountUsdc?: number }) {
   const response = await fetch(`${API_BASE_URL}/api/access/check`, {
     body: JSON.stringify(input),
-    headers: { "Content-Type": "application/json" },
+    headers: arcApiHeaders({ "Content-Type": "application/json" }),
     method: "POST",
   })
 
@@ -48,7 +49,7 @@ export async function runAccessCheck(input: { agentId: string; apiId: string; am
 
 export async function getMarketplaceData(): Promise<MarketplaceData> {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/apis`, { cache: "no-store" })
+    const response = await fetch(`${API_BASE_URL}/api/apis`, { cache: "no-store", headers: arcApiHeaders() })
     if (!response.ok) throw new Error(`Arc APIs request failed: ${response.status}`)
     const payload = (await response.json()) as { apis: BackendApiListing[] }
 
@@ -61,6 +62,13 @@ export async function getMarketplaceData(): Promise<MarketplaceData> {
       apis: APIS_ALL,
       source: "mock",
     }
+  }
+}
+
+function arcApiHeaders(extra: Record<string, string> = {}) {
+  return {
+    ...extra,
+    ...(ARC_API_KEY ? { "x-arc-api-key": ARC_API_KEY } : {}),
   }
 }
 

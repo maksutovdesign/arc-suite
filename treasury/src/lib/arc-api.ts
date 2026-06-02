@@ -82,14 +82,15 @@ type TreasuryDashboardData = {
 
 const DEFAULT_API_BASE_URL = process.env.NODE_ENV === "production" ? "https://arcsuite-app.vercel.app" : "http://127.0.0.1:3100"
 const API_BASE_URL = process.env.ARC_SUITE_API_URL ?? process.env.NEXT_PUBLIC_ARC_SUITE_API_URL ?? DEFAULT_API_BASE_URL
+const ARC_API_KEY = process.env.ARC_API_KEY
 
 export async function getTreasuryDashboardData(): Promise<TreasuryDashboardData> {
   try {
     const [summaryRes, agentsRes, transactionsRes, apisRes] = await Promise.all([
-      fetch(`${API_BASE_URL}/api/pilot/summary`, { cache: "no-store" }),
-      fetch(`${API_BASE_URL}/api/agents`, { cache: "no-store" }),
-      fetch(`${API_BASE_URL}/api/transactions`, { cache: "no-store" }),
-      fetch(`${API_BASE_URL}/api/apis`, { cache: "no-store" }),
+      fetch(`${API_BASE_URL}/api/pilot/summary`, { cache: "no-store", headers: arcApiHeaders() }),
+      fetch(`${API_BASE_URL}/api/agents`, { cache: "no-store", headers: arcApiHeaders() }),
+      fetch(`${API_BASE_URL}/api/transactions`, { cache: "no-store", headers: arcApiHeaders() }),
+      fetch(`${API_BASE_URL}/api/apis`, { cache: "no-store", headers: arcApiHeaders() }),
     ])
 
     if (!summaryRes.ok || !agentsRes.ok || !transactionsRes.ok || !apisRes.ok) {
@@ -161,7 +162,7 @@ export async function runAccessCheck(input: { agentId: string; apiId: string; am
 }
 
 async function fetchAccessDecisions(): Promise<AccessDecision[]> {
-  const response = await fetch(`${API_BASE_URL}/api/access/decisions?limit=12`, { cache: "no-store" })
+  const response = await fetch(`${API_BASE_URL}/api/access/decisions?limit=12`, { cache: "no-store", headers: arcApiHeaders() })
   if (!response.ok) return []
   const payload = (await response.json()) as { decisions: AccessDecision[] }
   return payload.decisions
@@ -171,7 +172,7 @@ async function arcApiRequest(path: string, init: RequestInit) {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...init,
     headers: {
-      "Content-Type": "application/json",
+      ...arcApiHeaders({ "Content-Type": "application/json" }),
       ...(init.headers ?? {}),
     },
   })
@@ -181,6 +182,13 @@ async function arcApiRequest(path: string, init: RequestInit) {
   }
 
   return response.json()
+}
+
+function arcApiHeaders(extra: Record<string, string> = {}) {
+  return {
+    ...extra,
+    ...(ARC_API_KEY ? { "x-arc-api-key": ARC_API_KEY } : {}),
+  }
 }
 
 function mapAgent(agent: ApiAgent): Agent {

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { requireArcApiKey } from "@/lib/backend/auth"
 import { updatePilotAgent } from "@/lib/backend/service"
 
 type RouteContext = {
@@ -6,6 +7,9 @@ type RouteContext = {
 }
 
 export async function PATCH(request: NextRequest, context: RouteContext) {
+  const unauthorized = requireArcApiKey(request)
+  if (unauthorized) return unauthorized
+
   const { agentId } = await context.params
   const body = await request.json().catch(() => null)
   if (!body || typeof body !== "object") {

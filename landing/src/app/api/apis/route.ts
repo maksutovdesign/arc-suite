@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server"
+import { requireArcApiKey } from "@/lib/backend/auth"
 import { listApiListings } from "@/lib/backend/service"
 
-export async function GET() {
+export async function GET(request: Request) {
+  const unauthorized = requireArcApiKey(request)
+  if (unauthorized) return unauthorized
+
   return NextResponse.json({ apis: await listApiListings() })
 }
