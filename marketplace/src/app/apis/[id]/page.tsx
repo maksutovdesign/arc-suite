@@ -3,6 +3,7 @@ import Link from "next/link"
 import { Star, Zap, CheckCircle, TrendingUp, Clock, ArrowLeft, Code, Copy, Globe, Activity, Shield } from "lucide-react"
 import { ArcProgress } from "@/components/ui/ArcProgress"
 import { ArcButton } from "@/components/ui/ArcButton"
+import { RequestAccessButton } from "@/components/browse/RequestAccessButton"
 import { APIS_ALL, REVIEWS } from "@/data/mock"
 import { formatPrice, formatCount, statusColor } from "@/lib/utils"
 
@@ -176,9 +177,7 @@ const data = await res.json()
               ${api.price < 0.001 ? api.price.toFixed(6) : api.price < 0.01 ? api.price.toFixed(4) : api.price.toFixed(3)}
             </p>
             <p className="text-xs mb-3" style={{ color: "#7a8fa8" }}>{PRICING_LABEL[api.pricingModel]} · USDC · x402</p>
-            <ArcButton variant="primary" size="md" icon={Zap} className="w-full justify-center">
-              Start integrating
-            </ArcButton>
+            <RequestAccessButton apiId={api.id} amountUsdc={api.price} />
           </div>
 
           {/* SLA stats */}

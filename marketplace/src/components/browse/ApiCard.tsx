@@ -2,9 +2,9 @@
 
 import Link from "next/link"
 import { Star, Zap, CheckCircle, TrendingUp, Clock, ArrowRight } from "lucide-react"
-import { ArcButton } from "@/components/ui/ArcButton"
 import { ArcProgress } from "@/components/ui/ArcProgress"
 import { VolumeSparkline } from "@/components/charts/VolumeSparkline"
+import { RequestAccessButton } from "@/components/browse/RequestAccessButton"
 import { type ApiListing } from "@/data/mock"
 import { formatPrice, formatCount, statusColor, CAT_COLORS} from "@/lib/utils"
 
@@ -21,7 +21,7 @@ export function ApiCard({ api, volume = [], featured = false }: Props) {
   const catColor = CAT_COLORS[api.category] ?? "#5FBFFF"
 
   return (
-    <Link href={`/apis/${api.id}`} className="block group">
+    <div className="block group">
       <div
         className="rounded-2xl overflow-hidden flex flex-col h-full transition-all duration-200 group-hover:-translate-y-0.5"
         style={{
@@ -44,7 +44,7 @@ export function ApiCard({ api, volume = [], featured = false }: Props) {
                 <Zap className="size-4" style={{ color: catColor }} />
               </div>
               <div>
-                <p className="text-sm font-semibold text-white group-hover:text-[#5FBFFF] transition-colors">{api.name}</p>
+                <Link href={`/apis/${api.id}`} className="text-sm font-semibold text-white group-hover:text-[#5FBFFF] transition-colors">{api.name}</Link>
                 <p className="text-[11px]" style={{ color: "#7a8fa8" }}>{api.provider}</p>
               </div>
             </div>
@@ -128,17 +128,23 @@ export function ApiCard({ api, volume = [], featured = false }: Props) {
         </div>
 
         {/* CTA */}
-        <div className="px-5 pb-4">
-          <ArcButton
-            variant={featured ? "primary" : "outline"}
-            size="md"
-            iconRight={ArrowRight}
-            className="w-full justify-center"
+        <div className="px-5 pb-4 space-y-2">
+          <RequestAccessButton apiId={api.id} amountUsdc={api.price} compact />
+          <Link
+            className="inline-flex h-8 w-full items-center justify-center gap-2 rounded-xl text-sm font-medium transition-all hover:opacity-80 active:scale-95"
+            href={`/apis/${api.id}`}
+            style={{
+              background: featured ? "linear-gradient(135deg, #4d8ee9 0%, #5FBFFF 100%)" : "rgba(255,255,255,0.04)",
+              border: featured ? "none" : "1px solid rgba(255,255,255,0.1)",
+              boxShadow: featured ? "0 0 16px rgba(77,142,233,0.35)" : "none",
+              color: featured ? "#fff" : "#C7C5D1",
+            }}
           >
             View & Integrate
-          </ArcButton>
+            <ArrowRight className="size-3.5" />
+          </Link>
         </div>
       </div>
-    </Link>
+    </div>
   )
 }
