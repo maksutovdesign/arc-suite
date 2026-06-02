@@ -2,11 +2,13 @@
   "name": "arc-suite",
   "private": true,
   "workspaces": [
+    "landing",
     "treasury",
     "reputation",
     "marketplace"
   ],
   "scripts": {
+    "landing": "npm run dev --workspace=landing",
     "treasury": "npm run dev --workspace=treasury",
     "reputation": "npm run dev --workspace=reputation",
     "marketplace": "npm run dev --workspace=marketplace",
