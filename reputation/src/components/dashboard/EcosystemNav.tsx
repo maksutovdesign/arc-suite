@@ -3,12 +3,24 @@
  * Shows in every app so presenters can navigate between them instantly.
  */
 export function EcosystemNav({ current }: { current: "treasury" | "reputation" | "marketplace" }) {
+  const urls = process.env.NODE_ENV === "production"
+    ? {
+        treasury: "https://treasury-umber.vercel.app",
+        reputation: "https://reputation-five.vercel.app",
+        marketplace: "https://marketplace-eosin-eight.vercel.app",
+      }
+    : {
+        treasury: "http://localhost:3001",
+        reputation: "http://localhost:3002",
+        marketplace: "http://localhost:3003",
+      }
+
   const APPS = [
     {
       id: "treasury",
       label: "Arc Treasury",
       sub: "Budget Manager",
-      url: "http://localhost:3001",
+      url: urls.treasury,
       color: "#4d8ee9",
       emoji: "💰",
     },
@@ -16,7 +28,7 @@ export function EcosystemNav({ current }: { current: "treasury" | "reputation" |
       id: "reputation",
       label: "Arc Reputation",
       sub: "Trust Layer",
-      url: "http://localhost:3002",
+      url: urls.reputation,
       color: "#a78bfa",
       emoji: "🛡️",
     },
@@ -24,7 +36,7 @@ export function EcosystemNav({ current }: { current: "treasury" | "reputation" |
       id: "marketplace",
       label: "Arc Marketplace",
       sub: "x402 APIs",
-      url: "http://localhost:3003",
+      url: urls.marketplace,
       color: "#34d399",
       emoji: "🛒",
     },
