@@ -1,4 +1,4 @@
-import type { Agent, ApiListing, ApiProvider, BudgetAlert, ReputationProfile, Transaction } from "./schema"
+import type { AccessDecisionLog, Agent, ApiListing, ApiProvider, BudgetAlert, ReputationProfile, Transaction } from "./schema"
 
 type WorkspaceRow = {
   id: string
@@ -82,6 +82,21 @@ type ApiListingRow = {
   min_reputation_score: number
 }
 
+type AccessDecisionRow = {
+  id: string
+  workspace_id: string
+  agent_id: string
+  api_id: string
+  amount_usdc: string | number
+  allowed: boolean
+  reason: string
+  required_score: number
+  score: number
+  monthly_budget_used_pct: number
+  daily_budget_used_pct: number
+  created_at: string
+}
+
 export type BackendDataset = {
   workspace: {
     id: string
@@ -151,6 +166,31 @@ export async function insertSupabaseAgent(agent: Agent): Promise<Agent | null> {
   }
 }
 
+export async function updateSupabaseAgent(agentId: string, updates: Partial<Agent>): Promise<Agent | null> {
+  if (!isSupabaseConfigured()) return null
+
+  const row: Partial<AgentRow> = {}
+  if (updates.name !== undefined) row.name = updates.name
+  if (updates.address !== undefined) row.address = updates.address
+  if (updates.status !== undefined) row.status = updates.status
+  if (updates.network !== undefined) row.network = updates.network
+  if (updates.balanceUsdc !== undefined) row.balance_usdc = updates.balanceUsdc
+  if (updates.monthlyBudgetUsdc !== undefined) row.monthly_budget_usdc = updates.monthlyBudgetUsdc
+  if (updates.monthlySpentUsdc !== undefined) row.monthly_spent_usdc = updates.monthlySpentUsdc
+  if (updates.dailyLimitUsdc !== undefined) row.daily_limit_usdc = updates.dailyLimitUsdc
+  if (updates.dailySpentUsdc !== undefined) row.daily_spent_usdc = updates.dailySpentUsdc
+  if (updates.txCount !== undefined) row.tx_count = updates.txCount
+  if (updates.tags !== undefined) row.tags = updates.tags
+  if (updates.lastActiveAt !== undefined) row.last_active_at = updates.lastActiveAt
+
+  try {
+    const rows = await patchRows<AgentRow>("agents", `id=eq.${encodeURIComponent(agentId)}`, row)
+    return rows[0] ? mapAgent(rows[0]) : null
+  } catch {
+    return null
+  }
+}
+
 export async function insertAccessDecision(input: {
   agentId: string
   apiId: string
@@ -185,6 +225,20 @@ export async function insertAccessDecision(input: {
   }
 }
 
+export async function listSupabaseAccessDecisions(limit = 20): Promise<AccessDecisionLog[] | null> {
+  if (!isSupabaseConfigured()) return null
+
+  try {
+    const rows = await getRows<AccessDecisionRow>(
+      "access_decisions",
+      `select=*&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&order=created_at.desc&limit=${limit}`,
+    )
+    return rows.map(mapAccessDecision)
+  } catch {
+    return null
+  }
+}
+
 async function getRows<T>(table: string, query: string): Promise<T[]> {
   const response = await fetch(`${restBaseUrl()}/${table}?${query}`, {
     cache: "no-store",
@@ -206,6 +260,20 @@ async function postRows<T>(table: string, rows: unknown[]): Promise<T[]> {
   })
 
   if (!response.ok) throw new Error(`Supabase insert failed for ${table}`)
+  return response.json() as Promise<T[]>
+}
+
+async function patchRows<T>(table: string, query: string, row: unknown): Promise<T[]> {
+  const response = await fetch(`${restBaseUrl()}/${table}?${query}`, {
+    body: JSON.stringify(row),
+    headers: {
+      ...supabaseHeaders(),
+      Prefer: "return=representation",
+    },
+    method: "PATCH",
+  })
+
+  if (!response.ok) throw new Error(`Supabase update failed for ${table}`)
   return response.json() as Promise<T[]>
 }
 
@@ -306,6 +374,23 @@ function mapApiListing(row: ApiListingRow): ApiListing {
     uptimePct: toNumber(row.uptime_pct),
     requestCount: toNumber(row.request_count),
     minReputationScore: row.min_reputation_score,
+  }
+}
+
+function mapAccessDecision(row: AccessDecisionRow): AccessDecisionLog {
+  return {
+    id: row.id,
+    workspaceId: row.workspace_id,
+    allowed: row.allowed,
+    agentId: row.agent_id,
+    apiId: row.api_id,
+    amountUsdc: toNumber(row.amount_usdc),
+    reason: row.reason,
+    requiredScore: row.required_score,
+    score: row.score,
+    monthlyBudgetUsedPct: row.monthly_budget_used_pct,
+    dailyBudgetUsedPct: row.daily_budget_used_pct,
+    createdAt: row.created_at,
   }
 }
 

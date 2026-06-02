@@ -11,6 +11,8 @@ import {
   Bell,
   Download,
   LayoutDashboard,
+  CheckCircle2,
+  XCircle,
 } from "lucide-react"
 import Link from "next/link"
 import { StatCard } from "@/components/dashboard/StatCard"
@@ -50,9 +52,10 @@ function SectionTitle({ children, actionLabel, actionHref }: { children: string;
 }
 
 export default async function DashboardPage() {
-  const { agents, alerts, transactions, stats, source } = await getTreasuryDashboardData()
+  const { agents, alerts, transactions, accessDecisions, stats, source } = await getTreasuryDashboardData()
   const recentTxs = transactions.slice(0, 6)
   const topAgents = agents.slice(0, 5)
+  const agentNames = new Map(agents.map((agent) => [agent.id, agent.name]))
 
   return (
     <div className="flex flex-col min-h-full">
@@ -202,6 +205,40 @@ export default async function DashboardPage() {
               </div>
             ))}
           </div>
+        </div>
+      </div>
+
+      <div className="px-6 pb-6">
+        <div className="p-4" style={arcCard}>
+          <SectionTitle>Access Decisions</SectionTitle>
+          {accessDecisions.length === 0 ? (
+            <div className="py-8 text-center text-xs" style={{ color: "#7a8fa8" }}>
+              No access decisions yet. Run <span className="font-mono">POST /api/access/check</span> to populate the audit log.
+            </div>
+          ) : (
+            <div className="space-y-0">
+              {accessDecisions.slice(0, 8).map((decision, index) => (
+                <div
+                  className="grid grid-cols-[24px_minmax(0,1fr)_90px_90px_120px] items-center gap-3 py-2.5 text-xs"
+                  key={decision.id}
+                  style={{ borderBottom: index < accessDecisions.length - 1 ? "1px solid rgba(255,255,255,0.04)" : "none" }}
+                >
+                  {decision.allowed ? (
+                    <CheckCircle2 className="size-4" style={{ color: "#34d399" }} />
+                  ) : (
+                    <XCircle className="size-4" style={{ color: "#f87171" }} />
+                  )}
+                  <div className="min-w-0">
+                    <p className="truncate font-medium text-white">{agentNames.get(decision.agentId) ?? decision.agentId}</p>
+                    <p className="truncate text-[10px]" style={{ color: "#7a8fa8" }}>{decision.reason}</p>
+                  </div>
+                  <span className="font-mono" style={{ color: "#5FBFFF" }}>{decision.apiId}</span>
+                  <span className="text-right text-white">{formatUSDC(decision.amountUsdc)}</span>
+                  <span className="text-right text-[10px]" style={{ color: "#7a8fa8" }}>{formatTimestamp(decision.createdAt)}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

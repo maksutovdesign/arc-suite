@@ -42,10 +42,26 @@ type ApiSummary = {
   }
 }
 
+export type AccessDecision = {
+  id: string
+  workspaceId: string
+  allowed: boolean
+  agentId: string
+  apiId: string
+  amountUsdc: number
+  reason: string
+  requiredScore: number
+  score: number
+  monthlyBudgetUsedPct: number
+  dailyBudgetUsedPct: number
+  createdAt: string
+}
+
 type TreasuryDashboardData = {
   agents: Agent[]
   alerts: BudgetAlert[]
   transactions: Transaction[]
+  accessDecisions: AccessDecision[]
   stats: typeof STATS
   source: "api" | "mock"
 }
@@ -67,7 +83,10 @@ export async function getTreasuryDashboardData(): Promise<TreasuryDashboardData>
 
     const summary = (await summaryRes.json()) as ApiSummary
     const agentsPayload = (await agentsRes.json()) as { agents: ApiAgent[] }
-    const transactionsPayload = (await transactionsRes.json()) as { transactions: ApiTransaction[] }
+    const [transactionsPayload, decisionsPayload] = await Promise.all([
+      transactionsRes.json() as Promise<{ transactions: ApiTransaction[] }>,
+      fetchAccessDecisions(),
+    ])
 
     const agents = agentsPayload.agents.map(mapAgent)
     const transactions = transactionsPayload.transactions.map(mapTransaction)
@@ -76,6 +95,7 @@ export async function getTreasuryDashboardData(): Promise<TreasuryDashboardData>
       agents,
       alerts: ALERTS,
       transactions,
+      accessDecisions: decisionsPayload,
       stats: {
         totalAgents: agents.length,
         activeAgents: agents.filter((agent) => agent.status === "active").length,
@@ -93,10 +113,49 @@ export async function getTreasuryDashboardData(): Promise<TreasuryDashboardData>
       agents: AGENTS,
       alerts: ALERTS,
       transactions: TRANSACTIONS,
+      accessDecisions: [],
       stats: STATS,
       source: "mock",
     }
   }
+}
+
+export async function patchAgent(agentId: string, updates: Partial<ApiAgent>) {
+  return arcApiRequest(`/api/agents/${agentId}`, {
+    body: JSON.stringify(updates),
+    method: "PATCH",
+  })
+}
+
+export async function pauseAgent(agentId: string) {
+  return arcApiRequest(`/api/agents/${agentId}/pause`, { method: "POST" })
+}
+
+export async function resumeAgent(agentId: string) {
+  return arcApiRequest(`/api/agents/${agentId}/resume`, { method: "POST" })
+}
+
+async function fetchAccessDecisions(): Promise<AccessDecision[]> {
+  const response = await fetch(`${API_BASE_URL}/api/access/decisions?limit=12`, { cache: "no-store" })
+  if (!response.ok) return []
+  const payload = (await response.json()) as { decisions: AccessDecision[] }
+  return payload.decisions
+}
+
+async function arcApiRequest(path: string, init: RequestInit) {
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    ...init,
+    headers: {
+      "Content-Type": "application/json",
+      ...(init.headers ?? {}),
+    },
+  })
+
+  if (!response.ok) {
+    throw new Error(`Arc API request failed: ${response.status}`)
+  }
+
+  return response.json()
 }
 
 function mapAgent(agent: ApiAgent): Agent {

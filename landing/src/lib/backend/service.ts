@@ -1,6 +1,13 @@
 import { agents, alerts, apiListings, providers, reputationProfiles, transactions, WORKSPACE } from "./seed"
-import type { AccessCheckRequest, AccessDecision, Agent, PilotSummary } from "./schema"
-import { insertAccessDecision, insertSupabaseAgent, loadSupabaseDataset, type BackendDataset } from "./supabase"
+import type { AccessCheckRequest, AccessDecision, AccessDecisionLog, Agent, PilotSummary } from "./schema"
+import {
+  insertAccessDecision,
+  insertSupabaseAgent,
+  listSupabaseAccessDecisions,
+  loadSupabaseDataset,
+  updateSupabaseAgent,
+  type BackendDataset,
+} from "./supabase"
 
 export async function listAgents() {
   const dataset = await getDataset()
@@ -52,6 +59,24 @@ export async function createPilotAgent(input: Partial<Agent>) {
   return (await insertSupabaseAgent(agent)) ?? agent
 }
 
+export async function updatePilotAgent(agentId: string, input: Partial<Agent>) {
+  const dataset = await getDataset()
+  const current = dataset.agents.find((agent) => agent.id === agentId)
+  if (!current) return null
+
+  const updates = normalizeAgentUpdates(input)
+  const updated: Agent = {
+    ...current,
+    ...updates,
+  }
+
+  return (await updateSupabaseAgent(agentId, updates)) ?? updated
+}
+
+export async function setPilotAgentStatus(agentId: string, status: Agent["status"]) {
+  return updatePilotAgent(agentId, { status })
+}
+
 export async function checkAccess(request: AccessCheckRequest): Promise<AccessDecision | null> {
   const dataset = await getDataset()
   const agent = dataset.agents.find((item) => item.id === request.agentId)
@@ -90,6 +115,10 @@ export async function checkAccess(request: AccessCheckRequest): Promise<AccessDe
   })
 
   return decision
+}
+
+export async function listAccessDecisions(limit = 20): Promise<AccessDecisionLog[]> {
+  return (await listSupabaseAccessDecisions(limit)) ?? []
 }
 
 export async function getPilotSummary(): Promise<PilotSummary> {
@@ -160,11 +189,32 @@ export async function getPilotSummary(): Promise<PilotSummary> {
       { method: "GET", path: "/api/pilot/summary", description: "Landing-ready pilot metrics" },
       { method: "GET", path: "/api/agents", description: "Agent wallets, limits, balances and status" },
       { method: "POST", path: "/api/agents", description: "Create a pilot agent profile" },
+      { method: "PATCH", path: "/api/agents/:agentId", description: "Update budget, limits, status or metadata" },
+      { method: "POST", path: "/api/agents/:agentId/pause", description: "Pause an agent by operator policy" },
+      { method: "POST", path: "/api/agents/:agentId/resume", description: "Resume a paused agent" },
       { method: "GET", path: "/api/transactions", description: "USDC spend events" },
       { method: "GET", path: "/api/reputation/:agentId", description: "0-1000 reputation profile" },
       { method: "POST", path: "/api/access/check", description: "x402 access decision from score and budget policy" },
+      { method: "GET", path: "/api/access/decisions", description: "Access decision audit log" },
     ],
   }
+}
+
+function normalizeAgentUpdates(input: Partial<Agent>) {
+  const updates: Partial<Agent> = {}
+  if (typeof input.name === "string") updates.name = input.name
+  if (typeof input.address === "string") updates.address = input.address
+  if (input.status && ["active", "paused", "alert", "idle"].includes(input.status)) updates.status = input.status
+  if (input.network && ["Arc", "Ethereum"].includes(input.network)) updates.network = input.network
+  if (typeof input.balanceUsdc === "number") updates.balanceUsdc = input.balanceUsdc
+  if (typeof input.monthlyBudgetUsdc === "number") updates.monthlyBudgetUsdc = input.monthlyBudgetUsdc
+  if (typeof input.monthlySpentUsdc === "number") updates.monthlySpentUsdc = input.monthlySpentUsdc
+  if (typeof input.dailyLimitUsdc === "number") updates.dailyLimitUsdc = input.dailyLimitUsdc
+  if (typeof input.dailySpentUsdc === "number") updates.dailySpentUsdc = input.dailySpentUsdc
+  if (typeof input.txCount === "number") updates.txCount = input.txCount
+  if (Array.isArray(input.tags)) updates.tags = input.tags.filter((tag) => typeof tag === "string")
+  if (input.lastActiveAt === null || typeof input.lastActiveAt === "string") updates.lastActiveAt = input.lastActiveAt
+  return updates
 }
 
 async function getDataset(): Promise<BackendDataset> {

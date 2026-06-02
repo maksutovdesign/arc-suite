@@ -2,10 +2,11 @@ import { notFound } from "next/navigation"
 import Link from "next/link"
 import {
   ArrowLeft, Bot, Wallet, Activity, Network, Clock,
-  Settings2, Pause, Play, Zap, ArrowLeftRight,
+  Settings2, Zap, ArrowLeftRight,
   CheckCircle2, XCircle, Loader2, TrendingUp,
 } from "lucide-react"
-import { AGENTS, TRANSACTIONS, AGENT_SPARKLINES } from "@/data/mock"
+import { AGENTS, AGENT_SPARKLINES } from "@/data/mock"
+import { getTreasuryDashboardData } from "@/lib/arc-api"
 
 export async function generateStaticParams() {
   return AGENTS.map((a) => ({ id: a.id }))
@@ -16,6 +17,7 @@ import { AgentStatusBadge } from "@/components/agents/AgentStatusBadge"
 import { ArcProgress } from "@/components/ui/ArcProgress"
 import { ArcButton } from "@/components/ui/ArcButton"
 import { AgentSparkline } from "@/components/charts/AgentSparkline"
+import { AgentPolicyActions } from "@/components/agents/AgentPolicyActions"
 
 function StatusIcon({ status }: { status: "completed" | "pending" | "failed" }) {
   if (status === "completed") return <CheckCircle2 className="size-3.5 shrink-0" style={{ color: "#34d399" }} />
@@ -24,16 +26,19 @@ function StatusIcon({ status }: { status: "completed" | "pending" | "failed" }) 
 }
 
 const arcCard = ARC_CARD
+export const dynamic = "force-dynamic"
 
 export default async function AgentDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const agentIndex = AGENTS.findIndex((a) => a.id === id)
-  const agent = AGENTS[agentIndex]
+  const { agents, transactions, accessDecisions } = await getTreasuryDashboardData()
+  const agentIndex = agents.findIndex((a) => a.id === id)
+  const agent = agents[agentIndex]
   if (!agent) notFound()
 
   const grad = AGENT_GRADIENTS[agentIndex % AGENT_GRADIENTS.length]
   const sparkline = AGENT_SPARKLINES[agent.id] ?? []
-  const agentTxs = TRANSACTIONS.filter((t) => t.agentId === agent.id)
+  const agentTxs = transactions.filter((t) => t.agentId === agent.id)
+  const agentDecisions = accessDecisions.filter((decision) => decision.agentId === agent.id)
   const mPct = pctUsed(agent.monthlySpent, agent.monthlyBudget)
   const dPct = pctUsed(agent.dailySpent, agent.dailyLimit)
   const weeklySpend = sparkline.reduce((s, d) => s + d.value, 0)
@@ -91,11 +96,6 @@ export default async function AgentDetailPage({ params }: { params: Promise<{ id
         </div>
 
         <div className="relative flex items-center gap-2">
-          {agent.status === "paused" ? (
-            <ArcButton variant="primary" size="sm" icon={Play}>Resume</ArcButton>
-          ) : (
-            <ArcButton variant="outline" size="sm" icon={Pause}>Pause</ArcButton>
-          )}
           <ArcButton variant="primary" size="sm" icon={Zap}>Top Up</ArcButton>
           <ArcButton variant="outline" size="icon" icon={Settings2} />
         </div>
@@ -163,9 +163,7 @@ export default async function AgentDetailPage({ params }: { params: Promise<{ id
                 </div>
               ))}
 
-              <ArcButton variant="outline" size="sm" icon={Settings2} className="w-full justify-center">
-                Edit limits
-              </ArcButton>
+              <AgentPolicyActions agent={agent} />
             </div>
 
             {/* Agent info */}
@@ -247,6 +245,48 @@ export default async function AgentDetailPage({ params }: { params: Promise<{ id
               </div>
             )}
           </div>
+        </div>
+
+        <div className="p-4 rounded-2xl" style={arcCard}>
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-sm font-semibold text-white">
+              Access Decisions
+              <span className="ml-2 text-[11px] font-normal" style={{ color: "#7a8fa8" }}>
+                {agentDecisions.length} audit records
+              </span>
+            </span>
+          </div>
+
+          {agentDecisions.length === 0 ? (
+            <div className="py-8 text-center text-xs" style={{ color: "#7a8fa8" }}>
+              No access checks recorded for this agent yet.
+            </div>
+          ) : (
+            <div className="space-y-0">
+              {agentDecisions.map((decision, index) => (
+                <div
+                  className="grid grid-cols-[24px_minmax(0,1fr)_90px_90px_120px] items-center gap-3 py-2.5 text-xs"
+                  key={decision.id}
+                  style={{ borderBottom: index < agentDecisions.length - 1 ? "1px solid rgba(255,255,255,0.04)" : "none" }}
+                >
+                  {decision.allowed ? (
+                    <CheckCircle2 className="size-4" style={{ color: "#34d399" }} />
+                  ) : (
+                    <XCircle className="size-4" style={{ color: "#f87171" }} />
+                  )}
+                  <div className="min-w-0">
+                    <p className="truncate font-medium text-white">{decision.reason}</p>
+                    <p className="truncate text-[10px]" style={{ color: "#7a8fa8" }}>
+                      score {decision.score} / required {decision.requiredScore} · daily {decision.dailyBudgetUsedPct}%
+                    </p>
+                  </div>
+                  <span className="font-mono" style={{ color: "#5FBFFF" }}>{decision.apiId}</span>
+                  <span className="text-right text-white">{formatUSDC(decision.amountUsdc)}</span>
+                  <span className="text-right text-[10px]" style={{ color: "#7a8fa8" }}>{formatTimestamp(decision.createdAt)}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

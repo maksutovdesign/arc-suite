@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { X, Bot, Zap, CheckCircle2 } from "lucide-react"
 import { ArcButton } from "@/components/ui/ArcButton"
 
@@ -17,11 +18,14 @@ const TEMPLATES = [
 ]
 
 export function NewAgentModal({ onClose }: Props) {
+  const router = useRouter()
   const [step, setStep] = useState<"template" | "config" | "success">("template")
   const [selected, setSelected] = useState<string | null>(null)
   const [name, setName] = useState("")
   const [budget, setBudget] = useState("500")
   const [network, setNetwork] = useState<string>(NETWORKS[0])
+  const [isCreating, setIsCreating] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const template = TEMPLATES.find(t => t.id === selected)
 
@@ -33,8 +37,29 @@ export function NewAgentModal({ onClose }: Props) {
     setStep("config")
   }
 
-  function handleCreate() {
-    setStep("success")
+  async function handleCreate() {
+    setIsCreating(true)
+    setError(null)
+    try {
+      const response = await fetch("/api/arc/agents", {
+        body: JSON.stringify({
+          dailyLimitUsdc: Math.max(10, Number(budget) / 20),
+          monthlyBudgetUsdc: Number(budget),
+          name,
+          network: network === "Arc Testnet" ? "Arc" : "Ethereum",
+          tags: selected ? [selected, "pilot"] : ["pilot"],
+        }),
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+      })
+      if (!response.ok) throw new Error("Create failed")
+      setStep("success")
+      router.refresh()
+    } catch {
+      setError("Could not create agent")
+    } finally {
+      setIsCreating(false)
+    }
   }
 
   return (
@@ -175,9 +200,10 @@ export function NewAgentModal({ onClose }: Props) {
                 Back
               </button>
               <ArcButton variant="primary" size="md" icon={Zap} className="flex-1 justify-center" onClick={handleCreate}>
-                Create Agent on {network}
+                {isCreating ? "Creating..." : `Create Agent on ${network}`}
               </ArcButton>
             </div>
+            {error && <p className="text-[11px]" style={{ color: "#f87171" }}>{error}</p>}
           </div>
         )}
 

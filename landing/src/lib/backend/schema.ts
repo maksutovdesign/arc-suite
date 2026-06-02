@@ -97,6 +97,13 @@ export type AccessDecision = {
   dailyBudgetUsedPct: number
 }
 
+export type AccessDecisionLog = AccessDecision & {
+  id: string
+  workspaceId: string
+  amountUsdc: number
+  createdAt: string
+}
+
 export type PilotSummary = {
   workspace: {
     id: string
@@ -139,7 +146,7 @@ export type PilotSummary = {
     categoryMix: Array<{ label: ApiListing["category"]; value: number }>
   }
   endpoints: Array<{
-    method: "GET" | "POST"
+    method: "GET" | "POST" | "PATCH"
     path: string
     description: string
   }>
