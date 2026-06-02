@@ -17,6 +17,8 @@ export function WorkspaceSecurityPanel({ initialSecurity }: { initialSecurity: W
   const [pending, setPending] = useState<string | null>(null)
   const [freshKey, setFreshKey] = useState<WorkspaceApiKeyCreated | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [adminKey, setAdminKey] = useState("")
+  const [isLocked, setIsLocked] = useState(false)
 
   useEffect(() => {
     if (initialSecurity) return
@@ -27,11 +29,37 @@ export function WorkspaceSecurityPanel({ initialSecurity }: { initialSecurity: W
 
   async function refresh() {
     const response = await fetch("/api/arc/workspace/security")
+    if (response.status === 401) {
+      setIsLocked(true)
+      setError("Unlock a Treasury admin session to manage workspace access.")
+      return
+    }
     if (!response.ok) {
       setError("Workspace security API is unavailable")
       return
     }
+    setIsLocked(false)
     setSecurity(await response.json())
+  }
+
+  async function unlockSession() {
+    setPending("unlock")
+    setError(null)
+    try {
+      const response = await fetch("/api/arc/session", {
+        body: JSON.stringify({ adminKey }),
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+      })
+      if (!response.ok) throw new Error("Unlock failed")
+      setAdminKey("")
+      setIsLocked(false)
+      await refresh()
+    } catch {
+      setError("Invalid Treasury admin key.")
+    } finally {
+      setPending(null)
+    }
   }
 
   async function createKey() {
@@ -116,6 +144,31 @@ export function WorkspaceSecurityPanel({ initialSecurity }: { initialSecurity: W
           <code className="block mt-3 text-[11px] break-all rounded-lg p-2" style={{ color: "#fff", background: "rgba(0,0,0,0.18)" }}>
             {freshKey.secret}
           </code>
+        </div>
+      )}
+
+      {(isLocked || error?.includes("admin session")) && (
+        <div className="rounded-xl p-3" style={{ background: "rgba(95,191,255,0.08)", border: "1px solid rgba(95,191,255,0.2)" }}>
+          <div className="flex items-center gap-2 mb-3">
+            <Shield className="size-4" style={{ color: "#5FBFFF" }} />
+            <p className="text-xs font-semibold text-white">Treasury admin session</p>
+          </div>
+          <div className="grid grid-cols-[1fr_auto] gap-3">
+            <input
+              className="h-9 w-full rounded-lg px-3 text-sm outline-none"
+              placeholder="Enter admin key"
+              style={{ background: "rgba(0,0,0,0.16)", border: "1px solid rgba(255,255,255,0.08)", color: "#fff" }}
+              type="password"
+              value={adminKey}
+              onChange={(event) => setAdminKey(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") unlockSession()
+              }}
+            />
+            <ArcButton variant="primary" size="md" disabled={!adminKey || pending === "unlock"} onClick={unlockSession}>
+              Unlock
+            </ArcButton>
+          </div>
         </div>
       )}
 

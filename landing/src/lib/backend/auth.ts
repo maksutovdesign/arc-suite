@@ -5,10 +5,10 @@ import { verifySupabaseApiKey } from "./supabase"
 const API_KEY = process.env.ARC_API_KEY
 
 export async function requireArcApiKey(request: Request, requiredScopes: ApiKeyScope[] = ["read"]) {
-  if (!API_KEY) return null
+  if (!API_KEY && process.env.NODE_ENV !== "production") return null
 
   const providedKey = request.headers.get("x-arc-api-key") ?? request.headers.get("authorization")?.replace(/^Bearer\s+/i, "")
-  if (providedKey === API_KEY) return null
+  if (API_KEY && providedKey === API_KEY) return null
 
   if (providedKey) {
     const workspaceKey = await verifySupabaseApiKey(providedKey)
