@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createPilotAgent, listAgents } from "@/lib/backend/service"
 
-export function GET() {
-  return NextResponse.json({ agents: listAgents() })
+export async function GET() {
+  return NextResponse.json({ agents: await listAgents() })
 }
 
 export async function POST(request: NextRequest) {
@@ -11,6 +11,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 })
   }
 
-  const agent = createPilotAgent(body)
+  const agent = await createPilotAgent(body)
   return NextResponse.json({ agent }, { status: 201 })
 }

@@ -7,7 +7,7 @@ type RouteContext = {
 
 export async function GET(_request: Request, context: RouteContext) {
   const { agentId } = await context.params
-  const reputation = getReputationProfile(agentId)
+  const reputation = await getReputationProfile(agentId)
   if (!reputation) {
     return NextResponse.json({ error: "Agent reputation not found" }, { status: 404 })
   }

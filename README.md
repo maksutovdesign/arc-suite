@@ -141,6 +141,29 @@ Each app is an independent Next.js 16 project sharing:
 - Node.js 22+
 - npm 10+
 
+### Pilot API database
+
+The landing app exposes the Arc Suite pilot API. By default it uses the bundled demo seed.
+To switch it to Supabase/Postgres, run:
+
+```sql
+-- Supabase SQL Editor or Supabase CLI
+landing/supabase/migrations/2026060201_arc_pilot_schema.sql
+landing/supabase/seed.sql
+```
+
+Then configure the landing deployment:
+
+```env
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=...
+ARC_WORKSPACE_ID=wrk_arc_demo
+```
+
+When these env vars are present, `/api/pilot/summary`, `/api/agents`,
+`/api/transactions`, `/api/reputation/:agentId`, and `/api/access/check`
+read from Supabase. If Supabase is unavailable, the API falls back to demo seed data.
+
 ### Run locally
 
 ```bash

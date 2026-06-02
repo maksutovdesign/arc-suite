@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "agentId and apiId are required" }, { status: 400 })
   }
 
-  const decision = checkAccess({
+  const decision = await checkAccess({
     agentId: body.agentId,
     apiId: body.apiId,
     amountUsdc: typeof body.amountUsdc === "number" ? body.amountUsdc : undefined,

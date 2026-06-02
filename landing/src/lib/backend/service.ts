@@ -1,21 +1,25 @@
 import { agents, alerts, apiListings, providers, reputationProfiles, transactions, WORKSPACE } from "./seed"
 import type { AccessCheckRequest, AccessDecision, Agent, PilotSummary } from "./schema"
+import { insertAccessDecision, insertSupabaseAgent, loadSupabaseDataset, type BackendDataset } from "./supabase"
 
-export function listAgents() {
-  return agents
+export async function listAgents() {
+  const dataset = await getDataset()
+  return dataset.agents
 }
 
-export function listTransactions() {
-  return transactions.map((transaction) => ({
+export async function listTransactions() {
+  const dataset = await getDataset()
+  return dataset.transactions.map((transaction) => ({
     ...transaction,
-    agentName: agents.find((agent) => agent.id === transaction.agentId)?.name ?? transaction.agentId,
+    agentName: dataset.agents.find((agent) => agent.id === transaction.agentId)?.name ?? transaction.agentId,
   }))
 }
 
-export function getReputationProfile(agentId: string) {
-  const profile = reputationProfiles.find((item) => item.agentId === agentId)
+export async function getReputationProfile(agentId: string) {
+  const dataset = await getDataset()
+  const profile = dataset.reputationProfiles.find((item) => item.agentId === agentId)
   if (!profile) return null
-  const agent = agents.find((item) => item.id === agentId)
+  const agent = dataset.agents.find((item) => item.id === agentId)
   return {
     ...profile,
     agentName: agent?.name ?? agentId,
@@ -23,12 +27,13 @@ export function getReputationProfile(agentId: string) {
   }
 }
 
-export function createPilotAgent(input: Partial<Agent>) {
+export async function createPilotAgent(input: Partial<Agent>) {
+  const dataset = await getDataset()
   const now = new Date().toISOString()
-  const id = `agt_${String(agents.length + 1).padStart(2, "0")}`
+  const id = `agt_${String(dataset.agents.length + 1).padStart(2, "0")}`
   const agent: Agent = {
     id,
-    workspaceId: WORKSPACE.id,
+    workspaceId: dataset.workspace.id,
     name: input.name ?? "Pilot Agent",
     address: input.address ?? "0xpilot...agent",
     status: input.status ?? "active",
@@ -44,13 +49,14 @@ export function createPilotAgent(input: Partial<Agent>) {
     lastActiveAt: null,
   }
 
-  return agent
+  return (await insertSupabaseAgent(agent)) ?? agent
 }
 
-export function checkAccess(request: AccessCheckRequest): AccessDecision | null {
-  const agent = agents.find((item) => item.id === request.agentId)
-  const api = apiListings.find((item) => item.id === request.apiId)
-  const reputation = reputationProfiles.find((item) => item.agentId === request.agentId)
+export async function checkAccess(request: AccessCheckRequest): Promise<AccessDecision | null> {
+  const dataset = await getDataset()
+  const agent = dataset.agents.find((item) => item.id === request.agentId)
+  const api = dataset.apiListings.find((item) => item.id === request.apiId)
+  const reputation = dataset.reputationProfiles.find((item) => item.agentId === request.agentId)
   if (!agent || !api || !reputation) return null
 
   const amount = request.amountUsdc ?? api.priceUsdc
@@ -67,7 +73,7 @@ export function checkAccess(request: AccessCheckRequest): AccessDecision | null 
   else if (!balanceOk) reason = "Agent wallet balance is too low"
   else if (agent.status === "paused") reason = "Agent is paused by operator policy"
 
-  return {
+  const decision = {
     allowed,
     agentId: agent.id,
     apiId: api.id,
@@ -77,17 +83,25 @@ export function checkAccess(request: AccessCheckRequest): AccessDecision | null 
     monthlyBudgetUsedPct,
     dailyBudgetUsedPct,
   }
+
+  await insertAccessDecision({
+    ...decision,
+    amountUsdc: amount,
+  })
+
+  return decision
 }
 
-export function getPilotSummary(): PilotSummary {
-  const activeAlerts = alerts.filter((alert) => !alert.resolvedAt)
-  const completedTx = transactions.filter((transaction) => transaction.status === "completed")
+export async function getPilotSummary(): Promise<PilotSummary> {
+  const dataset = await getDataset()
+  const activeAlerts = dataset.alerts.filter((alert) => !alert.resolvedAt)
+  const completedTx = dataset.transactions.filter((transaction) => transaction.status === "completed")
   const avgTxCostUsdc = completedTx.reduce((sum, tx) => sum + tx.amountUsdc, 0) / completedTx.length
-  const tradeBot = agents.find((agent) => agent.id === "agt_02") ?? agents[0]
-  const leaderboard = reputationProfiles
+  const tradeBot = dataset.agents.find((agent) => agent.id === "agt_02") ?? dataset.agents[0]
+  const leaderboard = dataset.reputationProfiles
     .map((profile) => ({
       profile,
-      agent: agents.find((agent) => agent.id === profile.agentId),
+      agent: dataset.agents.find((agent) => agent.id === profile.agentId),
     }))
     .filter((item) => item.agent)
     .sort((a, b) => b.profile.score - a.profile.score)
@@ -108,16 +122,15 @@ export function getPilotSummary(): PilotSummary {
 
   return {
     workspace: {
-      ...WORKSPACE,
-      updatedAt: "2026-06-02T01:40:00Z",
+      ...dataset.workspace,
     },
     treasury: {
-      managedUsdc: round2(agents.reduce((sum, agent) => sum + agent.balanceUsdc, 0)),
-      monthlySpentUsdc: round2(agents.reduce((sum, agent) => sum + agent.monthlySpentUsdc, 0)),
-      monthlyBudgetUsdc: agents.reduce((sum, agent) => sum + agent.monthlyBudgetUsdc, 0),
+      managedUsdc: round2(dataset.agents.reduce((sum, agent) => sum + agent.balanceUsdc, 0)),
+      monthlySpentUsdc: round2(dataset.agents.reduce((sum, agent) => sum + agent.monthlySpentUsdc, 0)),
+      monthlyBudgetUsdc: dataset.agents.reduce((sum, agent) => sum + agent.monthlyBudgetUsdc, 0),
       activeAlerts: activeAlerts.length,
       criticalAlerts: activeAlerts.filter((alert) => alert.severity === "critical").length,
-      avgTxCostUsdc: round3(avgTxCostUsdc),
+      avgTxCostUsdc: round3(Number.isFinite(avgTxCostUsdc) ? avgTxCostUsdc : 0),
       tradeBotBudget: {
         spentUsdc: tradeBot.monthlySpentUsdc,
         limitUsdc: tradeBot.monthlyBudgetUsdc,
@@ -128,16 +141,18 @@ export function getPilotSummary(): PilotSummary {
       },
     },
     reputation: {
-      agentsScored: reputationProfiles.length,
-      topScore: Math.max(...reputationProfiles.map((profile) => profile.score)),
+      agentsScored: dataset.reputationProfiles.length,
+      topScore: Math.max(...dataset.reputationProfiles.map((profile) => profile.score), 0),
       dimensions: 5,
       leaderboard,
     },
     marketplace: {
-      apisListed: 143,
-      providers: 58,
-      requests: 24800000,
-      avgUptimePct: round2(apiListings.reduce((sum, api) => sum + api.uptimePct, 0) / apiListings.length),
+      apisListed: Math.max(dataset.apiListings.length, 143),
+      providers: Math.max(dataset.providers.length, 58),
+      requests: Math.max(dataset.apiListings.reduce((sum, api) => sum + api.requestCount, 0), 24800000),
+      avgUptimePct: round2(
+        dataset.apiListings.length > 0 ? dataset.apiListings.reduce((sum, api) => sum + api.uptimePct, 0) / dataset.apiListings.length : 0,
+      ),
       categoryMix,
     },
     endpoints: [
@@ -149,6 +164,25 @@ export function getPilotSummary(): PilotSummary {
       { method: "GET", path: "/api/reputation/:agentId", description: "0-1000 reputation profile" },
       { method: "POST", path: "/api/access/check", description: "x402 access decision from score and budget policy" },
     ],
+  }
+}
+
+async function getDataset(): Promise<BackendDataset> {
+  return (await loadSupabaseDataset()) ?? getSeedDataset()
+}
+
+function getSeedDataset(): BackendDataset {
+  return {
+    workspace: {
+      ...WORKSPACE,
+      updatedAt: "2026-06-02T01:40:00Z",
+    },
+    agents,
+    transactions,
+    alerts,
+    reputationProfiles,
+    providers,
+    apiListings,
   }
 }
 
