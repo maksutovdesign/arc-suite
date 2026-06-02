@@ -5,9 +5,9 @@
 export function EcosystemNav({ current }: { current: "treasury" | "reputation" | "marketplace" }) {
   const urls = process.env.NODE_ENV === "production"
     ? {
-        treasury: "https://treasury-umber.vercel.app",
-        reputation: "https://reputation-five.vercel.app",
-        marketplace: "https://marketplace-eosin-eight.vercel.app",
+        treasury: process.env.NEXT_PUBLIC_ARC_TREASURY_URL ?? "https://treasury-umber.vercel.app",
+        reputation: process.env.NEXT_PUBLIC_ARC_REPUTATION_URL ?? "https://reputation-five.vercel.app",
+        marketplace: process.env.NEXT_PUBLIC_ARC_MARKETPLACE_URL ?? "https://marketplace-eosin-eight.vercel.app",
       }
     : {
         treasury: "http://localhost:3001",
