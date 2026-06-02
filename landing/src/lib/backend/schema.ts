@@ -62,6 +62,28 @@ export type ReputationProfile = {
   updatedAt: string
 }
 
+export type ReputationEventType =
+  | "payment_completed"
+  | "payment_failed"
+  | "payment_denied"
+  | "dispute_raised"
+  | "dispute_resolved"
+  | "fast_response"
+  | "large_tx"
+  | "new_service"
+
+export type ReputationEvent = {
+  id: string
+  workspaceId: string
+  agentId: string
+  agentName: string
+  type: ReputationEventType
+  description: string
+  scoreDelta: number
+  timestamp: string
+  txHash?: string
+}
+
 export type ApiProvider = {
   id: string
   name: string

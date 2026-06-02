@@ -1,5 +1,5 @@
 import { agents, alerts, apiListings, providers, reputationProfiles, transactions, WORKSPACE } from "./seed"
-import type { AccessCheckRequest, AccessDecision, AccessDecisionLog, Agent, PilotSummary } from "./schema"
+import type { AccessCheckRequest, AccessDecision, AccessDecisionLog, Agent, PilotSummary, ReputationEvent, Transaction } from "./schema"
 import {
   insertAccessDecision,
   insertSupabaseAgent,
@@ -42,6 +42,46 @@ export async function getReputationProfile(agentId: string) {
   }
 }
 
+export async function listReputationEvents(limit = 40): Promise<ReputationEvent[]> {
+  const dataset = await getDataset()
+  const accessEvents = (await listAccessDecisions(limit)).map((decision) => {
+    const agent = dataset.agents.find((item) => item.id === decision.agentId)
+    return {
+      id: `rep_${decision.id}`,
+      workspaceId: decision.workspaceId,
+      agentId: decision.agentId,
+      agentName: agent?.name ?? decision.agentId,
+      type: decision.allowed ? "payment_completed" as const : "payment_denied" as const,
+      description: decision.reason,
+      scoreDelta: 0,
+      timestamp: decision.createdAt,
+    }
+  })
+
+  const transactionEvents = dataset.transactions.map((transaction) => {
+    const agent = dataset.agents.find((item) => item.id === transaction.agentId)
+    return transactionToReputationEvent(transaction, agent?.name ?? transaction.agentId)
+  })
+
+  const profileEvents = dataset.reputationProfiles.map((profile) => {
+    const agent = dataset.agents.find((item) => item.id === profile.agentId)
+    return {
+      id: `rep_profile_${profile.agentId}`,
+      workspaceId: agent?.workspaceId ?? dataset.workspace.id,
+      agentId: profile.agentId,
+      agentName: agent?.name ?? profile.agentId,
+      type: profile.scoreChange30d >= 0 ? "new_service" as const : "dispute_raised" as const,
+      description: `${profile.tier} tier profile refreshed at score ${profile.score}`,
+      scoreDelta: profile.scoreChange30d,
+      timestamp: profile.updatedAt,
+    }
+  })
+
+  return [...accessEvents, ...transactionEvents, ...profileEvents]
+    .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+    .slice(0, limit)
+}
+
 export async function createPilotAgent(input: Partial<Agent>) {
   const dataset = await getDataset()
   const now = new Date().toISOString()
@@ -65,6 +105,76 @@ export async function createPilotAgent(input: Partial<Agent>) {
   }
 
   return (await insertSupabaseAgent(agent)) ?? agent
+}
+
+function transactionToReputationEvent(transaction: Transaction, agentName: string): ReputationEvent {
+  if (transaction.status === "failed") {
+    return {
+      id: `rep_${transaction.id}`,
+      workspaceId: transaction.workspaceId,
+      agentId: transaction.agentId,
+      agentName,
+      type: "payment_failed",
+      description: `${transaction.description} failed`,
+      scoreDelta: -4,
+      timestamp: transaction.occurredAt,
+      txHash: transaction.txHash,
+    }
+  }
+
+  if (transaction.status === "pending") {
+    return {
+      id: `rep_${transaction.id}`,
+      workspaceId: transaction.workspaceId,
+      agentId: transaction.agentId,
+      agentName,
+      type: "dispute_raised",
+      description: `${transaction.description} pending operator review`,
+      scoreDelta: -8,
+      timestamp: transaction.occurredAt,
+      txHash: transaction.txHash,
+    }
+  }
+
+  if (transaction.category === "data_feed") {
+    return {
+      id: `rep_${transaction.id}`,
+      workspaceId: transaction.workspaceId,
+      agentId: transaction.agentId,
+      agentName,
+      type: "fast_response",
+      description: `${transaction.description} completed with low-latency delivery`,
+      scoreDelta: 5,
+      timestamp: transaction.occurredAt,
+      txHash: transaction.txHash,
+    }
+  }
+
+  if (transaction.amountUsdc >= 1) {
+    return {
+      id: `rep_${transaction.id}`,
+      workspaceId: transaction.workspaceId,
+      agentId: transaction.agentId,
+      agentName,
+      type: "large_tx",
+      description: `${transaction.description} settled for $${transaction.amountUsdc.toFixed(2)} USDC`,
+      scoreDelta: 2,
+      timestamp: transaction.occurredAt,
+      txHash: transaction.txHash,
+    }
+  }
+
+  return {
+    id: `rep_${transaction.id}`,
+    workspaceId: transaction.workspaceId,
+    agentId: transaction.agentId,
+    agentName,
+    type: "payment_completed",
+    description: `${transaction.description} completed`,
+    scoreDelta: 3,
+    timestamp: transaction.occurredAt,
+    txHash: transaction.txHash,
+  }
 }
 
 export async function updatePilotAgent(agentId: string, input: Partial<Agent>) {
@@ -202,6 +312,7 @@ export async function getPilotSummary(): Promise<PilotSummary> {
       { method: "POST", path: "/api/agents/:agentId/resume", description: "Resume a paused agent" },
       { method: "GET", path: "/api/transactions", description: "USDC spend events" },
       { method: "GET", path: "/api/reputation/:agentId", description: "0-1000 reputation profile" },
+      { method: "GET", path: "/api/reputation/events", description: "Live reputation timeline from transactions and access decisions" },
       { method: "POST", path: "/api/access/check", description: "x402 access decision from score and budget policy" },
       { method: "GET", path: "/api/access/decisions", description: "Access decision audit log" },
     ],

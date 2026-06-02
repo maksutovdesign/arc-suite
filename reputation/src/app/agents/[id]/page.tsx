@@ -2,7 +2,7 @@ import { notFound } from "next/navigation"
 import { ShieldCheck, CheckCircle, Activity, TrendingUp, TrendingDown, Clock, ArrowLeft, Zap, AlertTriangle, Globe } from "lucide-react"
 import { ArcProgress } from "@/components/ui/ArcProgress"
 import { ArcButton } from "@/components/ui/ArcButton"
-import { AGENTS, EVENTS, TIER_CONFIG } from "@/data/mock"
+import { AGENTS, TIER_CONFIG } from "@/data/mock"
 import { getReputationData } from "@/lib/arc-api"
 import { scoreColor, formatUSDC, formatTimestamp } from "@/lib/utils"
 import Link from "next/link"
@@ -15,13 +15,13 @@ export async function generateStaticParams() {
 
 export default async function AgentDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const { agents, source } = await getReputationData()
+  const { agents, events, source } = await getReputationData()
   const agent = agents.find(a => a.id === id)
   if (!agent) notFound()
 
   const tier = TIER_CONFIG[agent.tier]
   const col = scoreColor(agent.score)
-  const agentEvents = EVENTS.filter(e => e.agentId === agent.id || e.agentName === agent.name)
+  const agentEvents = events.filter(e => e.agentId === agent.id || e.agentName === agent.name)
   const scorePct = Math.round(agent.score / 10)
   const sourceLabel = source === "api" ? "Live Arc API" : "Mock fallback"
 

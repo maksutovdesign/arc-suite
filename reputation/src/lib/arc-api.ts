@@ -1,4 +1,4 @@
-import { AGENTS, type Agent, type TrustTier } from "@/data/mock"
+import { AGENTS, EVENTS, type Agent, type ReputationEvent, type TrustTier } from "@/data/mock"
 
 type ApiAgent = {
   id: string
@@ -36,6 +36,7 @@ type ApiReputation = {
 
 export type ReputationData = {
   agents: Agent[]
+  events: ReputationEvent[]
   source: "api" | "mock"
 }
 
@@ -56,17 +57,22 @@ export async function getReputationData(): Promise<ReputationData> {
         return payload.reputation
       }),
     )
+    const eventsResponse = await fetch(`${API_BASE_URL}/api/reputation/events?limit=40`, { cache: "no-store" })
+    if (!eventsResponse.ok) throw new Error("Reputation events request failed")
+    const eventsPayload = (await eventsResponse.json()) as { events: ReputationEvent[] }
 
     return {
       agents: agentsPayload.agents.map((agent) => {
         const profile = reputationProfiles.find((item) => item.agentId === agent.id)
         return mapAgent(agent, profile)
       }),
+      events: eventsPayload.events,
       source: "api",
     }
   } catch {
     return {
       agents: AGENTS,
+      events: EVENTS,
       source: "mock",
     }
   }

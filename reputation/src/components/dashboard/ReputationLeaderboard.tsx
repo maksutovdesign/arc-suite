@@ -8,7 +8,7 @@ import { ArcProgress } from "@/components/ui/ArcProgress"
 import { StatCard } from "@/components/dashboard/StatCard"
 import { LiveTicker } from "@/components/dashboard/LiveTicker"
 import { ScoreSparkline } from "@/components/charts/ScoreSparkline"
-import { AGENTS, EVENTS, TIER_CONFIG, SCORE_HISTORY, type Agent } from "@/data/mock"
+import { AGENTS, TIER_CONFIG, SCORE_HISTORY, type Agent, type ReputationEvent } from "@/data/mock"
 import { scoreColor } from "@/lib/utils"
 import { useState } from "react"
 
@@ -27,6 +27,7 @@ type FilterTier = "all" | "platinum" | "gold" | "silver" | "new"
 
 type Props = {
   agents: Agent[]
+  events: ReputationEvent[]
   source: "api" | "mock"
 }
 
@@ -35,7 +36,7 @@ function getScoreHistory(agent: Agent) {
   return SCORE_HISTORY[agent.id] ?? SCORE_HISTORY[mockAgent?.id ?? ""] ?? [{ value: Math.max(0, agent.score - 12) }, { value: agent.score }]
 }
 
-export function ReputationLeaderboard({ agents, source }: Props) {
+export function ReputationLeaderboard({ agents, events, source }: Props) {
   const [search, setSearch] = useState("")
   const [tierFilter, setTierFilter] = useState<FilterTier>("all")
   const [verifiedOnly, setVerifiedOnly] = useState(false)
@@ -49,7 +50,7 @@ export function ReputationLeaderboard({ agents, source }: Props) {
     .filter(a => a.name.toLowerCase().includes(search.toLowerCase()) || a.address.toLowerCase().includes(search.toLowerCase()))
 
   const topAgent = sortedAll[0]
-  const recentEvents = EVENTS.slice(0, 7)
+  const recentEvents = events.slice(0, 7)
   const avgScore = agents.length > 0 ? Math.round(agents.reduce((s, a) => s + a.score, 0) / agents.length) : 0
   const sourceLabel = source === "api" ? "Live Arc API" : "Mock fallback"
 
