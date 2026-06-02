@@ -44,27 +44,24 @@ export function EcosystemNav({ current }: { current: "treasury" | "reputation" |
         </span>
         {APPS.map(app => {
           const isCurrent = app.id === current
-          // ✅ Non-current apps rendered as <span> — avoids dead browser tabs during demo
-          // Set DEMO_ALL_APPS=true (or run all 3 servers) to enable live links
-          const Tag = isCurrent ? "a" : "span"
           return (
-            <Tag
+            <a
               key={app.id}
-              {...(isCurrent ? { href: app.url } : {})}
+              href={app.url}
               className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-medium transition-all"
               style={
                 isCurrent
                   ? { background: `${app.color}18`, color: app.color, border: `1px solid ${app.color}30`, cursor: "pointer" }
-                  : { color: "#3d5468", border: "1px solid transparent", cursor: "default" }
+                  : { color: "#7a8fa8", border: "1px solid transparent", cursor: "pointer" }
               }
-              title={isCurrent ? undefined : "Coming soon"}
+              title={`Open ${app.label}`}
             >
               <span>{app.emoji}</span>
               <span>{app.label}</span>
               {isCurrent && (
-                <span className="size-1.5 rounded-full" style={{ background: app.color }} />
+                  <span className="size-1.5 rounded-full" style={{ background: app.color }} />
               )}
-            </Tag>
+            </a>
           )
         })}
       </div>
