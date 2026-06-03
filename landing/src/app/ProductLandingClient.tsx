@@ -11,7 +11,7 @@ const productDetails = [
     eyebrow: "Spend control",
     title: "Operator-grade spend control for AI-agent wallets.",
     text: "Set budgets, daily caps, alert thresholds and wallet rules before agents start buying data, compute, storage or API calls with USDC.",
-    image: "/screenshots/treasury-dashboard.png",
+    image: "/screenshots/treasury-dashboard-20260603.png",
     imageAlt: "Arc Treasury dashboard with managed USDC, spend charts, budget alerts and agent wallet controls",
     stats: [
       ["$3,072.93", "managed USDC"],
@@ -130,6 +130,8 @@ const story = [
   },
 ]
 
+const liveDemoUrl = "https://treasury-umber.vercel.app"
+
 type ProductLandingClientProps = {
   initialApiStatus: "live" | "fallback"
   initialPilotSummary: PilotSummary | null
@@ -221,6 +223,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
             <a href="#proof">Proof</a>
             <a href="/investors">Investors</a>
           </div>
+          <a className="nav-demo" href={liveDemoUrl} target="_blank" rel="noreferrer">Demo</a>
           <div className="social-links" aria-label="Social links">
             <a href="https://github.com/maksutovdesign" aria-label="Maksutov Design on GitHub">
               <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -246,7 +249,8 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
             x402 API access.
           </p>
           <div className="hero-actions">
-            <a className="button primary" href="#system">Explore the product</a>
+            <a className="button primary" href={liveDemoUrl} target="_blank" rel="noreferrer">Launch live demo</a>
+            <a className="button secondary" href="#system">Explore the product</a>
             <a className="button secondary" href="/investors">Investor page</a>
           </div>
         </div>
@@ -401,7 +405,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
               <strong>Arc Treasury · Dashboard</strong>
             </div>
             <img
-              src="/screenshots/treasury-dashboard.png"
+              src="/screenshots/treasury-dashboard-20260603.png"
               alt="Arc Treasury dashboard showing budget alerts, managed USDC, monthly spend, charts, agent budgets and recent transactions"
             />
             <div className="shot-caption">
@@ -665,7 +669,10 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
       <section className="cta">
         <p className="kicker">Ready for pilots</p>
         <h2>Turn autonomous agent payments into accountable infrastructure.</h2>
-        <a className="button primary" href="/investors">View investor page</a>
+        <div className="cta-actions">
+          <a className="button primary" href={liveDemoUrl} target="_blank" rel="noreferrer">Launch live demo</a>
+          <a className="button secondary" href="/investors">View investor page</a>
+        </div>
       </section>
     </main>
   )
