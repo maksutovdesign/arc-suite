@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server"
 import { pauseAgent } from "@/lib/arc-api"
-import { requireTreasuryAdmin } from "@/lib/treasury-auth"
+import { requireWritableTreasuryAdmin } from "@/lib/treasury-auth"
 
 type RouteContext = {
   params: Promise<{ agentId: string }>
 }
 
 export async function POST(request: Request, context: RouteContext) {
-  const unauthorized = requireTreasuryAdmin(request)
+  const unauthorized = requireWritableTreasuryAdmin(request)
   if (unauthorized) return unauthorized
 
   const { agentId } = await context.params

@@ -10,7 +10,7 @@ const cardStyle = {
   border: "1px solid rgba(255,255,255,0.05)",
 }
 
-export function WorkspaceSecurityPanel({ initialSecurity }: { initialSecurity: WorkspaceSecurity | null }) {
+export function WorkspaceSecurityPanel({ initialSecurity, isDemo = false }: { initialSecurity: WorkspaceSecurity | null; isDemo?: boolean }) {
   const [security, setSecurity] = useState(initialSecurity)
   const [name, setName] = useState("Marketplace integration key")
   const [scopes, setScopes] = useState<Array<"read" | "write" | "admin">>(["read"])
@@ -63,6 +63,10 @@ export function WorkspaceSecurityPanel({ initialSecurity }: { initialSecurity: W
   }
 
   async function createKey() {
+    if (isDemo) {
+      setError("Demo workspace is read-only. API key creation is disabled.")
+      return
+    }
     setPending("create")
     setError(null)
     try {
@@ -83,6 +87,10 @@ export function WorkspaceSecurityPanel({ initialSecurity }: { initialSecurity: W
   }
 
   async function rotateKey(key: WorkspaceApiKey) {
+    if (isDemo) {
+      setError("Demo workspace is read-only. API key rotation is disabled.")
+      return
+    }
     setPending(`rotate:${key.id}`)
     setError(null)
     try {
@@ -99,6 +107,10 @@ export function WorkspaceSecurityPanel({ initialSecurity }: { initialSecurity: W
   }
 
   async function revokeKey(key: WorkspaceApiKey) {
+    if (isDemo) {
+      setError("Demo workspace is read-only. API key revoke is disabled.")
+      return
+    }
     setPending(`revoke:${key.id}`)
     setError(null)
     try {
@@ -129,6 +141,15 @@ export function WorkspaceSecurityPanel({ initialSecurity }: { initialSecurity: W
         <Metric label="Members" value={String(security?.members.length ?? 0)} />
         <Metric label="Active keys" value={String(activeKeys.length)} />
       </div>
+
+      {isDemo && (
+        <div className="rounded-xl p-3" style={{ background: "rgba(95,191,255,0.08)", border: "1px solid rgba(95,191,255,0.2)" }}>
+          <p className="text-xs font-semibold" style={{ color: "#5FBFFF" }}>Demo security view</p>
+          <p className="text-[11px] mt-1" style={{ color: "#C7C5D1" }}>
+            Members and key prefixes are visible, but creating, rotating, and revoking keys is disabled for public demo sessions.
+          </p>
+        </div>
+      )}
 
       {freshKey && (
         <div className="rounded-xl p-3" style={{ background: "rgba(52,211,153,0.09)", border: "1px solid rgba(52,211,153,0.2)" }}>
@@ -184,13 +205,21 @@ export function WorkspaceSecurityPanel({ initialSecurity }: { initialSecurity: W
             <span className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "#7a8fa8" }}>Key name</span>
             <input
               className="h-9 w-full rounded-lg px-3 text-sm outline-none"
+              disabled={isDemo}
               style={{ background: "rgba(0,0,0,0.16)", border: "1px solid rgba(255,255,255,0.08)", color: "#fff" }}
               value={name}
               onChange={(event) => setName(event.target.value)}
             />
           </label>
           <div className="flex items-end">
-            <ArcButton variant="primary" size="md" icon={Plus} disabled={pending === "create"} onClick={createKey}>
+            <ArcButton
+              variant="primary"
+              size="md"
+              icon={Plus}
+              disabled={pending === "create" || isDemo}
+              title={isDemo ? "Demo workspace is read-only" : "Generate workspace API key"}
+              onClick={createKey}
+            >
               Generate key
             </ArcButton>
           </div>
@@ -200,12 +229,14 @@ export function WorkspaceSecurityPanel({ initialSecurity }: { initialSecurity: W
             <button
               key={scope}
               className="h-7 px-3 rounded-lg text-xs font-semibold"
+              disabled={isDemo}
               style={
                 scopes.includes(scope)
                   ? { background: "rgba(95,191,255,0.16)", color: "#5FBFFF", border: "1px solid rgba(95,191,255,0.3)" }
                   : { background: "rgba(255,255,255,0.03)", color: "#7a8fa8", border: "1px solid rgba(255,255,255,0.06)" }
               }
               onClick={() => toggleScope(scope)}
+              title={isDemo ? "Demo workspace is read-only" : `Toggle ${scope} scope`}
               type="button"
             >
               {scope}
@@ -231,8 +262,22 @@ export function WorkspaceSecurityPanel({ initialSecurity }: { initialSecurity: W
               </div>
             </div>
             <div className="flex items-center gap-2 shrink-0">
-              <ArcButton variant="ghost" size="icon" icon={RotateCcw} disabled={Boolean(key.revokedAt) || pending === `rotate:${key.id}`} onClick={() => rotateKey(key)} />
-              <ArcButton variant="danger" size="icon" icon={XCircle} disabled={Boolean(key.revokedAt) || pending === `revoke:${key.id}`} onClick={() => revokeKey(key)} />
+              <ArcButton
+                variant="ghost"
+                size="icon"
+                icon={RotateCcw}
+                disabled={isDemo || Boolean(key.revokedAt) || pending === `rotate:${key.id}`}
+                title={isDemo ? "Demo workspace is read-only" : "Rotate key"}
+                onClick={() => rotateKey(key)}
+              />
+              <ArcButton
+                variant="danger"
+                size="icon"
+                icon={XCircle}
+                disabled={isDemo || Boolean(key.revokedAt) || pending === `revoke:${key.id}`}
+                title={isDemo ? "Demo workspace is read-only" : "Revoke key"}
+                onClick={() => revokeKey(key)}
+              />
             </div>
           </div>
         ))}

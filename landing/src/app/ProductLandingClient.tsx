@@ -130,7 +130,7 @@ const story = [
   },
 ]
 
-const liveDemoUrl = "https://treasury-umber.vercel.app"
+const liveDemoUrl = "https://treasury-umber.vercel.app/demo"
 
 type ProductLandingClientProps = {
   initialApiStatus: "live" | "fallback"

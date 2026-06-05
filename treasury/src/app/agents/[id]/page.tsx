@@ -7,6 +7,7 @@ import {
 } from "lucide-react"
 import { AGENTS, AGENT_SPARKLINES } from "@/data/mock"
 import { getTreasuryDashboardData } from "@/lib/arc-api"
+import { isTreasuryDemoMode } from "@/lib/treasury-session-server"
 
 export async function generateStaticParams() {
   return AGENTS.map((a) => ({ id: a.id }))
@@ -31,7 +32,10 @@ export const dynamic = "force-dynamic"
 
 export default async function AgentDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const { agents, transactions, accessDecisions, apiListings } = await getTreasuryDashboardData()
+  const [{ agents, transactions, accessDecisions, apiListings }, isDemo] = await Promise.all([
+    getTreasuryDashboardData(),
+    isTreasuryDemoMode(),
+  ])
   const agentIndex = agents.findIndex((a) => a.id === id)
   const agent = agents[agentIndex]
   if (!agent) notFound()
@@ -97,8 +101,10 @@ export default async function AgentDetailPage({ params }: { params: Promise<{ id
         </div>
 
         <div className="relative flex items-center gap-2">
-          <ArcButton variant="primary" size="sm" icon={Zap}>Top Up</ArcButton>
-          <ArcButton variant="outline" size="icon" icon={Settings2} />
+          <ArcButton disabled={isDemo} title={isDemo ? "Demo workspace is read-only" : "Top up wallet"} variant="primary" size="sm" icon={Zap}>
+            Top Up
+          </ArcButton>
+          <ArcButton disabled={isDemo} title={isDemo ? "Demo workspace is read-only" : "Agent settings"} variant="outline" size="icon" icon={Settings2} />
         </div>
       </div>
 
@@ -164,7 +170,7 @@ export default async function AgentDetailPage({ params }: { params: Promise<{ id
                 </div>
               ))}
 
-              <AgentPolicyActions agent={agent} />
+              <AgentPolicyActions agent={agent} isDemo={isDemo} />
             </div>
 
             <AccessCheckSimulator agent={agent} apiListings={apiListings} />

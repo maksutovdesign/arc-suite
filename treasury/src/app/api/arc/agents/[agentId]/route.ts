@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server"
 import { patchAgent } from "@/lib/arc-api"
-import { requireTreasuryAdmin } from "@/lib/treasury-auth"
+import { requireWritableTreasuryAdmin } from "@/lib/treasury-auth"
 
 type RouteContext = {
   params: Promise<{ agentId: string }>
 }
 
 export async function PATCH(request: NextRequest, context: RouteContext) {
-  const unauthorized = requireTreasuryAdmin(request)
+  const unauthorized = requireWritableTreasuryAdmin(request)
   if (unauthorized) return unauthorized
 
   const { agentId } = await context.params

@@ -7,6 +7,7 @@ import { ArcButton } from "@/components/ui/ArcButton"
 import { ArcProgress } from "@/components/ui/ArcProgress"
 import { WorkspaceSecurityPanel } from "@/components/settings/WorkspaceSecurityPanel"
 import { getWorkspaceSecurity } from "@/lib/arc-api"
+import { getTreasuryServerSessionMode } from "@/lib/treasury-session-server"
 
 const arcCard = {
   background: "linear-gradient(160deg, #263a52 0%, #1e3247 100%)",
@@ -54,7 +55,9 @@ function SettingRow({ label, value, action }: { label: string; value: string; ac
 }
 
 export default async function SettingsPage() {
-  const security = await getWorkspaceSecurity()
+  const sessionMode = await getTreasuryServerSessionMode()
+  const security = sessionMode === "admin" || sessionMode === "demo" ? await getWorkspaceSecurity() : null
+  const isDemo = sessionMode === "demo"
 
   return (
     <div className="flex flex-col min-h-full">
@@ -69,7 +72,7 @@ export default async function SettingsPage() {
         {/* API Keys */}
         <div className="col-span-2">
           <SectionCard title="Workspace Access" icon={Key}>
-            <WorkspaceSecurityPanel initialSecurity={security} />
+            <WorkspaceSecurityPanel initialSecurity={security} isDemo={isDemo} />
           </SectionCard>
         </div>
 

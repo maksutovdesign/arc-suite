@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server"
 import { rotateWorkspaceApiKey } from "@/lib/arc-api"
-import { requireTreasuryAdmin } from "@/lib/treasury-auth"
+import { requireWritableTreasuryAdmin } from "@/lib/treasury-auth"
 
 type RouteContext = {
   params: Promise<{ keyId: string }>
 }
 
 export async function POST(request: Request, context: RouteContext) {
-  const unauthorized = requireTreasuryAdmin(request)
+  const unauthorized = requireWritableTreasuryAdmin(request)
   if (unauthorized) return unauthorized
 
   const { keyId } = await context.params

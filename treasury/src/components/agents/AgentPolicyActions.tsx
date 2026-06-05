@@ -8,9 +8,10 @@ import type { Agent } from "@/data/mock"
 
 type Props = {
   agent: Agent
+  isDemo?: boolean
 }
 
-export function AgentPolicyActions({ agent }: Props) {
+export function AgentPolicyActions({ agent, isDemo = false }: Props) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [monthlyBudget, setMonthlyBudget] = useState(String(agent.monthlyBudget))
@@ -19,6 +20,10 @@ export function AgentPolicyActions({ agent }: Props) {
 
   function runAction(action: () => Promise<void>) {
     setError(null)
+    if (isDemo) {
+      setError("Demo workspace is read-only. Run Access Check below to test live policy logic.")
+      return
+    }
     startTransition(async () => {
       try {
         await action()
@@ -34,7 +39,8 @@ export function AgentPolicyActions({ agent }: Props) {
       <div className="flex gap-2">
         {agent.status === "paused" ? (
           <ArcButton
-            disabled={isPending}
+            disabled={isPending || isDemo}
+            title={isDemo ? "Demo workspace is read-only" : "Resume agent"}
             icon={Play}
             onClick={() => runAction(() => post(`/api/arc/agents/${agent.id}/resume`))}
             size="sm"
@@ -44,8 +50,9 @@ export function AgentPolicyActions({ agent }: Props) {
           </ArcButton>
         ) : (
           <ArcButton
-            disabled={isPending}
+            disabled={isPending || isDemo}
             icon={Pause}
+            title={isDemo ? "Demo workspace is read-only" : "Pause agent"}
             onClick={() => runAction(() => post(`/api/arc/agents/${agent.id}/pause`))}
             size="sm"
             variant="outline"
@@ -63,6 +70,7 @@ export function AgentPolicyActions({ agent }: Props) {
           <input
             className="h-8 w-full rounded-lg px-2 text-xs text-white outline-none"
             min="0"
+            disabled={isDemo}
             onChange={(event) => setMonthlyBudget(event.target.value)}
             step="1"
             style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)" }}
@@ -77,6 +85,7 @@ export function AgentPolicyActions({ agent }: Props) {
           <input
             className="h-8 w-full rounded-lg px-2 text-xs text-white outline-none"
             min="0"
+            disabled={isDemo}
             onChange={(event) => setDailyLimit(event.target.value)}
             step="0.01"
             style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)" }}
@@ -88,8 +97,9 @@ export function AgentPolicyActions({ agent }: Props) {
 
       <ArcButton
         className="w-full justify-center"
-        disabled={isPending}
+        disabled={isPending || isDemo}
         icon={isPending ? Settings2 : Save}
+        title={isDemo ? "Demo workspace is read-only" : "Save limits"}
         onClick={() =>
           runAction(() =>
             patch(`/api/arc/agents/${agent.id}`, {
@@ -105,6 +115,11 @@ export function AgentPolicyActions({ agent }: Props) {
       </ArcButton>
 
       {error && <p className="text-[11px]" style={{ color: "#f87171" }}>{error}</p>}
+      {isDemo && !error && (
+        <p className="text-[11px]" style={{ color: "#7a8fa8" }}>
+          Demo mode keeps budget controls read-only.
+        </p>
+      )}
     </div>
   )
 }

@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createWorkspaceApiKey, getWorkspaceSecurity } from "@/lib/arc-api"
-import { requireTreasuryAdmin } from "@/lib/treasury-auth"
+import { requireTreasuryViewer, requireWritableTreasuryAdmin } from "@/lib/treasury-auth"
 
 export async function GET(request: NextRequest) {
-  const unauthorized = requireTreasuryAdmin(request)
+  const unauthorized = requireTreasuryViewer(request)
   if (unauthorized) return unauthorized
 
   const security = await getWorkspaceSecurity()
@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const unauthorized = requireTreasuryAdmin(request)
+  const unauthorized = requireWritableTreasuryAdmin(request)
   if (unauthorized) return unauthorized
 
   const body = await request.json().catch(() => null)

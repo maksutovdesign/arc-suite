@@ -3,6 +3,8 @@ import { Space_Grotesk, Space_Mono } from "next/font/google"
 import "./globals.css"
 import { Sidebar } from "@/components/dashboard/Sidebar"
 import { EcosystemNav } from "@/components/dashboard/EcosystemNav"
+import { DemoModeBanner } from "@/components/dashboard/DemoModeBanner"
+import { isTreasuryDemoMode } from "@/lib/treasury-session-server"
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
@@ -21,14 +23,19 @@ export const metadata: Metadata = {
   description: "Manage, monitor and control AI agent spending on Arc",
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const isDemo = await isTreasuryDemoMode()
+
   return (
     <html lang="en" className={`${spaceGrotesk.variable} ${spaceMono.variable} h-full`}>
       <body className="h-full bg-background text-foreground antialiased flex flex-col">
         <EcosystemNav current="treasury" />
         <div className="flex flex-1 min-h-0">
-          <Sidebar />
-          <main className="flex-1 overflow-auto">{children}</main>
+          <Sidebar isDemo={isDemo} />
+          <main className="flex-1 overflow-auto">
+            {isDemo && <DemoModeBanner />}
+            {children}
+          </main>
         </div>
       </body>
     </html>

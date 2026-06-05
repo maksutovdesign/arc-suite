@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server"
 import { runAccessCheck } from "@/lib/arc-api"
-import { requireTreasuryAdmin } from "@/lib/treasury-auth"
+import { requireTreasuryViewer } from "@/lib/treasury-auth"
 
 export async function POST(request: NextRequest) {
-  const unauthorized = requireTreasuryAdmin(request)
+  const unauthorized = requireTreasuryViewer(request)
   if (unauthorized) return unauthorized
 
   const body = await request.json().catch(() => null)

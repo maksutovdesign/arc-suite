@@ -24,7 +24,7 @@ const NAV = [
   { href: "/settings",     label: "Settings",     icon: Settings },
 ]
 
-export function Sidebar() {
+export function Sidebar({ isDemo = false }: { isDemo?: boolean }) {
   const path = usePathname()
 
   return (
@@ -50,12 +50,22 @@ export function Sidebar() {
       <div className="px-4 py-2.5 border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
         <div className="flex items-center justify-between">
           <span className="text-[11px]" style={{ color: "#7a8fa8" }}>Network</span>
-          <div
-            className="flex items-center gap-1.5 px-2 py-0.5 rounded-full"
-            style={{ background: "rgba(52,211,153,0.1)", border: "1px solid rgba(52,211,153,0.2)" }}
-          >
-            <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-[10px] font-medium text-emerald-400">Arc Testnet</span>
+          <div className="flex items-center gap-1.5">
+            {isDemo && (
+              <span
+                className="px-2 py-0.5 rounded-full text-[10px] font-semibold"
+                style={{ background: "rgba(95,191,255,0.12)", border: "1px solid rgba(95,191,255,0.24)", color: "#5FBFFF" }}
+              >
+                Demo
+              </span>
+            )}
+            <div
+              className="flex items-center gap-1.5 px-2 py-0.5 rounded-full"
+              style={{ background: "rgba(52,211,153,0.1)", border: "1px solid rgba(52,211,153,0.2)" }}
+            >
+              <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-[10px] font-medium text-emerald-400">Arc Testnet</span>
+            </div>
           </div>
         </div>
       </div>
@@ -121,7 +131,9 @@ export function Sidebar() {
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-xs font-semibold text-white truncate">Arc Corp</p>
-            <p className="text-[10px] truncate" style={{ color: "#7a8fa8" }}>Pro Plan · Testnet</p>
+            <p className="text-[10px] truncate" style={{ color: "#7a8fa8" }}>
+              {isDemo ? "Demo Workspace · Read-only" : "Pro Plan · Testnet"}
+            </p>
           </div>
           <ChevronRight className="size-3 shrink-0" style={{ color: "#7a8fa8" }} />
         </div>

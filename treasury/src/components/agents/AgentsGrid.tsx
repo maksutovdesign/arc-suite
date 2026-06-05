@@ -13,9 +13,10 @@ import { formatUSDC, pctUsed } from "@/lib/utils"
 
 type Props = {
   agents: Agent[]
+  isDemo?: boolean
 }
 
-export function AgentsGrid({ agents }: Props) {
+export function AgentsGrid({ agents, isDemo = false }: Props) {
   const [showModal, setShowModal] = useState(false)
   const activeCount = agents.filter((agent) => agent.status === "active").length
   const alertCount = agents.filter((agent) => agent.status === "alert").length
@@ -37,8 +38,22 @@ export function AgentsGrid({ agents }: Props) {
             style={{ color: "#C7C5D1" }}
           />
         </div>
-        <ArcButton icon={Plus} onClick={() => setShowModal(true)} size="md" variant="primary">New Agent</ArcButton>
+        <ArcButton
+          disabled={isDemo}
+          icon={Plus}
+          onClick={() => setShowModal(true)}
+          size="md"
+          title={isDemo ? "Demo workspace is read-only" : "Create a new agent"}
+          variant="primary"
+        >
+          New Agent
+        </ArcButton>
       </div>
+      {isDemo && (
+        <div className="mx-6 mt-3 rounded-xl px-3 py-2 text-xs" style={{ background: "rgba(95,191,255,0.08)", border: "1px solid rgba(95,191,255,0.18)", color: "#a9b8c9" }}>
+          Demo mode uses live pilot data. Creating new agents is disabled so the workspace stays stable for every visitor.
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 p-6">
         {agents.map((agent, idx) => {
