@@ -1453,6 +1453,297 @@ h3 {
   background: rgba(30, 50, 71, 0.72);
 }
 
+.analytics-shell {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 78px 24px 96px;
+}
+
+.analytics-toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
+  gap: 28px;
+  align-items: end;
+  margin-bottom: 24px;
+}
+
+.analytics-toolbar h1 {
+  margin-bottom: 16px;
+  font-size: clamp(42px, 6vw, 72px);
+}
+
+.analytics-toolbar p {
+  max-width: 720px;
+  color: var(--muted);
+  font-size: 18px;
+  line-height: 1.55;
+}
+
+.analytics-auth,
+.analytics-lock,
+.analytics-card,
+.analytics-metric {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(13, 21, 30, 0.86);
+}
+
+.analytics-auth {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+}
+
+.analytics-auth label,
+.analytics-auth label span {
+  display: grid;
+  gap: 8px;
+}
+
+.analytics-auth label span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.analytics-auth input {
+  min-height: 42px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.035);
+  color: var(--text);
+  font: inherit;
+  outline: none;
+}
+
+.analytics-auth-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.analytics-auth .button {
+  min-height: 40px;
+  border: 0;
+  cursor: pointer;
+}
+
+.analytics-error {
+  margin-bottom: 18px;
+  padding: 14px 16px;
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  border-radius: 8px;
+  background: rgba(248, 113, 113, 0.1);
+  color: var(--red);
+  font-weight: 700;
+}
+
+.analytics-lock {
+  max-width: 720px;
+  padding: 26px;
+}
+
+.analytics-lock strong {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--text);
+  font-size: 24px;
+}
+
+.analytics-lock p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.analytics-meta {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.analytics-meta span {
+  padding: 7px 10px;
+  border: 1px solid rgba(95, 191, 255, 0.18);
+  border-radius: 999px;
+  background: rgba(95, 191, 255, 0.08);
+  color: var(--cyan);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.analytics-kpi-grid,
+.analytics-grid,
+.funnel-grid,
+.placement-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.analytics-kpi-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-bottom: 14px;
+}
+
+.analytics-metric {
+  min-height: 112px;
+  padding: 18px;
+}
+
+.analytics-metric span,
+.analytics-card-head span,
+.funnel-step span,
+.bar-row span,
+.event-row span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.analytics-metric strong {
+  display: block;
+  margin-top: 12px;
+  color: var(--cyan);
+  font-size: 34px;
+}
+
+.analytics-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.analytics-card {
+  min-height: 220px;
+  padding: 18px;
+}
+
+.analytics-card-wide {
+  grid-column: span 2;
+}
+
+.analytics-card-full {
+  grid-column: 1 / -1;
+}
+
+.analytics-card-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.analytics-card-head h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.funnel-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.funnel-step {
+  min-height: 150px;
+  padding: 18px;
+  border: 1px solid rgba(95, 191, 255, 0.16);
+  border-radius: 8px;
+  background: rgba(95, 191, 255, 0.06);
+}
+
+.funnel-step strong {
+  display: block;
+  margin-top: 18px;
+  color: var(--text);
+  font-size: 44px;
+}
+
+.bar-list {
+  display: grid;
+  gap: 14px;
+}
+
+.bar-row {
+  display: grid;
+  gap: 8px;
+}
+
+.bar-row div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.bar-row strong {
+  color: var(--text);
+}
+
+.bar-row b {
+  display: block;
+  height: 8px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--cyan), var(--green));
+}
+
+.placement-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.placement-row,
+.event-row {
+  border: 1px solid rgba(255, 255, 255, 0.055);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.placement-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(92px, auto) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 11px 12px;
+}
+
+.placement-row strong {
+  color: var(--text);
+  font-size: 12px;
+}
+
+.placement-row b {
+  color: var(--cyan);
+  font-size: 15px;
+}
+
+.event-list {
+  display: grid;
+  gap: 8px;
+  max-height: 540px;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.event-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(120px, 260px);
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+}
+
+.event-row strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.event-row code {
+  color: var(--muted);
+  font-family: "Space Mono", "SFMono-Regular", monospace;
+  font-size: 11px;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
 .logo-lab {
   max-width: var(--max);
   margin: 0 auto;
@@ -1608,7 +1899,8 @@ h3 {
   .metrics,
   .loop-grid,
   .roadmap,
-  .kpi-grid {
+  .kpi-grid,
+  .analytics-kpi-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -1637,6 +1929,15 @@ h3 {
 
   .roadmap-item {
     min-height: 220px;
+  }
+
+  .analytics-toolbar,
+  .analytics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .analytics-card-wide {
+    grid-column: auto;
   }
 }
 
@@ -1683,12 +1984,41 @@ h3 {
   .shot-stats,
   .result-panels,
   .result-metric-grid,
-  .marketplace-shot {
+  .marketplace-shot,
+  .funnel-grid,
+  .placement-grid {
     grid-template-columns: 1fr;
   }
 
   .terminal {
     min-width: 0;
+  }
+
+  .analytics-shell {
+    padding-top: 48px;
+  }
+
+  .analytics-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .analytics-card-head,
+  .analytics-auth-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .analytics-auth .button {
+    width: 100%;
+  }
+
+  .placement-row,
+  .event-row {
+    grid-template-columns: 1fr;
+  }
+
+  .event-row code {
+    text-align: left;
   }
 
   .treasury-shot,

@@ -29,6 +29,7 @@ export default function InvestorPage() {
             <a href="/">Product</a>
             <a href="#roadmap">Roadmap</a>
             <a href="#ask">Funding ask</a>
+            <a href="/analytics">Analytics</a>
           </div>
           <div className="social-links" aria-label="Social links">
             <a href="https://github.com/maksutovdesign" aria-label="Maksutov Design on GitHub">

@@ -229,5 +229,16 @@ export type AnalyticsEvent = AnalyticsEventInput & {
 export type AnalyticsSummary = {
   totals: Array<{ eventName: string; count: number }>
   sources: Array<{ source: AnalyticsSource; count: number }>
+  placements: Array<{ eventName: string; placement: string; count: number }>
+  funnel: {
+    demoClicks: number
+    investorClicks: number
+    githubClicks: number
+    xClicks: number
+    accessCheckRuns: number
+    accessCheckResults: number
+    demoToAccessCheckRatePct: number
+    accessCheckCompletionRatePct: number
+  }
   recent: AnalyticsEvent[]
 }

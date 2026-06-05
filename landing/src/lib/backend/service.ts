@@ -324,11 +324,30 @@ export async function getAnalyticsSummary(limit = 200): Promise<AnalyticsSummary
   const events = (await listSupabaseAnalyticsEvents(limit)) ?? []
   const totals = aggregateCounts(events.map((event) => event.eventName)).map(([eventName, count]) => ({ eventName, count }))
   const sources = aggregateCounts(events.map((event) => event.source)).map(([source, count]) => ({ source: source as AnalyticsSource, count }))
+  const placements = aggregateCounts(events.map((event) => `${event.eventName}:${event.placement ?? "unknown"}`)).map(([key, count]) => {
+    const [eventName, placement] = key.split(":")
+    return { eventName, placement, count }
+  })
+  const countByEvent = new Map(totals.map((item) => [item.eventName, item.count]))
+  const demoClicks = countByEvent.get("demo_click") ?? 0
+  const accessCheckRuns = countByEvent.get("access_check_run") ?? 0
+  const accessCheckResults = countByEvent.get("access_check_result") ?? 0
 
   return {
+    funnel: {
+      accessCheckCompletionRatePct: percentage(accessCheckResults, accessCheckRuns),
+      accessCheckResults,
+      accessCheckRuns,
+      demoClicks,
+      demoToAccessCheckRatePct: percentage(accessCheckRuns, demoClicks),
+      githubClicks: countByEvent.get("github_click") ?? 0,
+      investorClicks: countByEvent.get("investors_click") ?? 0,
+      xClicks: countByEvent.get("x_click") ?? 0,
+    },
+    placements,
     totals,
     sources,
-    recent: events.slice(0, 25),
+    recent: events.slice(0, 50),
   }
 }
 
@@ -529,6 +548,11 @@ function aggregateCounts(values: string[]) {
   const counts = new Map<string, number>()
   values.forEach((value) => counts.set(value, (counts.get(value) ?? 0) + 1))
   return [...counts.entries()].sort((a, b) => b[1] - a[1])
+}
+
+function percentage(numerator: number, denominator: number) {
+  if (!denominator) return 0
+  return Math.round((numerator / denominator) * 1000) / 10
 }
 
 function round2(value: number) {
