@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react"
 import { BrandMark } from "./BrandMark"
+import { RequestPilotForm } from "./RequestPilotForm"
 import { trackLandingConversion } from "@/lib/analytics"
 import type { PilotSummary } from "@/lib/backend/schema"
 
@@ -698,6 +699,28 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
             Together, the suite becomes an operating layer for x402-enabled APIs,
             agent wallets, and autonomous pay-per-use workflows on Arc.
           </p>
+        </div>
+      </section>
+
+      <section className="section lead-section" id="request-pilot">
+        <div className="section-heading compact">
+          <p className="kicker">Request pilot</p>
+          <h2>Start with a demo workspace, then move into a live pilot.</h2>
+        </div>
+        <div className="lead-layout">
+          <div className="lead-proof">
+            <div>
+              <span>Tracked session</span>
+              <strong>Lead → analytics</strong>
+              <p>Each request is linked to the visitor session that clicked Demo, Investors, GitHub, X, or ran an access check.</p>
+            </div>
+            <div>
+              <span>CRM status</span>
+              <strong>New lead</strong>
+              <p>Saved in Supabase with interest, company context, message, and source path for operator follow-up.</p>
+            </div>
+          </div>
+          <RequestPilotForm />
         </div>
       </section>
 

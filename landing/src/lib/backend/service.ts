@@ -8,6 +8,9 @@ import type {
   AnalyticsSummary,
   AnalyticsSource,
   ApiKeyScope,
+  InvestorLead,
+  InvestorLeadInput,
+  LeadInterest,
   PilotSummary,
   ReputationEvent,
   Transaction,
@@ -19,7 +22,9 @@ import {
   createSupabaseWorkspaceApiKey,
   insertAccessDecision,
   insertSupabaseAnalyticsEvent,
+  insertSupabaseInvestorLead,
   insertSupabaseAgent,
+  listSupabaseInvestorLeads,
   listSupabaseAnalyticsEvents,
   listSupabaseAccessDecisions,
   listSupabaseWorkspaceApiKeys,
@@ -38,6 +43,8 @@ const ANALYTICS_EVENTS = new Set([
   "x_click",
   "access_check_run",
   "access_check_result",
+  "lead_submit",
+  "lead_created",
 ])
 
 const ANALYTICS_SOURCES = new Set<AnalyticsSource>(["landing", "treasury", "reputation", "marketplace"])
@@ -351,6 +358,37 @@ export async function getAnalyticsSummary(limit = 200): Promise<AnalyticsSummary
   }
 }
 
+export async function createInvestorLead(input: Partial<InvestorLeadInput>): Promise<InvestorLead | null> {
+  const normalized = normalizeInvestorLead(input)
+  if (!normalized) return null
+
+  const lead = await insertSupabaseInvestorLead(normalized)
+  await recordAnalyticsEvent({
+    anonymousId: normalized.anonymousId,
+    eventName: "lead_created",
+    path: normalized.path,
+    placement: "request_pilot_form",
+    properties: {
+      company: Boolean(normalized.company),
+      interest: normalized.interest,
+      stored: Boolean(lead),
+    },
+    referrer: normalized.referrer,
+    sessionId: normalized.sessionId,
+    source: "landing",
+    surface: "lead_capture",
+    url: normalized.url,
+    userAgent: normalized.userAgent,
+    ipHash: normalized.ipHash,
+  })
+
+  return lead
+}
+
+export async function listInvestorLeads(limit = 100): Promise<InvestorLead[]> {
+  return (await listSupabaseInvestorLeads(limit)) ?? []
+}
+
 export async function getPilotSummary(): Promise<PilotSummary> {
   const dataset = await getDataset()
   const activeAlerts = dataset.alerts.filter((alert) => !alert.resolvedAt)
@@ -432,6 +470,8 @@ export async function getPilotSummary(): Promise<PilotSummary> {
       { method: "POST", path: "/api/workspace/security/keys/:keyId/rotate", description: "Rotate a workspace API key" },
       { method: "POST", path: "/api/analytics/events", description: "Capture landing and demo conversion events" },
       { method: "GET", path: "/api/analytics/summary", description: "Protected conversion analytics summary" },
+      { method: "POST", path: "/api/leads", description: "Capture investor and pilot requests linked to analytics sessions" },
+      { method: "GET", path: "/api/leads", description: "Protected investor CRM lead list" },
     ],
   }
 }
@@ -522,6 +562,34 @@ function normalizeAnalyticsEventName(value: string) {
   const normalized = value.trim().toLowerCase().replace(/[^a-z0-9_:-]/g, "_").slice(0, 80)
   if (ANALYTICS_EVENTS.has(normalized)) return normalized
   return normalized || "unknown_event"
+}
+
+function normalizeInvestorLead(input: Partial<InvestorLeadInput>): InvestorLeadInput | null {
+  const name = normalizeOptionalText(input.name, 120)
+  const email = normalizeOptionalText(input.email, 160)?.toLowerCase()
+  if (!name || !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return null
+
+  return {
+    anonymousId: normalizeOptionalText(input.anonymousId, 120),
+    company: normalizeOptionalText(input.company, 140),
+    email,
+    interest: normalizeLeadInterest(input.interest),
+    ipHash: normalizeOptionalText(input.ipHash, 96),
+    message: normalizeOptionalText(input.message, 1200),
+    name,
+    path: normalizeOptionalText(input.path, 240),
+    properties: sanitizeAnalyticsProperties(input.properties),
+    referrer: normalizeOptionalText(input.referrer, 500),
+    role: normalizeOptionalText(input.role, 120),
+    sessionId: normalizeOptionalText(input.sessionId, 120),
+    url: normalizeOptionalText(input.url, 500),
+    userAgent: normalizeOptionalText(input.userAgent, 500),
+  }
+}
+
+function normalizeLeadInterest(value: unknown): LeadInterest {
+  if (value === "investment" || value === "partnership" || value === "press" || value === "other") return value
+  return "pilot"
 }
 
 function normalizeOptionalText(value: unknown, maxLength: number) {

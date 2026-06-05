@@ -5,6 +5,7 @@ export type AlertSeverity = "warning" | "critical"
 export type ReputationTier = "Platinum" | "Gold" | "Silver" | "New"
 export type WorkspaceRole = "owner" | "admin" | "operator" | "viewer"
 export type ApiKeyScope = "read" | "write" | "admin"
+export type LeadInterest = "pilot" | "investment" | "partnership" | "press" | "other"
 
 export type Agent = {
   id: string
@@ -241,4 +242,29 @@ export type AnalyticsSummary = {
     accessCheckCompletionRatePct: number
   }
   recent: AnalyticsEvent[]
+}
+
+export type InvestorLeadInput = {
+  name: string
+  email: string
+  company?: string | null
+  role?: string | null
+  interest?: LeadInterest
+  message?: string | null
+  anonymousId?: string | null
+  sessionId?: string | null
+  path?: string | null
+  url?: string | null
+  referrer?: string | null
+  userAgent?: string | null
+  ipHash?: string | null
+  properties?: Record<string, unknown>
+}
+
+export type InvestorLead = InvestorLeadInput & {
+  id: string
+  workspaceId: string
+  interest: LeadInterest
+  status: "new" | "contacted" | "qualified" | "closed"
+  createdAt: string
 }

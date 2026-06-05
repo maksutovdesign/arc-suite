@@ -12,21 +12,29 @@ const SESSION_ID_KEY = "arc_analytics_session_id"
 
 export function trackLandingConversion(input: TrackInput) {
   if (typeof window === "undefined") return
+  const identity = getLandingAnalyticsIdentity()
 
   const payload = {
-    anonymousId: getStoredId(ANONYMOUS_ID_KEY, "anon"),
+    anonymousId: identity.anonymousId,
     eventName: input.eventName,
     path: window.location.pathname,
     placement: input.placement,
     properties: input.properties ?? {},
     referrer: document.referrer,
-    sessionId: getStoredId(SESSION_ID_KEY, "ses", "session"),
+    sessionId: identity.sessionId,
     source: "landing",
     surface: input.surface ?? "product_landing",
     url: window.location.href,
   }
 
   sendAnalytics("/api/analytics/events", payload)
+}
+
+export function getLandingAnalyticsIdentity() {
+  return {
+    anonymousId: getStoredId(ANONYMOUS_ID_KEY, "anon"),
+    sessionId: getStoredId(SESSION_ID_KEY, "ses", "session"),
+  }
 }
 
 function sendAnalytics(url: string, payload: Record<string, unknown>) {

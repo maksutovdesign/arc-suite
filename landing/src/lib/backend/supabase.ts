@@ -9,6 +9,9 @@ import type {
   ApiListing,
   ApiProvider,
   BudgetAlert,
+  InvestorLead,
+  InvestorLeadInput,
+  LeadInterest,
   ReputationProfile,
   Transaction,
   WorkspaceApiKey,
@@ -144,6 +147,27 @@ type AnalyticsEventRow = {
   source: AnalyticsSource
   surface: string | null
   placement: string | null
+  anonymous_id: string | null
+  session_id: string | null
+  path: string | null
+  url: string | null
+  referrer: string | null
+  user_agent: string | null
+  ip_hash: string | null
+  properties: Record<string, unknown> | null
+  created_at: string
+}
+
+type InvestorLeadRow = {
+  id: string
+  workspace_id: string
+  name: string
+  email: string
+  company: string | null
+  role: string | null
+  interest: LeadInterest
+  message: string | null
+  status: InvestorLead["status"]
   anonymous_id: string | null
   session_id: string | null
   path: string | null
@@ -442,6 +466,52 @@ export async function listSupabaseAnalyticsEvents(limit = 200): Promise<Analytic
   }
 }
 
+export async function insertSupabaseInvestorLead(input: InvestorLeadInput): Promise<InvestorLead | null> {
+  if (!isSupabaseConfigured()) return null
+
+  try {
+    const rows = await postRows<InvestorLeadRow>("investor_leads", [
+      {
+        id: `lead_${randomUUID()}`,
+        workspace_id: WORKSPACE_ID,
+        name: input.name,
+        email: input.email,
+        company: input.company ?? null,
+        role: input.role ?? null,
+        interest: input.interest ?? "pilot",
+        message: input.message ?? null,
+        status: "new",
+        anonymous_id: input.anonymousId ?? null,
+        session_id: input.sessionId ?? null,
+        path: input.path ?? null,
+        url: input.url ?? null,
+        referrer: input.referrer ?? null,
+        user_agent: input.userAgent ?? null,
+        ip_hash: input.ipHash ?? null,
+        properties: input.properties ?? {},
+      },
+    ])
+
+    return rows[0] ? mapInvestorLead(rows[0]) : null
+  } catch {
+    return null
+  }
+}
+
+export async function listSupabaseInvestorLeads(limit = 100): Promise<InvestorLead[] | null> {
+  if (!isSupabaseConfigured()) return null
+
+  try {
+    const rows = await getRows<InvestorLeadRow>(
+      "investor_leads",
+      `select=*&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&order=created_at.desc&limit=${limit}`,
+    )
+    return rows.map(mapInvestorLead)
+  } catch {
+    return null
+  }
+}
+
 async function getRows<T>(table: string, query: string): Promise<T[]> {
   const response = await fetch(`${restBaseUrl()}/${table}?${query}`, {
     cache: "no-store",
@@ -520,6 +590,29 @@ function mapAnalyticsEvent(row: AnalyticsEventRow): AnalyticsEvent {
     source: row.source,
     surface: row.surface,
     placement: row.placement,
+    anonymousId: row.anonymous_id,
+    sessionId: row.session_id,
+    path: row.path,
+    url: row.url,
+    referrer: row.referrer,
+    userAgent: row.user_agent,
+    ipHash: row.ip_hash,
+    properties: row.properties ?? {},
+    createdAt: row.created_at,
+  }
+}
+
+function mapInvestorLead(row: InvestorLeadRow): InvestorLead {
+  return {
+    id: row.id,
+    workspaceId: row.workspace_id,
+    name: row.name,
+    email: row.email,
+    company: row.company,
+    role: row.role,
+    interest: row.interest,
+    message: row.message,
+    status: row.status,
     anonymousId: row.anonymous_id,
     sessionId: row.session_id,
     path: row.path,

@@ -151,6 +151,7 @@ To switch it to Supabase/Postgres, run:
 landing/supabase/migrations/2026060201_arc_pilot_schema.sql
 landing/supabase/migrations/2026060202_workspace_auth.sql
 landing/supabase/migrations/2026060501_analytics_events.sql
+landing/supabase/migrations/2026060502_investor_leads.sql
 landing/supabase/seed.sql
 ```
 
@@ -169,6 +170,9 @@ read from Supabase. If Supabase is unavailable, the API falls back to demo seed 
 Conversion analytics are captured through `/api/analytics/events` and summarized
 through protected `/api/analytics/summary`. The tracked funnel events are demo,
 investor page, GitHub, X, and Treasury access-check interactions.
+
+Investor CRM light is captured through `/api/leads` and listed through protected
+`GET /api/leads`. Leads store the same anonymous/session ids used by analytics.
 
 ### Run locally
 

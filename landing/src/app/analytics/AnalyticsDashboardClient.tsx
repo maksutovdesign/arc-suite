@@ -1,13 +1,14 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
-import type { AnalyticsEvent, AnalyticsSummary } from "@/lib/backend/schema"
+import type { AnalyticsEvent, AnalyticsSummary, InvestorLead } from "@/lib/backend/schema"
 
 const API_KEY_STORAGE = "arc_analytics_dashboard_key"
 
 export function AnalyticsDashboardClient() {
   const [apiKey, setApiKey] = useState("")
   const [summary, setSummary] = useState<AnalyticsSummary | null>(null)
+  const [leads, setLeads] = useState<InvestorLead[]>([])
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [lastLoadedAt, setLastLoadedAt] = useState<string | null>(null)
@@ -31,19 +32,23 @@ export function AnalyticsDashboardClient() {
     setIsLoading(true)
     setError(null)
     try {
-      const response = await fetch("/api/analytics/summary?limit=500", {
-        cache: "no-store",
-        headers: { "x-arc-api-key": nextKey.trim() },
-      })
-      if (response.status === 401) throw new Error("Invalid API key or missing read scope.")
-      if (!response.ok) throw new Error("Analytics summary is unavailable.")
+      const headers = { "x-arc-api-key": nextKey.trim() }
+      const [summaryResponse, leadsResponse] = await Promise.all([
+        fetch("/api/analytics/summary?limit=500", { cache: "no-store", headers }),
+        fetch("/api/leads?limit=100", { cache: "no-store", headers }),
+      ])
+      if (summaryResponse.status === 401 || leadsResponse.status === 401) throw new Error("Invalid API key or missing read scope.")
+      if (!summaryResponse.ok) throw new Error("Analytics summary is unavailable.")
 
-      const payload = (await response.json()) as AnalyticsSummary
+      const payload = (await summaryResponse.json()) as AnalyticsSummary
+      const leadsPayload = leadsResponse.ok ? (await leadsResponse.json()) as { leads: InvestorLead[] } : { leads: [] }
       setSummary(payload)
+      setLeads(leadsPayload.leads)
       setLastLoadedAt(new Date().toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" }))
       window.sessionStorage.setItem(API_KEY_STORAGE, nextKey.trim())
     } catch (err) {
       setSummary(null)
+      setLeads([])
       setError(err instanceof Error ? err.message : "Could not load analytics.")
     } finally {
       setIsLoading(false)
@@ -54,6 +59,7 @@ export function AnalyticsDashboardClient() {
     window.sessionStorage.removeItem(API_KEY_STORAGE)
     setApiKey("")
     setSummary(null)
+    setLeads([])
     setError(null)
     setLastLoadedAt(null)
   }
@@ -116,6 +122,7 @@ export function AnalyticsDashboardClient() {
           <div className="analytics-kpi-grid">
             <Metric label="Demo clicks" value={String(summary.funnel.demoClicks)} />
             <Metric label="Access checks" value={String(summary.funnel.accessCheckRuns)} />
+            <Metric label="Leads" value={String(leads.length)} />
             <Metric label="Demo to check" value={`${summary.funnel.demoToAccessCheckRatePct}%`} />
             <Metric label="Check completion" value={`${summary.funnel.accessCheckCompletionRatePct}%`} />
           </div>
@@ -170,6 +177,20 @@ export function AnalyticsDashboardClient() {
                   </div>
                 ))}
               </div>
+            </div>
+
+            <div className="analytics-card analytics-card-full">
+              <div className="analytics-card-head">
+                <h2>Investor Leads</h2>
+                <span>latest 100</span>
+              </div>
+              {leads.length === 0 ? (
+                <div className="empty-row">No leads captured yet.</div>
+              ) : (
+                <div className="lead-list">
+                  {leads.map((lead) => <LeadRow lead={lead} key={lead.id} />)}
+                </div>
+              )}
             </div>
 
             <div className="analytics-card analytics-card-full">
@@ -231,6 +252,21 @@ function EventRow({ event }: { event: AnalyticsEvent }) {
         <span>{event.source} · {event.placement ?? "unknown"} · {formatDate(event.createdAt)}</span>
       </div>
       <code>{event.path ?? "/"}</code>
+    </div>
+  )
+}
+
+function LeadRow({ lead }: { lead: InvestorLead }) {
+  return (
+    <div className="lead-row">
+      <div>
+        <strong>{lead.name}</strong>
+        <span>{lead.email} · {lead.company ?? "No company"} · {formatDate(lead.createdAt)}</span>
+      </div>
+      <div>
+        <b>{labelize(lead.interest)}</b>
+        <code>{lead.anonymousId ?? "no-session"}</code>
+      </div>
     </div>
   )
 }
