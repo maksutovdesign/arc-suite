@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react"
 import { BrandMark } from "./BrandMark"
+import { trackLandingConversion } from "@/lib/analytics"
 import type { PilotSummary } from "@/lib/backend/schema"
 
 const productDetails = [
@@ -221,16 +222,36 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
             <a href="#system">Product</a>
             <a href="#loop">Loop</a>
             <a href="#proof">Proof</a>
-            <a href="/investors">Investors</a>
+            <a href="/investors" onClick={() => trackLandingConversion({ eventName: "investors_click", placement: "nav" })}>Investors</a>
           </div>
-          <a className="nav-demo" href={liveDemoUrl} target="_blank" rel="noreferrer">Demo</a>
+          <a
+            className="nav-demo"
+            href={liveDemoUrl}
+            onClick={() => trackLandingConversion({ eventName: "demo_click", placement: "nav" })}
+            target="_blank"
+            rel="noreferrer"
+          >
+            Demo
+          </a>
           <div className="social-links" aria-label="Social links">
-            <a href="https://github.com/maksutovdesign" aria-label="Maksutov Design on GitHub">
+            <a
+              href="https://github.com/maksutovdesign"
+              aria-label="Maksutov Design on GitHub"
+              onClick={() => trackLandingConversion({ eventName: "github_click", placement: "nav" })}
+              target="_blank"
+              rel="noreferrer"
+            >
               <svg viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M12 .5a12 12 0 0 0-3.79 23.38c.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.42-4.04-1.42-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.2.09 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5.99.11-.78.42-1.3.76-1.6-2.67-.31-5.47-1.34-5.47-5.94 0-1.31.47-2.39 1.24-3.23-.12-.3-.54-1.53.12-3.18 0 0 1.01-.32 3.3 1.23a11.4 11.4 0 0 1 6.01 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.77.84 1.23 1.92 1.23 3.23 0 4.62-2.81 5.63-5.49 5.93.43.37.82 1.1.82 2.22v3.29c0 .32.22.69.83.57A12 12 0 0 0 12 .5Z" />
               </svg>
             </a>
-            <a href="https://x.com/maksutovdesign" aria-label="Maksutov Design on X">
+            <a
+              href="https://x.com/maksutovdesign"
+              aria-label="Maksutov Design on X"
+              onClick={() => trackLandingConversion({ eventName: "x_click", placement: "nav" })}
+              target="_blank"
+              rel="noreferrer"
+            >
               <svg viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M18.9 2h3.3l-7.3 8.35L23.5 22h-6.73l-5.27-6.89L5.47 22H2.16l7.8-8.92L1.72 2h6.9l4.76 6.29L18.9 2Zm-1.16 17.95h1.83L7.63 3.94H5.67l12.07 16.01Z" />
               </svg>
@@ -249,9 +270,23 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
             x402 API access.
           </p>
           <div className="hero-actions">
-            <a className="button primary" href={liveDemoUrl} target="_blank" rel="noreferrer">Launch live demo</a>
+            <a
+              className="button primary"
+              href={liveDemoUrl}
+              onClick={() => trackLandingConversion({ eventName: "demo_click", placement: "hero" })}
+              target="_blank"
+              rel="noreferrer"
+            >
+              Launch live demo
+            </a>
             <a className="button secondary" href="#system">Explore the product</a>
-            <a className="button secondary" href="/investors">Investor page</a>
+            <a
+              className="button secondary"
+              href="/investors"
+              onClick={() => trackLandingConversion({ eventName: "investors_click", placement: "hero" })}
+            >
+              Investor page
+            </a>
           </div>
         </div>
 
@@ -670,8 +705,22 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
         <p className="kicker">Ready for pilots</p>
         <h2>Turn autonomous agent payments into accountable infrastructure.</h2>
         <div className="cta-actions">
-          <a className="button primary" href={liveDemoUrl} target="_blank" rel="noreferrer">Launch live demo</a>
-          <a className="button secondary" href="/investors">View investor page</a>
+          <a
+            className="button primary"
+            href={liveDemoUrl}
+            onClick={() => trackLandingConversion({ eventName: "demo_click", placement: "bottom_cta" })}
+            target="_blank"
+            rel="noreferrer"
+          >
+            Launch live demo
+          </a>
+          <a
+            className="button secondary"
+            href="/investors"
+            onClick={() => trackLandingConversion({ eventName: "investors_click", placement: "bottom_cta" })}
+          >
+            View investor page
+          </a>
         </div>
       </section>
     </main>

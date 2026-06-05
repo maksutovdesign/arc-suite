@@ -2,6 +2,9 @@ import { createHash, randomBytes, randomUUID } from "crypto"
 import type {
   AccessDecisionLog,
   Agent,
+  AnalyticsEvent,
+  AnalyticsEventInput,
+  AnalyticsSource,
   ApiKeyScope,
   ApiListing,
   ApiProvider,
@@ -132,6 +135,24 @@ type WorkspaceApiKeyRow = {
   last_used_at: string | null
   rotated_at: string | null
   revoked_at: string | null
+}
+
+type AnalyticsEventRow = {
+  id: string
+  workspace_id: string
+  event_name: string
+  source: AnalyticsSource
+  surface: string | null
+  placement: string | null
+  anonymous_id: string | null
+  session_id: string | null
+  path: string | null
+  url: string | null
+  referrer: string | null
+  user_agent: string | null
+  ip_hash: string | null
+  properties: Record<string, unknown> | null
+  created_at: string
 }
 
 export type BackendDataset = {
@@ -378,6 +399,49 @@ export async function verifySupabaseApiKey(secret: string): Promise<WorkspaceApi
   }
 }
 
+export async function insertSupabaseAnalyticsEvent(input: AnalyticsEventInput): Promise<AnalyticsEvent | null> {
+  if (!isSupabaseConfigured()) return null
+
+  try {
+    const rows = await postRows<AnalyticsEventRow>("analytics_events", [
+      {
+        id: `evt_${randomUUID()}`,
+        workspace_id: WORKSPACE_ID,
+        event_name: input.eventName,
+        source: input.source,
+        surface: input.surface ?? null,
+        placement: input.placement ?? null,
+        anonymous_id: input.anonymousId ?? null,
+        session_id: input.sessionId ?? null,
+        path: input.path ?? null,
+        url: input.url ?? null,
+        referrer: input.referrer ?? null,
+        user_agent: input.userAgent ?? null,
+        ip_hash: input.ipHash ?? null,
+        properties: input.properties ?? {},
+      },
+    ])
+
+    return rows[0] ? mapAnalyticsEvent(rows[0]) : null
+  } catch {
+    return null
+  }
+}
+
+export async function listSupabaseAnalyticsEvents(limit = 200): Promise<AnalyticsEvent[] | null> {
+  if (!isSupabaseConfigured()) return null
+
+  try {
+    const rows = await getRows<AnalyticsEventRow>(
+      "analytics_events",
+      `select=*&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&order=created_at.desc&limit=${limit}`,
+    )
+    return rows.map(mapAnalyticsEvent)
+  } catch {
+    return null
+  }
+}
+
 async function getRows<T>(table: string, query: string): Promise<T[]> {
   const response = await fetch(`${restBaseUrl()}/${table}?${query}`, {
     cache: "no-store",
@@ -445,6 +509,26 @@ function mapAgent(row: AgentRow): Agent {
     tags: row.tags ?? [],
     createdAt: row.created_at,
     lastActiveAt: row.last_active_at,
+  }
+}
+
+function mapAnalyticsEvent(row: AnalyticsEventRow): AnalyticsEvent {
+  return {
+    id: row.id,
+    workspaceId: row.workspace_id,
+    eventName: row.event_name,
+    source: row.source,
+    surface: row.surface,
+    placement: row.placement,
+    anonymousId: row.anonymous_id,
+    sessionId: row.session_id,
+    path: row.path,
+    url: row.url,
+    referrer: row.referrer,
+    userAgent: row.user_agent,
+    ipHash: row.ip_hash,
+    properties: row.properties ?? {},
+    createdAt: row.created_at,
   }
 }
 

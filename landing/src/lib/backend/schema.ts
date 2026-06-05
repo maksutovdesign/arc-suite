@@ -202,3 +202,32 @@ export type WorkspaceApiKey = {
 export type WorkspaceApiKeyCreated = WorkspaceApiKey & {
   secret: string
 }
+
+export type AnalyticsSource = "landing" | "treasury" | "reputation" | "marketplace"
+
+export type AnalyticsEventInput = {
+  eventName: string
+  source: AnalyticsSource
+  surface?: string | null
+  placement?: string | null
+  anonymousId?: string | null
+  sessionId?: string | null
+  path?: string | null
+  url?: string | null
+  referrer?: string | null
+  userAgent?: string | null
+  ipHash?: string | null
+  properties?: Record<string, unknown>
+}
+
+export type AnalyticsEvent = AnalyticsEventInput & {
+  id: string
+  workspaceId: string
+  createdAt: string
+}
+
+export type AnalyticsSummary = {
+  totals: Array<{ eventName: string; count: number }>
+  sources: Array<{ source: AnalyticsSource; count: number }>
+  recent: AnalyticsEvent[]
+}

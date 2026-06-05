@@ -6,6 +6,7 @@ import { CheckCircle2, Play, XCircle } from "lucide-react"
 import { ArcButton } from "@/components/ui/ArcButton"
 import type { Agent } from "@/data/mock"
 import type { AccessDecision, ApiListing } from "@/lib/arc-api"
+import { trackTreasuryEvent } from "@/lib/analytics"
 import { formatUSDC } from "@/lib/utils"
 
 type Props = {
@@ -31,6 +32,16 @@ export function AccessCheckSimulator({ agent, apiListings }: Props) {
   function runCheck() {
     setError(null)
     setDecision(null)
+    trackTreasuryEvent({
+      eventName: "access_check_run",
+      placement: "agent_detail",
+      surface: "access_check_simulator",
+      properties: {
+        agentId: agent.id,
+        apiId,
+        amountUsdc: Number(amount),
+      },
+    })
     startTransition(async () => {
       try {
         const response = await fetch("/api/arc/access/check", {
@@ -45,8 +56,31 @@ export function AccessCheckSimulator({ agent, apiListings }: Props) {
         if (!response.ok) throw new Error("Check failed")
         const payload = (await response.json()) as { decision: AccessDecision }
         setDecision(payload.decision)
+        trackTreasuryEvent({
+          eventName: "access_check_result",
+          placement: "agent_detail",
+          surface: "access_check_simulator",
+          properties: {
+            agentId: agent.id,
+            allowed: payload.decision.allowed,
+            apiId,
+            requiredScore: payload.decision.requiredScore,
+            score: payload.decision.score,
+          },
+        })
         router.refresh()
       } catch {
+        trackTreasuryEvent({
+          eventName: "access_check_result",
+          placement: "agent_detail",
+          surface: "access_check_simulator",
+          properties: {
+            agentId: agent.id,
+            allowed: false,
+            apiId,
+            error: true,
+          },
+        })
         setError("Access check failed")
       }
     })

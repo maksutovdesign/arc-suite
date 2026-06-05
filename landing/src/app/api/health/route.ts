@@ -5,7 +5,7 @@ export function GET() {
   return NextResponse.json({
     ok: true,
     service: "arc-suite-pilot-api",
-    schemaVersion: "2026-06-02.2",
+    schemaVersion: "2026-06-05.1",
     mode: "pilot",
     dataSource: isSupabaseConfigured() ? "supabase" : "seed",
   })

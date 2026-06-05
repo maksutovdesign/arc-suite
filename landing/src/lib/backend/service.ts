@@ -4,6 +4,9 @@ import type {
   AccessDecision,
   AccessDecisionLog,
   Agent,
+  AnalyticsEventInput,
+  AnalyticsSummary,
+  AnalyticsSource,
   ApiKeyScope,
   PilotSummary,
   ReputationEvent,
@@ -15,7 +18,9 @@ import type {
 import {
   createSupabaseWorkspaceApiKey,
   insertAccessDecision,
+  insertSupabaseAnalyticsEvent,
   insertSupabaseAgent,
+  listSupabaseAnalyticsEvents,
   listSupabaseAccessDecisions,
   listSupabaseWorkspaceApiKeys,
   listSupabaseWorkspaceMembers,
@@ -25,6 +30,17 @@ import {
   updateSupabaseAgent,
   type BackendDataset,
 } from "./supabase"
+
+const ANALYTICS_EVENTS = new Set([
+  "demo_click",
+  "investors_click",
+  "github_click",
+  "x_click",
+  "access_check_run",
+  "access_check_result",
+])
+
+const ANALYTICS_SOURCES = new Set<AnalyticsSource>(["landing", "treasury", "reputation", "marketplace"])
 
 export async function listAgents() {
   const dataset = await getDataset()
@@ -284,6 +300,38 @@ export async function revokeWorkspaceApiKey(keyId: string): Promise<WorkspaceApi
   return revokeSupabaseWorkspaceApiKey(keyId)
 }
 
+export async function recordAnalyticsEvent(input: AnalyticsEventInput) {
+  const eventName = normalizeAnalyticsEventName(input.eventName)
+  const source = ANALYTICS_SOURCES.has(input.source) ? input.source : "landing"
+
+  return insertSupabaseAnalyticsEvent({
+    eventName,
+    source,
+    surface: normalizeOptionalText(input.surface, 80),
+    placement: normalizeOptionalText(input.placement, 80),
+    anonymousId: normalizeOptionalText(input.anonymousId, 120),
+    sessionId: normalizeOptionalText(input.sessionId, 120),
+    path: normalizeOptionalText(input.path, 240),
+    url: normalizeOptionalText(input.url, 500),
+    referrer: normalizeOptionalText(input.referrer, 500),
+    userAgent: normalizeOptionalText(input.userAgent, 500),
+    ipHash: normalizeOptionalText(input.ipHash, 96),
+    properties: sanitizeAnalyticsProperties(input.properties),
+  })
+}
+
+export async function getAnalyticsSummary(limit = 200): Promise<AnalyticsSummary> {
+  const events = (await listSupabaseAnalyticsEvents(limit)) ?? []
+  const totals = aggregateCounts(events.map((event) => event.eventName)).map(([eventName, count]) => ({ eventName, count }))
+  const sources = aggregateCounts(events.map((event) => event.source)).map(([source, count]) => ({ source: source as AnalyticsSource, count }))
+
+  return {
+    totals,
+    sources,
+    recent: events.slice(0, 25),
+  }
+}
+
 export async function getPilotSummary(): Promise<PilotSummary> {
   const dataset = await getDataset()
   const activeAlerts = dataset.alerts.filter((alert) => !alert.resolvedAt)
@@ -363,6 +411,8 @@ export async function getPilotSummary(): Promise<PilotSummary> {
       { method: "GET", path: "/api/workspace/security", description: "Workspace members and scoped API keys" },
       { method: "POST", path: "/api/workspace/security", description: "Create a scoped workspace API key" },
       { method: "POST", path: "/api/workspace/security/keys/:keyId/rotate", description: "Rotate a workspace API key" },
+      { method: "POST", path: "/api/analytics/events", description: "Capture landing and demo conversion events" },
+      { method: "GET", path: "/api/analytics/summary", description: "Protected conversion analytics summary" },
     ],
   }
 }
@@ -447,6 +497,38 @@ function normalizeKeyScopes(scopes: string[] | undefined): ApiKeyScope[] {
   const allowed = new Set<ApiKeyScope>(["read", "write", "admin"])
   const normalized = (scopes ?? ["read"]).filter((scope): scope is ApiKeyScope => allowed.has(scope as ApiKeyScope))
   return normalized.length > 0 ? Array.from(new Set(normalized)) : ["read"]
+}
+
+function normalizeAnalyticsEventName(value: string) {
+  const normalized = value.trim().toLowerCase().replace(/[^a-z0-9_:-]/g, "_").slice(0, 80)
+  if (ANALYTICS_EVENTS.has(normalized)) return normalized
+  return normalized || "unknown_event"
+}
+
+function normalizeOptionalText(value: unknown, maxLength: number) {
+  if (typeof value !== "string") return null
+  const trimmed = value.trim()
+  return trimmed ? trimmed.slice(0, maxLength) : null
+}
+
+function sanitizeAnalyticsProperties(properties: unknown): Record<string, unknown> {
+  if (!properties || typeof properties !== "object" || Array.isArray(properties)) return {}
+  return Object.fromEntries(
+    Object.entries(properties as Record<string, unknown>)
+      .filter(([key, value]) => typeof key === "string" && isAnalyticsPrimitive(value))
+      .slice(0, 20)
+      .map(([key, value]) => [key.slice(0, 80), value]),
+  )
+}
+
+function isAnalyticsPrimitive(value: unknown) {
+  return value === null || ["string", "number", "boolean"].includes(typeof value)
+}
+
+function aggregateCounts(values: string[]) {
+  const counts = new Map<string, number>()
+  values.forEach((value) => counts.set(value, (counts.get(value) ?? 0) + 1))
+  return [...counts.entries()].sort((a, b) => b[1] - a[1])
 }
 
 function round2(value: number) {
