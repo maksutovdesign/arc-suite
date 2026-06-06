@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { withSentryConfig } from "@sentry/nextjs";
 
 const securityHeaders = [
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
@@ -32,4 +33,16 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+const canUploadSourcemaps = Boolean(process.env.SENTRY_AUTH_TOKEN && process.env.SENTRY_ORG && process.env.SENTRY_PROJECT);
+
+export default withSentryConfig(nextConfig, {
+  ...(canUploadSourcemaps
+    ? {
+        authToken: process.env.SENTRY_AUTH_TOKEN,
+        org: process.env.SENTRY_ORG,
+        project: process.env.SENTRY_PROJECT,
+        widenClientFileUpload: true,
+      }
+    : {}),
+  silent: !process.env.CI,
+});

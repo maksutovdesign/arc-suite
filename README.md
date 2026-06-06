@@ -223,6 +223,12 @@ before alert destinations are configured.
 To test delivery without breaking production, run `Arc Suite Production Monitor`
 manually from GitHub Actions with `send_test_alert=true`.
 
+Runtime Sentry is configured in all Next.js apps with `@sentry/nextjs`.
+Set `NEXT_PUBLIC_SENTRY_DSN` in Vercel for browser errors, and `SENTRY_DSN`
+or `ARC_SENTRY_DSN` for server/API errors. Optional source map upload uses
+`SENTRY_AUTH_TOKEN`, `SENTRY_ORG`, and `SENTRY_PROJECT`. Landing also exposes
+a protected `POST /api/ops/sentry-test` endpoint for manual runtime verification.
+
 ### Deploy to Vercel
 
 ```bash

@@ -11,6 +11,7 @@
   "dependencies": {
     "@base-ui/react": "^1.5.0",
     "@circle-fin/developer-controlled-wallets": "^10.6.0",
+    "@sentry/nextjs": "^10.56.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.4.0",

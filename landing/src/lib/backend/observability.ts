@@ -1,4 +1,5 @@
 import { randomUUID } from "crypto"
+import * as Sentry from "@sentry/nextjs"
 
 type LogLevel = "info" | "warn" | "error"
 
@@ -14,7 +15,9 @@ const LOG_PREFIX = "arc.ops"
 
 export function createRequestId(request?: Request) {
   const incoming = request?.headers.get("x-request-id")?.trim()
-  return incoming ? incoming.slice(0, 96) : randomUUID()
+  const requestId = incoming ? incoming.slice(0, 96) : randomUUID()
+  setSentryRequestContext(requestId, request)
+  return requestId
 }
 
 export function requestIdHeaders(requestId: string) {
@@ -34,7 +37,10 @@ export function logOperationalEvent(input: OperationalEvent) {
   }
 
   const line = JSON.stringify(payload)
+  addSentryBreadcrumb(payload)
+
   if (level === "error") {
+    captureSentryOperationalError(payload)
     console.error(line)
     return
   }
@@ -45,6 +51,76 @@ export function logOperationalEvent(input: OperationalEvent) {
   }
 
   console.log(line)
+}
+
+function setSentryRequestContext(requestId: string, request?: Request) {
+  try {
+    Sentry.setTag("request_id", requestId)
+    Sentry.setContext("arc_request", {
+      id: requestId,
+      method: request?.method,
+      path: request ? safePath(request.url) : undefined,
+    })
+  } catch {
+    // Sentry should never affect request handling.
+  }
+}
+
+function addSentryBreadcrumb(payload: {
+  details: Record<string, unknown>
+  event: string
+  level: LogLevel
+  prefix: string
+  requestId?: string
+  route?: string
+  timestamp: string
+}) {
+  try {
+    Sentry.addBreadcrumb({
+      category: "arc.ops",
+      data: {
+        ...payload.details,
+        request_id: payload.requestId,
+        route: payload.route,
+      },
+      level: payload.level === "warn" ? "warning" : payload.level,
+      message: payload.event,
+    })
+  } catch {
+    // Sentry should never affect request handling.
+  }
+}
+
+function captureSentryOperationalError(payload: {
+  details: Record<string, unknown>
+  event: string
+  level: LogLevel
+  prefix: string
+  requestId?: string
+  route?: string
+  timestamp: string
+}) {
+  try {
+    Sentry.captureMessage(payload.event, {
+      extra: payload.details,
+      level: "error",
+      tags: {
+        event: payload.event,
+        request_id: payload.requestId,
+        route: payload.route,
+      },
+    })
+  } catch {
+    // Sentry should never affect request handling.
+  }
+}
+
+function safePath(url: string) {
+  try {
+    return new URL(url).pathname.slice(0, 240)
+  } catch {
+    return undefined
+  }
 }
 
 function sanitizeDetails(details: Record<string, unknown>) {
