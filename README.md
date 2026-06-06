@@ -209,6 +209,9 @@ npm run dev --workspace=marketplace # → http://localhost:3003
 `monitor:prod` checks production health, Supabase data source, readiness access
 guards, CORS preflight, security headers, and the four public app surfaces. GitHub
 Actions also runs this monitor every 30 minutes through `Arc Suite Production Monitor`.
+The monitor records per-check latency, writes a Markdown run summary in GitHub
+Actions, warns above `ARC_MONITOR_LATENCY_WARN_MS` (default `5000`) and fails above
+`ARC_MONITOR_LATENCY_FAIL_MS` (default `15000`).
 When that monitor fails, it can notify Slack and Sentry. Add either or both GitHub
 repository secrets:
 

@@ -1,9 +1,13 @@
+import { appendFile } from "node:fs/promises"
+
 const DEFAULTS = {
   landing: "https://arcsuite-app.vercel.app",
   treasury: "https://treasury-umber.vercel.app",
   reputation: "https://reputation-five.vercel.app",
   marketplace: "https://marketplace-eosin-eight.vercel.app",
 }
+
+const MONITOR_NAME = "Arc Suite Production Monitor"
 
 const bases = {
   landing: withoutTrailingSlash(process.env.ARC_MONITOR_LANDING_URL ?? process.env.ARC_SMOKE_LANDING_URL ?? DEFAULTS.landing),
@@ -13,6 +17,8 @@ const bases = {
 }
 
 const requireSupabase = process.env.ARC_MONITOR_REQUIRE_SUPABASE !== "false"
+const latencyWarnMs = numberFromEnv("ARC_MONITOR_LATENCY_WARN_MS", 5_000)
+const latencyFailMs = numberFromEnv("ARC_MONITOR_LATENCY_FAIL_MS", 15_000)
 
 const checks = [
   {
@@ -74,25 +80,70 @@ const checks = [
 
 const startedAt = Date.now()
 const failures = []
+const warnings = []
+const results = []
 
 for (const check of checks) {
+  const checkStartedAt = Date.now()
   try {
     const detail = await check.run()
-    console.log(`OK ${check.name}${detail ? `: ${detail}` : ""}`)
+    const durationMs = Date.now() - checkStartedAt
+    const result = {
+      detail,
+      durationMs,
+      name: check.name,
+      status: "ok",
+    }
+
+    if (durationMs > latencyFailMs) {
+      throw new Error(`latency budget exceeded: ${durationMs}ms > ${latencyFailMs}ms`)
+    }
+
+    if (durationMs > latencyWarnMs) {
+      const warning = { durationMs, message: `slow check: ${durationMs}ms > ${latencyWarnMs}ms`, name: check.name }
+      warnings.push(warning)
+      result.status = "warn"
+      result.warning = warning.message
+      console.warn(`WARN ${check.name}: ${warning.message}`)
+    }
+
+    results.push(result)
+    console.log(`OK ${check.name} (${durationMs}ms)${detail ? `: ${detail}` : ""}`)
   } catch (error) {
+    const durationMs = Date.now() - checkStartedAt
     const message = error instanceof Error ? error.message : String(error)
-    failures.push({ name: check.name, message })
-    console.error(`FAIL ${check.name}: ${message}`)
+    failures.push({ durationMs, name: check.name, message })
+    results.push({
+      durationMs,
+      message,
+      name: check.name,
+      status: "failed",
+    })
+    console.error(`FAIL ${check.name} (${durationMs}ms): ${message}`)
   }
 }
 
 const durationMs = Date.now() - startedAt
+const summary = {
+  checks: checks.length,
+  durationMs,
+  failureCount: failures.length,
+  latencyFailMs,
+  latencyWarnMs,
+  results,
+  status: failures.length > 0 ? "failed" : "ok",
+  warningCount: warnings.length,
+  warnings,
+}
+
+await writeGithubSummary(summary)
+
 if (failures.length > 0) {
-  console.error(JSON.stringify({ durationMs, failures, status: "failed" }))
+  console.error(JSON.stringify(summary))
   process.exit(1)
 }
 
-console.log(JSON.stringify({ checks: checks.length, durationMs, status: "ok" }))
+console.log(JSON.stringify(summary))
 
 async function checkHtmlPage(url, expectedText) {
   const response = await fetchWithRetry(url)
@@ -170,6 +221,53 @@ function withoutTrailingSlash(value) {
   return value.replace(/\/$/, "")
 }
 
+function numberFromEnv(name, fallback) {
+  const value = Number(process.env[name])
+  return Number.isFinite(value) && value > 0 ? value : fallback
+}
+
 function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+async function writeGithubSummary(summary) {
+  const summaryFile = process.env.GITHUB_STEP_SUMMARY
+  if (!summaryFile) return
+
+  try {
+    const statusIcon = summary.status === "ok" ? "OK" : "FAIL"
+    const rows = summary.results
+      .map((result) => {
+        const state = result.status === "failed" ? "FAIL" : result.status === "warn" ? "WARN" : "OK"
+        const detail = result.message ?? result.warning ?? result.detail ?? ""
+        return `| ${state} | ${escapeMarkdown(result.name)} | ${result.durationMs} | ${escapeMarkdown(detail)} |`
+      })
+      .join("\n")
+
+    const content = [
+      `## ${MONITOR_NAME}`,
+      "",
+      `Status: **${statusIcon}**`,
+      "",
+      `Duration: **${summary.durationMs}ms**`,
+      "",
+      `Per-check latency warning budget: **${summary.latencyWarnMs}ms**`,
+      "",
+      `Per-check latency failure budget: **${summary.latencyFailMs}ms**`,
+      "",
+      "| Status | Check | Duration, ms | Detail |",
+      "| --- | --- | ---: | --- |",
+      rows,
+      "",
+    ].join("\n")
+
+    await appendFile(summaryFile, content, "utf8")
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error)
+    console.warn(`WARN GitHub summary unavailable: ${message}`)
+  }
+}
+
+function escapeMarkdown(value) {
+  return String(value).replaceAll("|", "\\|").replaceAll("\n", " ")
 }

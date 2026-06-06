@@ -97,9 +97,7 @@ async function notifySlack(webhookUrl, context, output, monitorResult) {
   const title = context.status === "test"
     ? "Arc Suite production monitor test alert"
     : "Arc Suite production monitor failed"
-  const failureList = Array.isArray(monitorResult?.failures)
-    ? monitorResult.failures.map((failure) => `- ${failure.name}: ${failure.message}`).join("\n")
-    : output
+  const failureList = formatMonitorSignal(monitorResult, output)
 
   const payload = {
     text: `${title} in ${context.repository}`,
@@ -243,6 +241,38 @@ function parseSentryDsn(dsn) {
   return {
     envelopeUrl: `${url.protocol}//${url.host}/api/${projectId}/envelope/`,
   }
+}
+
+function formatMonitorSignal(monitorResult, output) {
+  if (!monitorResult) return output
+
+  const lines = []
+
+  if (Array.isArray(monitorResult.failures) && monitorResult.failures.length > 0) {
+    lines.push("Failures:")
+    lines.push(...monitorResult.failures.map((failure) => {
+      const duration = typeof failure.durationMs === "number" ? ` (${failure.durationMs}ms)` : ""
+      return `- ${failure.name}${duration}: ${failure.message}`
+    }))
+  }
+
+  if (Array.isArray(monitorResult.warnings) && monitorResult.warnings.length > 0) {
+    lines.push("Warnings:")
+    lines.push(...monitorResult.warnings.map((warning) => {
+      const duration = typeof warning.durationMs === "number" ? ` (${warning.durationMs}ms)` : ""
+      return `- ${warning.name}${duration}: ${warning.message}`
+    }))
+  }
+
+  if (Array.isArray(monitorResult.results) && monitorResult.results.length > 0) {
+    lines.push("Checks:")
+    lines.push(...monitorResult.results.map((result) => {
+      const detail = result.message ?? result.warning ?? result.detail ?? ""
+      return `- ${result.status} ${result.name}: ${result.durationMs}ms${detail ? ` · ${detail}` : ""}`
+    }))
+  }
+
+  return lines.length > 0 ? lines.join("\n") : output
 }
 
 function firstPresent(...values) {
