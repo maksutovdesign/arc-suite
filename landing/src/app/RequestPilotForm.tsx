@@ -11,6 +11,7 @@ type FormState = {
   message: string
   name: string
   role: string
+  website: string
 }
 
 const initialForm: FormState = {
@@ -20,6 +21,7 @@ const initialForm: FormState = {
   message: "",
   name: "",
   role: "",
+  website: "",
 }
 
 export function RequestPilotForm() {
@@ -99,6 +101,16 @@ export function RequestPilotForm() {
         <label className="lead-message">
           <span>Message</span>
           <textarea name="message" value={form.message} onChange={(event) => update("message", event.target.value)} />
+        </label>
+        <label className="lead-honeypot" aria-hidden="true">
+          <span>Website</span>
+          <input
+            autoComplete="off"
+            name="website"
+            tabIndex={-1}
+            value={form.website}
+            onChange={(event) => update("website", event.target.value)}
+          />
         </label>
       </div>
 

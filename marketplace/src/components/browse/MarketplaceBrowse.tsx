@@ -226,7 +226,7 @@ export function MarketplaceBrowse({ apis, source }: Props) {
               <h2 className="text-sm font-bold text-white">Featured</h2>
               <span className="text-[10px] px-1.5 py-0.5 rounded-full font-semibold"
                 style={{ background: "rgba(250,204,21,0.1)", color: "#facc15", border: "1px solid rgba(250,204,21,0.2)" }}>
-                Editor's pick
+                Editor&apos;s pick
               </span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

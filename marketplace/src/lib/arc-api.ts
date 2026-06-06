@@ -33,15 +33,19 @@ export type AccessDecision = {
   dailyBudgetUsedPct: number
 }
 
-export async function runAccessCheck(input: { agentId: string; apiId: string; amountUsdc?: number }) {
+export async function runAccessCheck(input: { agentId: string; apiId: string; amountUsdc?: number }, options: { clientBucket?: string | null } = {}) {
   const response = await fetch(`${API_BASE_URL}/api/access/check`, {
     body: JSON.stringify(input),
-    headers: arcApiHeaders({ "Content-Type": "application/json" }),
+    headers: arcApiHeaders({
+      "Content-Type": "application/json",
+      ...(options.clientBucket ? { "x-arc-client-bucket": options.clientBucket } : {}),
+    }),
     method: "POST",
   })
 
   if (!response.ok) {
-    throw new Error(`Arc access check failed: ${response.status}`)
+    const payload = await response.json().catch(() => null) as { error?: string; message?: string } | null
+    throw new Error(payload?.message ?? payload?.error ?? `Arc access check failed: ${response.status}`)
   }
 
   return response.json() as Promise<{ decision: AccessDecision }>

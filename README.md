@@ -152,6 +152,7 @@ landing/supabase/migrations/2026060201_arc_pilot_schema.sql
 landing/supabase/migrations/2026060202_workspace_auth.sql
 landing/supabase/migrations/2026060501_analytics_events.sql
 landing/supabase/migrations/2026060502_investor_leads.sql
+landing/supabase/migrations/2026060601_rate_limit_events.sql
 landing/supabase/seed.sql
 ```
 
@@ -161,11 +162,14 @@ Then configure the landing deployment:
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=...
 ARC_WORKSPACE_ID=wrk_arc_demo
+ARC_ANALYTICS_SALT=...
 ```
 
 When these env vars are present, `/api/pilot/summary`, `/api/agents`,
 `/api/transactions`, `/api/reputation/:agentId`, and `/api/access/check`
 read from Supabase. If Supabase is unavailable, the API falls back to demo seed data.
+`/api/health` reports whether the API is using Supabase or seed data. Protected
+`/api/readiness` verifies required Supabase tables for production operation.
 
 Conversion analytics are captured through `/api/analytics/events` and summarized
 through protected `/api/analytics/summary`. The tracked funnel events are demo,
@@ -173,6 +177,8 @@ investor page, GitHub, X, and Treasury access-check interactions.
 
 Investor CRM light is captured through `/api/leads` and listed through protected
 `GET /api/leads`. Leads store the same anonymous/session ids used by analytics.
+Public lead, analytics, and access-check endpoints are rate-limited. Leads also
+include an invisible honeypot field to filter simple bot submissions.
 
 ### Run locally
 
@@ -184,7 +190,13 @@ cd arc
 # Install all workspaces
 npm install
 
+# Verify all apps
+npm run lint:all
+npm run build:all
+npm run test:smoke
+
 # Run each app (separate terminals)
+npm run dev --workspace=landing    # → http://localhost:3000
 npm run dev --workspace=treasury    # → http://localhost:3001
 npm run dev --workspace=reputation  # → http://localhost:3002
 npm run dev --workspace=marketplace # → http://localhost:3003

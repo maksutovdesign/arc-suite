@@ -1551,6 +1551,15 @@ h3 {
   grid-column: 1 / -1;
 }
 
+.lead-honeypot {
+  position: absolute;
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
 .lead-form-footer {
   display: flex;
   gap: 12px;

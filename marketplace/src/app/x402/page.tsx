@@ -1,4 +1,4 @@
-import { Zap, ArrowRight, Code, Shield, Globe, CheckCircle, DollarSign, Bot, Server, Cpu } from "lucide-react"
+import { Zap, ArrowRight, Code, Shield, Globe, CheckCircle, DollarSign, Bot, Server } from "lucide-react"
 import { ArcButton } from "@/components/ui/ArcButton"
 import Link from "next/link"
 import { APIS_ALL } from "@/data/mock"

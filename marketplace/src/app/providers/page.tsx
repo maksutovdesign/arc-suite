@@ -1,6 +1,5 @@
 import Link from "next/link"
-import { Users, CheckCircle, TrendingUp, Star, ArrowRight, Zap } from "lucide-react"
-import { ArcButton } from "@/components/ui/ArcButton"
+import { CheckCircle, ArrowRight } from "lucide-react"
 import { ArcProgress } from "@/components/ui/ArcProgress"
 import { PROVIDERS, STATS } from "@/data/mock"
 import { formatCount } from "@/lib/utils"

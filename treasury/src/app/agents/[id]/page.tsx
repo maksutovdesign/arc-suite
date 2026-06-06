@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import {
-  ArrowLeft, Bot, Wallet, Activity, Network, Clock,
+  ArrowLeft, Bot, Wallet, Activity, Clock,
   Settings2, Zap, ArrowLeftRight,
   CheckCircle2, XCircle, Loader2, TrendingUp,
 } from "lucide-react"

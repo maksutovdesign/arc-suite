@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation"
-import { ShieldCheck, CheckCircle, Activity, TrendingUp, TrendingDown, Clock, ArrowLeft, Zap, AlertTriangle, Globe } from "lucide-react"
+import { CheckCircle, Activity, TrendingUp, TrendingDown, Clock, ArrowLeft, Zap, AlertTriangle, Globe } from "lucide-react"
 import { ArcProgress } from "@/components/ui/ArcProgress"
 import { ArcButton } from "@/components/ui/ArcButton"
 import { AGENTS, TIER_CONFIG } from "@/data/mock"

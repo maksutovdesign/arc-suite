@@ -1,3 +1,4 @@
+import Link from "next/link"
 import { BrandMark } from "../BrandMark"
 
 const roadmap = [
@@ -20,16 +21,16 @@ export default function InvestorPage() {
   return (
     <main>
       <nav className="nav">
-        <a className="brand" href="/" aria-label="Arc Suite home">
+        <Link className="brand" href="/" aria-label="Arc Suite home">
           <BrandMark idPrefix="investor-brand" />
           <span className="brand-name">Arc Suite</span>
-        </a>
+        </Link>
         <div className="nav-cluster">
           <div className="nav-links" aria-label="Investor navigation">
-            <a href="/">Product</a>
+            <Link href="/">Product</Link>
             <a href="#roadmap">Roadmap</a>
             <a href="#ask">Funding ask</a>
-            <a href="/analytics">Analytics</a>
+            <Link href="/analytics">Analytics</Link>
           </div>
           <div className="social-links" aria-label="Social links">
             <a href="https://github.com/maksutovdesign" aria-label="Maksutov Design on GitHub">

@@ -1,6 +1,5 @@
 import { Trophy, ShieldCheck, Users, Info } from "lucide-react"
 import { PageHeader } from "@/components/dashboard/PageHeader"
-import { ArcProgress } from "@/components/ui/ArcProgress"
 import { AGENTS, TIER_CONFIG } from "@/data/mock"
 import { scoreColor } from "@/lib/utils"
 

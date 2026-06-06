@@ -1,5 +1,6 @@
 import { createHash } from "crypto"
 import { NextRequest, NextResponse } from "next/server"
+import { enforceRateLimit, rateLimitHeaders, rateLimitResponse } from "@/lib/backend/rate-limit"
 import { recordAnalyticsEvent } from "@/lib/backend/service"
 import type { AnalyticsSource } from "@/lib/backend/schema"
 
@@ -23,9 +24,21 @@ export function OPTIONS(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const body = await parseAnalyticsBody(request)
+  const body = await parseAnalyticsBody(request, 8_192)
   if (!body || typeof body.eventName !== "string") {
     return NextResponse.json({ error: "eventName is required" }, { headers: corsHeaders(request), status: 400 })
+  }
+
+  const ipHash = hashClientIp(request)
+  const rateLimit = await enforceRateLimit({
+    bucketKey: ipHash ?? optionalString(body.sessionId) ?? optionalString(body.anonymousId),
+    ipHash,
+    max: 240,
+    route: "analytics_events",
+    windowMs: 10 * 60 * 1000,
+  })
+  if (!rateLimit.allowed) {
+    return rateLimitResponseWithCors(request, rateLimit)
   }
 
   const event = await recordAnalyticsEvent({
@@ -39,19 +52,21 @@ export async function POST(request: NextRequest) {
     url: optionalString(body.url),
     referrer: optionalString(body.referrer) ?? request.headers.get("referer"),
     userAgent: request.headers.get("user-agent"),
-    ipHash: hashClientIp(request),
+    ipHash,
     properties: optionalProperties(body.properties),
   })
 
   return NextResponse.json(
     { ok: true, stored: Boolean(event) },
-    { headers: corsHeaders(request), status: event ? 201 : 202 },
+    { headers: { ...corsHeaders(request), ...rateLimitHeaders(rateLimit) }, status: event ? 201 : 202 },
   )
 }
 
-async function parseAnalyticsBody(request: NextRequest) {
+async function parseAnalyticsBody(request: NextRequest, maxBytes: number) {
   try {
-    return JSON.parse(await request.text()) as Record<string, unknown>
+    const raw = await request.text()
+    if (raw.length > maxBytes) return null
+    return JSON.parse(raw) as Record<string, unknown>
   } catch {
     return null
   }
@@ -91,4 +106,12 @@ function corsHeaders(request: NextRequest) {
   }
 
   return headers
+}
+
+function rateLimitResponseWithCors(request: NextRequest, decision: Awaited<ReturnType<typeof enforceRateLimit>>) {
+  const response = rateLimitResponse(decision)
+  for (const [key, value] of Object.entries(corsHeaders(request))) {
+    response.headers.set(key, value)
+  }
+  return response
 }

@@ -1,3 +1,4 @@
+import { createHash } from "crypto"
 import { NextRequest, NextResponse } from "next/server"
 import { runAccessCheck } from "@/lib/arc-api"
 
@@ -12,8 +13,21 @@ export async function POST(request: NextRequest) {
       agentId: body.agentId,
       apiId: body.apiId,
       amountUsdc: typeof body.amountUsdc === "number" ? body.amountUsdc : undefined,
+    }, {
+      clientBucket: hashClientBucket(request),
     }))
-  } catch {
-    return NextResponse.json({ error: "Arc access check failed" }, { status: 502 })
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Arc access check failed", message: error instanceof Error ? error.message : "Unknown proxy error" },
+      { status: 502 },
+    )
   }
+}
+
+function hashClientBucket(request: NextRequest) {
+  const forwardedFor = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
+  const ip = forwardedFor || request.headers.get("x-real-ip") || "unknown-ip"
+  const userAgent = request.headers.get("user-agent") || "unknown-agent"
+  const salt = process.env.ARC_PROXY_SALT ?? process.env.ARC_API_KEY ?? "arc-marketplace"
+  return createHash("sha256").update(`${salt}:${ip}:${userAgent}`).digest("hex")
 }

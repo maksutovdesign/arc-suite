@@ -179,6 +179,15 @@ type InvestorLeadRow = {
   created_at: string
 }
 
+type RateLimitEventRow = {
+  id: string
+  workspace_id: string
+  route: string
+  bucket_key: string
+  ip_hash: string | null
+  created_at: string
+}
+
 export type BackendDataset = {
   workspace: {
     id: string
@@ -195,11 +204,20 @@ export type BackendDataset = {
 }
 
 const SUPABASE_URL = process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.SUPABASE_ANON_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
 const WORKSPACE_ID = process.env.ARC_WORKSPACE_ID ?? "wrk_arc_demo"
 
 export function isSupabaseConfigured() {
   return Boolean(SUPABASE_URL && SUPABASE_KEY)
+}
+
+export function getSupabaseConfigurationStatus() {
+  return {
+    configured: isSupabaseConfigured(),
+    hasServiceRole: Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY),
+    hasUrl: Boolean(SUPABASE_URL),
+    workspaceId: WORKSPACE_ID,
+  }
 }
 
 export async function loadSupabaseDataset(): Promise<BackendDataset | null> {
@@ -512,6 +530,77 @@ export async function listSupabaseInvestorLeads(limit = 100): Promise<InvestorLe
   }
 }
 
+export async function countSupabaseRateLimitEvents(input: {
+  bucketKey: string
+  route: string
+  sinceIso: string
+}): Promise<number | null> {
+  if (!isSupabaseConfigured()) return null
+
+  try {
+    const rows = await getRows<{ id: string }>(
+      "rate_limit_events",
+      `select=id&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&route=eq.${encodeURIComponent(input.route)}&bucket_key=eq.${encodeURIComponent(input.bucketKey)}&created_at=gte.${encodeURIComponent(input.sinceIso)}&limit=1000`,
+    )
+    return rows.length
+  } catch (error) {
+    logSupabaseError("rate limit count", error)
+    return null
+  }
+}
+
+export async function insertSupabaseRateLimitEvent(input: {
+  bucketKey: string
+  ipHash?: string | null
+  route: string
+}): Promise<boolean> {
+  if (!isSupabaseConfigured()) return false
+
+  try {
+    await postRows<RateLimitEventRow>("rate_limit_events", [
+      {
+        id: `rl_${randomUUID()}`,
+        workspace_id: WORKSPACE_ID,
+        route: input.route,
+        bucket_key: input.bucketKey,
+        ip_hash: input.ipHash ?? null,
+      },
+    ])
+    return true
+  } catch (error) {
+    logSupabaseError("rate limit insert", error)
+    return false
+  }
+}
+
+export async function checkSupabaseReadiness() {
+  const config = getSupabaseConfigurationStatus()
+  if (!config.configured) {
+    return {
+      ok: false,
+      config,
+      tables: [] as Array<{ name: string; ok: boolean }>,
+    }
+  }
+
+  const tables = ["workspaces", "agents", "analytics_events", "investor_leads", "rate_limit_events"]
+  const checks = await Promise.all(tables.map(async (table) => {
+    try {
+      await getRows(table, "select=id&limit=1")
+      return { name: table, ok: true }
+    } catch (error) {
+      logSupabaseError(`readiness ${table}`, error)
+      return { name: table, ok: false }
+    }
+  }))
+
+  return {
+    ok: checks.every((check) => check.ok),
+    config,
+    tables: checks,
+  }
+}
+
 async function getRows<T>(table: string, query: string): Promise<T[]> {
   const response = await fetch(`${restBaseUrl()}/${table}?${query}`, {
     cache: "no-store",
@@ -560,6 +649,16 @@ function supabaseHeaders() {
     Authorization: `Bearer ${SUPABASE_KEY}`,
     "Content-Type": "application/json",
   }
+}
+
+function logSupabaseError(scope: string, error: unknown) {
+  if (process.env.NODE_ENV !== "production") {
+    console.error(`[supabase:${scope}]`, error)
+    return
+  }
+
+  const message = error instanceof Error ? error.message : "unknown error"
+  console.error(`[supabase:${scope}] ${message}`)
 }
 
 function mapAgent(row: AgentRow): Agent {

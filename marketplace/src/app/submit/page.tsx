@@ -2,8 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { Plus, Code, Zap, CheckCircle, DollarSign, Shield, ArrowLeft, PartyPopper } from "lucide-react"
-import { ArcButton } from "@/components/ui/ArcButton"
+import { Plus, Code, CheckCircle, DollarSign, Shield, ArrowLeft, PartyPopper } from "lucide-react"
 
 const STEPS = [
   { n: 1, icon: Code,        color: "#5FBFFF", title: "Wrap your endpoint with x402",   desc: "Add the x402 middleware to any existing API. Works with Node.js, Python, Go — any language." },
@@ -38,7 +37,7 @@ export default function SubmitPage() {
               <span className="font-semibold text-white">{form.name}</span> by {form.provider} is now in the review queue.
             </p>
             <p className="text-sm mb-6" style={{ color: "#7a8fa8" }}>
-              Verification takes 24–48h. You'll receive a notification at your wallet address when approved.
+              Verification takes 24–48h. You&apos;ll receive a notification at your wallet address when approved.
             </p>
 
             <div className="rounded-xl p-4 mb-6 text-left space-y-2"

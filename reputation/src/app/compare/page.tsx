@@ -1,10 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { ShieldCheck, CheckCircle, TrendingUp, TrendingDown, ArrowLeftRight, Activity, Trophy, Zap } from "lucide-react"
+import { CheckCircle, ArrowLeftRight, Trophy } from "lucide-react"
 import { PageHeader } from "@/components/dashboard/PageHeader"
-import { ArcButton } from "@/components/ui/ArcButton"
-import { ArcProgress } from "@/components/ui/ArcProgress"
 import { ScoreSparkline } from "@/components/charts/ScoreSparkline"
 import { AGENTS, TIER_CONFIG, SCORE_HISTORY } from "@/data/mock"
 import { scoreColor, formatUSDC } from "@/lib/utils"

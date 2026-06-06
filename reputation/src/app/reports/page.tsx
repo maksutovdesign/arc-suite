@@ -1,5 +1,5 @@
 "use client"
-import { BarChart2, Download, TrendingUp } from "lucide-react"
+import { BarChart2, Download } from "lucide-react"
 import { PageHeader } from "@/components/dashboard/PageHeader"
 import { ArcButton } from "@/components/ui/ArcButton"
 import { ArcProgress } from "@/components/ui/ArcProgress"

@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation"
 import Link from "next/link"
-import { Star, Zap, CheckCircle, TrendingUp, Clock, ArrowLeft, Code, Copy, Globe, Activity, Shield } from "lucide-react"
+import { Star, Zap, CheckCircle, Clock, ArrowLeft, Code, Copy, Globe, Activity, Shield } from "lucide-react"
 import { ArcProgress } from "@/components/ui/ArcProgress"
 import { ArcButton } from "@/components/ui/ArcButton"
 import { RequestAccessButton } from "@/components/browse/RequestAccessButton"

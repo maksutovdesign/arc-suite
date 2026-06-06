@@ -1,3 +1,4 @@
+import Link from "next/link"
 import { BrandMark } from "../BrandMark"
 import { AnalyticsDashboardClient } from "./AnalyticsDashboardClient"
 
@@ -9,14 +10,14 @@ export default function AnalyticsPage() {
   return (
     <main>
       <nav className="nav">
-        <a className="brand" href="/" aria-label="Arc Suite home">
+        <Link className="brand" href="/" aria-label="Arc Suite home">
           <BrandMark idPrefix="analytics-brand" />
           <span className="brand-name">Arc Suite</span>
-        </a>
+        </Link>
         <div className="nav-cluster">
           <div className="nav-links" aria-label="Analytics navigation">
-            <a href="/">Product</a>
-            <a href="/investors">Investors</a>
+            <Link href="/">Product</Link>
+            <Link href="/investors">Investors</Link>
             <a href="https://treasury-umber.vercel.app/demo">Demo</a>
           </div>
         </div>

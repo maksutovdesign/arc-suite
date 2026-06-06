@@ -1,30 +1,22 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import type { AnalyticsEvent, AnalyticsSummary, InvestorLead } from "@/lib/backend/schema"
 
 const API_KEY_STORAGE = "arc_analytics_dashboard_key"
 
 export function AnalyticsDashboardClient() {
-  const [apiKey, setApiKey] = useState("")
+  const [apiKey, setApiKey] = useState(readStoredApiKey)
   const [summary, setSummary] = useState<AnalyticsSummary | null>(null)
   const [leads, setLeads] = useState<InvestorLead[]>([])
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [lastLoadedAt, setLastLoadedAt] = useState<string | null>(null)
+  const hasLoadedStoredKey = useRef(false)
 
-  useEffect(() => {
-    const stored = window.sessionStorage.getItem(API_KEY_STORAGE)
-    if (stored) {
-      setApiKey(stored)
-      void loadSummary(stored)
-    }
-  }, [])
-
-  const totalEvents = useMemo(() => summary?.totals.reduce((sum, item) => sum + item.count, 0) ?? 0, [summary])
-
-  async function loadSummary(nextKey = apiKey) {
-    if (!nextKey.trim()) {
+  const loadSummary = useCallback(async (nextKey = apiKey) => {
+    const key = nextKey.trim()
+    if (!key) {
       setError("Enter an Arc API key to open the analytics dashboard.")
       return
     }
@@ -32,7 +24,7 @@ export function AnalyticsDashboardClient() {
     setIsLoading(true)
     setError(null)
     try {
-      const headers = { "x-arc-api-key": nextKey.trim() }
+      const headers = { "x-arc-api-key": key }
       const [summaryResponse, leadsResponse] = await Promise.all([
         fetch("/api/analytics/summary?limit=500", { cache: "no-store", headers }),
         fetch("/api/leads?limit=100", { cache: "no-store", headers }),
@@ -45,7 +37,7 @@ export function AnalyticsDashboardClient() {
       setSummary(payload)
       setLeads(leadsPayload.leads)
       setLastLoadedAt(new Date().toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" }))
-      window.sessionStorage.setItem(API_KEY_STORAGE, nextKey.trim())
+      window.sessionStorage.setItem(API_KEY_STORAGE, key)
     } catch (err) {
       setSummary(null)
       setLeads([])
@@ -53,7 +45,23 @@ export function AnalyticsDashboardClient() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [apiKey])
+
+  useEffect(() => {
+    if (hasLoadedStoredKey.current) return
+    hasLoadedStoredKey.current = true
+
+    const stored = apiKey.trim()
+    if (!stored) return
+
+    const handle = window.setTimeout(() => {
+      void loadSummary(stored)
+    }, 0)
+
+    return () => window.clearTimeout(handle)
+  }, [apiKey, loadSummary])
+
+  const totalEvents = useMemo(() => summary?.totals.reduce((sum, item) => sum + item.count, 0) ?? 0, [summary])
 
   function clearSession() {
     window.sessionStorage.removeItem(API_KEY_STORAGE)
@@ -207,6 +215,11 @@ export function AnalyticsDashboardClient() {
       )}
     </section>
   )
+}
+
+function readStoredApiKey() {
+  if (typeof window === "undefined") return ""
+  return window.sessionStorage.getItem(API_KEY_STORAGE) ?? ""
 }
 
 function Metric({ label, value }: { label: string; value: string }) {

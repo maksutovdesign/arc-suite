@@ -1,3 +1,5 @@
+import Link from "next/link"
+
 const variants = [
   {
     name: "01 / Arc Cyan",
@@ -58,7 +60,7 @@ export default function LogoOptionsPage() {
           No effects. No decoration. Just a flat blue background and a large white
           lowercase a using the project type style.
         </p>
-        <a className="button secondary" href="/">Back to landing</a>
+        <Link className="button secondary" href="/">Back to landing</Link>
       </section>
 
       <section className="logo-grid" aria-label="Arc Suite flat blue logo options">

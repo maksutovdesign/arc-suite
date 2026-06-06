@@ -2,10 +2,15 @@ import { getPilotSummary } from "@/lib/backend/service"
 import { ProductLandingClient } from "./ProductLandingClient"
 
 export default async function ProductLanding() {
+  const initialData = await loadInitialLandingData()
+  return <ProductLandingClient {...initialData} />
+}
+
+async function loadInitialLandingData() {
   try {
     const pilotSummary = await getPilotSummary()
-    return <ProductLandingClient initialApiStatus="live" initialPilotSummary={pilotSummary} />
+    return { initialApiStatus: "live" as const, initialPilotSummary: pilotSummary }
   } catch {
-    return <ProductLandingClient initialApiStatus="fallback" initialPilotSummary={null} />
+    return { initialApiStatus: "fallback" as const, initialPilotSummary: null }
   }
 }

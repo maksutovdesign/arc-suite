@@ -1,4 +1,4 @@
-import { Code, Zap, Shield, ArrowRight, CheckCircle, Globe, Webhook } from "lucide-react"
+import { Code, Zap, Shield, Globe, Webhook } from "lucide-react"
 import { PageHeader } from "@/components/dashboard/PageHeader"
 import { ArcButton } from "@/components/ui/ArcButton"
 
