@@ -5,16 +5,22 @@ import { requireArcApiKey } from "@/lib/backend/auth"
 import { createRequestId, logOperationalEvent, requestIdHeaders } from "@/lib/backend/observability"
 
 export async function POST(request: NextRequest) {
-  const unauthorized = await requireArcApiKey(request, ["admin"])
-  if (unauthorized) return unauthorized
+  if (!hasValidSentryTestToken(request)) {
+    const unauthorized = await requireArcApiKey(request, ["admin"])
+    if (unauthorized) return unauthorized
+  }
 
   const requestId = createRequestId(request)
   const error = new Error("Arc Suite Sentry runtime test error")
+  const hasDsn = Boolean(process.env.SENTRY_DSN ?? process.env.ARC_SENTRY_DSN ?? process.env.NEXT_PUBLIC_SENTRY_DSN)
+  const hasClient = Boolean(Sentry.getClient())
 
   Sentry.setTag("request_id", requestId)
   Sentry.setTag("route", "/api/ops/sentry-test")
-  Sentry.captureException(error, {
+  const eventId = Sentry.captureException(error, {
     extra: {
+      hasClient,
+      hasDsn,
       requestId,
       route: "/api/ops/sentry-test",
       source: "manual-runtime-test",
@@ -25,10 +31,10 @@ export async function POST(request: NextRequest) {
       test: "runtime",
     },
   })
-  await Sentry.flush(2000)
+  const flushOk = await Sentry.flush(2000)
 
   logOperationalEvent({
-    details: { sentryFlushMs: 2000 },
+    details: { eventId, flushOk, hasClient, hasDsn, sentryFlushMs: 2000 },
     event: "sentry.runtime_test",
     level: "info",
     requestId,
@@ -36,7 +42,14 @@ export async function POST(request: NextRequest) {
   })
 
   return NextResponse.json(
-    { ok: true, requestId },
+    { ok: true, requestId, sentry: { eventId, flushOk, hasClient, hasDsn } },
     { headers: requestIdHeaders(requestId) },
   )
+}
+
+function hasValidSentryTestToken(request: NextRequest) {
+  const expectedToken = process.env.SENTRY_TEST_TOKEN
+  const providedToken = request.headers.get("x-sentry-test-token")
+
+  return Boolean(expectedToken && providedToken && providedToken === expectedToken)
 }
