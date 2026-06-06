@@ -94,18 +94,21 @@ function extractMonitorResult(text) {
 }
 
 async function notifySlack(webhookUrl, context, output, monitorResult) {
+  const title = context.status === "test"
+    ? "Arc Suite production monitor test alert"
+    : "Arc Suite production monitor failed"
   const failureList = Array.isArray(monitorResult?.failures)
     ? monitorResult.failures.map((failure) => `- ${failure.name}: ${failure.message}`).join("\n")
     : output
 
   const payload = {
-    text: `Arc Suite production monitor failed in ${context.repository}`,
+    text: `${title} in ${context.repository}`,
     blocks: [
       {
         type: "header",
         text: {
           type: "plain_text",
-          text: "Arc Suite production monitor failed",
+          text: title,
         },
       },
       {
@@ -167,6 +170,9 @@ async function notifySlack(webhookUrl, context, output, monitorResult) {
 async function notifySentry(dsn, context, output, monitorResult) {
   const parsed = parseSentryDsn(dsn)
   const timestamp = new Date().toISOString()
+  const message = context.status === "test"
+    ? "Arc Suite production monitor test alert"
+    : "Arc Suite production monitor failed"
   const event = {
     culprit: context.workflow,
     environment: process.env.ARC_SENTRY_ENVIRONMENT ?? process.env.SENTRY_ENVIRONMENT ?? "production",
@@ -190,7 +196,7 @@ async function notifySentry(dsn, context, output, monitorResult) {
       },
     },
     level: "error",
-    message: "Arc Suite production monitor failed",
+    message,
     platform: "node",
     release: context.sha,
     tags: {
@@ -198,6 +204,7 @@ async function notifySentry(dsn, context, output, monitorResult) {
       event_name: context.eventName,
       monitor: "production",
       repository: context.repository,
+      status: context.status,
       workflow: context.workflow,
     },
     timestamp,

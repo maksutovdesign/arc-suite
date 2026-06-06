@@ -217,6 +217,8 @@ repository secrets:
 
 The notifier is dependency-free and skips missing sinks, so the workflow stays usable
 before alert destinations are configured.
+To test delivery without breaking production, run `Arc Suite Production Monitor`
+manually from GitHub Actions with `send_test_alert=true`.
 
 ### Deploy to Vercel
 

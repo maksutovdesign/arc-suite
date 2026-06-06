@@ -7,6 +7,12 @@ on:
   schedule:
     - cron: "*/30 * * * *"
   workflow_dispatch:
+    inputs:
+      send_test_alert:
+        description: Send a test Slack/Sentry alert after a successful monitor run
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   monitor:
@@ -40,3 +46,21 @@ jobs:
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: node scripts/notify-monitor.mjs
+
+      - name: Send test alert
+        if: success() && inputs.send_test_alert == true
+        env:
+          ARC_MONITOR_OUTPUT_FILE: monitor-output.log
+          ARC_MONITOR_STATUS: test
+          ARC_SENTRY_DSN: ${{ secrets.ARC_SENTRY_DSN }}
+          ARC_SENTRY_ENVIRONMENT: production
+          ARC_SLACK_WEBHOOK_URL: ${{ secrets.ARC_SLACK_WEBHOOK_URL }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        shell: bash
+        run: |
+          cat > monitor-output.log <<'EOF'
+          TEST alert delivery: manual workflow_dispatch requested send_test_alert=true
+          {"durationMs":0,"failures":[{"name":"alert delivery test","message":"Manual test alert from Arc Suite Production Monitor workflow."}],"status":"test"}
+          EOF
+          node scripts/notify-monitor.mjs
