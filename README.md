@@ -209,6 +209,14 @@ npm run dev --workspace=marketplace # → http://localhost:3003
 `monitor:prod` checks production health, Supabase data source, readiness access
 guards, CORS preflight, security headers, and the four public app surfaces. GitHub
 Actions also runs this monitor every 30 minutes through `Arc Suite Production Monitor`.
+When that monitor fails, it can notify Slack and Sentry. Add either or both GitHub
+repository secrets:
+
+- `ARC_SLACK_WEBHOOK_URL` or `SLACK_WEBHOOK_URL` for a Slack Incoming Webhook.
+- `ARC_SENTRY_DSN` or `SENTRY_DSN` for a Sentry project DSN.
+
+The notifier is dependency-free and skips missing sinks, so the workflow stays usable
+before alert destinations are configured.
 
 ### Deploy to Vercel
 

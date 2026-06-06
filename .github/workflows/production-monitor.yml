@@ -23,4 +23,20 @@ jobs:
           node-version: 22
 
       - name: Monitor production
-        run: npm run monitor:prod
+        id: monitor
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run monitor:prod 2>&1 | tee monitor-output.log
+
+      - name: Notify monitor failure
+        if: failure() && steps.monitor.outcome == 'failure'
+        env:
+          ARC_MONITOR_OUTPUT_FILE: monitor-output.log
+          ARC_MONITOR_STATUS: failure
+          ARC_SENTRY_DSN: ${{ secrets.ARC_SENTRY_DSN }}
+          ARC_SENTRY_ENVIRONMENT: production
+          ARC_SLACK_WEBHOOK_URL: ${{ secrets.ARC_SLACK_WEBHOOK_URL }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: node scripts/notify-monitor.mjs
