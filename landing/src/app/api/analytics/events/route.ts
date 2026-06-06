@@ -99,6 +99,7 @@ function corsHeaders(request: NextRequest) {
     "Access-Control-Allow-Headers": "Content-Type",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Access-Control-Max-Age": "86400",
+    "Vary": "Origin",
   }
 
   if (origin && (ALLOWED_ORIGINS.includes(origin) || /^https:\/\/[a-z0-9-]+-maksutovdesigns-projects\.vercel\.app$/.test(origin))) {
