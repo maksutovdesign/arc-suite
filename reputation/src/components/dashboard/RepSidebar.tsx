@@ -2,7 +2,8 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { LayoutDashboard, Trophy, Activity, ShieldCheck, Settings, ChevronRight, BarChart2, ArrowLeftRight, Code } from "lucide-react"
+import { useState } from "react"
+import { LayoutDashboard, Trophy, Activity, ShieldCheck, Settings, ChevronRight, BarChart2, ArrowLeftRight, Code, Menu, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const NAV = [
@@ -18,11 +19,41 @@ const NAV = [
 
 export function RepSidebar() {
   const path = usePathname()
+  const [isOpen, setIsOpen] = useState(false)
+
   return (
-    <aside
-      className="w-56 shrink-0 flex flex-col h-full border-r"
-      style={{ background: "linear-gradient(180deg,#1a2d3e 0%,#162436 100%)", borderColor: "rgba(255,255,255,0.06)" }}
-    >
+    <>
+      <button
+        aria-label={isOpen ? "Close navigation" : "Open navigation"}
+        className="fixed left-3 top-12 z-50 flex size-10 items-center justify-center rounded-xl border shadow-lg md:hidden"
+        onClick={() => setIsOpen((current) => !current)}
+        style={{
+          background: "linear-gradient(160deg,#263a52,#1e3247)",
+          borderColor: "rgba(167,139,250,0.28)",
+          boxShadow: "0 10px 30px rgba(0,0,0,0.32), 0 0 16px rgba(167,139,250,0.14)",
+          color: "#a78bfa",
+        }}
+        type="button"
+      >
+        {isOpen ? <X className="size-4" /> : <Menu className="size-4" />}
+      </button>
+
+      {isOpen && (
+        <button
+          aria-label="Close navigation overlay"
+          className="fixed inset-0 top-9 z-30 bg-black/45 backdrop-blur-sm md:hidden"
+          onClick={() => setIsOpen(false)}
+          type="button"
+        />
+      )}
+
+      <aside
+        className={cn(
+          "fixed bottom-0 left-0 top-9 z-40 flex h-auto w-64 shrink-0 flex-col border-r transition-transform duration-200 md:relative md:top-auto md:z-auto md:h-full md:w-56 md:translate-x-0",
+          isOpen ? "translate-x-0" : "-translate-x-full",
+        )}
+        style={{ background: "linear-gradient(180deg,#1a2d3e 0%,#162436 100%)", borderColor: "rgba(255,255,255,0.06)" }}
+      >
       {/* Logo */}
       <div className="flex items-center gap-3 px-4 py-4 border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
         <div className="size-8 rounded-xl flex items-center justify-center shrink-0"
@@ -53,6 +84,7 @@ export function RepSidebar() {
           const active = path === href || (href !== "/" && path.startsWith(href))
           return (
             <Link key={href} href={href}
+              onClick={() => setIsOpen(false)}
               className={cn("flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm transition-all font-medium",
                 active ? "text-white" : "text-[#7a8fa8] hover:text-white hover:bg-white/5")}
               style={active ? {
@@ -85,6 +117,7 @@ export function RepSidebar() {
           <ChevronRight className="size-3 shrink-0" style={{ color: "#7a8fa8" }} />
         </div>
       </div>
-    </aside>
+      </aside>
+    </>
   )
 }

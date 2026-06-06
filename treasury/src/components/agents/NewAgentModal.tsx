@@ -26,13 +26,14 @@ export function NewAgentModal({ onClose }: Props) {
   const [network, setNetwork] = useState<string>(NETWORKS[0])
   const [isCreating, setIsCreating] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [createdAgentAddress, setCreatedAgentAddress] = useState("0xpilot...agent")
 
   const template = TEMPLATES.find(t => t.id === selected)
 
   function handleSelectTemplate(id: string) {
     const t = TEMPLATES.find(t => t.id === id)!
     setSelected(id)
-    setName(t.label + "-" + Math.floor(Math.random() * 100))
+    setName(`${t.label}-Pilot`)
     setBudget(String(t.budget))
     setStep("config")
   }
@@ -53,6 +54,8 @@ export function NewAgentModal({ onClose }: Props) {
         method: "POST",
       })
       if (!response.ok) throw new Error("Create failed")
+      const payload = (await response.json()) as { agent?: { address?: string } }
+      setCreatedAgentAddress(payload.agent?.address ?? "0xpilot...agent")
       setStep("success")
       router.refresh()
     } catch {
@@ -229,7 +232,7 @@ export function NewAgentModal({ onClose }: Props) {
               className="w-full px-3 py-2 rounded-xl text-[11px] font-mono text-left"
               style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", color: "#7a8fa8" }}
             >
-              0x{Math.random().toString(16).slice(2, 6)}...{Math.random().toString(16).slice(2, 6)} · Arc Testnet
+              {createdAgentAddress} · Arc Testnet
             </div>
             <ArcButton variant="primary" size="md" className="w-full justify-center" onClick={onClose}>
               Done

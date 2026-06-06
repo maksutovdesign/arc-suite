@@ -19,7 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <EcosystemNav current="reputation" />
         <div className="flex flex-1 overflow-hidden">
           <RepSidebar />
-          <main className="flex-1 overflow-auto">{children}</main>
+          <main className="min-w-0 flex-1 overflow-auto">{children}</main>
         </div>
       </body>
     </html>

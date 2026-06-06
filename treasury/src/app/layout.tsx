@@ -30,9 +30,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang="en" className={`${spaceGrotesk.variable} ${spaceMono.variable} h-full`}>
       <body className="h-full bg-background text-foreground antialiased flex flex-col">
         <EcosystemNav current="treasury" />
-        <div className="flex flex-1 min-h-0">
+        <div className="flex flex-1 min-h-0 overflow-hidden">
           <Sidebar isDemo={isDemo} />
-          <main className="flex-1 overflow-auto">
+          <main className="min-w-0 flex-1 overflow-auto">
             {isDemo && <DemoModeBanner />}
             {children}
           </main>
