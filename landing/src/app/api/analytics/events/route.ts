@@ -1,5 +1,6 @@
 import { createHash } from "crypto"
 import { NextRequest, NextResponse } from "next/server"
+import { createRequestId, logOperationalEvent, requestIdHeaders } from "@/lib/backend/observability"
 import { enforceRateLimit, rateLimitHeaders, rateLimitResponse } from "@/lib/backend/rate-limit"
 import { recordAnalyticsEvent } from "@/lib/backend/service"
 import type { AnalyticsSource } from "@/lib/backend/schema"
@@ -24,9 +25,14 @@ export function OPTIONS(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const requestId = createRequestId(request)
   const body = await parseAnalyticsBody(request, 8_192)
   if (!body || typeof body.eventName !== "string") {
-    return NextResponse.json({ error: "eventName is required" }, { headers: corsHeaders(request), status: 400 })
+    logOperationalEvent({ event: "analytics.invalid_payload", level: "warn", requestId, route: "/api/analytics/events" })
+    return NextResponse.json(
+      { error: "eventName is required" },
+      { headers: { ...corsHeaders(request), ...requestIdHeaders(requestId) }, status: 400 },
+    )
   }
 
   const ipHash = hashClientIp(request)
@@ -38,7 +44,8 @@ export async function POST(request: NextRequest) {
     windowMs: 10 * 60 * 1000,
   })
   if (!rateLimit.allowed) {
-    return rateLimitResponseWithCors(request, rateLimit)
+    logOperationalEvent({ event: "analytics.rate_limited", level: "warn", requestId, route: "/api/analytics/events" })
+    return rateLimitResponseWithCors(request, rateLimit, requestId)
   }
 
   const event = await recordAnalyticsEvent({
@@ -56,9 +63,22 @@ export async function POST(request: NextRequest) {
     properties: optionalProperties(body.properties),
   })
 
+  if (!event) {
+    logOperationalEvent({
+      details: {
+        eventName: body.eventName,
+        source: normalizeSource(body.source),
+      },
+      event: "analytics.storage_unavailable",
+      level: "warn",
+      requestId,
+      route: "/api/analytics/events",
+    })
+  }
+
   return NextResponse.json(
     { ok: true, stored: Boolean(event) },
-    { headers: { ...corsHeaders(request), ...rateLimitHeaders(rateLimit) }, status: event ? 201 : 202 },
+    { headers: { ...corsHeaders(request), ...rateLimitHeaders(rateLimit), ...requestIdHeaders(requestId) }, status: event ? 201 : 202 },
   )
 }
 
@@ -109,10 +129,11 @@ function corsHeaders(request: NextRequest) {
   return headers
 }
 
-function rateLimitResponseWithCors(request: NextRequest, decision: Awaited<ReturnType<typeof enforceRateLimit>>) {
+function rateLimitResponseWithCors(request: NextRequest, decision: Awaited<ReturnType<typeof enforceRateLimit>>, requestId: string) {
   const response = rateLimitResponse(decision)
   for (const [key, value] of Object.entries(corsHeaders(request))) {
     response.headers.set(key, value)
   }
+  response.headers.set("X-Request-Id", requestId)
   return response
 }

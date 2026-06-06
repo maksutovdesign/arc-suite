@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import type { ApiKeyScope } from "./schema"
+import { createRequestId, logOperationalEvent, requestIdHeaders } from "./observability"
 import { verifySupabaseApiKey } from "./supabase"
 
 const API_KEY = process.env.ARC_API_KEY
@@ -15,9 +16,21 @@ export async function requireArcApiKey(request: Request, requiredScopes: ApiKeyS
     if (workspaceKey && hasScopes(workspaceKey.scopes, requiredScopes)) return null
   }
 
+  const requestId = createRequestId(request)
+  logOperationalEvent({
+    details: {
+      hasProvidedKey: Boolean(providedKey),
+      requiredScopes,
+    },
+    event: "auth.unauthorized",
+    level: "warn",
+    requestId,
+    route: new URL(request.url).pathname,
+  })
+
   return NextResponse.json(
     { error: "Unauthorized", message: "A valid Arc API key with the required scope is required." },
-    { status: 401 },
+    { headers: requestIdHeaders(requestId), status: 401 },
   )
 }
 

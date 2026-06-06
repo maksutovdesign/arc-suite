@@ -15,6 +15,7 @@
     "dev:all": "concurrently \"npm run treasury\" \"npm run reputation\" \"npm run marketplace\"",
     "build:all": "npm run build --workspace=landing && npm run build --workspace=treasury && npm run build --workspace=reputation && npm run build --workspace=marketplace",
     "lint:all": "npm run lint --workspace=landing && npm run lint --workspace=treasury && npm run lint --workspace=reputation && npm run lint --workspace=marketplace",
+    "monitor:prod": "node scripts/monitor.mjs",
     "test:smoke": "node scripts/smoke.mjs"
   },
   "overrides": {

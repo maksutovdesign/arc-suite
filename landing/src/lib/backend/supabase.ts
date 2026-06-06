@@ -1,4 +1,5 @@
 import { createHash, randomBytes, randomUUID } from "crypto"
+import { logOperationalEvent } from "./observability"
 import type {
   AccessDecisionLog,
   Agent,
@@ -680,13 +681,17 @@ function supabaseHeaders() {
 }
 
 function logSupabaseError(scope: string, error: unknown) {
+  const message = error instanceof Error ? error.message : "unknown error"
+  logOperationalEvent({
+    details: { message },
+    event: "supabase.error",
+    level: "error",
+    route: scope,
+  })
+
   if (process.env.NODE_ENV !== "production") {
     console.error(`[supabase:${scope}]`, error)
-    return
   }
-
-  const message = error instanceof Error ? error.message : "unknown error"
-  console.error(`[supabase:${scope}] ${message}`)
 }
 
 function mapAgent(row: AgentRow): Agent {

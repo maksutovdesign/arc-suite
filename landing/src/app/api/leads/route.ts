@@ -1,6 +1,7 @@
 import { createHash } from "crypto"
 import { NextRequest, NextResponse } from "next/server"
 import { requireArcApiKey } from "@/lib/backend/auth"
+import { createRequestId, logOperationalEvent, requestIdHeaders } from "@/lib/backend/observability"
 import { enforceRateLimit, rateLimitHeaders, rateLimitResponse } from "@/lib/backend/rate-limit"
 import { createInvestorLead, listInvestorLeads } from "@/lib/backend/service"
 
@@ -22,17 +23,27 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const requestId = createRequestId(request)
   if (!isAllowedOrigin(request)) {
-    return NextResponse.json({ error: "Origin not allowed" }, { status: 403 })
+    logOperationalEvent({
+      details: { origin: request.headers.get("origin") },
+      event: "lead.origin_denied",
+      level: "warn",
+      requestId,
+      route: "/api/leads",
+    })
+    return NextResponse.json({ error: "Origin not allowed" }, { headers: requestIdHeaders(requestId), status: 403 })
   }
 
   const body = await parseJsonBody(request, 16_384)
   if (!body || typeof body !== "object") {
-    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 })
+    logOperationalEvent({ event: "lead.invalid_json", level: "warn", requestId, route: "/api/leads" })
+    return NextResponse.json({ error: "Invalid JSON body" }, { headers: requestIdHeaders(requestId), status: 400 })
   }
 
   if (typeof body.website === "string" && body.website.trim()) {
-    return NextResponse.json({ error: "Invalid lead payload" }, { status: 400 })
+    logOperationalEvent({ event: "lead.honeypot_triggered", level: "warn", requestId, route: "/api/leads" })
+    return NextResponse.json({ error: "Invalid lead payload" }, { headers: requestIdHeaders(requestId), status: 400 })
   }
 
   const ipHash = hashClientIp(request)
@@ -43,7 +54,12 @@ export async function POST(request: NextRequest) {
     route: "lead_capture",
     windowMs: 60 * 60 * 1000,
   })
-  if (!rateLimit.allowed) return rateLimitResponse(rateLimit)
+  if (!rateLimit.allowed) {
+    logOperationalEvent({ event: "lead.rate_limited", level: "warn", requestId, route: "/api/leads" })
+    const response = rateLimitResponse(rateLimit)
+    response.headers.set("X-Request-Id", requestId)
+    return response
+  }
 
   const lead = await createInvestorLead({
     ...(body as Record<string, unknown>),
@@ -53,13 +69,33 @@ export async function POST(request: NextRequest) {
   })
 
   if (!lead) {
+    logOperationalEvent({
+      details: {
+        email: optionalString(body.email),
+        interest: optionalString(body.interest),
+      },
+      event: "lead.storage_unavailable",
+      level: "error",
+      requestId,
+      route: "/api/leads",
+    })
     return NextResponse.json(
       { error: "Lead storage unavailable or invalid lead payload", stored: false },
-      { status: 422 },
+      { headers: requestIdHeaders(requestId), status: 422 },
     )
   }
 
-  return NextResponse.json({ lead, stored: true }, { headers: rateLimitHeaders(rateLimit), status: 201 })
+  logOperationalEvent({
+    details: { interest: lead.interest, leadId: lead.id },
+    event: "lead.created",
+    requestId,
+    route: "/api/leads",
+  })
+
+  return NextResponse.json(
+    { lead, stored: true },
+    { headers: { ...rateLimitHeaders(rateLimit), ...requestIdHeaders(requestId) }, status: 201 },
+  )
 }
 
 async function parseJsonBody(request: NextRequest, maxBytes: number) {

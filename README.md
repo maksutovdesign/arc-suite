@@ -197,6 +197,7 @@ npm install
 npm run lint:all
 npm run build:all
 npm run test:smoke
+npm run monitor:prod
 
 # Run each app (separate terminals)
 npm run dev --workspace=landing    # → http://localhost:3000
@@ -204,6 +205,10 @@ npm run dev --workspace=treasury    # → http://localhost:3001
 npm run dev --workspace=reputation  # → http://localhost:3002
 npm run dev --workspace=marketplace # → http://localhost:3003
 ```
+
+`monitor:prod` checks production health, Supabase data source, readiness access
+guards, CORS preflight, security headers, and the four public app surfaces. GitHub
+Actions also runs this monitor every 30 minutes through `Arc Suite Production Monitor`.
 
 ### Deploy to Vercel
 
