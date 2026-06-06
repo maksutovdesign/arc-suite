@@ -573,6 +573,21 @@ export async function insertSupabaseRateLimitEvent(input: {
   }
 }
 
+export async function deleteSupabaseRateLimitEventsBefore(olderThanIso: string): Promise<number | null> {
+  if (!isSupabaseConfigured()) return null
+
+  try {
+    const rows = await deleteRows<{ id: string }>(
+      "rate_limit_events",
+      `workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&created_at=lt.${encodeURIComponent(olderThanIso)}&select=id`,
+    )
+    return rows.length
+  } catch (error) {
+    logSupabaseError("rate limit cleanup", error)
+    return null
+  }
+}
+
 export async function checkSupabaseReadiness() {
   const config = getSupabaseConfigurationStatus()
   if (!config.configured) {
@@ -636,6 +651,19 @@ async function patchRows<T>(table: string, query: string, row: unknown): Promise
   })
 
   if (!response.ok) throw new Error(`Supabase update failed for ${table}`)
+  return response.json() as Promise<T[]>
+}
+
+async function deleteRows<T>(table: string, query: string): Promise<T[]> {
+  const response = await fetch(`${restBaseUrl()}/${table}?${query}`, {
+    headers: {
+      ...supabaseHeaders(),
+      Prefer: "return=representation",
+    },
+    method: "DELETE",
+  })
+
+  if (!response.ok) throw new Error(`Supabase delete failed for ${table}`)
   return response.json() as Promise<T[]>
 }
 

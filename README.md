@@ -163,6 +163,7 @@ SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=...
 ARC_WORKSPACE_ID=wrk_arc_demo
 ARC_ANALYTICS_SALT=...
+CRON_SECRET=...
 ```
 
 When these env vars are present, `/api/pilot/summary`, `/api/agents`,
@@ -170,6 +171,8 @@ When these env vars are present, `/api/pilot/summary`, `/api/agents`,
 read from Supabase. If Supabase is unavailable, the API falls back to demo seed data.
 `/api/health` reports whether the API is using Supabase or seed data. Protected
 `/api/readiness` verifies required Supabase tables for production operation.
+Protected `/api/ops/rate-limits/cleanup` removes old rate-limit buckets; Vercel
+Cron runs it daily when `CRON_SECRET` is configured.
 
 Conversion analytics are captured through `/api/analytics/events` and summarized
 through protected `/api/analytics/summary`. The tracked funnel events are demo,

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { countSupabaseRateLimitEvents, insertSupabaseRateLimitEvent } from "./supabase"
+import { countSupabaseRateLimitEvents, deleteSupabaseRateLimitEventsBefore, insertSupabaseRateLimitEvent } from "./supabase"
 
 type RateLimitInput = {
   bucketKey?: string | null
@@ -17,12 +17,15 @@ type RateLimitDecision = {
 }
 
 const localBuckets = new Map<string, { count: number; resetAt: number }>()
+let lastLocalCleanupAt = 0
+const LOCAL_CLEANUP_INTERVAL_MS = 5 * 60 * 1000
 
 export async function enforceRateLimit(input: RateLimitInput): Promise<RateLimitDecision> {
   const now = Date.now()
   const resetAtMs = now + input.windowMs
   const resetAt = new Date(resetAtMs).toISOString()
   const bucketKey = normalizeBucketKey(input.bucketKey ?? input.ipHash)
+  cleanupLocalRateLimitBuckets(now)
 
   const supabaseCount = await countSupabaseRateLimitEvents({
     bucketKey,
@@ -67,6 +70,20 @@ export function rateLimitResponse(decision: RateLimitDecision) {
   )
 }
 
+export async function cleanupRateLimitEvents(retentionHours = 24) {
+  const normalizedHours = Math.min(Math.max(Math.round(retentionHours), 1), 168)
+  const olderThanIso = new Date(Date.now() - normalizedHours * 60 * 60 * 1000).toISOString()
+  const deletedSupabase = await deleteSupabaseRateLimitEventsBefore(olderThanIso)
+
+  return {
+    dataSource: deletedSupabase === null ? "local" : "supabase",
+    deletedLocal: cleanupLocalRateLimitBuckets(Date.now(), true),
+    deletedSupabase,
+    olderThanIso,
+    retentionHours: normalizedHours,
+  }
+}
+
 function enforceLocalRateLimit(input: RateLimitInput & { bucketKey: string }, now: number, resetAtMs: number): RateLimitDecision {
   const key = `${input.route}:${input.bucketKey}`
   const current = localBuckets.get(key)
@@ -90,6 +107,20 @@ function enforceLocalRateLimit(input: RateLimitInput & { bucketKey: string }, no
     remaining: Math.max(0, input.max - next.count),
     resetAt: new Date(next.resetAt).toISOString(),
   }
+}
+
+function cleanupLocalRateLimitBuckets(now: number, force = false) {
+  if (!force && now - lastLocalCleanupAt < LOCAL_CLEANUP_INTERVAL_MS) return 0
+  lastLocalCleanupAt = now
+
+  let deleted = 0
+  for (const [key, bucket] of localBuckets.entries()) {
+    if (bucket.resetAt <= now) {
+      localBuckets.delete(key)
+      deleted += 1
+    }
+  }
+  return deleted
 }
 
 function normalizeBucketKey(value: string | null | undefined) {
