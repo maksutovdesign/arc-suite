@@ -1,30 +1,31 @@
 import Link from "next/link"
+
 import { BrandMark } from "../BrandMark"
-import { AnalyticsDashboardClient } from "./AnalyticsDashboardClient"
+import { OpsHealthClient } from "./OpsHealthClient"
 
 export const metadata = {
-  title: "Analytics — Arc Suite",
+  title: "Ops Health — Arc Suite",
 }
 
-export default function AnalyticsPage() {
+export default function OpsHealthPage() {
   return (
     <main>
       <nav className="nav">
         <Link className="brand" href="/" aria-label="Arc Suite home">
-          <BrandMark idPrefix="analytics-brand" />
+          <BrandMark idPrefix="ops-brand" />
           <span className="brand-name">Arc Suite</span>
         </Link>
         <div className="nav-cluster">
-          <div className="nav-links" aria-label="Analytics navigation">
+          <div className="nav-links" aria-label="Ops navigation">
             <Link href="/">Product</Link>
             <Link href="/investors">Investors</Link>
-            <Link href="/ops">Ops Health</Link>
+            <Link href="/analytics">Analytics</Link>
             <a href="https://treasury-umber.vercel.app/demo">Demo</a>
           </div>
         </div>
       </nav>
 
-      <AnalyticsDashboardClient />
+      <OpsHealthClient />
     </main>
   )
 }
