@@ -39,7 +39,9 @@ type OpsSummary = {
     }
     monitor: {
       checks: Array<{
+        branch: string | null
         checks: number
+        commitSha: string | null
         createdAt: string
         durationMs: number
         failureCount: number
@@ -53,6 +55,7 @@ type OpsSummary = {
           status: "ok" | "warn" | "failed"
           warning?: string | null
         }>
+        runId: string | null
         runUrl: string | null
         source: string
         status: MonitorStatus
@@ -390,6 +393,7 @@ export function OpsHealthClient() {
                   <strong>{summary.services.monitor.summary.latestStatus ? labelize(summary.services.monitor.summary.latestStatus) : "None"}</strong>
                 </div>
               </div>
+              <MonitorPersistence checks={summary.services.monitor.checks} />
               <MonitorTimeline checks={summary.services.monitor.checks} />
             </div>
 
@@ -595,6 +599,47 @@ function MonitorTimeline({ checks }: { checks: OpsSummary["services"]["monitor"]
       </div>
     </div>
   )
+}
+
+function MonitorPersistence({ checks }: { checks: OpsSummary["services"]["monitor"]["checks"] }) {
+  const latest = checks[0]
+
+  if (!latest) {
+    return (
+      <div className="ops-history-persistence is-warning">
+        <StatusPill status="warning" label="Not stored yet" />
+        <div>
+          <strong>Waiting for the first persisted monitor run</strong>
+          <span>Add ARC_MONITOR_API_KEY to GitHub Secrets, then the scheduled monitor will write results into Supabase.</span>
+        </div>
+      </div>
+    )
+  }
+
+  const detail = [
+    latest.source ? labelize(latest.source) : null,
+    latest.runId ? `Run ${latest.runId}` : null,
+    latest.branch ? latest.branch : null,
+    latest.commitSha ? latest.commitSha.slice(0, 7) : null,
+  ].filter(Boolean).join(" · ")
+  const status = monitorStatusToService(latest.status)
+  const content = (
+    <>
+      <StatusPill status={status} label={status === "ok" ? "Stored" : labelize(latest.status)} />
+      <div>
+        <strong>Last persisted run: {formatDate(latest.createdAt)}</strong>
+        <span>
+          {detail || "Manual monitor run"} · {latest.checks} checks · {latest.warningCount} warnings · {latest.failureCount} failures · {formatDuration(latest.durationMs)}
+        </span>
+      </div>
+    </>
+  )
+
+  if (latest.runUrl) {
+    return <a className={`ops-history-persistence is-${status}`} href={latest.runUrl}>{content}</a>
+  }
+
+  return <div className={`ops-history-persistence is-${status}`}>{content}</div>
 }
 
 function monitorStatusToService(status: MonitorStatus | null): ServiceStatus {

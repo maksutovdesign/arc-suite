@@ -2083,6 +2083,55 @@ a.ops-status-row:hover {
   gap: 12px;
 }
 
+.ops-history-persistence {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 12px;
+  padding: 14px;
+  border: 1px solid rgba(52, 211, 153, 0.2);
+  border-radius: 8px;
+  background: rgba(52, 211, 153, 0.055);
+  color: var(--text);
+}
+
+a.ops-history-persistence {
+  transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
+}
+
+a.ops-history-persistence:hover {
+  border-color: rgba(96, 165, 250, 0.42);
+  background: rgba(96, 165, 250, 0.08);
+  transform: translateY(-1px);
+}
+
+.ops-history-persistence.is-warning {
+  border-color: rgba(250, 204, 21, 0.22);
+  background: rgba(250, 204, 21, 0.055);
+}
+
+.ops-history-persistence.is-error {
+  border-color: rgba(248, 113, 113, 0.24);
+  background: rgba(248, 113, 113, 0.055);
+}
+
+.ops-history-persistence strong,
+.ops-history-persistence span {
+  display: block;
+}
+
+.ops-history-persistence strong {
+  font-size: 15px;
+}
+
+.ops-history-persistence span {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
 .ops-history-chart {
   display: grid;
   grid-template-columns: repeat(36, minmax(8px, 1fr));
@@ -2442,6 +2491,10 @@ a.ops-history-run:hover {
   }
 
   .ops-history-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .ops-history-persistence {
     grid-template-columns: 1fr;
   }
 
