@@ -13,6 +13,11 @@ import type {
   InvestorLead,
   InvestorLeadInput,
   LeadInterest,
+  OpsHealthCheck,
+  OpsHealthCheckInput,
+  OpsHealthCheckResult,
+  OpsHealthCheckSource,
+  OpsHealthWarning,
   ReputationProfile,
   Transaction,
   WorkspaceApiKey,
@@ -186,6 +191,28 @@ type RateLimitEventRow = {
   route: string
   bucket_key: string
   ip_hash: string | null
+  created_at: string
+}
+
+type OpsHealthCheckRow = {
+  id: string
+  workspace_id: string
+  monitor_name: string
+  source: OpsHealthCheckSource
+  status: OpsHealthCheck["status"]
+  check_count: number
+  warning_count: number
+  failure_count: number
+  duration_ms: number
+  latency_warn_ms: number | null
+  latency_fail_ms: number | null
+  branch: string | null
+  commit_sha: string | null
+  run_id: string | null
+  run_url: string | null
+  results: OpsHealthCheckResult[] | null
+  warnings: OpsHealthWarning[] | null
+  metadata: Record<string, unknown> | null
   created_at: string
 }
 
@@ -589,6 +616,55 @@ export async function deleteSupabaseRateLimitEventsBefore(olderThanIso: string):
   }
 }
 
+export async function insertSupabaseOpsHealthCheck(input: OpsHealthCheckInput): Promise<OpsHealthCheck | null> {
+  if (!isSupabaseConfigured()) return null
+
+  try {
+    const rows = await postRows<OpsHealthCheckRow>("ops_health_checks", [
+      {
+        id: `ops_${randomUUID()}`,
+        workspace_id: WORKSPACE_ID,
+        monitor_name: input.monitorName ?? "Arc Suite Production Monitor",
+        source: input.source ?? "local",
+        status: input.status,
+        check_count: input.checks,
+        warning_count: input.warningCount,
+        failure_count: input.failureCount,
+        duration_ms: input.durationMs,
+        latency_warn_ms: input.latencyWarnMs ?? null,
+        latency_fail_ms: input.latencyFailMs ?? null,
+        branch: input.branch ?? null,
+        commit_sha: input.commitSha ?? null,
+        run_id: input.runId ?? null,
+        run_url: input.runUrl ?? null,
+        results: input.results,
+        warnings: input.warnings ?? [],
+        metadata: input.metadata ?? {},
+      },
+    ])
+
+    return rows[0] ? mapOpsHealthCheck(rows[0]) : null
+  } catch (error) {
+    logSupabaseError("ops health insert", error)
+    return null
+  }
+}
+
+export async function listSupabaseOpsHealthChecks(limit = 50): Promise<OpsHealthCheck[] | null> {
+  if (!isSupabaseConfigured()) return null
+
+  try {
+    const rows = await getRows<OpsHealthCheckRow>(
+      "ops_health_checks",
+      `select=*&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&order=created_at.desc&limit=${limit}`,
+    )
+    return rows.map(mapOpsHealthCheck)
+  } catch (error) {
+    logSupabaseError("ops health list", error)
+    return null
+  }
+}
+
 export async function checkSupabaseReadiness() {
   const config = getSupabaseConfigurationStatus()
   if (!config.configured) {
@@ -599,7 +675,7 @@ export async function checkSupabaseReadiness() {
     }
   }
 
-  const tables = ["workspaces", "agents", "analytics_events", "investor_leads", "rate_limit_events"]
+  const tables = ["workspaces", "agents", "analytics_events", "investor_leads", "rate_limit_events", "ops_health_checks"]
   const checks = await Promise.all(tables.map(async (table) => {
     try {
       await getRows(table, "select=id&limit=1")
@@ -753,6 +829,30 @@ function mapInvestorLead(row: InvestorLeadRow): InvestorLead {
     userAgent: row.user_agent,
     ipHash: row.ip_hash,
     properties: row.properties ?? {},
+    createdAt: row.created_at,
+  }
+}
+
+function mapOpsHealthCheck(row: OpsHealthCheckRow): OpsHealthCheck {
+  return {
+    id: row.id,
+    workspaceId: row.workspace_id,
+    monitorName: row.monitor_name,
+    source: row.source,
+    status: row.status,
+    checks: row.check_count,
+    warningCount: row.warning_count,
+    failureCount: row.failure_count,
+    durationMs: row.duration_ms,
+    latencyWarnMs: row.latency_warn_ms,
+    latencyFailMs: row.latency_fail_ms,
+    branch: row.branch,
+    commitSha: row.commit_sha,
+    runId: row.run_id,
+    runUrl: row.run_url,
+    results: row.results ?? [],
+    warnings: row.warnings ?? [],
+    metadata: row.metadata ?? {},
     createdAt: row.created_at,
   }
 }

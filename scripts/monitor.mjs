@@ -125,18 +125,25 @@ for (const check of checks) {
 
 const durationMs = Date.now() - startedAt
 const summary = {
+  branch: process.env.GITHUB_REF_NAME ?? null,
   checks: checks.length,
+  commitSha: process.env.GITHUB_SHA ?? null,
   durationMs,
   failureCount: failures.length,
   latencyFailMs,
   latencyWarnMs,
+  monitorName: MONITOR_NAME,
   results,
-  status: failures.length > 0 ? "failed" : "ok",
+  runId: process.env.GITHUB_RUN_ID ?? null,
+  runUrl: getGithubRunUrl(),
+  source: process.env.GITHUB_ACTIONS === "true" ? "github_actions" : "local",
+  status: failures.length > 0 ? "failed" : warnings.length > 0 ? "warn" : "ok",
   warningCount: warnings.length,
   warnings,
 }
 
 await writeGithubSummary(summary)
+await persistMonitorSummary(summary)
 
 if (failures.length > 0) {
   console.error(JSON.stringify(summary))
@@ -230,6 +237,41 @@ function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
+async function persistMonitorSummary(summary) {
+  const apiKey = firstPresent(process.env.ARC_MONITOR_API_KEY, process.env.ARC_API_KEY)
+  if (!apiKey) {
+    console.warn("WARN monitor history not stored: set ARC_MONITOR_API_KEY or ARC_API_KEY.")
+    return
+  }
+
+  const url = process.env.ARC_MONITOR_INGEST_URL ?? `${bases.landing}/api/ops/health-checks`
+
+  try {
+    const response = await fetch(url, {
+      body: JSON.stringify(summary),
+      cache: "no-store",
+      headers: {
+        "Content-Type": "application/json",
+        "User-Agent": "arc-suite-monitor/1.0",
+        "x-arc-api-key": apiKey,
+      },
+      method: "POST",
+    })
+
+    if (!response.ok) {
+      const text = await response.text().catch(() => "")
+      console.warn(`WARN monitor history not stored: ${response.status}${text ? ` ${truncateForLog(text)}` : ""}`)
+      return
+    }
+
+    const payload = await response.json().catch(() => null)
+    console.log(`OK monitor history stored: stored=${Boolean(payload?.stored)}`)
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error)
+    console.warn(`WARN monitor history not stored: ${message}`)
+  }
+}
+
 async function writeGithubSummary(summary) {
   const summaryFile = process.env.GITHUB_STEP_SUMMARY
   if (!summaryFile) return
@@ -270,4 +312,17 @@ async function writeGithubSummary(summary) {
 
 function escapeMarkdown(value) {
   return String(value).replaceAll("|", "\\|").replaceAll("\n", " ")
+}
+
+function firstPresent(...values) {
+  return values.find((value) => typeof value === "string" && value.trim())?.trim()
+}
+
+function getGithubRunUrl() {
+  if (!process.env.GITHUB_SERVER_URL || !process.env.GITHUB_REPOSITORY || !process.env.GITHUB_RUN_ID) return null
+  return `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`
+}
+
+function truncateForLog(value) {
+  return String(value).replaceAll("\n", " ").slice(0, 240)
 }

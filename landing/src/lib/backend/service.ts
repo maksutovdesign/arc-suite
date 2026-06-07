@@ -11,6 +11,14 @@ import type {
   InvestorLead,
   InvestorLeadInput,
   LeadInterest,
+  OpsHealthCheck,
+  OpsHealthCheckInput,
+  OpsHealthCheckResult,
+  OpsHealthCheckResultStatus,
+  OpsHealthCheckSource,
+  OpsHealthCheckStatus,
+  OpsHealthHistory,
+  OpsHealthWarning,
   PilotSummary,
   ReputationEvent,
   Transaction,
@@ -23,8 +31,10 @@ import {
   insertAccessDecision,
   insertSupabaseAnalyticsEvent,
   insertSupabaseInvestorLead,
+  insertSupabaseOpsHealthCheck,
   insertSupabaseAgent,
   listSupabaseInvestorLeads,
+  listSupabaseOpsHealthChecks,
   listSupabaseAnalyticsEvents,
   listSupabaseAccessDecisions,
   listSupabaseWorkspaceApiKeys,
@@ -389,6 +399,30 @@ export async function listInvestorLeads(limit = 100): Promise<InvestorLead[]> {
   return (await listSupabaseInvestorLeads(limit)) ?? []
 }
 
+export async function recordOpsHealthCheck(input: unknown): Promise<{
+  check: OpsHealthCheck | null
+  normalized: OpsHealthCheckInput | null
+  stored: boolean
+}> {
+  const normalized = normalizeOpsHealthCheck(input)
+  if (!normalized) return { check: null, normalized: null, stored: false }
+
+  const check = await insertSupabaseOpsHealthCheck(normalized)
+  return {
+    check,
+    normalized,
+    stored: Boolean(check),
+  }
+}
+
+export async function getOpsHealthHistory(limit = 50): Promise<OpsHealthHistory> {
+  const checks = (await listSupabaseOpsHealthChecks(limit)) ?? []
+  return {
+    checks,
+    summary: summarizeOpsHealthChecks(checks),
+  }
+}
+
 export async function getPilotSummary(): Promise<PilotSummary> {
   const dataset = await getDataset()
   const activeAlerts = dataset.alerts.filter((alert) => !alert.resolvedAt)
@@ -564,6 +598,109 @@ function normalizeAnalyticsEventName(value: string) {
   return normalized || "unknown_event"
 }
 
+function normalizeOpsHealthCheck(input: unknown): OpsHealthCheckInput | null {
+  if (!input || typeof input !== "object" || Array.isArray(input)) return null
+
+  const data = input as Record<string, unknown>
+  const status = normalizeOpsStatus(data.status)
+  if (!status) return null
+
+  const results = Array.isArray(data.results)
+    ? data.results.map(normalizeOpsResult).filter((result): result is OpsHealthCheckResult => Boolean(result)).slice(0, 40)
+    : []
+  const warnings = Array.isArray(data.warnings)
+    ? data.warnings.map(normalizeOpsWarning).filter((warning): warning is OpsHealthWarning => Boolean(warning)).slice(0, 20)
+    : []
+
+  return {
+    branch: normalizeOptionalText(data.branch, 120),
+    checks: normalizeNonNegativeInteger(data.checks, results.length),
+    commitSha: normalizeOptionalText(data.commitSha, 80),
+    durationMs: normalizeNonNegativeInteger(data.durationMs, 0),
+    failureCount: normalizeNonNegativeInteger(data.failureCount, results.filter((result) => result.status === "failed").length),
+    latencyFailMs: normalizeNullableNonNegativeInteger(data.latencyFailMs),
+    latencyWarnMs: normalizeNullableNonNegativeInteger(data.latencyWarnMs),
+    metadata: sanitizeOpsMetadata(data.metadata),
+    monitorName: normalizeOptionalText(data.monitorName, 120) ?? "Arc Suite Production Monitor",
+    results,
+    runId: normalizeOptionalText(data.runId, 120),
+    runUrl: normalizeOptionalText(data.runUrl, 500),
+    source: normalizeOpsSource(data.source),
+    status,
+    warningCount: normalizeNonNegativeInteger(data.warningCount, warnings.length),
+    warnings,
+  }
+}
+
+function normalizeOpsResult(input: unknown): OpsHealthCheckResult | null {
+  if (!input || typeof input !== "object" || Array.isArray(input)) return null
+
+  const data = input as Record<string, unknown>
+  const name = normalizeOptionalText(data.name, 120)
+  const status = normalizeOpsResultStatus(data.status)
+  if (!name || !status) return null
+
+  return {
+    detail: normalizeOptionalText(data.detail, 500),
+    durationMs: normalizeNonNegativeInteger(data.durationMs, 0),
+    message: normalizeOptionalText(data.message, 500),
+    name,
+    status,
+    warning: normalizeOptionalText(data.warning, 500),
+  }
+}
+
+function normalizeOpsWarning(input: unknown): OpsHealthWarning | null {
+  if (!input || typeof input !== "object" || Array.isArray(input)) return null
+
+  const data = input as Record<string, unknown>
+  const name = normalizeOptionalText(data.name, 120)
+  const message = normalizeOptionalText(data.message, 500)
+  if (!name || !message) return null
+
+  return {
+    durationMs: normalizeNullableNonNegativeInteger(data.durationMs),
+    message,
+    name,
+  }
+}
+
+function normalizeOpsStatus(value: unknown): OpsHealthCheckStatus | null {
+  if (value === "ok" || value === "warn" || value === "failed" || value === "test") return value
+  return null
+}
+
+function normalizeOpsResultStatus(value: unknown): OpsHealthCheckResultStatus | null {
+  if (value === "ok" || value === "warn" || value === "failed") return value
+  return null
+}
+
+function normalizeOpsSource(value: unknown): OpsHealthCheckSource {
+  if (value === "github_actions" || value === "manual") return value
+  return "local"
+}
+
+function summarizeOpsHealthChecks(checks: OpsHealthCheck[]): OpsHealthHistory["summary"] {
+  const productionRuns = checks.filter((check) => check.status !== "test")
+  const okRuns = productionRuns.filter((check) => check.status === "ok").length
+  const warningRuns = productionRuns.filter((check) => check.status === "warn").length
+  const failedRuns = productionRuns.filter((check) => check.status === "failed").length
+  const durations = productionRuns.map((check) => check.durationMs).sort((a, b) => a - b)
+  const totalRuns = productionRuns.length
+
+  return {
+    avgLatencyMs: durations.length > 0 ? Math.round(durations.reduce((sum, value) => sum + value, 0) / durations.length) : 0,
+    failedRuns,
+    latestAt: checks[0]?.createdAt ?? null,
+    latestStatus: checks[0]?.status ?? null,
+    okRuns,
+    p95LatencyMs: durations.length > 0 ? durations[Math.max(0, Math.ceil(durations.length * 0.95) - 1)] : 0,
+    totalRuns,
+    uptimePct: percentage(okRuns + warningRuns, totalRuns),
+    warningRuns,
+  }
+}
+
 function normalizeInvestorLead(input: Partial<InvestorLeadInput>): InvestorLeadInput | null {
   const name = normalizeOptionalText(input.name, 120)
   const email = normalizeOptionalText(input.email, 160)?.toLowerCase()
@@ -596,6 +733,28 @@ function normalizeOptionalText(value: unknown, maxLength: number) {
   if (typeof value !== "string") return null
   const trimmed = value.trim()
   return trimmed ? trimmed.slice(0, maxLength) : null
+}
+
+function normalizeNonNegativeInteger(value: unknown, fallback: number) {
+  const numberValue = typeof value === "number" ? value : Number(value)
+  if (!Number.isFinite(numberValue) || numberValue < 0) return fallback
+  return Math.round(numberValue)
+}
+
+function normalizeNullableNonNegativeInteger(value: unknown) {
+  if (value === null || value === undefined || value === "") return null
+  const numberValue = normalizeNonNegativeInteger(value, -1)
+  return numberValue >= 0 ? numberValue : null
+}
+
+function sanitizeOpsMetadata(metadata: unknown): Record<string, unknown> {
+  if (!metadata || typeof metadata !== "object" || Array.isArray(metadata)) return {}
+  return Object.fromEntries(
+    Object.entries(metadata as Record<string, unknown>)
+      .filter(([key, value]) => typeof key === "string" && isAnalyticsPrimitive(value))
+      .slice(0, 20)
+      .map(([key, value]) => [key.slice(0, 80), value]),
+  )
 }
 
 function sanitizeAnalyticsProperties(properties: unknown): Record<string, unknown> {

@@ -30,6 +30,8 @@ jobs:
 
       - name: Monitor production
         id: monitor
+        env:
+          ARC_MONITOR_API_KEY: ${{ secrets.ARC_MONITOR_API_KEY || secrets.ARC_API_KEY }}
         shell: bash
         run: |
           set -o pipefail

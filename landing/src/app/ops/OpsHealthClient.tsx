@@ -1,10 +1,11 @@
 "use client"
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { type CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 const API_KEY_STORAGE = "arc_ops_health_key"
 
 type ServiceStatus = "ok" | "warning" | "error"
+type MonitorStatus = "ok" | "warn" | "failed" | "test"
 
 type OpsSummary = {
   generatedAt: string
@@ -35,6 +36,39 @@ type OpsSummary = {
         updatedAt: string | null
         workflowFile: string
       }>
+    }
+    monitor: {
+      checks: Array<{
+        checks: number
+        createdAt: string
+        durationMs: number
+        failureCount: number
+        id: string
+        monitorName: string
+        results: Array<{
+          detail?: string | null
+          durationMs: number
+          message?: string | null
+          name: string
+          status: "ok" | "warn" | "failed"
+          warning?: string | null
+        }>
+        runUrl: string | null
+        source: string
+        status: MonitorStatus
+        warningCount: number
+      }>
+      summary: {
+        avgLatencyMs: number
+        failedRuns: number
+        latestAt: string | null
+        latestStatus: MonitorStatus | null
+        okRuns: number
+        p95LatencyMs: number
+        totalRuns: number
+        uptimePct: number
+        warningRuns: number
+      }
     }
     sentry: {
       hasClientDsn: boolean
@@ -260,6 +294,11 @@ export function OpsHealthClient() {
           <div className="analytics-kpi-grid ops-kpi-grid">
             <Metric label="Production apps" value={appStatusText} status={summary.status} />
             <Metric label="Supabase" value={summary.services.supabase.dataSource} status={summary.services.supabase.status} />
+            <Metric
+              label="Monitor uptime"
+              value={summary.services.monitor.summary.totalRuns > 0 ? `${summary.services.monitor.summary.uptimePct}%` : "no data"}
+              status={monitorStatusToService(summary.services.monitor.summary.latestStatus)}
+            />
             <Metric label="GitHub monitor" value={summary.services.github.workflows[0]?.conclusion ?? "pending"} status={summary.services.github.workflows[0]?.status ?? "warning"} />
             <Metric label="Sentry runtime" value={summary.services.sentry.hasDsn ? "ready" : "missing"} status={summary.services.sentry.status} />
             <Metric label="Investor leads" value={String(summary.signals.leads.totalLoaded)} status="ok" />
@@ -326,6 +365,32 @@ export function OpsHealthClient() {
                   />
                 ))}
               </div>
+            </div>
+
+            <div className="analytics-card analytics-card-full">
+              <div className="analytics-card-head">
+                <h2>Monitor History</h2>
+                <span>{summary.services.monitor.summary.totalRuns} stored runs</span>
+              </div>
+              <div className="ops-history-stats">
+                <div>
+                  <span>Uptime</span>
+                  <strong>{summary.services.monitor.summary.totalRuns > 0 ? `${summary.services.monitor.summary.uptimePct}%` : "No data"}</strong>
+                </div>
+                <div>
+                  <span>Average latency</span>
+                  <strong>{formatDuration(summary.services.monitor.summary.avgLatencyMs)}</strong>
+                </div>
+                <div>
+                  <span>P95 latency</span>
+                  <strong>{formatDuration(summary.services.monitor.summary.p95LatencyMs)}</strong>
+                </div>
+                <div>
+                  <span>Latest status</span>
+                  <strong>{summary.services.monitor.summary.latestStatus ? labelize(summary.services.monitor.summary.latestStatus) : "None"}</strong>
+                </div>
+              </div>
+              <MonitorTimeline checks={summary.services.monitor.checks} />
             </div>
 
             <div className="analytics-card">
@@ -478,6 +543,66 @@ function StatusPill({ label, status }: { label?: string; status: ServiceStatus }
   return <span className={`ops-pill is-${status}`}>{label ?? status}</span>
 }
 
+function MonitorTimeline({ checks }: { checks: OpsSummary["services"]["monitor"]["checks"] }) {
+  const visibleChecks = checks.slice(0, 36).reverse()
+  const maxDuration = Math.max(...visibleChecks.map((check) => check.durationMs), 1)
+
+  if (visibleChecks.length === 0) {
+    return <div className="empty-row">No monitor history yet. Scheduled runs will appear after the first stored check.</div>
+  }
+
+  return (
+    <div className="ops-history">
+      <div className="ops-history-chart" aria-label="Monitor uptime and latency history">
+        {visibleChecks.map((check) => {
+          const height = Math.max(10, Math.round((check.durationMs / maxDuration) * 100))
+          const style = { "--bar-height": `${height}%` } as CSSProperties
+          const content = (
+            <>
+              <span className={`ops-history-bar is-${monitorStatusToService(check.status)}`} style={style} />
+              <b>{formatShortTime(check.createdAt)}</b>
+            </>
+          )
+
+          if (check.runUrl) {
+            return (
+              <a
+                className="ops-history-run"
+                href={check.runUrl}
+                key={check.id}
+                title={`${labelize(check.status)} · ${formatDuration(check.durationMs)} · ${check.failureCount} failures`}
+              >
+                {content}
+              </a>
+            )
+          }
+
+          return (
+            <div
+              className="ops-history-run"
+              key={check.id}
+              title={`${labelize(check.status)} · ${formatDuration(check.durationMs)} · ${check.failureCount} failures`}
+            >
+              {content}
+            </div>
+          )
+        })}
+      </div>
+      <div className="ops-history-legend">
+        <span><i className="is-ok" />OK</span>
+        <span><i className="is-warning" />Warning</span>
+        <span><i className="is-error" />Failed</span>
+      </div>
+    </div>
+  )
+}
+
+function monitorStatusToService(status: MonitorStatus | null): ServiceStatus {
+  if (status === "failed") return "error"
+  if (status === "warn" || status === "test" || status === null) return "warning"
+  return "ok"
+}
+
 function labelize(value: string) {
   return value.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase())
 }
@@ -489,4 +614,17 @@ function formatDate(value: string) {
     minute: "2-digit",
     month: "short",
   }).format(new Date(value))
+}
+
+function formatShortTime(value: string) {
+  return new Intl.DateTimeFormat("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date(value))
+}
+
+function formatDuration(value: number) {
+  if (!value) return "0ms"
+  if (value >= 1000) return `${(value / 1000).toFixed(1)}s`
+  return `${value}ms`
 }

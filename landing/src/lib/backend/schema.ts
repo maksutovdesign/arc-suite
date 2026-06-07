@@ -6,6 +6,9 @@ export type ReputationTier = "Platinum" | "Gold" | "Silver" | "New"
 export type WorkspaceRole = "owner" | "admin" | "operator" | "viewer"
 export type ApiKeyScope = "read" | "write" | "admin"
 export type LeadInterest = "pilot" | "investment" | "partnership" | "press" | "other"
+export type OpsHealthCheckSource = "github_actions" | "local" | "manual"
+export type OpsHealthCheckStatus = "ok" | "warn" | "failed" | "test"
+export type OpsHealthCheckResultStatus = "ok" | "warn" | "failed"
 
 export type Agent = {
   id: string
@@ -267,4 +270,68 @@ export type InvestorLead = InvestorLeadInput & {
   interest: LeadInterest
   status: "new" | "contacted" | "qualified" | "closed"
   createdAt: string
+}
+
+export type OpsHealthCheckResult = {
+  detail?: string | null
+  durationMs: number
+  message?: string | null
+  name: string
+  status: OpsHealthCheckResultStatus
+  warning?: string | null
+}
+
+export type OpsHealthWarning = {
+  durationMs?: number | null
+  message: string
+  name: string
+}
+
+export type OpsHealthCheckInput = {
+  branch?: string | null
+  checks: number
+  commitSha?: string | null
+  durationMs: number
+  failureCount: number
+  latencyFailMs?: number | null
+  latencyWarnMs?: number | null
+  metadata?: Record<string, unknown>
+  monitorName?: string
+  results: OpsHealthCheckResult[]
+  runId?: string | null
+  runUrl?: string | null
+  source?: OpsHealthCheckSource
+  status: OpsHealthCheckStatus
+  warningCount: number
+  warnings?: OpsHealthWarning[]
+}
+
+export type OpsHealthCheck = OpsHealthCheckInput & {
+  branch: string | null
+  commitSha: string | null
+  createdAt: string
+  id: string
+  latencyFailMs: number | null
+  latencyWarnMs: number | null
+  monitorName: string
+  runId: string | null
+  runUrl: string | null
+  source: OpsHealthCheckSource
+  warnings: OpsHealthWarning[]
+  workspaceId: string
+}
+
+export type OpsHealthHistory = {
+  checks: OpsHealthCheck[]
+  summary: {
+    avgLatencyMs: number
+    failedRuns: number
+    latestAt: string | null
+    latestStatus: OpsHealthCheckStatus | null
+    okRuns: number
+    p95LatencyMs: number
+    totalRuns: number
+    uptimePct: number
+    warningRuns: number
+  }
 }
