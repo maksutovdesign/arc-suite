@@ -28,6 +28,14 @@ This is the enforcement loop: *spend drives behavior, behavior drives reputation
 
 ---
 
+## Screenshots
+
+| Treasury | Reputation | Marketplace |
+|----------|-----------|-------------|
+| ![Treasury Dashboard](docs/screenshots/treasury-dashboard.png) | ![Reputation Leaderboard](docs/screenshots/reputation-leaderboard.png) | ![Marketplace Browse](docs/screenshots/marketplace-browse.png) |
+
+---
+
 ## Apps
 
 ### 💰 Arc Treasury — Agent Budget Manager
