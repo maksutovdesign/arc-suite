@@ -56,6 +56,7 @@ export function ArcButton({
 
   return (
     <button
+      type="button"
       className={`inline-flex items-center justify-center font-medium transition-all duration-150 cursor-pointer select-none disabled:opacity-50 hover:opacity-80 active:scale-95 ${sizeClass} ${className}`}
       style={style}
       {...props}

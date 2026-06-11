@@ -552,15 +552,15 @@ export const REVIEWS: Review[] = [
   { id: "rv_08", apiId: "api_11", author: "AuditBot-Corp", rating: 5, comment: "KYC-lite is exactly what compliance agents need.", timestamp: "2026-06-25T14:00:00Z" },
 ]
 
-export const STATS = {
-  totalApis: 143,
-  totalProviders: 58,
-  totalRequests: 24800000,
-  avgUptime: 99.72,
-}
-
 // All APIs merged
 export const APIS_ALL = [...APIS, ...APIS_EXTRA]
+
+export const STATS = {
+  totalApis: APIS_ALL.length,
+  totalProviders: PROVIDERS.length,
+  totalRequests: Math.round(APIS_ALL.reduce((s, a) => s + a.totalRequests, 0)),
+  avgUptime: Math.round(APIS_ALL.reduce((s, a) => s + a.uptime, 0) / APIS_ALL.length * 100) / 100,
+}
 
 // 7-day request volume sparklines per API (thousands)
 export const API_VOLUME: Record<string, { value: number }[]> = {

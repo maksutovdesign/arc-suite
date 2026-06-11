@@ -15,7 +15,7 @@ const SCORE_DIMS = [
   { key: "accountAge",        label: "Account Age"        },
 ] as const
 
-function AgentPicker({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+function AgentPicker({ label, value, onChange, excludeId }: { label: string; value: string; onChange: (v: string) => void; excludeId: string }) {
   return (
     <div className="flex flex-col gap-1.5">
       <p className="text-[11px] font-medium uppercase tracking-widest" style={{ color: "#7a8fa8" }}>{label}</p>
@@ -24,7 +24,7 @@ function AgentPicker({ label, value, onChange }: { label: string; value: string;
         style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "#E8E6F0" }}
         value={value}
         onChange={e => onChange(e.target.value)}>
-        {AGENTS.map(a => (
+        {AGENTS.filter(a => a.id !== excludeId).map(a => (
           <option key={a.id} value={a.id} style={{ background: "#1e3247" }}>
             {a.name} — {a.score} pts
           </option>
@@ -68,14 +68,14 @@ export default function ComparePage() {
       {/* Agent selectors */}
       <div className="px-6 py-4 border-b grid grid-cols-3 items-center gap-4"
         style={{ borderColor: "rgba(255,255,255,0.06)" }}>
-        <AgentPicker label="Agent A" value={idA} onChange={setIdA} />
+        <AgentPicker label="Agent A" value={idA} onChange={setIdA} excludeId={idB} />
         <div className="flex justify-center">
           <div className="size-10 rounded-full flex items-center justify-center"
             style={{ background: "rgba(167,139,250,0.1)", border: "1px solid rgba(167,139,250,0.2)" }}>
             <ArrowLeftRight className="size-4" style={{ color: "#a78bfa" }} />
           </div>
         </div>
-        <AgentPicker label="Agent B" value={idB} onChange={setIdB} />
+        <AgentPicker label="Agent B" value={idB} onChange={setIdB} excludeId={idA} />
       </div>
 
       <div className="p-6 space-y-4">
@@ -113,19 +113,21 @@ export default function ComparePage() {
           <div className="rounded-2xl p-5 flex flex-col gap-3 items-center justify-center"
             style={{ background: "linear-gradient(160deg,#263a52,#1e3247)", border: "1px solid rgba(255,255,255,0.08)" }}>
             <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "#7a8fa8" }}>Score diff</p>
-            <p className="text-3xl font-bold" style={{ color: Math.abs(agentA.score - agentB.score) > 100 ? "#f87171" : "#f59e0b" }}>
-              {agentA.score > agentB.score ? "+" : "-"}{Math.abs(agentA.score - agentB.score)}
+            <p className="text-3xl font-bold" style={{ color: agentA.score === agentB.score ? "#7a8fa8" : Math.abs(agentA.score - agentB.score) > 100 ? "#f87171" : "#f59e0b" }}>
+              {agentA.score === agentB.score ? "0" : `+${Math.abs(agentA.score - agentB.score)}`}
             </p>
             <p className="text-[11px] text-center" style={{ color: "#7a8fa8" }}>
-              {agentA.score > agentB.score ? agentA.name.split("-")[0] : agentB.name.split("-")[0]} leads
+              {agentA.score === agentB.score ? "Tied" : `${agentA.score > agentB.score ? agentA.name.split("-")[0] : agentB.name.split("-")[0]} leads`}
             </p>
             <div className="w-full h-px" style={{ background: "rgba(255,255,255,0.06)" }} />
-            <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "#7a8fa8" }}>Winner</p>
+            <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "#7a8fa8" }}>
+              {agentA.score === agentB.score ? "Result" : "Winner"}
+            </p>
             <div className="size-10 rounded-xl flex items-center justify-center text-lg">
-              {agentA.score > agentB.score ? "🥇" : "🥈"}
+              {agentA.score === agentB.score ? "🤝" : "🥇"}
             </div>
             <p className="text-sm font-bold text-white text-center">
-              {agentA.score >= agentB.score ? agentA.name : agentB.name}
+              {agentA.score === agentB.score ? "Tie" : agentA.score > agentB.score ? agentA.name : agentB.name}
             </p>
           </div>
 
@@ -169,10 +171,11 @@ export default function ComparePage() {
             {SCORE_DIMS.map(({ key, label }, i) => {
               const valA = agentA.scoreBreakdown[key]
               const valB = agentB.scoreBreakdown[key]
-              const max = 250
+              const max = 200
               const pctA = Math.round((valA / max) * 100)
               const pctB = Math.round((valB / max) * 100)
               const winnerA = valA >= valB
+              const winnerB = valB >= valA
 
               return (
                 <div key={key} className="px-5 py-3.5"
@@ -198,7 +201,7 @@ export default function ComparePage() {
                     </div>
                     {/* B value */}
                     <div className="w-10">
-                      <span className="text-sm font-bold" style={{ color: !winnerA ? colB : "#7a8fa8" }}>{valB}</span>
+                      <span className="text-sm font-bold" style={{ color: winnerB ? colB : "#7a8fa8" }}>{valB}</span>
                     </div>
                   </div>
                 </div>
@@ -217,8 +220,9 @@ export default function ComparePage() {
             <span className="text-[10px] font-semibold uppercase tracking-widest text-center" style={{ color: colB }}>{agentB.name.split("-")[0]}</span>
           </div>
           {METRICS.map(({ label, a, b, fmt, higherIsBetter }, i) => {
-            const aWins = higherIsBetter ? a >= b : a <= b
-            const bWins = higherIsBetter ? b > a : b < a
+            const tied = a === b
+            const aWins = tied || (higherIsBetter ? a > b : a < b)
+            const bWins = tied || (higherIsBetter ? b > a : b < a)
             return (
               <div key={label} className="grid items-center px-5 py-3"
                 style={{ gridTemplateColumns: "1fr 140px 140px", borderBottom: i < METRICS.length - 1 ? "1px solid rgba(255,255,255,0.04)" : "none" }}>

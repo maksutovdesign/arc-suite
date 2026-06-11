@@ -153,6 +153,16 @@ export const AGENT_SPARKLINES: Record<string, { value: number }[]> = {
   agt_06: [{ value: 0 }, { value: 0 }, { value: 0 }, { value: 0 }, { value: 0 }, { value: 0 }, { value: 0 }],
 }
 
+// Previous week sparkline data for comparison
+export const AGENT_SPARKLINES_PREV: Record<string, { value: number }[]> = {
+  agt_01: [{ value: 16.0 }, { value: 19.5 }, { value: 14.2 }, { value: 21.3 }, { value: 17.8 }, { value: 24.6 }, { value: 14.9 }],
+  agt_02: [{ value: 38.4 }, { value: 45.2 }, { value: 51.1 }, { value: 60.3 }, { value: 42.9 }, { value: 55.8 }, { value: 34.7 }],
+  agt_03: [{ value: 7.1 }, { value: 8.5 }, { value: 6.3 }, { value: 10.4 }, { value: 5.8 }, { value: 9.2 }, { value: 7.0 }],
+  agt_04: [{ value: 5.5 }, { value: 6.8 }, { value: 4.9 }, { value: 7.1 }, { value: 5.3 }, { value: 8.0 }, { value: 3.2 }],
+  agt_05: [{ value: 9.2 }, { value: 11.0 }, { value: 10.4 }, { value: 10.8 }, { value: 9.7 }, { value: 11.5 }, { value: 12.1 }],
+  agt_06: [{ value: 0 }, { value: 0 }, { value: 0 }, { value: 0 }, { value: 0 }, { value: 0 }, { value: 0 }],
+}
+
 // Weekly agent comparison bar chart
 export const AGENT_BAR_DATA = [
   { name: "DataHarvester", value: 152.68, color: "#4d8ee9" },
@@ -227,9 +237,9 @@ export const SPEND_OVER_TIME = [
   { date: "Tue May 26", total: 112.8, dataharvester: 22.1, tradebot: 68.3, contentgen: 9.1,  iot: 13.3 },
   { date: "Wed May 27", total: 78.5,  dataharvester: 15.4, tradebot: 44.2, contentgen: 7.8,  iot: 11.1 },
   { date: "Thu May 28", total: 134.2, dataharvester: 28.9, tradebot: 81.5, contentgen: 11.2, iot: 12.6 },
-  { date: "Fri May 30", total: 95.7,  dataharvester: 19.8, tradebot: 57.4, contentgen: 6.9,  iot: 11.6 },
-  { date: "Sat May 31", total: 148.3, dataharvester: 31.2, tradebot: 89.7, contentgen: 14.1, iot: 13.3 },
-  { date: "Today",      total: 62.1,  dataharvester: 12.4, tradebot: 29.8, contentgen: 4.2,  iot: 15.7 },
+  { date: "Fri May 29", total: 95.7,  dataharvester: 19.8, tradebot: 57.4, contentgen: 6.9,  iot: 11.6 },
+  { date: "Sat May 30", total: 148.3, dataharvester: 31.2, tradebot: 89.7, contentgen: 14.1, iot: 13.3 },
+  { date: "Sun May 31", total: 62.1,  dataharvester: 12.4, tradebot: 29.8, contentgen: 4.2,  iot: 15.7 },
 ]
 
 export const CATEGORY_BREAKDOWN = [
@@ -242,13 +252,12 @@ export const CATEGORY_BREAKDOWN = [
 ]
 
 export const STATS = {
-  totalAgents: 6,
-  activeAgents: 3,
-  totalUSDCManaged: 3072.93,
-  monthlySpent: 1527.07,
-  monthlyBudget: 4400,
-  activeAlerts: 3,
-  // Cumulative all-time txs across all agents (matches sum of agent.txCount fields)
-  totalTransactions: 1847 + 4291 + 623 + 289 + 18432 + 0, // = 25482
+  totalAgents: AGENTS.length,
+  activeAgents: AGENTS.filter(a => a.status === "active").length,
+  totalUSDCManaged: Math.round(AGENTS.reduce((s, a) => s + a.balance, 0) * 100) / 100,
+  monthlySpent: Math.round(AGENTS.reduce((s, a) => s + a.monthlySpent, 0) * 100) / 100,
+  monthlyBudget: AGENTS.reduce((s, a) => s + a.monthlyBudget, 0),
+  activeAlerts: ALERTS.filter(a => !a.resolved).length,
+  totalTransactions: AGENTS.reduce((s, a) => s + a.txCount, 0),
   avgTxCost: 0.061,
 }

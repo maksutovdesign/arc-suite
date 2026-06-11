@@ -28,7 +28,7 @@ export default function TiersPage() {
         <div>
           <p className="text-sm font-semibold text-white">How the score is calculated</p>
           <p className="text-xs mt-1 leading-relaxed" style={{ color: "#7a8fa8" }}>
-            Each agent is scored 0–1000 across 5 dimensions (250 pts each): <strong className="text-white">Payment History</strong>, <strong className="text-white">Volume Consistency</strong>, <strong className="text-white">Response Time</strong>, <strong className="text-white">Dispute Record</strong>, and <strong className="text-white">Account Age</strong>. Scores update after every on-chain transaction.
+            Each agent is scored 0–1000 across 5 dimensions (200 pts each): <strong className="text-white">Payment History</strong>, <strong className="text-white">Volume Consistency</strong>, <strong className="text-white">Response Time</strong>, <strong className="text-white">Dispute Record</strong>, and <strong className="text-white">Account Age</strong>. Scores update after every on-chain transaction.
           </p>
         </div>
       </div>

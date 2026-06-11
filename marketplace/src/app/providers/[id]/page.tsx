@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft, CheckCircle, Globe, TrendingUp, Star, Calendar, Zap } from "lucide-react"
-import { ArcButton } from "@/components/ui/ArcButton"
 import { ArcProgress } from "@/components/ui/ArcProgress"
 import { ApiCard } from "@/components/browse/ApiCard"
 import { PROVIDERS, APIS_ALL, API_VOLUME } from "@/data/mock"
@@ -61,7 +60,11 @@ export default async function ProviderDetailPage({ params }: { params: Promise<{
               </div>
             </div>
 
-            <a href={provider.website} target="_blank" rel="noopener noreferrer"><ArcButton variant="outline" size="sm" icon={Globe}>Visit website</ArcButton></a>
+            <a href={provider.website} target="_blank" rel="noopener noreferrer"
+              className="inline-flex items-center justify-center font-medium transition-all duration-150 hover:opacity-80 h-7 px-3 text-xs rounded-lg gap-1.5"
+              style={{ background: "rgba(255,255,255,0.04)", color: "#C7C5D1", border: "1px solid rgba(255,255,255,0.1)" }}>
+              <Globe className="size-3.5" />Visit website
+            </a>
           </div>
         </div>
       </div>
@@ -98,7 +101,7 @@ export default async function ProviderDetailPage({ params }: { params: Promise<{
             <p className="text-sm font-semibold text-white">Metrics</p>
             {[
               { label: "Total Requests", value: formatCount(provider.totalRequests), icon: TrendingUp, color: "#5FBFFF" },
-              { label: "Published APIs",  value: String(provider.totalApis),         icon: Zap,        color: "#a78bfa" },
+              { label: "Published APIs",  value: String(providerApis.length),        icon: Zap,        color: "#a78bfa" },
               { label: "Avg Rating",      value: String(provider.avgRating),          icon: Star,       color: "#facc15" },
             ].map(({ label, value, icon: Icon, color }) => (
               <div key={label} className="flex items-center justify-between">

@@ -32,13 +32,6 @@ export const CAT_COLORS: Record<string, string> = {
   messaging: "#c084fc",
 }
 
-// Shared arc card style
-export const ARC_CARD = {
-  background: "linear-gradient(160deg,#1e3247 0%,#162436 100%)",
-  border:     "1px solid rgba(255,255,255,0.08)",
-  borderRadius: 16,
-} as const
-
 export function statusColor(status: string): { bg: string; color: string; border: string } {
   switch (status) {
     case "live":     return { bg: "rgba(52,211,153,0.1)", color: "#34d399", border: "rgba(52,211,153,0.25)" }

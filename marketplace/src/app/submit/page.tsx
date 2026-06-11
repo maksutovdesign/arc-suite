@@ -15,10 +15,16 @@ const CATEGORIES = ["Data Feeds","Compute","Finance","Storage","AI / LLM","Ident
 export default function SubmitPage() {
   const [submitted, setSubmitted] = useState(false)
   const [form, setForm] = useState({ name: "", provider: "", endpoint: "", price: "", unit: "", description: "", category: "Data Feeds" })
+  const [errors, setErrors] = useState<Record<string, boolean>>({})
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!form.name || !form.provider || !form.endpoint) return
+    const newErrors: Record<string, boolean> = {}
+    if (!form.name.trim()) newErrors.name = true
+    if (!form.provider.trim()) newErrors.provider = true
+    if (!form.endpoint.trim()) newErrors.endpoint = true
+    setErrors(newErrors)
+    if (Object.keys(newErrors).length > 0) return
     setSubmitted(true)
   }
 
@@ -140,29 +146,34 @@ export const middleware = paymentMiddleware({
           <p className="text-sm font-semibold text-white">API Details</p>
 
           <div className="grid grid-cols-2 gap-4">
-            {[
-              { label: "API Name *",              key: "name",     placeholder: "e.g. CryptoPrice Feed",        full: false },
-              { label: "Provider Name *",          key: "provider", placeholder: "Company or handle",            full: false },
-              { label: "Endpoint URL *",           key: "endpoint", placeholder: "https://api.example.com/v1/", full: true  },
-              { label: "Price per unit (USDC)",    key: "price",    placeholder: "e.g. 0.002",                  full: false },
-              { label: "Unit",                     key: "unit",     placeholder: "request / token / MB",         full: false },
-            ].map(({ label, key, placeholder, full }) => (
+            {([
+              { label: "API Name *",              key: "name" as const,     placeholder: "e.g. CryptoPrice Feed",        full: false, type: "text" },
+              { label: "Provider Name *",          key: "provider" as const, placeholder: "Company or handle",            full: false, type: "text" },
+              { label: "Endpoint URL *",           key: "endpoint" as const, placeholder: "https://api.example.com/v1/", full: true,  type: "url" },
+              { label: "Price per unit (USDC)",    key: "price" as const,    placeholder: "e.g. 0.002",                  full: false, type: "text" },
+              { label: "Unit",                     key: "unit" as const,     placeholder: "request / token / MB",         full: false, type: "text" },
+            ]).map(({ label, key, placeholder, full, type }) => (
               <div key={key} className={full ? "col-span-2" : ""}>
-                <label className="text-[11px] font-medium mb-1.5 block" style={{ color: "#7a8fa8" }}>{label}</label>
+                <label htmlFor={`submit-${key}`} className="text-[11px] font-medium mb-1.5 block" style={{ color: "#7a8fa8" }}>{label}</label>
                 <input
+                  id={`submit-${key}`}
+                  type={type}
+                  required={label.includes("*")}
                   className="w-full h-9 px-3 rounded-xl text-sm outline-none transition-all focus:border-[#5FBFFF]"
-                  style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "#e8e6f0" }}
+                  style={{ background: "rgba(255,255,255,0.04)", border: `1px solid ${errors[key] ? "rgba(248,113,113,0.5)" : "rgba(255,255,255,0.08)"}`, color: "#e8e6f0" }}
                   placeholder={placeholder}
-                  value={(form as Record<string, string>)[key]}
-                  onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
+                  value={form[key]}
+                  onChange={e => { setForm(f => ({ ...f, [key]: e.target.value })); setErrors(er => { const n = {...er}; delete n[key]; return n }) }}
                 />
+                {errors[key] && <p className="text-[10px] mt-1" style={{ color: "#f87171" }}>This field is required</p>}
               </div>
             ))}
           </div>
 
           <div>
-            <label className="text-[11px] font-medium mb-1.5 block" style={{ color: "#7a8fa8" }}>Description</label>
+            <label htmlFor="submit-desc" className="text-[11px] font-medium mb-1.5 block" style={{ color: "#7a8fa8" }}>Description</label>
             <textarea
+              id="submit-desc"
               className="w-full px-3 py-2 rounded-xl text-sm outline-none resize-none"
               style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "#e8e6f0" }}
               rows={3} placeholder="What does your API do? Who is it for?"
@@ -172,8 +183,9 @@ export const middleware = paymentMiddleware({
           </div>
 
           <div>
-            <label className="text-[11px] font-medium mb-1.5 block" style={{ color: "#7a8fa8" }}>Category</label>
+            <label htmlFor="submit-cat" className="text-[11px] font-medium mb-1.5 block" style={{ color: "#7a8fa8" }}>Category</label>
             <select
+              id="submit-cat"
               className="w-full h-9 px-3 rounded-xl text-sm outline-none"
               style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "#e8e6f0" }}
               value={form.category}

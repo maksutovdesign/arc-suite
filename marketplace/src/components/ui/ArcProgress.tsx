@@ -2,6 +2,7 @@ interface ArcProgressProps {
   value: number          // 0–100
   size?: "sm" | "md"
   variant?: "default" | "warning" | "danger" | "success"
+  inverted?: boolean     // high value = good (ratings, volume rankings)
   showLabel?: boolean
 }
 
@@ -12,14 +13,20 @@ const VARIANT_COLORS = {
   success: { from: "#34d399", to: "#10b981", glow: "rgba(52,211,153,0.4)" },
 }
 
-function getVariant(pct: number): ArcProgressProps["variant"] {
+function getVariant(pct: number, inverted: boolean): ArcProgressProps["variant"] {
+  if (inverted) {
+    if (pct >= 70) return "success"
+    if (pct >= 40) return "default"
+    if (pct >= 20) return "warning"
+    return "danger"
+  }
   if (pct >= 90) return "danger"
   if (pct >= 70) return "warning"
   return "default"
 }
 
-export function ArcProgress({ value, size = "md", variant, showLabel }: ArcProgressProps) {
-  const resolvedVariant: keyof typeof VARIANT_COLORS = variant ?? getVariant(value) ?? "default"
+export function ArcProgress({ value, size = "md", variant, inverted = false, showLabel }: ArcProgressProps) {
+  const resolvedVariant: keyof typeof VARIANT_COLORS = variant ?? getVariant(value, inverted) ?? "default"
   const colors = VARIANT_COLORS[resolvedVariant]
   const h = size === "sm" ? 3 : 5
 

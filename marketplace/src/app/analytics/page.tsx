@@ -96,7 +96,7 @@ export default function AnalyticsPage() {
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-semibold text-white truncate">{api.name}</p>
                       <div className="mt-1">
-                        <ArcProgress value={pct} size="sm" />
+                        <ArcProgress value={pct} size="sm" inverted />
                       </div>
                     </div>
                     <span className="text-xs font-bold text-white shrink-0">{formatCount(api.totalRequests)}</span>

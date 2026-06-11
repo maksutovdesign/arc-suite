@@ -13,7 +13,7 @@ export function formatUSDC(amount: number): string {
 
 export function formatTimestamp(iso: string): string {
   const d = new Date(iso)
-  return d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false })
+  return d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "UTC" })
 }
 
 export function scoreColor(score: number): string {

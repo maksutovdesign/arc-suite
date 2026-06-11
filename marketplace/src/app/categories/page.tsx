@@ -1,11 +1,10 @@
 import Link from "next/link"
-import { Database, Cpu, TrendingUp, Activity, Zap, CheckCircle, ArrowRight } from "lucide-react"
-import { ArcButton } from "@/components/ui/ArcButton"
+import { Database, Cpu, TrendingUp, HardDrive, Zap, Sparkles, Fingerprint, Radio, MessageSquare, ArrowRight } from "lucide-react"
 import { CATEGORIES, APIS_ALL, STATS } from "@/data/mock"
 import { CAT_COLORS } from "@/lib/utils"
 
 const ICONS: Record<string, React.ElementType> = {
-  Database, Cpu, TrendingUp, HardDrive: Activity, Sparkles: Zap, Fingerprint: CheckCircle, Radio: Activity, MessageSquare: Activity,
+  Database, Cpu, TrendingUp, HardDrive, Sparkles, Fingerprint, Radio, MessageSquare,
 }
 
 
@@ -69,7 +68,7 @@ export default function CategoriesPage() {
                       </div>
                     </div>
                     <div className="text-right shrink-0 ml-4">
-                      <p className="text-2xl font-bold" style={{ color }}>{cat.count}</p>
+                      <p className="text-2xl font-bold" style={{ color }}>{catApis.length}</p>
                       <p className="text-[10px]" style={{ color: "#7a8fa8" }}>APIs</p>
                     </div>
                   </div>
@@ -106,9 +105,13 @@ export default function CategoriesPage() {
                     </div>
                   )}
 
-                  <ArcButton variant="outline" size="sm" iconRight={ArrowRight} className="w-full justify-center">
+                  <div
+                    className="inline-flex items-center justify-center font-medium transition-all duration-150 cursor-pointer select-none hover:opacity-80 h-7 px-3 text-xs rounded-lg gap-1.5 w-full"
+                    style={{ background: "rgba(255,255,255,0.04)", color: "#C7C5D1", border: "1px solid rgba(255,255,255,0.1)" }}
+                  >
                     Browse {cat.label}
-                  </ArcButton>
+                    <ArrowRight className="size-3.5" />
+                  </div>
                 </div>
               </div>
               </Link>

@@ -26,11 +26,11 @@ export default async function AgentDetailPage({ params }: { params: Promise<{ id
   const sourceLabel = source === "api" ? "Live Arc API" : "Mock fallback"
 
   const SCORE_DIMS = [
-    { key: "paymentHistory",    label: "Payment History",    max: 250, icon: Zap },
-    { key: "volumeConsistency", label: "Volume Consistency", max: 250, icon: TrendingUp },
-    { key: "responseTime",      label: "Response Time",      max: 250, icon: Clock },
-    { key: "disputeRecord",     label: "Dispute Record",     max: 250, icon: AlertTriangle },
-    { key: "accountAge",        label: "Account Age",        max: 250, icon: Activity },
+    { key: "paymentHistory",    label: "Payment History",    max: 200, icon: Zap },
+    { key: "volumeConsistency", label: "Volume Consistency", max: 200, icon: TrendingUp },
+    { key: "responseTime",      label: "Response Time",      max: 200, icon: Clock },
+    { key: "disputeRecord",     label: "Dispute Record",     max: 200, icon: AlertTriangle },
+    { key: "accountAge",        label: "Account Age",        max: 200, icon: Activity },
   ] as const
 
   return (

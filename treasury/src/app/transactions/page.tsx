@@ -31,7 +31,7 @@ function StatusIndicator({ status }: { status: "completed" | "pending" | "failed
 }
 
 export default function TransactionsPage() {
-  const total = TRANSACTIONS.reduce((s, t) => (t.status !== "failed" ? s + t.amount : s), 0)
+  const total = TRANSACTIONS.reduce((s, t) => (t.status === "completed" ? s + t.amount : s), 0)
   const failed = TRANSACTIONS.filter(t => t.status === "failed").length
   const pending = TRANSACTIONS.filter(t => t.status === "pending").length
 

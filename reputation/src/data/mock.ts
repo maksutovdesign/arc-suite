@@ -20,7 +20,7 @@ export interface Agent {
   verified: boolean
   lastActive: string
   scoreBreakdown: {
-    paymentHistory: number   // 0–250
+    paymentHistory: number   // 0–200 (5 dimensions × 200 = 1000; sum equals score)
     volumeConsistency: number
     responseTime: number
     disputeRecord: number
@@ -58,7 +58,7 @@ export const AGENTS: Agent[] = [
     network: "Arc",
     verified: true,
     lastActive: "2 min ago",
-    scoreBreakdown: { paymentHistory: 248, volumeConsistency: 230, responseTime: 245, disputeRecord: 250, accountAge: 188 },
+    scoreBreakdown: { paymentHistory: 199, volumeConsistency: 190, responseTime: 197, disputeRecord: 200, accountAge: 175 },
   },
   {
     id: "agt_02",
@@ -78,7 +78,7 @@ export const AGENTS: Agent[] = [
     network: "Arc",
     verified: true,
     lastActive: "now",
-    scoreBreakdown: { paymentHistory: 243, volumeConsistency: 240, responseTime: 250, disputeRecord: 248, accountAge: 213 },
+    scoreBreakdown: { paymentHistory: 195, volumeConsistency: 192, responseTime: 200, disputeRecord: 198, accountAge: 159 },
   },
   {
     id: "agt_03",
@@ -98,7 +98,7 @@ export const AGENTS: Agent[] = [
     network: "Arc",
     verified: true,
     lastActive: "8 min ago",
-    scoreBreakdown: { paymentHistory: 210, volumeConsistency: 195, responseTime: 180, disputeRecord: 170, accountAge: 157 },
+    scoreBreakdown: { paymentHistory: 187, volumeConsistency: 174, responseTime: 160, disputeRecord: 151, accountAge: 140 },
   },
   {
     id: "agt_04",
@@ -118,7 +118,7 @@ export const AGENTS: Agent[] = [
     network: "Ethereum",
     verified: false,
     lastActive: "1 hour ago",
-    scoreBreakdown: { paymentHistory: 220, volumeConsistency: 185, responseTime: 150, disputeRecord: 234, accountAge: 100 },
+    scoreBreakdown: { paymentHistory: 195, volumeConsistency: 164, responseTime: 133, disputeRecord: 200, accountAge: 97 },
   },
   {
     id: "agt_05",
@@ -138,7 +138,7 @@ export const AGENTS: Agent[] = [
     network: "Arc",
     verified: false,
     lastActive: "3 days ago",
-    scoreBreakdown: { paymentHistory: 165, volumeConsistency: 140, responseTime: 120, disputeRecord: 209, accountAge: 130 },
+    scoreBreakdown: { paymentHistory: 137, volumeConsistency: 116, responseTime: 100, disputeRecord: 173, accountAge: 108 },
   },
   {
     id: "agt_06",
@@ -213,13 +213,4 @@ export const SCORE_BAR_DATA = [
   { name: "ContentGen",     value: 789, color: "#facc15" },
   { name: "ResearchAssist", value: 634, color: "#94a3b8" },
   { name: "AuditBot",       value: 150, color: "#7a8fa8" },
-]
-
-// Tier distribution over time
-export const TIER_HISTORY = [
-  { month: "Jan", platinum: 0, gold: 1, silver: 2, bronze: 1 },
-  { month: "Feb", platinum: 1, gold: 1, silver: 2, bronze: 1 },
-  { month: "Mar", platinum: 1, gold: 2, silver: 1, bronze: 1 },
-  { month: "Apr", platinum: 2, gold: 2, silver: 1, bronze: 0 },
-  { month: "May", platinum: 2, gold: 2, silver: 1, bronze: 0 },
 ]

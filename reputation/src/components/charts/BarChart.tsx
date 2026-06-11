@@ -25,7 +25,7 @@ const TOOLTIP_STYLE = {
   color: "#E8E6F0",
 }
 
-export function ArcBarChart({ data, height = 200, formatValue = (v) => `$${v}` }: BarChartProps) {
+export function ArcBarChart({ data, height = 200, formatValue = (v) => String(v) }: BarChartProps) {
   return (
     <ResponsiveContainer width="100%" height={height}>
       <RechartsBar data={data} margin={{ top: 4, right: 4, left: -20, bottom: 0 }} barSize={28}>
@@ -40,12 +40,12 @@ export function ArcBarChart({ data, height = 200, formatValue = (v) => `$${v}` }
           tick={{ fontSize: 10, fill: "#7a8fa8" }}
           tickLine={false}
           axisLine={false}
-          tickFormatter={(v) => `$${v}`}
+          tickFormatter={(v) => formatValue(Number(v))}
         />
         <Tooltip
           contentStyle={TOOLTIP_STYLE}
           cursor={{ fill: "rgba(77,142,233,0.06)", radius: 8 }}
-          formatter={(value) => [formatValue(Number(value)), "Spend"]}
+          formatter={(value) => [formatValue(Number(value)), "Score"]}
         />
         <Bar dataKey="value" radius={[6, 6, 0, 0]}>
           {data.map((entry, i) => (

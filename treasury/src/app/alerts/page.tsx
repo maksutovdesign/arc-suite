@@ -1,6 +1,6 @@
-import type { Metadata } from "next"
-export const metadata: Metadata = { title: "Alerts — Arc Treasury" }
+"use client"
 
+import { useState } from "react"
 import { AlertTriangle, CheckCircle2, Bell, BellOff, ShieldAlert, History } from "lucide-react"
 import { PageHeader } from "@/components/dashboard/PageHeader"
 import { ArcButton } from "@/components/ui/ArcButton"
@@ -21,8 +21,9 @@ const arcCard = {
 }
 
 export default function AlertsPage() {
-  const active = ALERTS.filter((a) => !a.resolved)
-  const resolved = ALERTS.filter((a) => a.resolved)
+  const [resolvedIds, setResolvedIds] = useState<Set<string>>(new Set())
+  const active = ALERTS.filter((a) => !a.resolved && !resolvedIds.has(a.id))
+  const resolved = ALERTS.filter((a) => a.resolved || resolvedIds.has(a.id))
 
   return (
     <div className="flex flex-col min-h-full">
@@ -118,7 +119,7 @@ export default function AlertsPage() {
 
                     <div className="flex items-center gap-2 shrink-0 ml-4">
                       <ArcButton variant="danger" size="sm">Pause agent</ArcButton>
-                      <ArcButton variant="primary" size="sm">Resolve</ArcButton>
+                      <ArcButton variant="primary" size="sm" onClick={() => setResolvedIds(s => new Set(s).add(alert.id))}>Resolve</ArcButton>
                     </div>
                   </div>
                 )
