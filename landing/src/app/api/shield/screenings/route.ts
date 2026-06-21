@@ -88,7 +88,8 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const providerResponse = await screenCircleAddress({ address, chain, idempotencyKey })
+    const providerResult = await screenCircleAddress({ address, chain, idempotencyKey })
+    const providerResponse = providerResult.response
     const policy = evaluateShieldPolicy(providerResponse)
     const screeningInput: Omit<ShieldScreening, "workspaceId" | "createdAt"> = {
       id: `scr_${randomUUID()}`,
@@ -107,7 +108,7 @@ export async function POST(request: NextRequest) {
       riskCategories: policy.riskCategories,
       reasons: policy.reasons,
       alertId: typeof providerResponse.alertId === "string" ? providerResponse.alertId : null,
-      rawResponse: providerResponse,
+      rawResponse: providerResult.rawResponse,
       requestId,
     }
     const stored = await insertSupabaseShieldScreening(screeningInput)

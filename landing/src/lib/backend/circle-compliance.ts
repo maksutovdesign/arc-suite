@@ -38,6 +38,11 @@ export type CircleScreeningResponse = {
   [key: string]: unknown
 }
 
+export type CircleScreeningResult = {
+  response: CircleScreeningResponse
+  rawResponse: Record<string, unknown>
+}
+
 export class CircleComplianceError extends Error {
   constructor(
     message: string,
@@ -61,7 +66,7 @@ export async function screenCircleAddress(input: {
   address: string
   chain: string
   idempotencyKey: string
-}): Promise<CircleScreeningResponse> {
+}): Promise<CircleScreeningResult> {
   const apiKey = process.env.CIRCLE_API_KEY
   if (!apiKey) {
     throw new CircleComplianceError("CIRCLE_API_KEY is not configured", 503, {
@@ -90,7 +95,10 @@ export async function screenCircleAddress(input: {
       throw new CircleComplianceError(message, response.status, payload)
     }
 
-    return payload as CircleScreeningResponse
+    return {
+      response: unwrapCircleResponse(payload),
+      rawResponse: payload,
+    }
   } catch (error) {
     if (error instanceof CircleComplianceError) throw error
     const message = error instanceof Error && error.name === "AbortError"
@@ -122,6 +130,7 @@ export function evaluateShieldPolicy(response: CircleScreeningResponse): {
   const riskCategories = uniqueStrings(reasons.flatMap((reason) => reason.riskCategories))
   const riskScore = highestRiskScore(reasons.map((reason) => reason.riskScore))
   const providerDenied = response.result?.toUpperCase() === "DENIED"
+  const providerApproved = response.result?.toUpperCase() === "APPROVED"
   const providerReview = actions.includes("REVIEW")
   const providerBlock = actions.includes("DENY") || actions.includes("FREEZE_WALLET")
 
@@ -153,6 +162,18 @@ export function evaluateShieldPolicy(response: CircleScreeningResponse): {
     }
   }
 
+  if (!providerApproved) {
+    return {
+      actions: actions.length > 0 ? actions : ["REVIEW"],
+      decision: "review",
+      decisionReason: "Circle response did not include a recognized APPROVED or DENIED result.",
+      reasons,
+      riskCategories,
+      riskScore,
+      ruleName: response.decision?.ruleName ?? null,
+    }
+  }
+
   return {
     actions,
     decision: "allow",
@@ -162,6 +183,14 @@ export function evaluateShieldPolicy(response: CircleScreeningResponse): {
     riskScore,
     ruleName: response.decision?.ruleName ?? null,
   }
+}
+
+function unwrapCircleResponse(payload: Record<string, unknown>): CircleScreeningResponse {
+  const data = payload.data
+  if (data && typeof data === "object" && !Array.isArray(data)) {
+    return data as CircleScreeningResponse
+  }
+  return payload as CircleScreeningResponse
 }
 
 function highestRiskScore(scores: string[]) {
