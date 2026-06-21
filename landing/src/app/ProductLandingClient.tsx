@@ -67,6 +67,21 @@ const productDetails = [
     ],
     bullets: ["Circle address screening", "Allow, review and block policy", "Supabase audit history"],
   },
+  {
+    key: "flow",
+    name: "Arc Flow",
+    eyebrow: "Payment orchestration",
+    title: "One policy-gated path from intent to onchain settlement.",
+    text: "Orchestrate Shield screening, reputation and budget access checks, Circle wallet execution, Arc Testnet receipts and the resulting reputation update under one run ID.",
+    image: "",
+    imageAlt: "Arc Flow pipeline showing screening, access policy, Arc settlement and reputation update",
+    stats: [
+      ["4", "atomic stages"],
+      ["1", "auditable run ID"],
+      ["P0", "launch priority"],
+    ],
+    bullets: ["Fail-closed compliance gate", "Idempotent Arc USDC settlement", "End-to-end execution history"],
+  },
 ]
 
 const steps = [
@@ -77,7 +92,7 @@ const steps = [
 ]
 
 const metrics = [
-  ["4", "connected products"],
+  ["5", "connected products"],
   ["25,482", "agent transactions in demo"],
   ["24.8M", "marketplace request volume"],
   ["99.72%", "average uptime in marketplace stats"],
@@ -200,7 +215,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
   const activeProduct = liveProductDetails.find((product) => product.key === activeProductKey) ?? liveProductDetails[0]
   const liveMetrics = pilotSummary
     ? [
-        ["4", "connected products"],
+        ["5", "connected products"],
         [formatCompact(pilotSummary.marketplace.requests), "marketplace request volume"],
         [`${pilotSummary.marketplace.avgUptimePct}%`, "average uptime from API"],
         [apiStatus === "live" ? "Live" : "Fallback", "pilot API status"],
@@ -242,6 +257,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
             <a href="#system">Product</a>
             <a href="#loop">Loop</a>
             <a href="#proof">Proof</a>
+            <a href="/flow">Flow</a>
             <a href="/shield">Shield</a>
             <a href="/investors" onClick={() => trackLandingConversion({ eventName: "investors_click", placement: "nav" })}>Investors</a>
           </div>
@@ -288,7 +304,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
           <p className="hero-text">
             Arc Suite is a connected product system built for autonomous USDC commerce:
             Treasury controls spend, Shield screens counterparties, Reputation scores behavior,
-            and Marketplace gates x402 API access.
+            Marketplace gates x402 API access, and Flow executes the complete policy pipeline.
           </p>
           <div className="hero-actions">
             <a
@@ -377,7 +393,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
       <section className="section" id="system">
         <div className="section-heading">
           <p className="kicker">The product system</p>
-          <h2>Three apps. One enforcement layer.</h2>
+          <h2>Five connected products. One enforcement layer.</h2>
           <p>
             Arc Suite is designed around a shared cast of agents moving through the
             complete economic journey, from wallet spend to trust scoring to service access.
@@ -459,6 +475,22 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
                     <b>DENY · REVIEW</b>
                   </div>
                   <a href="/shield">Open live console</a>
+                </div>
+              ) : activeProduct.key === "flow" ? (
+                <div className="flow-product-preview" aria-label={activeProduct.imageAlt}>
+                  <div className="shield-preview-top"><span>ARC FLOW / RUN</span><strong>POLICY PIPELINE</strong></div>
+                  {[
+                    ["01", "Shield screening", "PASSED"],
+                    ["02", "Access policy", "PASSED"],
+                    ["03", "Arc settlement", "CONFIRMED"],
+                    ["04", "Reputation update", "+3"],
+                  ].map(([index, label, status]) => (
+                    <div className="flow-preview-step" key={label}>
+                      <i>{index}</i><span>{label}</span><b>{status}</b>
+                    </div>
+                  ))}
+                  <div className="flow-preview-receipt"><span>Arc Testnet receipt</span><code>0x84de...3a921</code></div>
+                  <a href="/flow">Open live console</a>
                 </div>
               ) : (
                 <img src={activeProduct.image} alt={activeProduct.imageAlt} />
@@ -708,6 +740,10 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
           </div>
           <div className="map-core">
             <div>
+              <span>Flow</span>
+              <b>Policy orchestration</b>
+            </div>
+            <div>
               <span>Treasury</span>
               <b>Spend controls</b>
             </div>
@@ -738,7 +774,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
         </div>
         <div className="text-stack">
           <p>
-            Treasury answers: how do I control what my agents spend? Reputation
+            Flow answers: how does a payment move safely from intent to settlement? Treasury answers: how do I control what my agents spend? Reputation
             answers: which agents can services trust? Marketplace answers: where do
             agents find services to pay for?
           </p>

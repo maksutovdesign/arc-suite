@@ -1,6 +1,6 @@
 # Arc Suite — AI Agent Infrastructure for the Onchain Economy
 
-> **Four interconnected products built on [Arc](https://arc.io) and [Circle](https://circle.com) — demonstrating what the agentic economy looks like when AI agents can spend, screen risk, earn trust, and pay for services autonomously using USDC.**
+> **Five interconnected products built on [Arc](https://arc.io) and [Circle](https://circle.com) — demonstrating what the agentic economy looks like when AI agents can spend, screen risk, earn trust, and pay for services autonomously using USDC.**
 
 Built with **Next.js 16**, **TypeScript**, **Tailwind CSS v4**, **shadcn/ui v4**, and the **Arc / Circle SDK**.
 
@@ -14,6 +14,7 @@ Built with **Next.js 16**, **TypeScript**, **Tailwind CSS v4**, **shadcn/ui v4**
 | 🛡️ **Arc Reputation** | [reputation-five.vercel.app](https://reputation-five.vercel.app) | On-chain trust scoring layer for agents |
 | 🛒 **Arc Marketplace** | [marketplace-eosin-eight.vercel.app](https://marketplace-eosin-eight.vercel.app) | Discovery platform for x402-enabled APIs |
 | **Arc Shield** | [arcsuite-app.vercel.app/shield](https://arcsuite-app.vercel.app/shield) | Circle-powered compliance screening and risk policy |
+| **Arc Flow** | [arcsuite-app.vercel.app/flow](https://arcsuite-app.vercel.app/flow) | Compliance-to-settlement payment orchestration |
 
 ---
 
@@ -141,7 +142,7 @@ arc/
 
 Each app is an independent Next.js 16 project sharing:
 - **Design system**: Space Grotesk font, Arc dark theme, `ArcButton`, `ArcProgress`, `StatCard`, `PageHeader`
-- **EcosystemNav**: top bar linking all four products together
+- **EcosystemNav**: top bar linking all five products together
 - **LiveTicker**: animated real-time event feed in each app's header
 
 ---
@@ -184,6 +185,8 @@ landing/supabase/migrations/2026060502_investor_leads.sql
 landing/supabase/migrations/2026060601_rate_limit_events.sql
 landing/supabase/migrations/2026060701_ops_health_checks.sql
 landing/supabase/migrations/2026062101_arc_settlements.sql
+landing/supabase/migrations/2026062102_arc_shield.sql
+landing/supabase/migrations/2026062201_arc_flow.sql
 landing/supabase/seed.sql
 ```
 
@@ -322,12 +325,13 @@ Arc Testnet:
 
 ## Built for Arc/Circle
 
-These products were designed to showcase the Arc ecosystem to the **Arc community** and **Circle team** — demonstrating four complementary products that together form an infrastructure layer for the agentic economy:
+These products were designed to showcase the Arc ecosystem to the **Arc community** and **Circle team** — demonstrating five complementary products that together form an infrastructure layer for the agentic economy:
 
 - **Treasury** answers: *"How do I control what my agents spend?"*
 - **Reputation** answers: *"How do I know which agents I can trust?"*
 - **Marketplace** answers: *"Where do agents find services to pay for?"*
 - **Shield** answers: *"Should this wallet be allowed to transact?"*
+- **Flow** answers: *"How does an approved payment move safely from intent to settlement?"*
 
 ---
 

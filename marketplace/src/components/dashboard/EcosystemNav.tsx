@@ -2,19 +2,21 @@
  * EcosystemNav — thin top banner linking all Arc Suite products.
  * Shows in every app so presenters can navigate between them instantly.
  */
-export function EcosystemNav({ current }: { current: "treasury" | "reputation" | "marketplace" | "shield" }) {
+export function EcosystemNav({ current }: { current: "treasury" | "reputation" | "marketplace" | "shield" | "flow" }) {
   const urls = process.env.NODE_ENV === "production"
     ? {
         treasury: process.env.NEXT_PUBLIC_ARC_TREASURY_URL ?? "https://treasury-umber.vercel.app",
         reputation: process.env.NEXT_PUBLIC_ARC_REPUTATION_URL ?? "https://reputation-five.vercel.app",
         marketplace: process.env.NEXT_PUBLIC_ARC_MARKETPLACE_URL ?? "https://marketplace-eosin-eight.vercel.app",
         shield: process.env.NEXT_PUBLIC_ARC_SHIELD_URL ?? "https://arcsuite-app.vercel.app/shield",
+        flow: process.env.NEXT_PUBLIC_ARC_FLOW_URL ?? "https://arcsuite-app.vercel.app/flow",
       }
     : {
         treasury: "http://localhost:3001",
         reputation: "http://localhost:3002",
         marketplace: "http://localhost:3003",
         shield: "http://localhost:3100/shield",
+        flow: "http://localhost:3100/flow",
       }
 
   const APPS = [
@@ -41,6 +43,14 @@ export function EcosystemNav({ current }: { current: "treasury" | "reputation" |
       url: urls.marketplace,
       color: "#34d399",
       emoji: "🛒",
+    },
+    {
+      id: "flow",
+      label: "Arc Flow",
+      sub: "Orchestration",
+      url: urls.flow,
+      color: "#22d3ee",
+      emoji: "F",
     },
     {
       id: "shield",

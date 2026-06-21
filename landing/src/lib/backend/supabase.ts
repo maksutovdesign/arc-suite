@@ -9,6 +9,7 @@ import type {
   ArcSettlement,
   ArcSettlementResult,
   ArcSettlementStatus,
+  FlowRun,
   ApiKeyScope,
   ApiListing,
   ApiProvider,
@@ -282,6 +283,35 @@ type ShieldScreeningRow = {
   created_at: string
 }
 
+type FlowRunRow = {
+  id: string
+  workspace_id: string
+  idempotency_key: string
+  agent_id: string
+  api_id: string
+  recipient_address: string
+  screening_chain: string
+  amount_usdc: string | number
+  status: FlowRun["status"]
+  current_step: FlowRun["currentStep"]
+  steps: FlowRun["steps"] | null
+  screening_id: string | null
+  screening_decision: FlowRun["screeningDecision"]
+  access_decision_id: string | null
+  access_allowed: boolean | null
+  settlement_id: string | null
+  tx_hash: string | null
+  explorer_url: string | null
+  reputation_score_before: number | null
+  reputation_score_after: number | null
+  error_code: string | null
+  error_message: string | null
+  request_id: string | null
+  created_at: string
+  updated_at: string
+  completed_at: string | null
+}
+
 export type BackendDataset = {
   workspace: {
     id: string
@@ -537,6 +567,118 @@ export async function checkSupabaseShieldReadiness() {
   if (!isSupabaseConfigured()) return false
   try {
     await getRows<Pick<ShieldScreeningRow, "id">>("compliance_screenings", "select=id&limit=1")
+    return true
+  } catch {
+    return false
+  }
+}
+
+export async function insertSupabaseFlowRun(
+  run: Omit<FlowRun, "workspaceId" | "createdAt" | "updatedAt">,
+): Promise<FlowRun | null> {
+  if (!isSupabaseConfigured()) return null
+  try {
+    const rows = await postRows<FlowRunRow>("flow_runs", [{
+      id: run.id,
+      workspace_id: WORKSPACE_ID,
+      idempotency_key: run.idempotencyKey,
+      agent_id: run.agentId,
+      api_id: run.apiId,
+      recipient_address: run.recipientAddress,
+      screening_chain: run.screeningChain,
+      amount_usdc: run.amountUsdc,
+      status: run.status,
+      current_step: run.currentStep,
+      steps: run.steps,
+      screening_id: run.screeningId,
+      screening_decision: run.screeningDecision,
+      access_decision_id: run.accessDecisionId,
+      access_allowed: run.accessAllowed,
+      settlement_id: run.settlementId,
+      tx_hash: run.txHash,
+      explorer_url: run.explorerUrl,
+      reputation_score_before: run.reputationScoreBefore,
+      reputation_score_after: run.reputationScoreAfter,
+      error_code: run.errorCode,
+      error_message: run.errorMessage,
+      request_id: run.requestId,
+      completed_at: run.completedAt,
+    }])
+    return rows[0] ? mapFlowRun(rows[0]) : null
+  } catch (error) {
+    logSupabaseError("flow run insert", error)
+    return null
+  }
+}
+
+export async function updateSupabaseFlowRun(
+  runId: string,
+  updates: Partial<Omit<FlowRun, "id" | "workspaceId" | "idempotencyKey" | "createdAt">>,
+): Promise<FlowRun | null> {
+  if (!isSupabaseConfigured()) return null
+  const row: Partial<FlowRunRow> = { updated_at: new Date().toISOString() }
+  if (updates.status !== undefined) row.status = updates.status
+  if (updates.currentStep !== undefined) row.current_step = updates.currentStep
+  if (updates.steps !== undefined) row.steps = updates.steps
+  if (updates.screeningId !== undefined) row.screening_id = updates.screeningId
+  if (updates.screeningDecision !== undefined) row.screening_decision = updates.screeningDecision
+  if (updates.accessDecisionId !== undefined) row.access_decision_id = updates.accessDecisionId
+  if (updates.accessAllowed !== undefined) row.access_allowed = updates.accessAllowed
+  if (updates.settlementId !== undefined) row.settlement_id = updates.settlementId
+  if (updates.txHash !== undefined) row.tx_hash = updates.txHash
+  if (updates.explorerUrl !== undefined) row.explorer_url = updates.explorerUrl
+  if (updates.reputationScoreBefore !== undefined) row.reputation_score_before = updates.reputationScoreBefore
+  if (updates.reputationScoreAfter !== undefined) row.reputation_score_after = updates.reputationScoreAfter
+  if (updates.errorCode !== undefined) row.error_code = updates.errorCode
+  if (updates.errorMessage !== undefined) row.error_message = updates.errorMessage
+  if (updates.requestId !== undefined) row.request_id = updates.requestId
+  if (updates.completedAt !== undefined) row.completed_at = updates.completedAt
+
+  try {
+    const rows = await patchRows<FlowRunRow>(
+      "flow_runs",
+      `id=eq.${encodeURIComponent(runId)}&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}`,
+      row,
+    )
+    return rows[0] ? mapFlowRun(rows[0]) : null
+  } catch (error) {
+    logSupabaseError("flow run update", error)
+    return null
+  }
+}
+
+export async function findSupabaseFlowRun(idempotencyKey: string): Promise<FlowRun | null> {
+  if (!isSupabaseConfigured()) return null
+  try {
+    const rows = await getRows<FlowRunRow>(
+      "flow_runs",
+      `select=*&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&idempotency_key=eq.${encodeURIComponent(idempotencyKey)}&limit=1`,
+    )
+    return rows[0] ? mapFlowRun(rows[0]) : null
+  } catch (error) {
+    logSupabaseError("flow run lookup", error)
+    return null
+  }
+}
+
+export async function listSupabaseFlowRuns(limit = 50): Promise<FlowRun[] | null> {
+  if (!isSupabaseConfigured()) return null
+  try {
+    const rows = await getRows<FlowRunRow>(
+      "flow_runs",
+      `select=*&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&order=created_at.desc&limit=${limit}`,
+    )
+    return rows.map(mapFlowRun)
+  } catch (error) {
+    logSupabaseError("flow run list", error)
+    return null
+  }
+}
+
+export async function checkSupabaseFlowReadiness() {
+  if (!isSupabaseConfigured()) return false
+  try {
+    await getRows<Pick<FlowRunRow, "id">>("flow_runs", "select=id&limit=1")
     return true
   } catch {
     return false
@@ -1248,6 +1390,37 @@ function mapShieldScreening(row: ShieldScreeningRow): ShieldScreening {
     rawResponse: row.raw_response ?? {},
     requestId: row.request_id,
     createdAt: row.created_at,
+  }
+}
+
+function mapFlowRun(row: FlowRunRow): FlowRun {
+  return {
+    id: row.id,
+    workspaceId: row.workspace_id,
+    idempotencyKey: row.idempotency_key,
+    agentId: row.agent_id,
+    apiId: row.api_id,
+    recipientAddress: row.recipient_address,
+    screeningChain: row.screening_chain,
+    amountUsdc: toNumber(row.amount_usdc),
+    status: row.status,
+    currentStep: row.current_step,
+    steps: row.steps ?? [],
+    screeningId: row.screening_id,
+    screeningDecision: row.screening_decision,
+    accessDecisionId: row.access_decision_id,
+    accessAllowed: row.access_allowed,
+    settlementId: row.settlement_id,
+    txHash: row.tx_hash,
+    explorerUrl: row.explorer_url,
+    reputationScoreBefore: row.reputation_score_before,
+    reputationScoreAfter: row.reputation_score_after,
+    errorCode: row.error_code,
+    errorMessage: row.error_message,
+    requestId: row.request_id,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+    completedAt: row.completed_at,
   }
 }
 

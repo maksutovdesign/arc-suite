@@ -26,6 +26,11 @@ const targets = [
   },
   {
     kind: "html",
+    name: "Arc Flow console",
+    url: `${landingBase}/flow`,
+  },
+  {
+    kind: "html",
     name: "Treasury app",
     url: process.env.ARC_SMOKE_TREASURY_URL ?? DEFAULTS.treasury,
   },

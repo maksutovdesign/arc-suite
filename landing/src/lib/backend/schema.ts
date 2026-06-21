@@ -12,6 +12,8 @@ export type OpsHealthCheckResultStatus = "ok" | "warn" | "failed"
 export type ArcSettlementStatus = "policy_denied" | "approved" | "submitted" | "confirmed" | "failed"
 export type ShieldDecision = "allow" | "review" | "block"
 export type ShieldProviderStatus = "completed" | "provider_error"
+export type FlowRunStatus = "running" | "completed" | "review" | "blocked" | "failed"
+export type FlowStepStatus = "pending" | "running" | "passed" | "review" | "blocked" | "failed" | "skipped"
 
 export type Agent = {
   id: string
@@ -217,6 +219,52 @@ export type ShieldSummary = {
   blocked: number
   providerErrors: number
   lastScreenedAt: string | null
+}
+
+export type FlowStep = {
+  key: "screening" | "access" | "settlement" | "reputation"
+  label: string
+  status: FlowStepStatus
+  detail: string
+  completedAt: string | null
+}
+
+export type FlowRun = {
+  id: string
+  workspaceId: string
+  idempotencyKey: string
+  agentId: string
+  apiId: string
+  recipientAddress: string
+  screeningChain: string
+  amountUsdc: number
+  status: FlowRunStatus
+  currentStep: FlowStep["key"]
+  steps: FlowStep[]
+  screeningId: string | null
+  screeningDecision: ShieldDecision | null
+  accessDecisionId: string | null
+  accessAllowed: boolean | null
+  settlementId: string | null
+  txHash: string | null
+  explorerUrl: string | null
+  reputationScoreBefore: number | null
+  reputationScoreAfter: number | null
+  errorCode: string | null
+  errorMessage: string | null
+  requestId: string | null
+  createdAt: string
+  updatedAt: string
+  completedAt: string | null
+}
+
+export type FlowSummary = {
+  total: number
+  completed: number
+  review: number
+  blocked: number
+  failed: number
+  lastRunAt: string | null
 }
 
 export type PilotSummary = {
