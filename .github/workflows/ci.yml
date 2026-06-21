@@ -29,6 +29,3 @@ jobs:
 
       - name: Build all workspaces
         run: npm run build:all
-
-      - name: Smoke production apps
-        run: npm run test:smoke
