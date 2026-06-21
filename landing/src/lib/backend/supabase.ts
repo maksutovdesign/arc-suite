@@ -9,6 +9,12 @@ import type {
   ArcSettlement,
   ArcSettlementResult,
   ArcSettlementStatus,
+  BillingAccount,
+  BillingInvoice,
+  BillingOverview,
+  BillingPlan,
+  BillingSettlementBatch,
+  BillingUsageEvent,
   FlowRun,
   ApiKeyScope,
   ApiListing,
@@ -310,6 +316,92 @@ type FlowRunRow = {
   created_at: string
   updated_at: string
   completed_at: string | null
+}
+
+type BillingPlanRow = {
+  id: string
+  workspace_id: string
+  name: string
+  monthly_fee_usdc: string | number
+  included_units: string | number
+  discount_bps: number
+  active: boolean
+  created_at: string
+}
+
+type BillingAccountRow = {
+  id: string
+  workspace_id: string
+  agent_id: string
+  plan_id: string
+  prepaid_balance_usdc: string | number
+  low_balance_threshold_usdc: string | number
+  status: BillingAccount["status"]
+  current_period_start: string
+  current_period_end: string
+  created_at: string
+  updated_at: string
+}
+
+type BillingUsageRow = {
+  id: string
+  workspace_id: string
+  billing_account_id: string
+  agent_id: string
+  api_id: string
+  idempotency_key: string
+  units: string | number
+  unit_price_usdc: string | number
+  gross_amount_usdc: string | number
+  discount_usdc: string | number
+  net_amount_usdc: string | number
+  pricing_unit: string
+  invoice_id: string
+  batch_id: string | null
+  metadata: Record<string, unknown> | null
+  occurred_at: string
+  created_at: string
+}
+
+type BillingInvoiceRow = {
+  id: string
+  workspace_id: string
+  billing_account_id: string
+  agent_id: string
+  period_start: string
+  period_end: string
+  status: BillingInvoice["status"]
+  usage_count: number
+  subtotal_usdc: string | number
+  discount_usdc: string | number
+  total_usdc: string | number
+  batch_id: string | null
+  created_at: string
+  updated_at: string
+}
+
+type BillingBatchRow = {
+  id: string
+  workspace_id: string
+  status: BillingSettlementBatch["status"]
+  usage_count: number
+  invoice_count: number
+  gross_amount_usdc: string | number
+  net_amount_usdc: string | number
+  settlement_id: string | null
+  tx_hash: string | null
+  explorer_url: string | null
+  created_at: string
+  updated_at: string
+  settled_at: string | null
+}
+
+type BillingSummaryRow = {
+  prepaid_balance_usdc: string | number
+  metered_usage_usdc: string | number
+  unbatched_usage_usdc: string | number
+  active_accounts: string | number
+  low_balance_accounts: string | number
 }
 
 export type BackendDataset = {
@@ -679,6 +771,96 @@ export async function checkSupabaseFlowReadiness() {
   if (!isSupabaseConfigured()) return false
   try {
     await getRows<Pick<FlowRunRow, "id">>("flow_runs", "select=id&limit=1")
+    return true
+  } catch {
+    return false
+  }
+}
+
+export async function getSupabaseBillingOverview(limit = 50): Promise<BillingOverview | null> {
+  if (!isSupabaseConfigured()) return null
+  try {
+    const [planRows, accountRows, usageRows, invoiceRows, batchRows, summaryRow] = await Promise.all([
+      getRows<BillingPlanRow>("billing_plans", `select=*&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&order=created_at.asc`),
+      getRows<BillingAccountRow>("billing_accounts", `select=*&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&order=created_at.asc`),
+      getRows<BillingUsageRow>("billing_usage_events", `select=*&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&order=occurred_at.desc&limit=${limit}`),
+      getRows<BillingInvoiceRow>("billing_invoices", `select=*&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&order=created_at.desc&limit=${limit}`),
+      getRows<BillingBatchRow>("billing_settlement_batches", `select=*&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&order=created_at.desc&limit=${limit}`),
+      postRpc<BillingSummaryRow>("get_billing_summary", { p_workspace_id: WORKSPACE_ID }),
+    ])
+    const accounts = accountRows.map(mapBillingAccount)
+    const usage = usageRows.map(mapBillingUsage)
+    return {
+      plans: planRows.map(mapBillingPlan),
+      accounts,
+      usage,
+      invoices: invoiceRows.map(mapBillingInvoice),
+      batches: batchRows.map(mapBillingBatch),
+      summary: {
+        prepaidBalanceUsdc: toNumber(summaryRow.prepaid_balance_usdc),
+        meteredUsageUsdc: toNumber(summaryRow.metered_usage_usdc),
+        unbatchedUsageUsdc: toNumber(summaryRow.unbatched_usage_usdc),
+        activeAccounts: toNumber(summaryRow.active_accounts),
+        lowBalanceAccounts: toNumber(summaryRow.low_balance_accounts),
+      },
+    }
+  } catch (error) {
+    logSupabaseError("billing overview", error)
+    return null
+  }
+}
+
+export async function recordSupabaseBillingUsage(input: {
+  id: string
+  agentId: string
+  apiId: string
+  idempotencyKey: string
+  units: number
+  metadata: Record<string, unknown>
+  occurredAt: string
+}): Promise<BillingUsageEvent | null> {
+  if (!isSupabaseConfigured()) return null
+  try {
+    const row = await postRpc<BillingUsageRow>("record_billing_usage", {
+      p_event_id: input.id,
+      p_workspace_id: WORKSPACE_ID,
+      p_agent_id: input.agentId,
+      p_api_id: input.apiId,
+      p_idempotency_key: input.idempotencyKey,
+      p_units: input.units,
+      p_metadata: input.metadata,
+      p_occurred_at: input.occurredAt,
+    })
+    return row ? mapBillingUsage(row) : null
+  } catch (error) {
+    logSupabaseError("billing usage", error)
+    throw error
+  }
+}
+
+export async function topUpSupabaseBillingAccount(agentId: string, amountUsdc: number): Promise<BillingAccount | null> {
+  if (!isSupabaseConfigured()) return null
+  const row = await postRpc<BillingAccountRow>("top_up_billing_account", {
+    p_workspace_id: WORKSPACE_ID,
+    p_agent_id: agentId,
+    p_amount_usdc: amountUsdc,
+  })
+  return row ? mapBillingAccount(row) : null
+}
+
+export async function createSupabaseBillingBatch(): Promise<BillingSettlementBatch | null> {
+  if (!isSupabaseConfigured()) return null
+  const row = await postRpc<BillingBatchRow>("create_billing_settlement_batch", {
+    p_batch_id: `batch_${randomUUID()}`,
+    p_workspace_id: WORKSPACE_ID,
+  })
+  return row ? mapBillingBatch(row) : null
+}
+
+export async function checkSupabaseBillingReadiness() {
+  if (!isSupabaseConfigured()) return false
+  try {
+    await getRows<Pick<BillingAccountRow, "id">>("billing_accounts", "select=id&limit=1")
     return true
   } catch {
     return false
@@ -1125,7 +1307,20 @@ export async function checkSupabaseReadiness() {
     }
   }
 
-  const tables = ["workspaces", "agents", "analytics_events", "investor_leads", "rate_limit_events", "ops_health_checks", "arc_settlements"]
+  const tables = [
+    "workspaces",
+    "agents",
+    "analytics_events",
+    "investor_leads",
+    "rate_limit_events",
+    "ops_health_checks",
+    "arc_settlements",
+    "billing_plans",
+    "billing_accounts",
+    "billing_usage_events",
+    "billing_invoices",
+    "billing_settlement_batches",
+  ]
   const checks = await Promise.all(tables.map(async (table) => {
     try {
       await getRows(table, "select=id&limit=1")
@@ -1188,7 +1383,10 @@ async function postRpc<T>(functionName: string, body: unknown): Promise<T> {
     method: "POST",
   })
 
-  if (!response.ok) throw new Error(`Supabase RPC failed for ${functionName}`)
+  if (!response.ok) {
+    const payload = await response.json().catch(() => null) as { message?: string; details?: string } | null
+    throw new Error(payload?.message ?? payload?.details ?? `Supabase RPC failed for ${functionName}`)
+  }
   return response.json() as Promise<T>
 }
 
@@ -1421,6 +1619,56 @@ function mapFlowRun(row: FlowRunRow): FlowRun {
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     completedAt: row.completed_at,
+  }
+}
+
+function mapBillingPlan(row: BillingPlanRow): BillingPlan {
+  return {
+    id: row.id, workspaceId: row.workspace_id, name: row.name,
+    monthlyFeeUsdc: toNumber(row.monthly_fee_usdc), includedUnits: toNumber(row.included_units),
+    discountBps: row.discount_bps, active: row.active, createdAt: row.created_at,
+  }
+}
+
+function mapBillingAccount(row: BillingAccountRow): BillingAccount {
+  return {
+    id: row.id, workspaceId: row.workspace_id, agentId: row.agent_id, planId: row.plan_id,
+    prepaidBalanceUsdc: toNumber(row.prepaid_balance_usdc),
+    lowBalanceThresholdUsdc: toNumber(row.low_balance_threshold_usdc),
+    status: row.status, currentPeriodStart: row.current_period_start, currentPeriodEnd: row.current_period_end,
+    createdAt: row.created_at, updatedAt: row.updated_at,
+  }
+}
+
+function mapBillingUsage(row: BillingUsageRow): BillingUsageEvent {
+  return {
+    id: row.id, workspaceId: row.workspace_id, billingAccountId: row.billing_account_id,
+    agentId: row.agent_id, apiId: row.api_id, idempotencyKey: row.idempotency_key,
+    units: toNumber(row.units), unitPriceUsdc: toNumber(row.unit_price_usdc),
+    grossAmountUsdc: toNumber(row.gross_amount_usdc), discountUsdc: toNumber(row.discount_usdc),
+    netAmountUsdc: toNumber(row.net_amount_usdc), pricingUnit: row.pricing_unit,
+    invoiceId: row.invoice_id, batchId: row.batch_id, metadata: row.metadata ?? {},
+    occurredAt: row.occurred_at, createdAt: row.created_at,
+  }
+}
+
+function mapBillingInvoice(row: BillingInvoiceRow): BillingInvoice {
+  return {
+    id: row.id, workspaceId: row.workspace_id, billingAccountId: row.billing_account_id,
+    agentId: row.agent_id, periodStart: row.period_start, periodEnd: row.period_end,
+    status: row.status, usageCount: row.usage_count, subtotalUsdc: toNumber(row.subtotal_usdc),
+    discountUsdc: toNumber(row.discount_usdc), totalUsdc: toNumber(row.total_usdc),
+    batchId: row.batch_id, createdAt: row.created_at, updatedAt: row.updated_at,
+  }
+}
+
+function mapBillingBatch(row: BillingBatchRow): BillingSettlementBatch {
+  return {
+    id: row.id, workspaceId: row.workspace_id, status: row.status, usageCount: row.usage_count,
+    invoiceCount: row.invoice_count, grossAmountUsdc: toNumber(row.gross_amount_usdc),
+    netAmountUsdc: toNumber(row.net_amount_usdc), settlementId: row.settlement_id,
+    txHash: row.tx_hash, explorerUrl: row.explorer_url, createdAt: row.created_at,
+    updatedAt: row.updated_at, settledAt: row.settled_at,
   }
 }
 

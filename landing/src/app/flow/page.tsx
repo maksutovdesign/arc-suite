@@ -19,6 +19,7 @@ export default function FlowPage() {
         <div className="nav-cluster">
           <div className="nav-links" aria-label="Flow navigation">
             <Link href="/">Product</Link>
+            <Link href="/billing">Billing</Link>
             <Link href="/shield">Shield</Link>
             <a href="https://treasury-umber.vercel.app">Treasury</a>
             <a href="https://reputation-five.vercel.app">Reputation</a>

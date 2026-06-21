@@ -31,6 +31,11 @@ const targets = [
   },
   {
     kind: "html",
+    name: "Arc Billing console",
+    url: `${landingBase}/billing`,
+  },
+  {
+    kind: "html",
     name: "Treasury app",
     url: process.env.ARC_SMOKE_TREASURY_URL ?? DEFAULTS.treasury,
   },

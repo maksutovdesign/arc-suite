@@ -82,6 +82,21 @@ const productDetails = [
     ],
     bullets: ["Fail-closed compliance gate", "Idempotent Arc USDC settlement", "End-to-end execution history"],
   },
+  {
+    key: "billing",
+    name: "Arc Billing",
+    eyebrow: "x402 metering",
+    title: "Usage-based billing for APIs that software can buy autonomously.",
+    text: "Meter every API call, deduct prepaid USDC credits atomically, issue invoices and aggregate nanopayments into settlement-ready provider batches.",
+    image: "",
+    imageAlt: "Arc Billing console with prepaid balances, usage metering, invoices and nanopayment batches",
+    stats: [
+      ["402", "payment-native HTTP"],
+      ["6 dp", "USDC metering"],
+      ["1", "atomic usage ledger"],
+    ],
+    bullets: ["Prepaid agent balances", "Plans, usage and invoices", "Batched provider settlement"],
+  },
 ]
 
 const steps = [
@@ -92,7 +107,7 @@ const steps = [
 ]
 
 const metrics = [
-  ["5", "connected products"],
+  ["6", "connected products"],
   ["25,482", "agent transactions in demo"],
   ["24.8M", "marketplace request volume"],
   ["99.72%", "average uptime in marketplace stats"],
@@ -215,7 +230,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
   const activeProduct = liveProductDetails.find((product) => product.key === activeProductKey) ?? liveProductDetails[0]
   const liveMetrics = pilotSummary
     ? [
-        ["5", "connected products"],
+        ["6", "connected products"],
         [formatCompact(pilotSummary.marketplace.requests), "marketplace request volume"],
         [`${pilotSummary.marketplace.avgUptimePct}%`, "average uptime from API"],
         [apiStatus === "live" ? "Live" : "Fallback", "pilot API status"],
@@ -257,6 +272,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
             <a href="#system">Product</a>
             <a href="#loop">Loop</a>
             <a href="#proof">Proof</a>
+            <a href="/billing">Billing</a>
             <a href="/flow">Flow</a>
             <a href="/shield">Shield</a>
             <a href="/investors" onClick={() => trackLandingConversion({ eventName: "investors_click", placement: "nav" })}>Investors</a>
@@ -304,7 +320,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
           <p className="hero-text">
             Arc Suite is a connected product system built for autonomous USDC commerce:
             Treasury controls spend, Shield screens counterparties, Reputation scores behavior,
-            Marketplace gates x402 API access, and Flow executes the complete policy pipeline.
+            Marketplace sells x402 API access, Billing meters usage, and Flow executes the complete policy pipeline.
           </p>
           <div className="hero-actions">
             <a
@@ -393,7 +409,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
       <section className="section" id="system">
         <div className="section-heading">
           <p className="kicker">The product system</p>
-          <h2>Five connected products. One enforcement layer.</h2>
+          <h2>Six connected products. One economic operating layer.</h2>
           <p>
             Arc Suite is designed around a shared cast of agents moving through the
             complete economic journey, from wallet spend to trust scoring to service access.
@@ -491,6 +507,23 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
                   ))}
                   <div className="flow-preview-receipt"><span>Arc Testnet receipt</span><code>0x84de...3a921</code></div>
                   <a href="/flow">Open live console</a>
+                </div>
+              ) : activeProduct.key === "billing" ? (
+                <div className="billing-product-preview" aria-label={activeProduct.imageAlt}>
+                  <div className="shield-preview-top"><span>ARC BILLING / x402</span><strong>METERED</strong></div>
+                  <div className="billing-preview-balance"><span>Prepaid balance</span><strong>49.973 USDC</strong></div>
+                  {[
+                    ["Market Data Pro", "12 units", "0.0324"],
+                    ["GPT Inference", "1 request", "0.0180"],
+                    ["Weather Oracle", "20 calls", "0.0060"],
+                  ].map(([label, units, amount]) => (
+                    <div className="billing-preview-row" key={label}>
+                      <span><b>{label}</b><small>{units}</small></span>
+                      <strong>{amount} USDC</strong>
+                    </div>
+                  ))}
+                  <div className="flow-preview-receipt"><span>Settlement batch</span><code>3 events · READY</code></div>
+                  <a href="/billing">Open live console</a>
                 </div>
               ) : (
                 <img src={activeProduct.image} alt={activeProduct.imageAlt} />
@@ -755,6 +788,10 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
               <span>Marketplace</span>
               <b>x402 access</b>
             </div>
+            <div>
+              <span>Billing</span>
+              <b>Metering & invoices</b>
+            </div>
           </div>
           <div className="map-node arc">
             <span>Arc / Circle</span>
@@ -774,7 +811,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
         </div>
         <div className="text-stack">
           <p>
-            Flow answers: how does a payment move safely from intent to settlement? Treasury answers: how do I control what my agents spend? Reputation
+            Flow answers: how does a payment move safely from intent to settlement? Billing answers: how is every API call priced, invoiced and netted? Treasury answers: how do I control what my agents spend? Reputation
             answers: which agents can services trust? Marketplace answers: where do
             agents find services to pay for?
           </p>

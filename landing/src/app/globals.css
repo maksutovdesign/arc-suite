@@ -129,6 +129,7 @@ a {
 .nav-links a {
   display: inline-flex;
   align-items: center;
+  flex: 0 0 auto;
   min-height: 34px;
   padding: 0 12px;
   border-radius: 7px;
@@ -792,6 +793,73 @@ h3 {
 }
 
 .flow-product-preview > a {
+  justify-self: start;
+  margin-top: 18px;
+  color: var(--cyan);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.billing-product-preview {
+  display: grid;
+  align-content: start;
+  min-height: 430px;
+  padding: 22px;
+  background: #0b0f14;
+}
+
+.billing-preview-balance {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  margin: 18px 0 8px;
+  padding: 20px 16px;
+  border-left: 3px solid var(--yellow);
+  background: rgba(251, 191, 36, 0.055);
+}
+
+.billing-preview-balance span {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.billing-preview-balance strong {
+  color: var(--yellow);
+  font-size: 22px;
+}
+
+.billing-preview-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  min-height: 62px;
+  padding: 10px 2px;
+  border-bottom: 1px solid var(--line);
+}
+
+.billing-preview-row span,
+.billing-preview-row small {
+  display: block;
+}
+
+.billing-preview-row b {
+  font-size: 12px;
+}
+
+.billing-preview-row small {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.billing-preview-row strong {
+  color: var(--green);
+  font-size: 11px;
+}
+
+.billing-product-preview > a {
   justify-self: start;
   margin-top: 18px;
   color: var(--cyan);
@@ -2997,6 +3065,319 @@ a.ops-history-run:hover {
   color: var(--blue);
 }
 
+.billing-shell {
+  max-width: 1380px;
+}
+
+.billing-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);
+  gap: 28px;
+  align-items: end;
+  margin-bottom: 28px;
+}
+
+.billing-heading h1 {
+  margin: 4px 0 12px;
+  font-size: 64px;
+}
+
+.billing-heading p:not(.kicker) {
+  max-width: 760px;
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1.65;
+}
+
+.billing-protocol {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+  padding: 18px;
+  border: 1px solid rgba(251, 191, 36, 0.24);
+  border-radius: 8px;
+  background: rgba(251, 191, 36, 0.055);
+  color: var(--yellow);
+}
+
+.billing-protocol svg {
+  width: 42px;
+  height: 42px;
+  padding: 9px;
+  border-radius: 50%;
+  background: rgba(251, 191, 36, 0.12);
+}
+
+.billing-protocol span,
+.billing-protocol strong,
+.billing-protocol small {
+  display: block;
+}
+
+.billing-protocol span {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.billing-protocol strong {
+  margin: 4px 0;
+  color: var(--text);
+  font-size: 14px;
+}
+
+.billing-protocol small {
+  color: #d4a72c;
+  font-size: 11px;
+}
+
+.billing-notice {
+  margin: 14px 0;
+  padding: 12px 14px;
+  border: 1px solid rgba(52, 211, 153, 0.23);
+  border-radius: 7px;
+  background: rgba(52, 211, 153, 0.07);
+  color: var(--green);
+  font-size: 13px;
+}
+
+.billing-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 18px 0;
+}
+
+.billing-metric {
+  display: grid;
+  min-height: 102px;
+  align-content: space-between;
+  gap: 18px;
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.billing-metric span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.billing-metric span svg {
+  color: var(--yellow);
+}
+
+.billing-metric strong {
+  overflow-wrap: anywhere;
+  font-size: 26px;
+}
+
+.billing-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.billing-panel {
+  min-width: 0;
+  padding: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.085);
+  border-radius: 8px;
+  background: rgba(8, 13, 19, 0.92);
+}
+
+.billing-panel .flow-panel-title > svg {
+  color: var(--yellow);
+}
+
+.billing-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.billing-form label {
+  display: grid;
+  gap: 7px;
+}
+
+.billing-form label > span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.billing-form input,
+.billing-form select,
+.billing-topup input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 6px;
+  background: #080d13;
+  color: var(--text);
+  font: inherit;
+}
+
+.billing-quote {
+  display: grid;
+  align-content: center;
+  gap: 6px;
+  min-height: 66px;
+  padding: 10px 12px;
+  border-left: 2px solid var(--yellow);
+  background: rgba(251, 191, 36, 0.045);
+}
+
+.billing-quote span {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.billing-quote strong {
+  overflow-wrap: anywhere;
+  font-size: 13px;
+}
+
+.billing-action {
+  width: 100%;
+  margin-top: 18px;
+}
+
+.billing-account-list,
+.billing-invoices,
+.billing-batches {
+  display: grid;
+  gap: 8px;
+}
+
+.billing-account-list > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 4px 14px;
+  padding: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.065);
+}
+
+.billing-account-list span {
+  overflow-wrap: anywhere;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.billing-account-list strong {
+  color: var(--green);
+  font-size: 13px;
+}
+
+.billing-account-list small {
+  grid-column: 1 / -1;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.billing-topup {
+  display: grid;
+  grid-template-columns: minmax(100px, 0.45fr) minmax(0, 1fr);
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.billing-invoices > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.065);
+}
+
+.billing-invoices span,
+.billing-invoices small {
+  display: block;
+}
+
+.billing-invoices b {
+  overflow-wrap: anywhere;
+  font-size: 13px;
+}
+
+.billing-invoices small {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.billing-invoices strong {
+  font-size: 13px;
+}
+
+.billing-invoices em {
+  padding: 4px 7px;
+  border-radius: 999px;
+  background: rgba(95, 191, 255, 0.11);
+  color: var(--blue);
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.billing-copy {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.billing-batches {
+  margin-top: 16px;
+}
+
+.billing-batches > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 12px;
+  align-items: center;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.065);
+  font-size: 11px;
+}
+
+.billing-batches code {
+  overflow: hidden;
+  color: var(--muted);
+  text-overflow: ellipsis;
+}
+
+.billing-batches strong {
+  color: var(--yellow);
+}
+
+.billing-ledger {
+  margin-top: 16px;
+}
+
+.billing-ledger code {
+  display: inline-block;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: bottom;
+  white-space: nowrap;
+}
+
 .logo-lab-hero {
   max-width: 820px;
   margin-bottom: 42px;
@@ -3186,7 +3567,9 @@ a.ops-history-run:hover {
   .shield-heading,
   .shield-workspace,
   .flow-heading,
-  .flow-layout {
+  .flow-layout,
+  .billing-heading,
+  .billing-grid {
     grid-template-columns: 1fr;
   }
 
@@ -3264,7 +3647,9 @@ a.ops-history-run:hover {
   .shield-kpi-grid,
   .shield-form-grid,
   .flow-metrics,
-  .flow-form {
+  .flow-form,
+  .billing-metrics,
+  .billing-form {
     grid-template-columns: 1fr;
   }
 
@@ -3274,6 +3659,16 @@ a.ops-history-run:hover {
 
   .flow-wide {
     grid-column: auto;
+  }
+
+  .billing-heading h1 {
+    font-size: 48px;
+  }
+
+  .billing-topup,
+  .billing-invoices > div,
+  .billing-batches > div {
+    grid-template-columns: 1fr;
   }
 
   .ops-signal-grid {

@@ -1,35 +1,33 @@
 import Link from "next/link"
 
 import { BrandMark } from "../BrandMark"
-import { ShieldDashboardClient } from "./ShieldDashboardClient"
+import { BillingDashboardClient } from "./BillingDashboardClient"
 
 export const metadata = {
-  title: "Arc Shield — Compliance & Risk Engine",
-  description: "Circle-powered address screening and auditable policy decisions for Arc Suite.",
+  title: "Arc Billing — x402 Metering & Subscriptions",
+  description: "Usage metering, prepaid balances, invoices and batched settlement for x402 APIs.",
 }
 
-export default function ShieldPage() {
+export default function BillingPage() {
   return (
     <main>
       <nav className="nav">
         <Link className="brand" href="/" aria-label="Arc Suite home">
-          <BrandMark idPrefix="shield-brand" />
+          <BrandMark idPrefix="billing-brand" />
           <span className="brand-name">Arc Suite</span>
         </Link>
         <div className="nav-cluster">
-          <div className="nav-links" aria-label="Shield navigation">
+          <div className="nav-links" aria-label="Billing navigation">
             <Link href="/">Product</Link>
-            <Link href="/billing">Billing</Link>
             <Link href="/flow">Flow</Link>
-            <a href="https://treasury-umber.vercel.app">Treasury</a>
-            <a href="https://reputation-five.vercel.app">Reputation</a>
+            <Link href="/shield">Shield</Link>
             <a href="https://marketplace-eosin-eight.vercel.app">Marketplace</a>
+            <a href="https://treasury-umber.vercel.app">Treasury</a>
             <Link href="/ops">Ops Health</Link>
           </div>
         </div>
       </nav>
-
-      <ShieldDashboardClient />
+      <BillingDashboardClient />
     </main>
   )
 }

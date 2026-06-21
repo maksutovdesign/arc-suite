@@ -14,6 +14,8 @@ export type ShieldDecision = "allow" | "review" | "block"
 export type ShieldProviderStatus = "completed" | "provider_error"
 export type FlowRunStatus = "running" | "completed" | "review" | "blocked" | "failed"
 export type FlowStepStatus = "pending" | "running" | "passed" | "review" | "blocked" | "failed" | "skipped"
+export type BillingInvoiceStatus = "draft" | "ready" | "settled" | "void"
+export type BillingBatchStatus = "ready" | "processing" | "settled" | "failed"
 
 export type Agent = {
   id: string
@@ -265,6 +267,99 @@ export type FlowSummary = {
   blocked: number
   failed: number
   lastRunAt: string | null
+}
+
+export type BillingPlan = {
+  id: string
+  workspaceId: string
+  name: string
+  monthlyFeeUsdc: number
+  includedUnits: number
+  discountBps: number
+  active: boolean
+  createdAt: string
+}
+
+export type BillingAccount = {
+  id: string
+  workspaceId: string
+  agentId: string
+  planId: string
+  prepaidBalanceUsdc: number
+  lowBalanceThresholdUsdc: number
+  status: "active" | "paused"
+  currentPeriodStart: string
+  currentPeriodEnd: string
+  createdAt: string
+  updatedAt: string
+}
+
+export type BillingUsageEvent = {
+  id: string
+  workspaceId: string
+  billingAccountId: string
+  agentId: string
+  apiId: string
+  idempotencyKey: string
+  units: number
+  unitPriceUsdc: number
+  grossAmountUsdc: number
+  discountUsdc: number
+  netAmountUsdc: number
+  pricingUnit: string
+  invoiceId: string
+  batchId: string | null
+  metadata: Record<string, unknown>
+  occurredAt: string
+  createdAt: string
+}
+
+export type BillingInvoice = {
+  id: string
+  workspaceId: string
+  billingAccountId: string
+  agentId: string
+  periodStart: string
+  periodEnd: string
+  status: BillingInvoiceStatus
+  usageCount: number
+  subtotalUsdc: number
+  discountUsdc: number
+  totalUsdc: number
+  batchId: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export type BillingSettlementBatch = {
+  id: string
+  workspaceId: string
+  status: BillingBatchStatus
+  usageCount: number
+  invoiceCount: number
+  grossAmountUsdc: number
+  netAmountUsdc: number
+  settlementId: string | null
+  txHash: string | null
+  explorerUrl: string | null
+  createdAt: string
+  updatedAt: string
+  settledAt: string | null
+}
+
+export type BillingOverview = {
+  plans: BillingPlan[]
+  accounts: BillingAccount[]
+  usage: BillingUsageEvent[]
+  invoices: BillingInvoice[]
+  batches: BillingSettlementBatch[]
+  summary: {
+    prepaidBalanceUsdc: number
+    meteredUsageUsdc: number
+    unbatchedUsageUsdc: number
+    activeAccounts: number
+    lowBalanceAccounts: number
+  }
 }
 
 export type PilotSummary = {

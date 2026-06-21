@@ -1,6 +1,6 @@
 # Arc Suite — AI Agent Infrastructure for the Onchain Economy
 
-> **Five interconnected products built on [Arc](https://arc.io) and [Circle](https://circle.com) — demonstrating what the agentic economy looks like when AI agents can spend, screen risk, earn trust, and pay for services autonomously using USDC.**
+> **Six interconnected products built on [Arc](https://arc.io) and [Circle](https://circle.com) — demonstrating what the agentic economy looks like when AI agents can spend, screen risk, earn trust, meter usage, and pay for services autonomously using USDC.**
 
 Built with **Next.js 16**, **TypeScript**, **Tailwind CSS v4**, **shadcn/ui v4**, and the **Arc / Circle SDK**.
 
@@ -15,6 +15,7 @@ Built with **Next.js 16**, **TypeScript**, **Tailwind CSS v4**, **shadcn/ui v4**
 | 🛒 **Arc Marketplace** | [marketplace-eosin-eight.vercel.app](https://marketplace-eosin-eight.vercel.app) | Discovery platform for x402-enabled APIs |
 | **Arc Shield** | [arcsuite-app.vercel.app/shield](https://arcsuite-app.vercel.app/shield) | Circle-powered compliance screening and risk policy |
 | **Arc Flow** | [arcsuite-app.vercel.app/flow](https://arcsuite-app.vercel.app/flow) | Compliance-to-settlement payment orchestration |
+| **Arc Billing** | [arcsuite-app.vercel.app/billing](https://arcsuite-app.vercel.app/billing) | x402 usage metering, prepaid balances, invoices and settlement batches |
 
 ---
 
@@ -126,6 +127,20 @@ Arc Shield uses Circle Compliance Engine address screening as a provider signal 
 
 Circle currently does not list Arc Testnet in the standalone Address Screening chain enum. Shield therefore treats supported-chain screening as a cross-chain identity signal and keeps Arc settlement enforcement in monitor mode.
 
+### Arc Billing — x402 Metering & Subscriptions
+
+**`/landing/src/app/billing`** · [Live](https://arcsuite-app.vercel.app/billing)
+
+Arc Billing turns Marketplace requests into an auditable payment ledger. Usage is priced from the API listing, atomically deducted from an agent prepaid balance, added to the current invoice, and later grouped into a settlement-ready provider batch.
+
+**Key features:**
+- Atomic, idempotent x402 usage metering
+- Prepaid agent balances and operator credit top-ups
+- Metered and Scale plans with per-plan discounts
+- Draft invoices linked to every usage event
+- Nanopayment aggregation for efficient settlement
+- HTTP `402 Payment Required` when prepaid credit is insufficient
+
 ---
 
 ## Monorepo Structure
@@ -142,7 +157,7 @@ arc/
 
 Each app is an independent Next.js 16 project sharing:
 - **Design system**: Space Grotesk font, Arc dark theme, `ArcButton`, `ArcProgress`, `StatCard`, `PageHeader`
-- **EcosystemNav**: top bar linking all five products together
+- **EcosystemNav**: top bar linking all six products together
 - **LiveTicker**: animated real-time event feed in each app's header
 
 ---
@@ -187,6 +202,7 @@ landing/supabase/migrations/2026060701_ops_health_checks.sql
 landing/supabase/migrations/2026062101_arc_settlements.sql
 landing/supabase/migrations/2026062102_arc_shield.sql
 landing/supabase/migrations/2026062201_arc_flow.sql
+landing/supabase/migrations/2026062202_arc_billing.sql
 landing/supabase/seed.sql
 ```
 
@@ -325,13 +341,14 @@ Arc Testnet:
 
 ## Built for Arc/Circle
 
-These products were designed to showcase the Arc ecosystem to the **Arc community** and **Circle team** — demonstrating five complementary products that together form an infrastructure layer for the agentic economy:
+These products were designed to showcase the Arc ecosystem to the **Arc community** and **Circle team** — demonstrating six complementary products that together form an infrastructure layer for the agentic economy:
 
 - **Treasury** answers: *"How do I control what my agents spend?"*
 - **Reputation** answers: *"How do I know which agents I can trust?"*
 - **Marketplace** answers: *"Where do agents find services to pay for?"*
 - **Shield** answers: *"Should this wallet be allowed to transact?"*
 - **Flow** answers: *"How does an approved payment move safely from intent to settlement?"*
+- **Billing** answers: *"How is every API call priced, invoiced, and netted for settlement?"*
 
 ---
 
