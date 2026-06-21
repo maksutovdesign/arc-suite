@@ -1,18 +1,20 @@
 /**
- * EcosystemNav — thin top banner linking all 3 Arc suite apps.
+ * EcosystemNav — thin top banner linking all Arc Suite products.
  * Shows in every app so presenters can navigate between them instantly.
  */
-export function EcosystemNav({ current }: { current: "treasury" | "reputation" | "marketplace" }) {
+export function EcosystemNav({ current }: { current: "treasury" | "reputation" | "marketplace" | "shield" }) {
   const urls = process.env.NODE_ENV === "production"
     ? {
         treasury: process.env.NEXT_PUBLIC_ARC_TREASURY_URL ?? "https://treasury-umber.vercel.app",
         reputation: process.env.NEXT_PUBLIC_ARC_REPUTATION_URL ?? "https://reputation-five.vercel.app",
         marketplace: process.env.NEXT_PUBLIC_ARC_MARKETPLACE_URL ?? "https://marketplace-eosin-eight.vercel.app",
+        shield: process.env.NEXT_PUBLIC_ARC_SHIELD_URL ?? "https://arcsuite-app.vercel.app/shield",
       }
     : {
         treasury: "http://localhost:3001",
         reputation: "http://localhost:3002",
         marketplace: "http://localhost:3003",
+        shield: "http://localhost:3100/shield",
       }
 
   const APPS = [
@@ -39,6 +41,14 @@ export function EcosystemNav({ current }: { current: "treasury" | "reputation" |
       url: urls.marketplace,
       color: "#34d399",
       emoji: "🛒",
+    },
+    {
+      id: "shield",
+      label: "Arc Shield",
+      sub: "Compliance",
+      url: urls.shield,
+      color: "#f59e0b",
+      emoji: "S",
     },
   ]
 

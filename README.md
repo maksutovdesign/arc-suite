@@ -1,6 +1,6 @@
 # Arc Suite — AI Agent Infrastructure for the Onchain Economy
 
-> **Three interconnected applications built on [Arc](https://arc.io) and [Circle](https://circle.com) — demonstrating what the agentic economy looks like when AI agents can spend, earn trust, and pay for services autonomously using USDC.**
+> **Four interconnected products built on [Arc](https://arc.io) and [Circle](https://circle.com) — demonstrating what the agentic economy looks like when AI agents can spend, screen risk, earn trust, and pay for services autonomously using USDC.**
 
 Built with **Next.js 16**, **TypeScript**, **Tailwind CSS v4**, **shadcn/ui v4**, and the **Arc / Circle SDK**.
 
@@ -13,18 +13,20 @@ Built with **Next.js 16**, **TypeScript**, **Tailwind CSS v4**, **shadcn/ui v4**
 | 💰 **Arc Treasury** | [treasury-umber.vercel.app](https://treasury-umber.vercel.app) | Budget manager for AI agent wallets |
 | 🛡️ **Arc Reputation** | [reputation-five.vercel.app](https://reputation-five.vercel.app) | On-chain trust scoring layer for agents |
 | 🛒 **Arc Marketplace** | [marketplace-eosin-eight.vercel.app](https://marketplace-eosin-eight.vercel.app) | Discovery platform for x402-enabled APIs |
+| **Arc Shield** | [arcsuite-app.vercel.app/shield](https://arcsuite-app.vercel.app/shield) | Circle-powered compliance screening and risk policy |
 
 ---
 
 ## The Story
 
-Three AI agents — **DataHarvester-Pro**, **TradeBot-Alpha**, and **IoT-Gateway-01** — exist across all three apps. Follow their journey:
+Three AI agents — **DataHarvester-Pro**, **TradeBot-Alpha**, and **IoT-Gateway-01** — exist across the Suite. Follow their journey:
 
-1. **Treasury**: TradeBot-Alpha has consumed 95% of its monthly budget and triggered 3 critical alerts.
-2. **Reputation**: TradeBot-Alpha's trust score is declining (-23 pts in 30 days, tier: Gold).
-3. **Marketplace**: A premium data API **rejects** TradeBot-Alpha — trust score 812 is below the required threshold of 850.
+1. **Shield**: the counterparty wallet is screened and routed to allow, review, or block.
+2. **Treasury**: TradeBot-Alpha has consumed 95% of its monthly budget and triggered 3 critical alerts.
+3. **Reputation**: TradeBot-Alpha's trust score is declining (-23 pts in 30 days, tier: Gold).
+4. **Marketplace**: A premium data API **rejects** TradeBot-Alpha — trust score 812 is below the required threshold of 850.
 
-This is the enforcement loop: *spend drives behavior, behavior drives reputation, reputation gates access.*
+This is the enforcement loop: *screen risk, control spend, score behavior, and gate access.*
 
 ---
 
@@ -107,10 +109,29 @@ A discovery platform for APIs that accept payments via the [x402 protocol](https
 
 ---
 
+### Arc Shield — Compliance & Risk Engine
+
+**`/landing/src/app/shield`** · [Live](https://arcsuite-app.vercel.app/shield)
+
+Arc Shield uses Circle Compliance Engine address screening as a provider signal and records a separate Arc policy decision for every request.
+
+**Key features:**
+- Real Circle standalone address screening for supported networks
+- Explicit `allow`, `review`, and `block` policy outcomes
+- Provider result, reasons, risk categories, actions, and raw response retained in Supabase
+- Protected workspace API with read/write scopes and rate limiting
+- Provider outages fail to manual review instead of silently allowing activity
+- Operator dashboard with screening form, latest decision, KPIs, and audit table
+
+Circle currently does not list Arc Testnet in the standalone Address Screening chain enum. Shield therefore treats supported-chain screening as a cross-chain identity signal and keeps Arc settlement enforcement in monitor mode.
+
+---
+
 ## Monorepo Structure
 
 ```
 arc/
+├── landing/         # Landing, backend API, Shield, Ops, Analytics
 ├── treasury/        # Next.js app — Agent Budget Manager
 ├── reputation/      # Next.js app — Agent Trust Layer
 ├── marketplace/     # Next.js app — x402 API Marketplace
@@ -120,7 +141,7 @@ arc/
 
 Each app is an independent Next.js 16 project sharing:
 - **Design system**: Space Grotesk font, Arc dark theme, `ArcButton`, `ArcProgress`, `StatCard`, `PageHeader`
-- **EcosystemNav**: top bar linking all three apps together
+- **EcosystemNav**: top bar linking all four products together
 - **LiveTicker**: animated real-time event feed in each app's header
 
 ---
@@ -282,6 +303,15 @@ The endpoint is `POST /api/settlements/arc`. It requires a workspace API key wit
 demo sessions remain read-only. Recipients must be allowlisted and every request
 must include an idempotency key.
 
+## Arc Shield compliance screening
+
+Apply `landing/supabase/migrations/2026062102_arc_shield.sql`. Arc Shield reuses
+`CIRCLE_API_KEY`, `ARC_API_KEY`, `SUPABASE_URL`, and `SUPABASE_SERVICE_ROLE_KEY`.
+
+The endpoint is `GET|POST /api/shield/screenings`. Circle Compliance Engine is
+available only to eligible Circle customers; a provider `401` or `403` is stored
+as `provider_error` and Arc Shield returns a `review` decision.
+
 Arc Testnet:
 - **Chain ID**: 5042002
 - **Native gas token**: USDC (18 decimals)
@@ -292,11 +322,12 @@ Arc Testnet:
 
 ## Built for Arc/Circle
 
-These apps were designed to showcase the Arc ecosystem to the **Arc community** and **Circle team** — demonstrating three complementary products that together form an infrastructure layer for the agentic economy:
+These products were designed to showcase the Arc ecosystem to the **Arc community** and **Circle team** — demonstrating four complementary products that together form an infrastructure layer for the agentic economy:
 
 - **Treasury** answers: *"How do I control what my agents spend?"*
 - **Reputation** answers: *"How do I know which agents I can trust?"*
 - **Marketplace** answers: *"Where do agents find services to pay for?"*
+- **Shield** answers: *"Should this wallet be allowed to transact?"*
 
 ---
 

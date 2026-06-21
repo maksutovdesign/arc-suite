@@ -52,6 +52,21 @@ const productDetails = [
     ],
     bullets: ["x402 API discovery", "Provider and SLA context", "USDC-native access path"],
   },
+  {
+    key: "shield",
+    name: "Arc Shield",
+    eyebrow: "Compliance & risk",
+    title: "Address screening and auditable policy decisions before value moves.",
+    text: "Use Circle Compliance Engine signals to classify wallet risk, route manual review, block prohibited activity and preserve the provider response alongside the Arc Shield decision.",
+    image: "/screenshots/shield-console.png",
+    imageAlt: "Arc Shield compliance dashboard with wallet screening, policy decision and audit log",
+    stats: [
+      ["3", "policy outcomes"],
+      ["30", "checks / 10 min"],
+      ["100%", "auditable decisions"],
+    ],
+    bullets: ["Circle address screening", "Allow, review and block policy", "Supabase audit history"],
+  },
 ]
 
 const steps = [
@@ -62,7 +77,7 @@ const steps = [
 ]
 
 const metrics = [
-  ["3", "connected products"],
+  ["4", "connected products"],
   ["25,482", "agent transactions in demo"],
   ["24.8M", "marketplace request volume"],
   ["99.72%", "average uptime in marketplace stats"],
@@ -168,20 +183,24 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
         }
       }
 
-      return {
-        ...product,
-        stats: [
-          [String(pilotSummary.marketplace.apisListed), "APIs listed"],
-          [String(pilotSummary.marketplace.providers), "providers"],
-          [`${pilotSummary.marketplace.avgUptimePct}%`, "avg uptime"],
-        ],
+      if (product.key === "marketplace") {
+        return {
+          ...product,
+          stats: [
+            [String(pilotSummary.marketplace.apisListed), "APIs listed"],
+            [String(pilotSummary.marketplace.providers), "providers"],
+            [`${pilotSummary.marketplace.avgUptimePct}%`, "avg uptime"],
+          ],
+        }
       }
+
+      return product
     })
   }, [pilotSummary])
   const activeProduct = liveProductDetails.find((product) => product.key === activeProductKey) ?? liveProductDetails[0]
   const liveMetrics = pilotSummary
     ? [
-        ["3", "connected products"],
+        ["4", "connected products"],
         [formatCompact(pilotSummary.marketplace.requests), "marketplace request volume"],
         [`${pilotSummary.marketplace.avgUptimePct}%`, "average uptime from API"],
         [apiStatus === "live" ? "Live" : "Fallback", "pilot API status"],
@@ -223,6 +242,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
             <a href="#system">Product</a>
             <a href="#loop">Loop</a>
             <a href="#proof">Proof</a>
+            <a href="/shield">Shield</a>
             <a href="/investors" onClick={() => trackLandingConversion({ eventName: "investors_click", placement: "nav" })}>Investors</a>
           </div>
           <a
@@ -267,8 +287,8 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
           <h1>Control how agents spend, earn trust, and access paid APIs.</h1>
           <p className="hero-text">
             Arc Suite is a connected product system built for autonomous USDC commerce:
-            Treasury controls spend, Reputation scores behavior, and Marketplace gates
-            x402 API access.
+            Treasury controls spend, Shield screens counterparties, Reputation scores behavior,
+            and Marketplace gates x402 API access.
           </p>
           <div className="hero-actions">
             <a
@@ -415,7 +435,34 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
                 <span />
                 <strong>{activeProduct.name}</strong>
               </div>
-              <img src={activeProduct.image} alt={activeProduct.imageAlt} />
+              {activeProduct.key === "shield" ? (
+                <div className="shield-product-preview" aria-label={activeProduct.imageAlt}>
+                  <div className="shield-preview-top">
+                    <span>ARC SHIELD / SCREENING</span>
+                    <strong>MONITOR MODE</strong>
+                  </div>
+                  <div className="shield-preview-address">
+                    <span>Wallet address</span>
+                    <code>0x7fb4...9999</code>
+                  </div>
+                  <div className="shield-preview-decision">
+                    <span>Policy decision</span>
+                    <strong>BLOCK</strong>
+                    <p>Circle&apos;s Sanctions Blocklist</p>
+                  </div>
+                  <div className="shield-preview-row">
+                    <span>Risk score</span>
+                    <b>BLOCKLIST</b>
+                  </div>
+                  <div className="shield-preview-row">
+                    <span>Actions</span>
+                    <b>DENY · REVIEW</b>
+                  </div>
+                  <a href="/shield">Open live console</a>
+                </div>
+              ) : (
+                <img src={activeProduct.image} alt={activeProduct.imageAlt} />
+              )}
             </div>
           </article>
         </div>

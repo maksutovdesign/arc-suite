@@ -19,6 +19,7 @@ export default function AnalyticsPage() {
             <Link href="/">Product</Link>
             <Link href="/investors">Investors</Link>
             <Link href="/ops">Ops Health</Link>
+            <Link href="/shield">Shield</Link>
             <a href="https://treasury-umber.vercel.app/demo">Demo</a>
           </div>
         </div>

@@ -20,6 +20,7 @@ export default function OpsHealthPage() {
             <Link href="/">Product</Link>
             <Link href="/investors">Investors</Link>
             <Link href="/analytics">Analytics</Link>
+            <Link href="/shield">Shield</Link>
             <a href="https://treasury-umber.vercel.app/demo">Demo</a>
           </div>
         </div>

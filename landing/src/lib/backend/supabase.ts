@@ -22,6 +22,7 @@ import type {
   OpsHealthCheckSource,
   OpsHealthWarning,
   ReputationProfile,
+  ShieldScreening,
   Transaction,
   WorkspaceApiKey,
   WorkspaceApiKeyCreated,
@@ -258,6 +259,29 @@ type FinalizeArcSettlementRow = {
   scoreDelta: number
 }
 
+type ShieldScreeningRow = {
+  id: string
+  workspace_id: string
+  idempotency_key: string
+  address: string
+  chain: string
+  provider: "circle_compliance_engine"
+  provider_screening_id: string | null
+  provider_result: string | null
+  provider_status: ShieldScreening["providerStatus"]
+  decision: ShieldScreening["decision"]
+  decision_reason: string
+  rule_name: string | null
+  actions: string[] | null
+  risk_score: string
+  risk_categories: string[] | null
+  reasons: ShieldScreening["reasons"] | null
+  alert_id: string | null
+  raw_response: Record<string, unknown> | null
+  request_id: string | null
+  created_at: string
+}
+
 export type BackendDataset = {
   workspace: {
     id: string
@@ -440,6 +464,82 @@ export async function insertSupabaseArcSettlement(input: {
   } catch (error) {
     logSupabaseError("arc settlement insert", error)
     return null
+  }
+}
+
+export async function insertSupabaseShieldScreening(
+  screening: Omit<ShieldScreening, "workspaceId" | "createdAt">,
+): Promise<ShieldScreening | null> {
+  if (!isSupabaseConfigured()) return null
+
+  try {
+    const rows = await postRows<ShieldScreeningRow>("compliance_screenings", [
+      {
+        id: screening.id,
+        workspace_id: WORKSPACE_ID,
+        idempotency_key: screening.idempotencyKey,
+        address: screening.address,
+        chain: screening.chain,
+        provider: screening.provider,
+        provider_screening_id: screening.providerScreeningId,
+        provider_result: screening.providerResult,
+        provider_status: screening.providerStatus,
+        decision: screening.decision,
+        decision_reason: screening.decisionReason,
+        rule_name: screening.ruleName,
+        actions: screening.actions,
+        risk_score: screening.riskScore,
+        risk_categories: screening.riskCategories,
+        reasons: screening.reasons,
+        alert_id: screening.alertId,
+        raw_response: screening.rawResponse,
+        request_id: screening.requestId,
+      },
+    ])
+    return rows[0] ? mapShieldScreening(rows[0]) : null
+  } catch (error) {
+    logSupabaseError("shield screening insert", error)
+    return null
+  }
+}
+
+export async function findSupabaseShieldScreening(idempotencyKey: string): Promise<ShieldScreening | null> {
+  if (!isSupabaseConfigured()) return null
+
+  try {
+    const rows = await getRows<ShieldScreeningRow>(
+      "compliance_screenings",
+      `select=*&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&idempotency_key=eq.${encodeURIComponent(idempotencyKey)}&limit=1`,
+    )
+    return rows[0] ? mapShieldScreening(rows[0]) : null
+  } catch (error) {
+    logSupabaseError("shield screening lookup", error)
+    return null
+  }
+}
+
+export async function listSupabaseShieldScreenings(limit = 50): Promise<ShieldScreening[] | null> {
+  if (!isSupabaseConfigured()) return null
+
+  try {
+    const rows = await getRows<ShieldScreeningRow>(
+      "compliance_screenings",
+      `select=*&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&order=created_at.desc&limit=${limit}`,
+    )
+    return rows.map(mapShieldScreening)
+  } catch (error) {
+    logSupabaseError("shield screening list", error)
+    return null
+  }
+}
+
+export async function checkSupabaseShieldReadiness() {
+  if (!isSupabaseConfigured()) return false
+  try {
+    await getRows<Pick<ShieldScreeningRow, "id">>("compliance_screenings", "select=id&limit=1")
+    return true
+  } catch {
+    return false
   }
 }
 
@@ -1123,6 +1223,31 @@ function mapArcSettlement(row: ArcSettlementRow): ArcSettlement {
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     confirmedAt: row.confirmed_at,
+  }
+}
+
+function mapShieldScreening(row: ShieldScreeningRow): ShieldScreening {
+  return {
+    id: row.id,
+    workspaceId: row.workspace_id,
+    idempotencyKey: row.idempotency_key,
+    address: row.address,
+    chain: row.chain,
+    provider: row.provider,
+    providerScreeningId: row.provider_screening_id,
+    providerResult: row.provider_result,
+    providerStatus: row.provider_status,
+    decision: row.decision,
+    decisionReason: row.decision_reason,
+    ruleName: row.rule_name,
+    actions: row.actions ?? [],
+    riskScore: row.risk_score,
+    riskCategories: row.risk_categories ?? [],
+    reasons: row.reasons ?? [],
+    alertId: row.alert_id,
+    rawResponse: row.raw_response ?? {},
+    requestId: row.request_id,
+    createdAt: row.created_at,
   }
 }
 

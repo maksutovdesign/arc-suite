@@ -10,6 +10,8 @@ export type OpsHealthCheckSource = "github_actions" | "local" | "manual"
 export type OpsHealthCheckStatus = "ok" | "warn" | "failed" | "test"
 export type OpsHealthCheckResultStatus = "ok" | "warn" | "failed"
 export type ArcSettlementStatus = "policy_denied" | "approved" | "submitted" | "confirmed" | "failed"
+export type ShieldDecision = "allow" | "review" | "block"
+export type ShieldProviderStatus = "completed" | "provider_error"
 
 export type Agent = {
   id: string
@@ -175,6 +177,46 @@ export type ArcSettlementResult = {
   settlement: ArcSettlement
   transaction: Transaction
   scoreDelta: number
+}
+
+export type ShieldReason = {
+  source: string
+  sourceValue: string
+  riskScore: string
+  riskCategories: string[]
+  type: string
+}
+
+export type ShieldScreening = {
+  id: string
+  workspaceId: string
+  idempotencyKey: string
+  address: string
+  chain: string
+  provider: "circle_compliance_engine"
+  providerScreeningId: string | null
+  providerResult: string | null
+  providerStatus: ShieldProviderStatus
+  decision: ShieldDecision
+  decisionReason: string
+  ruleName: string | null
+  actions: string[]
+  riskScore: string
+  riskCategories: string[]
+  reasons: ShieldReason[]
+  alertId: string | null
+  rawResponse: Record<string, unknown>
+  requestId: string | null
+  createdAt: string
+}
+
+export type ShieldSummary = {
+  total: number
+  allowed: number
+  review: number
+  blocked: number
+  providerErrors: number
+  lastScreenedAt: string | null
 }
 
 export type PilotSummary = {
