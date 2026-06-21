@@ -2,6 +2,17 @@ import type { ShieldDecision, ShieldReason } from "./schema"
 
 const CIRCLE_SCREENING_URL = "https://api.circle.com/v1/w3s/compliance/screening/addresses"
 const PROVIDER_TIMEOUT_MS = 15_000
+const CIRCLE_TEST_SCENARIOS = [
+  { suffix: "9999", ruleName: "Circle's Sanctions Blocklist" },
+  { suffix: "8888", ruleName: "Frozen User Wallet" },
+  { suffix: "7777", ruleName: "Custom Blocklist Rule" },
+  { suffix: "8999", ruleName: "Severe Sanctions Risk (Owner)" },
+  { suffix: "8899", ruleName: "Severe Terrorist Financing (Owner)" },
+  { suffix: "8889", ruleName: "Severe CSAM Risk (Owner)" },
+  { suffix: "7779", ruleName: "Severe Illicit Behavior (Owner)" },
+  { suffix: "7666", ruleName: "High Illicit Behavior Risk (Owner)" },
+  { suffix: "7766", ruleName: "High Gambling Risk (Owner)" },
+] as const
 
 export const CIRCLE_SCREENING_CHAINS = [
   "ETH",
@@ -110,7 +121,10 @@ export async function screenCircleAddress(input: {
   }
 }
 
-export function evaluateShieldPolicy(response: CircleScreeningResponse): {
+export function evaluateShieldPolicy(
+  response: CircleScreeningResponse,
+  context?: { address: string; chain: string },
+): {
   actions: string[]
   decision: ShieldDecision
   decisionReason: string
@@ -133,6 +147,7 @@ export function evaluateShieldPolicy(response: CircleScreeningResponse): {
   const providerApproved = response.result?.toUpperCase() === "APPROVED"
   const providerReview = actions.includes("REVIEW")
   const providerBlock = actions.includes("DENY") || actions.includes("FREEZE_WALLET")
+  const missedTestScenario = findMissedTestScenario(response, context)
 
   if (providerDenied || providerBlock) {
     return {
@@ -162,6 +177,18 @@ export function evaluateShieldPolicy(response: CircleScreeningResponse): {
     }
   }
 
+  if (providerApproved && missedTestScenario) {
+    return {
+      actions: ["REVIEW"],
+      decision: "review",
+      decisionReason: `Circle approved an official simulated-risk address without the expected "${missedTestScenario.ruleName}" rule. Verify Compliance Engine account access and testnet rules.`,
+      reasons,
+      riskCategories,
+      riskScore,
+      ruleName: null,
+    }
+  }
+
   if (!providerApproved) {
     return {
       actions: actions.length > 0 ? actions : ["REVIEW"],
@@ -183,6 +210,25 @@ export function evaluateShieldPolicy(response: CircleScreeningResponse): {
     riskScore,
     ruleName: response.decision?.ruleName ?? null,
   }
+}
+
+function findMissedTestScenario(
+  response: CircleScreeningResponse,
+  context?: { address: string; chain: string },
+) {
+  if (response.decision?.ruleName || response.decision?.reasons?.length || response.decision?.actions?.length) {
+    return null
+  }
+
+  const address = (response.address ?? context?.address ?? "").toLowerCase()
+  const chain = (response.chain ?? context?.chain ?? "").toUpperCase()
+  if (!isTestnetChain(chain)) return null
+
+  return CIRCLE_TEST_SCENARIOS.find((scenario) => address.endsWith(scenario.suffix)) ?? null
+}
+
+function isTestnetChain(chain: string) {
+  return chain.endsWith("-SEPOLIA") || chain.endsWith("-FUJI") || chain.endsWith("-AMOY") || chain.endsWith("-DEVNET")
 }
 
 function unwrapCircleResponse(payload: Record<string, unknown>): CircleScreeningResponse {

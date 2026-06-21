@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
   try {
     const providerResult = await screenCircleAddress({ address, chain, idempotencyKey })
     const providerResponse = providerResult.response
-    const policy = evaluateShieldPolicy(providerResponse)
+    const policy = evaluateShieldPolicy(providerResponse, { address, chain })
     const screeningInput: Omit<ShieldScreening, "workspaceId" | "createdAt"> = {
       id: `scr_${randomUUID()}`,
       idempotencyKey,
