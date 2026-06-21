@@ -29,6 +29,10 @@ type ApiTransaction = {
   txHash: string
   network: Transaction["network"]
   recipient: string
+  explorerUrl?: string | null
+  sourceAddress?: string | null
+  chainId?: number | null
+  settlementId?: string | null
 }
 
 type ApiSummary = {
@@ -68,6 +72,51 @@ export type AccessDecision = {
   monthlyBudgetUsedPct: number
   dailyBudgetUsedPct: number
   createdAt: string
+}
+
+export type ArcSettlementConfiguration = {
+  configured: boolean
+  chain: "Arc_Testnet"
+  chainId: number
+  explorerBaseUrl: string
+  sourceAddress: string | null
+  defaultRecipient: string | null
+  allowedRecipients: string[]
+  maxAmountUsdc: number
+  missing: string[]
+}
+
+export type ArcSettlementOutcome = {
+  ok: boolean
+  idempotent: boolean
+  decision: {
+    allowed: boolean
+    agentId: string
+    apiId: string
+    amountUsdc: number
+    decisionId: string | null
+    reason: string
+    requiredScore: number
+    score: number
+    monthlyBudgetUsedPct: number
+    dailyBudgetUsedPct: number
+  }
+  result?: {
+    scoreDelta: number
+    settlement: {
+      id: string
+      status: string
+      txHash: string | null
+      explorerUrl: string | null
+      reputationScoreBefore: number | null
+      reputationScoreAfter: number | null
+    }
+    transaction: ApiTransaction
+  }
+  settlement?: {
+    id: string
+    status: string
+  }
 }
 
 export type WorkspaceMember = {
@@ -199,6 +248,28 @@ export async function runAccessCheck(input: { agentId: string; apiId: string; am
   })
 }
 
+export async function getArcSettlementConfiguration(): Promise<ArcSettlementConfiguration> {
+  const response = await fetch(`${API_BASE_URL}/api/settlements/arc`, { cache: "no-store", headers: arcApiHeaders() })
+  if (!response.ok) throw new Error(`Arc settlement configuration failed: ${response.status}`)
+  return response.json() as Promise<ArcSettlementConfiguration>
+}
+
+export async function runArcSettlement(input: {
+  agentId: string
+  apiId: string
+  amountUsdc: number
+  recipientAddress: string
+  idempotencyKey: string
+}) {
+  const response = await fetch(`${API_BASE_URL}/api/settlements/arc`, {
+    body: JSON.stringify(input),
+    headers: arcApiHeaders({ "Content-Type": "application/json" }),
+    method: "POST",
+  })
+  const payload = await response.json() as ArcSettlementOutcome & { error?: string; message?: string }
+  return { payload, status: response.status }
+}
+
 export async function getWorkspaceSecurity(): Promise<WorkspaceSecurity | null> {
   const response = await fetch(`${API_BASE_URL}/api/workspace/security`, { cache: "no-store", headers: arcApiHeaders() })
   if (!response.ok) return null
@@ -282,6 +353,10 @@ function mapTransaction(transaction: ApiTransaction): Transaction {
     txHash: transaction.txHash,
     network: transaction.network,
     recipient: transaction.recipient,
+    explorerUrl: transaction.explorerUrl,
+    sourceAddress: transaction.sourceAddress,
+    chainId: transaction.chainId,
+    settlementId: transaction.settlementId,
   }
 }
 

@@ -37,6 +37,7 @@ export interface ReputationEvent {
   scoreDelta: number
   timestamp: string
   txHash?: string
+  explorerUrl?: string | null
 }
 
 export const AGENTS: Agent[] = [

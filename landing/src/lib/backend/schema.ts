@@ -9,6 +9,7 @@ export type LeadInterest = "pilot" | "investment" | "partnership" | "press" | "o
 export type OpsHealthCheckSource = "github_actions" | "local" | "manual"
 export type OpsHealthCheckStatus = "ok" | "warn" | "failed" | "test"
 export type OpsHealthCheckResultStatus = "ok" | "warn" | "failed"
+export type ArcSettlementStatus = "policy_denied" | "approved" | "submitted" | "confirmed" | "failed"
 
 export type Agent = {
   id: string
@@ -40,6 +41,10 @@ export type Transaction = {
   txHash: string
   network: "Arc" | "Ethereum"
   recipient: string
+  explorerUrl?: string | null
+  sourceAddress?: string | null
+  chainId?: number | null
+  settlementId?: string | null
 }
 
 export type BudgetAlert = {
@@ -88,6 +93,7 @@ export type ReputationEvent = {
   scoreDelta: number
   timestamp: string
   txHash?: string
+  explorerUrl?: string | null
 }
 
 export type ApiProvider = {
@@ -125,11 +131,50 @@ export type AccessDecision = {
   dailyBudgetUsedPct: number
 }
 
+export type AccessDecisionResult = AccessDecision & {
+  amountUsdc: number
+  decisionId: string | null
+}
+
 export type AccessDecisionLog = AccessDecision & {
   id: string
   workspaceId: string
   amountUsdc: number
   createdAt: string
+}
+
+export type ArcSettlement = {
+  id: string
+  workspaceId: string
+  idempotencyKey: string
+  agentId: string
+  apiId: string
+  accessDecisionId: string | null
+  transactionId: string | null
+  sourceAddress: string
+  recipientAddress: string
+  amountUsdc: number
+  chainId: number
+  network: "Arc Testnet"
+  provider: "circle_wallets_sdk"
+  status: ArcSettlementStatus
+  txHash: string | null
+  explorerUrl: string | null
+  gasEstimate: Record<string, unknown>
+  providerReceipt: Record<string, unknown>
+  reputationScoreBefore: number | null
+  reputationScoreAfter: number | null
+  errorCode: string | null
+  errorMessage: string | null
+  createdAt: string
+  updatedAt: string
+  confirmedAt: string | null
+}
+
+export type ArcSettlementResult = {
+  settlement: ArcSettlement
+  transaction: Transaction
+  scoreDelta: number
 }
 
 export type PilotSummary = {

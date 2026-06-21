@@ -6,6 +6,9 @@ import type {
   AnalyticsEvent,
   AnalyticsEventInput,
   AnalyticsSource,
+  ArcSettlement,
+  ArcSettlementResult,
+  ArcSettlementStatus,
   ApiKeyScope,
   ApiListing,
   ApiProvider,
@@ -63,6 +66,10 @@ type TransactionRow = {
   tx_hash: string
   network: Transaction["network"]
   recipient: string
+  explorer_url?: string | null
+  source_address?: string | null
+  chain_id?: string | number | null
+  settlement_id?: string | null
 }
 
 type AlertRow = {
@@ -216,6 +223,41 @@ type OpsHealthCheckRow = {
   created_at: string
 }
 
+type ArcSettlementRow = {
+  id: string
+  workspace_id: string
+  idempotency_key: string
+  agent_id: string
+  api_id: string
+  access_decision_id: string | null
+  transaction_id: string | null
+  source_address: string
+  recipient_address: string
+  amount_usdc: string | number
+  chain_id: string | number
+  network: "Arc Testnet"
+  provider: "circle_wallets_sdk"
+  status: ArcSettlementStatus
+  tx_hash: string | null
+  explorer_url: string | null
+  gas_estimate: Record<string, unknown> | null
+  provider_receipt: Record<string, unknown> | null
+  reputation_score_before: number | null
+  reputation_score_after: number | null
+  error_code: string | null
+  error_message: string | null
+  created_at: string
+  updated_at: string
+  confirmed_at: string | null
+}
+
+type FinalizeArcSettlementRow = {
+  transactionId: string
+  scoreBefore: number
+  scoreAfter: number
+  scoreDelta: number
+}
+
 export type BackendDataset = {
   workspace: {
     id: string
@@ -319,6 +361,170 @@ export async function updateSupabaseAgent(agentId: string, updates: Partial<Agen
   }
 }
 
+export async function findSupabaseArcSettlement(idempotencyKey: string): Promise<ArcSettlement | null> {
+  if (!isSupabaseConfigured()) return null
+
+  try {
+    const rows = await getRows<ArcSettlementRow>(
+      "arc_settlements",
+      `select=*&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&idempotency_key=eq.${encodeURIComponent(idempotencyKey)}&limit=1`,
+    )
+    return rows[0] ? mapArcSettlement(rows[0]) : null
+  } catch (error) {
+    logSupabaseError("arc settlement lookup", error)
+    return null
+  }
+}
+
+export async function getSupabaseArcSettlementResult(settlementId: string): Promise<ArcSettlementResult | null> {
+  if (!isSupabaseConfigured()) return null
+
+  try {
+    const [settlementRows, transactionRows] = await Promise.all([
+      getRows<ArcSettlementRow>(
+        "arc_settlements",
+        `select=*&id=eq.${encodeURIComponent(settlementId)}&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&limit=1`,
+      ),
+      getRows<TransactionRow>(
+        "transactions",
+        `select=*&settlement_id=eq.${encodeURIComponent(settlementId)}&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&limit=1`,
+      ),
+    ])
+    const settlement = settlementRows[0]
+    const transaction = transactionRows[0]
+    if (!settlement || !transaction) return null
+
+    return {
+      settlement: mapArcSettlement(settlement),
+      transaction: mapTransaction(transaction),
+      scoreDelta: (settlement.reputation_score_after ?? 0) - (settlement.reputation_score_before ?? 0),
+    }
+  } catch (error) {
+    logSupabaseError("arc settlement result", error)
+    return null
+  }
+}
+
+export async function insertSupabaseArcSettlement(input: {
+  id: string
+  idempotencyKey: string
+  agentId: string
+  apiId: string
+  accessDecisionId: string | null
+  sourceAddress: string
+  recipientAddress: string
+  amountUsdc: number
+  status: ArcSettlementStatus
+}): Promise<ArcSettlement | null> {
+  if (!isSupabaseConfigured()) return null
+
+  try {
+    const rows = await postRows<ArcSettlementRow>("arc_settlements", [
+      {
+        id: input.id,
+        workspace_id: WORKSPACE_ID,
+        idempotency_key: input.idempotencyKey,
+        agent_id: input.agentId,
+        api_id: input.apiId,
+        access_decision_id: input.accessDecisionId,
+        source_address: input.sourceAddress,
+        recipient_address: input.recipientAddress,
+        amount_usdc: input.amountUsdc,
+        chain_id: 5042002,
+        network: "Arc Testnet",
+        provider: "circle_wallets_sdk",
+        status: input.status,
+      },
+    ])
+    return rows[0] ? mapArcSettlement(rows[0]) : null
+  } catch (error) {
+    logSupabaseError("arc settlement insert", error)
+    return null
+  }
+}
+
+export async function updateSupabaseArcSettlement(
+  settlementId: string,
+  updates: {
+    status?: ArcSettlementStatus
+    txHash?: string | null
+    explorerUrl?: string | null
+    gasEstimate?: Record<string, unknown>
+    providerReceipt?: Record<string, unknown>
+    errorCode?: string | null
+    errorMessage?: string | null
+  },
+): Promise<ArcSettlement | null> {
+  if (!isSupabaseConfigured()) return null
+
+  const row: Partial<ArcSettlementRow> = {
+    updated_at: new Date().toISOString(),
+  }
+  if (updates.status !== undefined) row.status = updates.status
+  if (updates.txHash !== undefined) row.tx_hash = updates.txHash
+  if (updates.explorerUrl !== undefined) row.explorer_url = updates.explorerUrl
+  if (updates.gasEstimate !== undefined) row.gas_estimate = updates.gasEstimate
+  if (updates.providerReceipt !== undefined) row.provider_receipt = updates.providerReceipt
+  if (updates.errorCode !== undefined) row.error_code = updates.errorCode
+  if (updates.errorMessage !== undefined) row.error_message = updates.errorMessage
+
+  try {
+    const rows = await patchRows<ArcSettlementRow>(
+      "arc_settlements",
+      `id=eq.${encodeURIComponent(settlementId)}&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}`,
+      row,
+    )
+    return rows[0] ? mapArcSettlement(rows[0]) : null
+  } catch (error) {
+    logSupabaseError("arc settlement update", error)
+    return null
+  }
+}
+
+export async function finalizeSupabaseArcSettlement(input: {
+  settlementId: string
+  transactionId: string
+  txHash: string
+  explorerUrl: string
+  gasEstimate: Record<string, unknown>
+  providerReceipt: Record<string, unknown>
+  occurredAt: string
+}): Promise<ArcSettlementResult | null> {
+  if (!isSupabaseConfigured()) return null
+
+  try {
+    const finalized = await postRpc<FinalizeArcSettlementRow>("finalize_arc_settlement", {
+      p_settlement_id: input.settlementId,
+      p_transaction_id: input.transactionId,
+      p_tx_hash: input.txHash,
+      p_explorer_url: input.explorerUrl,
+      p_gas_estimate: input.gasEstimate,
+      p_provider_receipt: input.providerReceipt,
+      p_occurred_at: input.occurredAt,
+    })
+    const [settlementRows, transactionRows] = await Promise.all([
+      getRows<ArcSettlementRow>(
+        "arc_settlements",
+        `select=*&id=eq.${encodeURIComponent(input.settlementId)}&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&limit=1`,
+      ),
+      getRows<TransactionRow>(
+        "transactions",
+        `select=*&id=eq.${encodeURIComponent(input.transactionId)}&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&limit=1`,
+      ),
+    ])
+
+    if (!settlementRows[0] || !transactionRows[0]) return null
+    return {
+      settlement: mapArcSettlement(settlementRows[0]),
+      transaction: mapTransaction(transactionRows[0]),
+      scoreDelta: finalized.scoreDelta,
+    }
+  } catch (error) {
+    logSupabaseError("arc settlement finalize", error)
+    return null
+  }
+}
+
 export async function insertAccessDecision(input: {
   agentId: string
   apiId: string
@@ -329,13 +535,13 @@ export async function insertAccessDecision(input: {
   score: number
   monthlyBudgetUsedPct: number
   dailyBudgetUsedPct: number
-}) {
-  if (!isSupabaseConfigured()) return
+}): Promise<AccessDecisionLog | null> {
+  if (!isSupabaseConfigured()) return null
 
   try {
-    await postRows("access_decisions", [
+    const rows = await postRows<AccessDecisionRow>("access_decisions", [
       {
-        id: `dec_${crypto.randomUUID()}`,
+        id: `dec_${randomUUID()}`,
         workspace_id: WORKSPACE_ID,
         agent_id: input.agentId,
         api_id: input.apiId,
@@ -348,8 +554,10 @@ export async function insertAccessDecision(input: {
         daily_budget_used_pct: input.dailyBudgetUsedPct,
       },
     ])
+    return rows[0] ? mapAccessDecision(rows[0]) : null
   } catch {
     // Access checks should remain available even if audit logging is temporarily unavailable.
+    return null
   }
 }
 
@@ -675,7 +883,7 @@ export async function checkSupabaseReadiness() {
     }
   }
 
-  const tables = ["workspaces", "agents", "analytics_events", "investor_leads", "rate_limit_events", "ops_health_checks"]
+  const tables = ["workspaces", "agents", "analytics_events", "investor_leads", "rate_limit_events", "ops_health_checks", "arc_settlements"]
   const checks = await Promise.all(tables.map(async (table) => {
     try {
       await getRows(table, "select=id&limit=1")
@@ -729,6 +937,17 @@ async function patchRows<T>(table: string, query: string, row: unknown): Promise
 
   if (!response.ok) throw new Error(`Supabase update failed for ${table}`)
   return response.json() as Promise<T[]>
+}
+
+async function postRpc<T>(functionName: string, body: unknown): Promise<T> {
+  const response = await fetch(`${SUPABASE_URL?.replace(/\/$/, "")}/rest/v1/rpc/${functionName}`, {
+    body: JSON.stringify(body),
+    headers: supabaseHeaders(),
+    method: "POST",
+  })
+
+  if (!response.ok) throw new Error(`Supabase RPC failed for ${functionName}`)
+  return response.json() as Promise<T>
 }
 
 async function deleteRows<T>(table: string, query: string): Promise<T[]> {
@@ -870,6 +1089,40 @@ function mapTransaction(row: TransactionRow): Transaction {
     txHash: row.tx_hash,
     network: row.network,
     recipient: row.recipient,
+    explorerUrl: row.explorer_url ?? null,
+    sourceAddress: row.source_address ?? null,
+    chainId: row.chain_id === null || row.chain_id === undefined ? null : toNumber(row.chain_id),
+    settlementId: row.settlement_id ?? null,
+  }
+}
+
+function mapArcSettlement(row: ArcSettlementRow): ArcSettlement {
+  return {
+    id: row.id,
+    workspaceId: row.workspace_id,
+    idempotencyKey: row.idempotency_key,
+    agentId: row.agent_id,
+    apiId: row.api_id,
+    accessDecisionId: row.access_decision_id,
+    transactionId: row.transaction_id,
+    sourceAddress: row.source_address,
+    recipientAddress: row.recipient_address,
+    amountUsdc: toNumber(row.amount_usdc),
+    chainId: toNumber(row.chain_id),
+    network: row.network,
+    provider: row.provider,
+    status: row.status,
+    txHash: row.tx_hash,
+    explorerUrl: row.explorer_url,
+    gasEstimate: row.gas_estimate ?? {},
+    providerReceipt: row.provider_receipt ?? {},
+    reputationScoreBefore: row.reputation_score_before,
+    reputationScoreAfter: row.reputation_score_after,
+    errorCode: row.error_code,
+    errorMessage: row.error_message,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+    confirmedAt: row.confirmed_at,
   }
 }
 

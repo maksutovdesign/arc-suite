@@ -1,12 +1,14 @@
 import type { Metadata } from "next"
 export const metadata: Metadata = { title: "Transactions — Arc Treasury" }
 
-import { ArrowLeftRight, Clock, CheckCircle2, XCircle, Loader2, SlidersHorizontal, Download } from "lucide-react"
+import { ArrowLeftRight, Clock, CheckCircle2, XCircle, Loader2, SlidersHorizontal, Download, ExternalLink } from "lucide-react"
 import { PageHeader } from "@/components/dashboard/PageHeader"
 import { ArcButton } from "@/components/ui/ArcButton"
-import { TRANSACTIONS } from "@/data/mock"
+import { getTreasuryDashboardData } from "@/lib/arc-api"
 import { CAT_STYLE } from "@/lib/styles"
 import { formatUSDC, formatTimestamp } from "@/lib/utils"
+
+export const dynamic = "force-dynamic"
 
 // Status icon components
 function StatusIndicator({ status }: { status: "completed" | "pending" | "failed" }) {
@@ -30,16 +32,17 @@ function StatusIndicator({ status }: { status: "completed" | "pending" | "failed
   )
 }
 
-export default function TransactionsPage() {
-  const total = TRANSACTIONS.reduce((s, t) => (t.status === "completed" ? s + t.amount : s), 0)
-  const failed = TRANSACTIONS.filter(t => t.status === "failed").length
-  const pending = TRANSACTIONS.filter(t => t.status === "pending").length
+export default async function TransactionsPage() {
+  const { transactions, source } = await getTreasuryDashboardData()
+  const total = transactions.reduce((sum, transaction) => transaction.status === "completed" ? sum + transaction.amount : sum, 0)
+  const failed = transactions.filter((transaction) => transaction.status === "failed").length
+  const pending = transactions.filter((transaction) => transaction.status === "pending").length
 
   return (
     <div className="flex flex-col min-h-full">
       <PageHeader
         title="Transactions"
-        subtitle={`${TRANSACTIONS.length} total · ${formatUSDC(total)} settled · ${failed} failed · ${pending} pending`}
+        subtitle={`${transactions.length} total · ${formatUSDC(total)} settled · ${failed} failed · ${pending} pending · ${source === "api" ? "Live pilot API" : "Mock fallback"}`}
         icon={ArrowLeftRight}
         glow
         actions={
@@ -54,7 +57,7 @@ export default function TransactionsPage() {
       <div className="flex items-center gap-6 px-6 py-3" style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
         {[
           { label: "Total settled",  value: formatUSDC(total),   color: "#5FBFFF" },
-          { label: "Completed",      value: `${TRANSACTIONS.filter(t=>t.status==="completed").length}`, color: "#34d399" },
+          { label: "Completed",      value: `${transactions.filter((transaction) => transaction.status === "completed").length}`, color: "#34d399" },
           { label: "Pending",        value: String(pending),     color: "#f59e0b" },
           { label: "Failed",         value: String(failed),      color: "#f87171" },
         ].map(s => (
@@ -68,9 +71,10 @@ export default function TransactionsPage() {
       {/* Table */}
       <div className="p-6">
         <div
-          className="rounded-2xl overflow-hidden"
+          className="overflow-x-auto rounded-2xl"
           style={{ border: "1px solid rgba(255,255,255,0.07)", background: "linear-gradient(160deg, #263a52 0%, #1e3247 100%)" }}
         >
+          <div className="min-w-[900px]">
           {/* Table header */}
           <div
             className="grid px-4 py-3"
@@ -92,9 +96,9 @@ export default function TransactionsPage() {
           </div>
 
           {/* Rows */}
-          {TRANSACTIONS.map((tx, i) => {
+          {transactions.map((tx, i) => {
             const cat = CAT_STYLE[tx.category] ?? CAT_STYLE.unknown
-            const isLast = i === TRANSACTIONS.length - 1
+            const isLast = i === transactions.length - 1
             const isFailed = tx.status === "failed"
 
             return (
@@ -120,7 +124,20 @@ export default function TransactionsPage() {
                   </div>
                   <div className="min-w-0">
                     <p className="text-xs font-medium text-white truncate">{tx.description}</p>
-                    <p className="text-[10px] font-mono truncate mt-0.5" style={{ color: "#3d5a74" }}>{tx.txHash}</p>
+                    {tx.explorerUrl ? (
+                      <a
+                        className="mt-0.5 flex items-center gap-1 truncate text-[10px] font-mono hover:underline"
+                        href={tx.explorerUrl}
+                        rel="noreferrer"
+                        style={{ color: "#5FBFFF" }}
+                        target="_blank"
+                      >
+                        <span className="truncate">{tx.txHash}</span>
+                        <ExternalLink className="size-2.5 shrink-0" />
+                      </a>
+                    ) : (
+                      <p className="text-[10px] font-mono truncate mt-0.5" style={{ color: "#3d5a74" }}>{tx.txHash}</p>
+                    )}
                   </div>
                 </div>
 
@@ -175,6 +192,7 @@ export default function TransactionsPage() {
               </div>
             )
           })}
+          </div>
         </div>
       </div>
     </div>

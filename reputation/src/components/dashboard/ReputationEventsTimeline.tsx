@@ -1,6 +1,6 @@
 "use client"
 
-import { Activity, TrendingUp, TrendingDown, Filter } from "lucide-react"
+import { Activity, TrendingUp, TrendingDown, Filter, ExternalLink } from "lucide-react"
 import { PageHeader } from "@/components/dashboard/PageHeader"
 import { ArcButton } from "@/components/ui/ArcButton"
 import type { ReputationEvent } from "@/data/mock"
@@ -92,9 +92,20 @@ export function ReputationEventsTimeline({ events, source }: Props) {
                 {/* Description */}
                 <div className="min-w-0 pr-4">
                   <p className="text-xs font-medium text-white">{ev.description}</p>
-                  {ev.txHash && (
+                  {ev.txHash && ev.explorerUrl ? (
+                    <a
+                      className="mt-0.5 flex items-center gap-1 text-[10px] font-mono hover:underline"
+                      href={ev.explorerUrl}
+                      rel="noreferrer"
+                      style={{ color: "#5FBFFF" }}
+                      target="_blank"
+                    >
+                      {ev.txHash}
+                      <ExternalLink className="size-2.5" />
+                    </a>
+                  ) : ev.txHash ? (
                     <p className="text-[10px] font-mono mt-0.5" style={{ color: "#3d5a74" }}>{ev.txHash}</p>
-                  )}
+                  ) : null}
                 </div>
 
                 {/* Agent */}

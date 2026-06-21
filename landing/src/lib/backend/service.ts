@@ -1,8 +1,8 @@
 import { agents, alerts, apiListings, providers, reputationProfiles, transactions, WORKSPACE } from "./seed"
 import type {
   AccessCheckRequest,
-  AccessDecision,
   AccessDecisionLog,
+  AccessDecisionResult,
   Agent,
   AnalyticsEventInput,
   AnalyticsSummary,
@@ -169,6 +169,7 @@ function transactionToReputationEvent(transaction: Transaction, agentName: strin
       scoreDelta: -4,
       timestamp: transaction.occurredAt,
       txHash: transaction.txHash,
+      explorerUrl: transaction.explorerUrl,
     }
   }
 
@@ -183,6 +184,7 @@ function transactionToReputationEvent(transaction: Transaction, agentName: strin
       scoreDelta: -8,
       timestamp: transaction.occurredAt,
       txHash: transaction.txHash,
+      explorerUrl: transaction.explorerUrl,
     }
   }
 
@@ -197,6 +199,7 @@ function transactionToReputationEvent(transaction: Transaction, agentName: strin
       scoreDelta: 5,
       timestamp: transaction.occurredAt,
       txHash: transaction.txHash,
+      explorerUrl: transaction.explorerUrl,
     }
   }
 
@@ -211,6 +214,7 @@ function transactionToReputationEvent(transaction: Transaction, agentName: strin
       scoreDelta: 2,
       timestamp: transaction.occurredAt,
       txHash: transaction.txHash,
+      explorerUrl: transaction.explorerUrl,
     }
   }
 
@@ -224,6 +228,7 @@ function transactionToReputationEvent(transaction: Transaction, agentName: strin
     scoreDelta: 3,
     timestamp: transaction.occurredAt,
     txHash: transaction.txHash,
+    explorerUrl: transaction.explorerUrl,
   }
 }
 
@@ -245,7 +250,7 @@ export async function setPilotAgentStatus(agentId: string, status: Agent["status
   return updatePilotAgent(agentId, { status })
 }
 
-export async function checkAccess(request: AccessCheckRequest): Promise<AccessDecision | null> {
+export async function checkAccess(request: AccessCheckRequest): Promise<AccessDecisionResult | null> {
   const dataset = await getDataset()
   const agent = dataset.agents.find((item) => item.id === request.agentId)
   const api = dataset.apiListings.find((item) => item.id === request.apiId)
@@ -277,12 +282,16 @@ export async function checkAccess(request: AccessCheckRequest): Promise<AccessDe
     dailyBudgetUsedPct,
   }
 
-  await insertAccessDecision({
+  const decisionLog = await insertAccessDecision({
     ...decision,
     amountUsdc: amount,
   })
 
-  return decision
+  return {
+    ...decision,
+    amountUsdc: amount,
+    decisionId: decisionLog?.id ?? null,
+  }
 }
 
 export async function listAccessDecisions(limit = 20): Promise<AccessDecisionLog[]> {
@@ -498,6 +507,8 @@ export async function getPilotSummary(): Promise<PilotSummary> {
       { method: "GET", path: "/api/reputation/:agentId", description: "0-1000 reputation profile" },
       { method: "GET", path: "/api/reputation/events", description: "Live reputation timeline from transactions and access decisions" },
       { method: "POST", path: "/api/access/check", description: "x402 access decision from score and budget policy" },
+      { method: "GET", path: "/api/settlements/arc", description: "Arc Testnet settlement readiness and allowlist status" },
+      { method: "POST", path: "/api/settlements/arc", description: "Policy-gated USDC transfer with Supabase and Reputation updates" },
       { method: "GET", path: "/api/access/decisions", description: "Access decision audit log" },
       { method: "GET", path: "/api/workspace/security", description: "Workspace members and scoped API keys" },
       { method: "POST", path: "/api/workspace/security", description: "Create a scoped workspace API key" },

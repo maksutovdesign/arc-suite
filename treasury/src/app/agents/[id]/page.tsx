@@ -4,6 +4,7 @@ import {
   ArrowLeft, Bot, Wallet, Activity, Clock,
   Settings2, Zap, ArrowLeftRight,
   CheckCircle2, XCircle, Loader2, TrendingUp,
+  ExternalLink,
 } from "lucide-react"
 import { AGENTS, AGENT_SPARKLINES } from "@/data/mock"
 import { getTreasuryDashboardData } from "@/lib/arc-api"
@@ -20,6 +21,7 @@ import { ArcButton } from "@/components/ui/ArcButton"
 import { AgentSparkline } from "@/components/charts/AgentSparkline"
 import { AgentPolicyActions } from "@/components/agents/AgentPolicyActions"
 import { AccessCheckSimulator } from "@/components/agents/AccessCheckSimulator"
+import { ArcSettlementPanel } from "@/components/agents/ArcSettlementPanel"
 
 function StatusIcon({ status }: { status: "completed" | "pending" | "failed" }) {
   if (status === "completed") return <CheckCircle2 className="size-3.5 shrink-0" style={{ color: "#34d399" }} />
@@ -59,7 +61,7 @@ export default async function AgentDetailPage({ params }: { params: Promise<{ id
     <div className="flex flex-col min-h-full">
       {/* Header */}
       <div
-        className="relative flex items-center justify-between px-6 py-4 overflow-hidden"
+        className="relative flex flex-col gap-3 overflow-hidden px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6"
         style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
       >
         {/* Ambient glow matching agent colour */}
@@ -100,7 +102,7 @@ export default async function AgentDetailPage({ params }: { params: Promise<{ id
           </div>
         </div>
 
-        <div className="relative flex items-center gap-2">
+        <div className="relative flex w-full items-center gap-2 sm:w-auto">
           <ArcButton disabled={isDemo} title={isDemo ? "Demo workspace is read-only" : "Top up wallet"} variant="primary" size="sm" icon={Zap}>
             Top Up
           </ArcButton>
@@ -108,9 +110,9 @@ export default async function AgentDetailPage({ params }: { params: Promise<{ id
         </div>
       </div>
 
-      <div className="p-6 space-y-5">
+      <div className="space-y-5 p-3 sm:p-6">
         {/* KPI row */}
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {[
             { label: "Wallet Balance", value: formatUSDC(agent.balance), icon: Wallet, color: grad.from, sub: agent.balance < 50 ? "⚠ Low" : "Sufficient" },
             { label: "Monthly Spend", value: formatUSDC(agent.monthlySpent), icon: TrendingUp, color: "#5FBFFF", sub: `${mPct}% of ${formatUSDC(agent.monthlyBudget)}` },
@@ -130,9 +132,9 @@ export default async function AgentDetailPage({ params }: { params: Promise<{ id
           ))}
         </div>
 
-        <div className="grid grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">
           {/* Left: Sparkline + Budget */}
-          <div className="col-span-1 flex flex-col gap-4">
+          <div className="flex flex-col gap-4 xl:col-span-1">
             {/* 7-day mini chart */}
             <div className="p-4 rounded-2xl" style={arcCard}>
               <div className="flex items-center justify-between mb-3">
@@ -174,6 +176,7 @@ export default async function AgentDetailPage({ params }: { params: Promise<{ id
             </div>
 
             <AccessCheckSimulator agent={agent} apiListings={apiListings} />
+            <ArcSettlementPanel agent={agent} apiListings={apiListings} isDemo={isDemo} />
 
             {/* Agent info */}
             <div className="p-4 rounded-2xl space-y-3" style={arcCard}>
@@ -193,7 +196,7 @@ export default async function AgentDetailPage({ params }: { params: Promise<{ id
           </div>
 
           {/* Right: Transaction history */}
-          <div className="col-span-2 p-4 rounded-2xl" style={arcCard}>
+          <div className="rounded-2xl p-4 xl:col-span-2" style={arcCard}>
             <div className="flex items-center justify-between mb-4">
               <span className="text-sm font-semibold text-white">
                 Transaction History
@@ -229,7 +232,20 @@ export default async function AgentDetailPage({ params }: { params: Promise<{ id
                       <div className="flex-1 min-w-0">
                         <p className="text-xs font-medium text-white truncate">{tx.description}</p>
                         <div className="flex items-center gap-2 mt-0.5">
-                          <span className="text-[10px] font-mono" style={{ color: "#3d5468" }}>{tx.txHash}</span>
+                          {tx.explorerUrl ? (
+                            <a
+                              className="flex items-center gap-1 text-[10px] font-mono hover:underline"
+                              href={tx.explorerUrl}
+                              rel="noreferrer"
+                              style={{ color: "#5FBFFF" }}
+                              target="_blank"
+                            >
+                              {tx.txHash}
+                              <ExternalLink className="size-2.5" />
+                            </a>
+                          ) : (
+                            <span className="text-[10px] font-mono" style={{ color: "#3d5468" }}>{tx.txHash}</span>
+                          )}
                           <span style={{ color: "#2d4560" }}>·</span>
                           <span className="text-[10px] flex items-center gap-0.5" style={{ color: "#7a8fa8" }}>
                             <Clock className="size-2.5" />{formatTimestamp(tx.timestamp)}
@@ -271,7 +287,8 @@ export default async function AgentDetailPage({ params }: { params: Promise<{ id
               No access checks recorded for this agent yet.
             </div>
           ) : (
-            <div className="space-y-0">
+            <div className="overflow-x-auto">
+              <div className="min-w-[680px] space-y-0">
               {agentDecisions.map((decision, index) => (
                 <div
                   className="grid grid-cols-[24px_minmax(0,1fr)_90px_90px_120px] items-center gap-3 py-2.5 text-xs"
@@ -294,6 +311,7 @@ export default async function AgentDetailPage({ params }: { params: Promise<{ id
                   <span className="text-right text-[10px]" style={{ color: "#7a8fa8" }}>{formatTimestamp(decision.createdAt)}</span>
                 </div>
               ))}
+              </div>
             </div>
           )}
         </div>

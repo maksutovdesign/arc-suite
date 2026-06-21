@@ -44,14 +44,14 @@ export function EcosystemNav({ current }: { current: "treasury" | "reputation" |
 
   return (
     <div
-      className="flex items-center justify-between px-4 py-1.5 shrink-0"
+      className="flex shrink-0 items-center justify-between px-2 py-1.5 sm:px-4"
       style={{
         background: "rgba(255,255,255,0.02)",
         borderBottom: "1px solid rgba(255,255,255,0.06)",
       }}
     >
-      <div className="flex items-center gap-1">
-        <span className="text-[10px] font-medium mr-2" style={{ color: "#3d5468" }}>
+      <div className="flex min-w-0 items-center gap-1">
+        <span className="mr-2 hidden text-[10px] font-medium lg:inline" style={{ color: "#3d5468" }}>
           Arc Suite
         </span>
         {APPS.map(app => {
@@ -60,7 +60,7 @@ export function EcosystemNav({ current }: { current: "treasury" | "reputation" |
             <a
               key={app.id}
               href={app.url}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-medium transition-all"
+              className="flex items-center gap-1.5 rounded-lg px-2 py-1 text-[11px] font-medium transition-all sm:px-2.5"
               style={
                 isCurrent
                   ? { background: `${app.color}18`, color: app.color, border: `1px solid ${app.color}30`, cursor: "pointer" }
@@ -69,7 +69,7 @@ export function EcosystemNav({ current }: { current: "treasury" | "reputation" |
               title={`Open ${app.label}`}
             >
               <span>{app.emoji}</span>
-              <span>{app.label}</span>
+              <span className="hidden sm:inline">{app.label}</span>
               {isCurrent && (
                   <span className="size-1.5 rounded-full" style={{ background: app.color }} />
               )}
@@ -77,7 +77,7 @@ export function EcosystemNav({ current }: { current: "treasury" | "reputation" |
           )
         })}
       </div>
-      <span className="text-[10px]" style={{ color: "#3d5468" }}>
+      <span className="hidden text-[10px] xl:inline" style={{ color: "#3d5468" }}>
         Arc Testnet · USDC by Circle
       </span>
     </div>

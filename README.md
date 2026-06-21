@@ -161,6 +161,8 @@ landing/supabase/migrations/2026060202_workspace_auth.sql
 landing/supabase/migrations/2026060501_analytics_events.sql
 landing/supabase/migrations/2026060502_investor_leads.sql
 landing/supabase/migrations/2026060601_rate_limit_events.sql
+landing/supabase/migrations/2026060701_ops_health_checks.sql
+landing/supabase/migrations/2026062101_arc_settlements.sql
 landing/supabase/seed.sql
 ```
 
@@ -255,24 +257,32 @@ cd ../marketplace && vercel --prod
 
 ---
 
-## Integrating with Arc
+## Arc Testnet settlement
 
-To connect to the real Arc Testnet, add these environment variables to each app:
+The landing backend can execute one policy-gated USDC payment on Arc Testnet:
+
+`policy check → Circle Wallets send → Arcscan hash → Supabase transaction → Treasury budget → Reputation score`
+
+Apply `landing/supabase/migrations/2026062101_arc_settlements.sql`, then add these variables to the landing Vercel project:
 
 ```env
-# Circle / Arc
-CIRCLE_API_KEY=sk_live_...
+# Circle Developer-Controlled Wallet
+CIRCLE_API_KEY=
 CIRCLE_ENTITY_SECRET=...
 
-# Arc Testnet RPC
-NEXT_PUBLIC_ARC_RPC=https://rpc.testnet.arc.network
-NEXT_PUBLIC_ARC_CHAIN_ID=5042002
-
-# x402 signing key (Marketplace)
-X402_PRIVATE_KEY=0x...
+# Server-side transfer policy
+ARC_SOURCE_WALLET_ADDRESS=0x...
+ARC_SETTLEMENT_DEFAULT_RECIPIENT=0x...
+ARC_SETTLEMENT_ALLOWED_RECIPIENTS=0x...,0x...
+ARC_MAX_SETTLEMENT_USDC=0.1
 ```
 
-Arc Testnet parameters:
+The endpoint is `POST /api/settlements/arc`. It requires a workspace API key with
+`write` scope. Treasury proxies it only for an authenticated admin session; public
+demo sessions remain read-only. Recipients must be allowlisted and every request
+must include an idempotency key.
+
+Arc Testnet:
 - **Chain ID**: 5042002
 - **Native gas token**: USDC (18 decimals)
 - **Block explorer**: [testnet.arcscan.app](https://testnet.arcscan.app)

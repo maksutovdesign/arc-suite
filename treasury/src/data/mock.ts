@@ -31,6 +31,10 @@ export interface Transaction {
   txHash: string
   network: string
   recipient: string
+  explorerUrl?: string | null
+  sourceAddress?: string | null
+  chainId?: number | null
+  settlementId?: string | null
 }
 
 export interface BudgetAlert {
