@@ -2,7 +2,7 @@
  * EcosystemNav — thin top banner linking all Arc Suite products.
  * Shows in every app so presenters can navigate between them instantly.
  */
-export function EcosystemNav({ current }: { current: "treasury" | "reputation" | "marketplace" | "shield" | "flow" | "billing" }) {
+export function EcosystemNav({ current }: { current: "treasury" | "reputation" | "marketplace" | "shield" | "flow" | "billing" | "escrow" }) {
   const urls = process.env.NODE_ENV === "production"
     ? {
         treasury: process.env.NEXT_PUBLIC_ARC_TREASURY_URL ?? "https://treasury-umber.vercel.app",
@@ -11,6 +11,7 @@ export function EcosystemNav({ current }: { current: "treasury" | "reputation" |
         shield: process.env.NEXT_PUBLIC_ARC_SHIELD_URL ?? "https://arcsuite-app.vercel.app/shield",
         flow: process.env.NEXT_PUBLIC_ARC_FLOW_URL ?? "https://arcsuite-app.vercel.app/flow",
         billing: process.env.NEXT_PUBLIC_ARC_BILLING_URL ?? "https://arcsuite-app.vercel.app/billing",
+        escrow: process.env.NEXT_PUBLIC_ARC_ESCROW_URL ?? "https://arcsuite-app.vercel.app/escrow",
       }
     : {
         treasury: "http://localhost:3001",
@@ -19,6 +20,7 @@ export function EcosystemNav({ current }: { current: "treasury" | "reputation" |
         shield: "http://localhost:3100/shield",
         flow: "http://localhost:3100/flow",
         billing: "http://localhost:3100/billing",
+        escrow: "http://localhost:3100/escrow",
       }
 
   const APPS = [
@@ -61,6 +63,14 @@ export function EcosystemNav({ current }: { current: "treasury" | "reputation" |
       url: urls.billing,
       color: "#fbbf24",
       emoji: "B",
+    },
+    {
+      id: "escrow",
+      label: "Arc Escrow",
+      sub: "Agent Deals",
+      url: urls.escrow,
+      color: "#fb7185",
+      emoji: "E",
     },
     {
       id: "shield",

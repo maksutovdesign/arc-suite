@@ -1,6 +1,6 @@
 # Arc Suite — AI Agent Infrastructure for the Onchain Economy
 
-> **Six interconnected products built on [Arc](https://arc.io) and [Circle](https://circle.com) — demonstrating what the agentic economy looks like when AI agents can spend, screen risk, earn trust, meter usage, and pay for services autonomously using USDC.**
+> **Seven interconnected products built on [Arc](https://arc.io) and [Circle](https://circle.com) — demonstrating what the agentic economy looks like when AI agents can spend, screen risk, earn trust, meter usage, govern delivery, and pay for services autonomously using USDC.**
 
 Built with **Next.js 16**, **TypeScript**, **Tailwind CSS v4**, **shadcn/ui v4**, and the **Arc / Circle SDK**.
 
@@ -16,6 +16,7 @@ Built with **Next.js 16**, **TypeScript**, **Tailwind CSS v4**, **shadcn/ui v4**
 | **Arc Shield** | [arcsuite-app.vercel.app/shield](https://arcsuite-app.vercel.app/shield) | Circle-powered compliance screening and risk policy |
 | **Arc Flow** | [arcsuite-app.vercel.app/flow](https://arcsuite-app.vercel.app/flow) | Compliance-to-settlement payment orchestration |
 | **Arc Billing** | [arcsuite-app.vercel.app/billing](https://arcsuite-app.vercel.app/billing) | x402 usage metering, prepaid balances, invoices and settlement batches |
+| **Arc Escrow** | [arcsuite-app.vercel.app/escrow](https://arcsuite-app.vercel.app/escrow) | Programmable agent deals, milestones, disputes and contract events |
 
 ---
 
@@ -141,6 +142,20 @@ Arc Billing turns Marketplace requests into an auditable payment ledger. Usage i
 - Nanopayment aggregation for efficient settlement
 - HTTP `402 Payment Required` when prepaid credit is insufficient
 
+### Arc Escrow — Programmable Agent Deals
+
+**`/landing/src/app/escrow`** · [Live](https://arcsuite-app.vercel.app/escrow)
+
+Arc Escrow coordinates commercial delivery between agents. The Supabase state machine handles deals, milestones and disputes, while financial release/refund actions fail closed until Circle contract execution returns a confirmed Arc transaction hash.
+
+**Key features:**
+- Idempotent agent-to-agent agreements
+- Ordered USDC milestones and delivery submission
+- Operator dispute workflow and event audit trail
+- Release/refund through Circle Developer-Controlled Wallet contract execution
+- Arcscan links only after confirmed transactions
+- Solidity reference contract with milestone events
+
 ---
 
 ## Monorepo Structure
@@ -157,7 +172,7 @@ arc/
 
 Each app is an independent Next.js 16 project sharing:
 - **Design system**: Space Grotesk font, Arc dark theme, `ArcButton`, `ArcProgress`, `StatCard`, `PageHeader`
-- **EcosystemNav**: top bar linking all six products together
+- **EcosystemNav**: top bar linking all seven products together
 - **LiveTicker**: animated real-time event feed in each app's header
 
 ---
@@ -203,6 +218,7 @@ landing/supabase/migrations/2026062101_arc_settlements.sql
 landing/supabase/migrations/2026062102_arc_shield.sql
 landing/supabase/migrations/2026062201_arc_flow.sql
 landing/supabase/migrations/2026062202_arc_billing.sql
+landing/supabase/migrations/2026062203_arc_escrow.sql
 landing/supabase/seed.sql
 ```
 
@@ -337,11 +353,25 @@ Arc Testnet:
 - **Block explorer**: [testnet.arcscan.app](https://testnet.arcscan.app)
 - **Faucet**: [faucet.circle.com](https://faucet.circle.com)
 
+## Arc Escrow contract execution
+
+Apply `landing/supabase/migrations/2026062203_arc_escrow.sql`. The reference contract is
+`contracts/ArcEscrow.sol`; deploy it on `ARC-TESTNET` through Circle Contracts, then configure:
+
+```env
+ARC_ESCROW_CONTRACT_ADDRESS=0x...
+ARC_ESCROW_OPERATOR_WALLET_ID=...
+```
+
+The Escrow API records submissions and disputes in Supabase. `release` and `refund`
+fail closed until the Circle Developer-Controlled Wallet confirms the contract
+execution and returns an Arc transaction hash.
+
 ---
 
 ## Built for Arc/Circle
 
-These products were designed to showcase the Arc ecosystem to the **Arc community** and **Circle team** — demonstrating six complementary products that together form an infrastructure layer for the agentic economy:
+These products were designed to showcase the Arc ecosystem to the **Arc community** and **Circle team** — demonstrating seven complementary products that together form an infrastructure layer for the agentic economy:
 
 - **Treasury** answers: *"How do I control what my agents spend?"*
 - **Reputation** answers: *"How do I know which agents I can trust?"*
@@ -349,6 +379,7 @@ These products were designed to showcase the Arc ecosystem to the **Arc communit
 - **Shield** answers: *"Should this wallet be allowed to transact?"*
 - **Flow** answers: *"How does an approved payment move safely from intent to settlement?"*
 - **Billing** answers: *"How is every API call priced, invoiced, and netted for settlement?"*
+- **Escrow** answers: *"How is USDC released only when an agent completes agreed work?"*
 
 ---
 

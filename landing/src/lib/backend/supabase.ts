@@ -15,6 +15,10 @@ import type {
   BillingPlan,
   BillingSettlementBatch,
   BillingUsageEvent,
+  EscrowDeal,
+  EscrowEvent,
+  EscrowMilestone,
+  EscrowOverview,
   FlowRun,
   ApiKeyScope,
   ApiListing,
@@ -402,6 +406,62 @@ type BillingSummaryRow = {
   unbatched_usage_usdc: string | number
   active_accounts: string | number
   low_balance_accounts: string | number
+}
+
+type EscrowDealRow = {
+  id: string
+  workspace_id: string
+  idempotency_key: string
+  title: string
+  description: string
+  buyer_agent_id: string
+  seller_agent_id: string
+  total_amount_usdc: string | number
+  released_amount_usdc: string | number
+  refunded_amount_usdc: string | number
+  status: EscrowDeal["status"]
+  contract_address: string | null
+  contract_deal_id: string | null
+  funding_tx_hash: string | null
+  explorer_url: string | null
+  dispute_reason: string | null
+  created_at: string
+  updated_at: string
+  completed_at: string | null
+}
+
+type EscrowMilestoneRow = {
+  id: string
+  workspace_id: string
+  deal_id: string
+  position: number
+  title: string
+  description: string
+  amount_usdc: string | number
+  status: EscrowMilestone["status"]
+  due_at: string | null
+  submitted_at: string | null
+  released_at: string | null
+  refunded_at: string | null
+  tx_hash: string | null
+  explorer_url: string | null
+  created_at: string
+  updated_at: string
+}
+
+type EscrowEventRow = {
+  id: string
+  workspace_id: string
+  deal_id: string
+  milestone_id: string | null
+  type: EscrowEvent["type"]
+  actor: string
+  detail: string
+  amount_usdc: string | number
+  tx_hash: string | null
+  explorer_url: string | null
+  provider_receipt: Record<string, unknown> | null
+  created_at: string
 }
 
 export type BackendDataset = {
@@ -867,6 +927,93 @@ export async function checkSupabaseBillingReadiness() {
   }
 }
 
+export async function getSupabaseEscrowOverview(configuration: EscrowOverview["configuration"], limit = 100): Promise<EscrowOverview | null> {
+  if (!isSupabaseConfigured()) return null
+  try {
+    const [dealRows, milestoneRows, eventRows] = await Promise.all([
+      getRows<EscrowDealRow>("escrow_deals", `select=*&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&order=created_at.desc&limit=${limit}`),
+      getRows<EscrowMilestoneRow>("escrow_milestones", `select=*&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&order=created_at.asc&limit=${limit * 5}`),
+      getRows<EscrowEventRow>("escrow_events", `select=*&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&order=created_at.desc&limit=${limit * 5}`),
+    ])
+    const deals = dealRows.map(mapEscrowDeal)
+    const milestones = milestoneRows.map(mapEscrowMilestone)
+    const events = eventRows.map(mapEscrowEvent)
+    return {
+      deals,
+      milestones,
+      events,
+      configuration,
+      summary: {
+        lockedUsdc: deals.reduce((sum, deal) => sum + Math.max(0, deal.totalAmountUsdc - deal.releasedAmountUsdc - deal.refundedAmountUsdc), 0),
+        releasedUsdc: deals.reduce((sum, deal) => sum + deal.releasedAmountUsdc, 0),
+        disputedUsdc: deals.filter((deal) => deal.status === "disputed").reduce((sum, deal) => sum + Math.max(0, deal.totalAmountUsdc - deal.releasedAmountUsdc - deal.refundedAmountUsdc), 0),
+        activeDeals: deals.filter((deal) => ["active", "disputed"].includes(deal.status)).length,
+      },
+    }
+  } catch (error) {
+    logSupabaseError("escrow overview", error)
+    return null
+  }
+}
+
+export async function createSupabaseEscrowDeal(input: {
+  id: string
+  idempotencyKey: string
+  title: string
+  description: string
+  buyerAgentId: string
+  sellerAgentId: string
+  milestones: Array<{ title: string; description: string; amountUsdc: number; dueAt: string | null }>
+}): Promise<EscrowDeal | null> {
+  if (!isSupabaseConfigured()) return null
+  const row = await postRpc<EscrowDealRow>("create_escrow_deal", {
+    p_id: input.id,
+    p_workspace_id: WORKSPACE_ID,
+    p_idempotency_key: input.idempotencyKey,
+    p_title: input.title,
+    p_description: input.description,
+    p_buyer_agent_id: input.buyerAgentId,
+    p_seller_agent_id: input.sellerAgentId,
+    p_milestones: input.milestones,
+  })
+  return row ? mapEscrowDeal(row) : null
+}
+
+export async function applySupabaseEscrowAction(input: {
+  dealId: string
+  milestoneId: string
+  action: "submit" | "release" | "refund" | "dispute"
+  actor: string
+  detail: string
+  txHash?: string | null
+  explorerUrl?: string | null
+  providerReceipt?: Record<string, unknown>
+}): Promise<EscrowDeal | null> {
+  if (!isSupabaseConfigured()) return null
+  const row = await postRpc<EscrowDealRow>("apply_escrow_action", {
+    p_workspace_id: WORKSPACE_ID,
+    p_deal_id: input.dealId,
+    p_milestone_id: input.milestoneId,
+    p_action: input.action,
+    p_actor: input.actor,
+    p_detail: input.detail,
+    p_tx_hash: input.txHash ?? null,
+    p_explorer_url: input.explorerUrl ?? null,
+    p_provider_receipt: input.providerReceipt ?? {},
+  })
+  return row ? mapEscrowDeal(row) : null
+}
+
+export async function checkSupabaseEscrowReadiness() {
+  if (!isSupabaseConfigured()) return false
+  try {
+    await getRows<Pick<EscrowDealRow, "id">>("escrow_deals", "select=id&limit=1")
+    return true
+  } catch {
+    return false
+  }
+}
+
 export async function updateSupabaseArcSettlement(
   settlementId: string,
   updates: {
@@ -1320,6 +1467,9 @@ export async function checkSupabaseReadiness() {
     "billing_usage_events",
     "billing_invoices",
     "billing_settlement_batches",
+    "escrow_deals",
+    "escrow_milestones",
+    "escrow_events",
   ]
   const checks = await Promise.all(tables.map(async (table) => {
     try {
@@ -1669,6 +1819,37 @@ function mapBillingBatch(row: BillingBatchRow): BillingSettlementBatch {
     netAmountUsdc: toNumber(row.net_amount_usdc), settlementId: row.settlement_id,
     txHash: row.tx_hash, explorerUrl: row.explorer_url, createdAt: row.created_at,
     updatedAt: row.updated_at, settledAt: row.settled_at,
+  }
+}
+
+function mapEscrowDeal(row: EscrowDealRow): EscrowDeal {
+  return {
+    id: row.id, workspaceId: row.workspace_id, idempotencyKey: row.idempotency_key,
+    title: row.title, description: row.description, buyerAgentId: row.buyer_agent_id,
+    sellerAgentId: row.seller_agent_id, totalAmountUsdc: toNumber(row.total_amount_usdc),
+    releasedAmountUsdc: toNumber(row.released_amount_usdc), refundedAmountUsdc: toNumber(row.refunded_amount_usdc),
+    status: row.status, contractAddress: row.contract_address, contractDealId: row.contract_deal_id,
+    fundingTxHash: row.funding_tx_hash, explorerUrl: row.explorer_url, disputeReason: row.dispute_reason,
+    createdAt: row.created_at, updatedAt: row.updated_at, completedAt: row.completed_at,
+  }
+}
+
+function mapEscrowMilestone(row: EscrowMilestoneRow): EscrowMilestone {
+  return {
+    id: row.id, workspaceId: row.workspace_id, dealId: row.deal_id, position: row.position,
+    title: row.title, description: row.description, amountUsdc: toNumber(row.amount_usdc),
+    status: row.status, dueAt: row.due_at, submittedAt: row.submitted_at,
+    releasedAt: row.released_at, refundedAt: row.refunded_at, txHash: row.tx_hash,
+    explorerUrl: row.explorer_url, createdAt: row.created_at, updatedAt: row.updated_at,
+  }
+}
+
+function mapEscrowEvent(row: EscrowEventRow): EscrowEvent {
+  return {
+    id: row.id, workspaceId: row.workspace_id, dealId: row.deal_id,
+    milestoneId: row.milestone_id, type: row.type, actor: row.actor, detail: row.detail,
+    amountUsdc: toNumber(row.amount_usdc), txHash: row.tx_hash, explorerUrl: row.explorer_url,
+    providerReceipt: row.provider_receipt ?? {}, createdAt: row.created_at,
   }
 }
 

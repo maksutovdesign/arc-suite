@@ -16,6 +16,9 @@ export type FlowRunStatus = "running" | "completed" | "review" | "blocked" | "fa
 export type FlowStepStatus = "pending" | "running" | "passed" | "review" | "blocked" | "failed" | "skipped"
 export type BillingInvoiceStatus = "draft" | "ready" | "settled" | "void"
 export type BillingBatchStatus = "ready" | "processing" | "settled" | "failed"
+export type EscrowDealStatus = "draft" | "active" | "disputed" | "completed" | "refunded" | "cancelled"
+export type EscrowMilestoneStatus = "pending" | "submitted" | "released" | "refunded" | "disputed"
+export type EscrowEventType = "created" | "funded" | "submitted" | "released" | "refunded" | "disputed" | "resolved"
 
 export type Agent = {
   id: string
@@ -359,6 +362,80 @@ export type BillingOverview = {
     unbatchedUsageUsdc: number
     activeAccounts: number
     lowBalanceAccounts: number
+  }
+}
+
+export type EscrowDeal = {
+  id: string
+  workspaceId: string
+  idempotencyKey: string
+  title: string
+  description: string
+  buyerAgentId: string
+  sellerAgentId: string
+  totalAmountUsdc: number
+  releasedAmountUsdc: number
+  refundedAmountUsdc: number
+  status: EscrowDealStatus
+  contractAddress: string | null
+  contractDealId: string | null
+  fundingTxHash: string | null
+  explorerUrl: string | null
+  disputeReason: string | null
+  createdAt: string
+  updatedAt: string
+  completedAt: string | null
+}
+
+export type EscrowMilestone = {
+  id: string
+  workspaceId: string
+  dealId: string
+  position: number
+  title: string
+  description: string
+  amountUsdc: number
+  status: EscrowMilestoneStatus
+  dueAt: string | null
+  submittedAt: string | null
+  releasedAt: string | null
+  refundedAt: string | null
+  txHash: string | null
+  explorerUrl: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export type EscrowEvent = {
+  id: string
+  workspaceId: string
+  dealId: string
+  milestoneId: string | null
+  type: EscrowEventType
+  actor: string
+  detail: string
+  amountUsdc: number
+  txHash: string | null
+  explorerUrl: string | null
+  providerReceipt: Record<string, unknown>
+  createdAt: string
+}
+
+export type EscrowOverview = {
+  deals: EscrowDeal[]
+  milestones: EscrowMilestone[]
+  events: EscrowEvent[]
+  configuration: {
+    onchainConfigured: boolean
+    chain: "ARC-TESTNET"
+    contractAddress: string | null
+    missing: string[]
+  }
+  summary: {
+    lockedUsdc: number
+    releasedUsdc: number
+    disputedUsdc: number
+    activeDeals: number
   }
 }
 

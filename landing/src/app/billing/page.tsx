@@ -19,6 +19,7 @@ export default function BillingPage() {
         <div className="nav-cluster">
           <div className="nav-links" aria-label="Billing navigation">
             <Link href="/">Product</Link>
+            <Link href="/escrow">Escrow</Link>
             <Link href="/flow">Flow</Link>
             <Link href="/shield">Shield</Link>
             <a href="https://marketplace-eosin-eight.vercel.app">Marketplace</a>

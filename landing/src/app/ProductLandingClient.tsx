@@ -97,6 +97,21 @@ const productDetails = [
     ],
     bullets: ["Prepaid agent balances", "Plans, usage and invoices", "Batched provider settlement"],
   },
+  {
+    key: "escrow",
+    name: "Arc Escrow",
+    eyebrow: "Programmable deals",
+    title: "Milestone contracts for autonomous commercial relationships.",
+    text: "Create agent-to-agent agreements, hold value against delivery milestones, open disputes and release or refund USDC through confirmed Circle contract execution.",
+    image: "",
+    imageAlt: "Arc Escrow console showing locked value, agent deals, milestones and dispute events",
+    stats: [
+      ["3", "milestone states"],
+      ["2", "financial outcomes"],
+      ["100%", "event-audited"],
+    ],
+    bullets: ["Milestone state machine", "Release, refund and disputes", "Arc onchain event receipts"],
+  },
 ]
 
 const steps = [
@@ -107,7 +122,7 @@ const steps = [
 ]
 
 const metrics = [
-  ["6", "connected products"],
+  ["7", "connected products"],
   ["25,482", "agent transactions in demo"],
   ["24.8M", "marketplace request volume"],
   ["99.72%", "average uptime in marketplace stats"],
@@ -230,7 +245,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
   const activeProduct = liveProductDetails.find((product) => product.key === activeProductKey) ?? liveProductDetails[0]
   const liveMetrics = pilotSummary
     ? [
-        ["6", "connected products"],
+        ["7", "connected products"],
         [formatCompact(pilotSummary.marketplace.requests), "marketplace request volume"],
         [`${pilotSummary.marketplace.avgUptimePct}%`, "average uptime from API"],
         [apiStatus === "live" ? "Live" : "Fallback", "pilot API status"],
@@ -272,6 +287,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
             <a href="#system">Product</a>
             <a href="#loop">Loop</a>
             <a href="#proof">Proof</a>
+            <a href="/escrow">Escrow</a>
             <a href="/billing">Billing</a>
             <a href="/flow">Flow</a>
             <a href="/shield">Shield</a>
@@ -320,7 +336,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
           <p className="hero-text">
             Arc Suite is a connected product system built for autonomous USDC commerce:
             Treasury controls spend, Shield screens counterparties, Reputation scores behavior,
-            Marketplace sells x402 API access, Billing meters usage, and Flow executes the complete policy pipeline.
+            Marketplace sells x402 API access, Billing meters usage, Escrow governs delivery, and Flow executes the complete policy pipeline.
           </p>
           <div className="hero-actions">
             <a
@@ -409,7 +425,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
       <section className="section" id="system">
         <div className="section-heading">
           <p className="kicker">The product system</p>
-          <h2>Six connected products. One economic operating layer.</h2>
+          <h2>Seven connected products. One economic operating layer.</h2>
           <p>
             Arc Suite is designed around a shared cast of agents moving through the
             complete economic journey, from wallet spend to trust scoring to service access.
@@ -524,6 +540,23 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
                   ))}
                   <div className="flow-preview-receipt"><span>Settlement batch</span><code>3 events · READY</code></div>
                   <a href="/billing">Open live console</a>
+                </div>
+              ) : activeProduct.key === "escrow" ? (
+                <div className="billing-product-preview escrow-product-preview" aria-label={activeProduct.imageAlt}>
+                  <div className="shield-preview-top"><span>ARC ESCROW / DEAL</span><strong>ACTIVE</strong></div>
+                  <div className="billing-preview-balance"><span>Locked value</span><strong>9.00 USDC</strong></div>
+                  {[
+                    ["Schema delivery", "RELEASED", "3.00"],
+                    ["Live data stream", "SUBMITTED", "6.00"],
+                    ["Production handoff", "PENDING", "3.00"],
+                  ].map(([label, status, amount]) => (
+                    <div className="billing-preview-row" key={label}>
+                      <span><b>{label}</b><small>{status}</small></span>
+                      <strong>{amount} USDC</strong>
+                    </div>
+                  ))}
+                  <div className="flow-preview-receipt"><span>Contract events</span><code>3 audited</code></div>
+                  <a href="/escrow">Open live console</a>
                 </div>
               ) : (
                 <img src={activeProduct.image} alt={activeProduct.imageAlt} />
@@ -792,6 +825,10 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
               <span>Billing</span>
               <b>Metering & invoices</b>
             </div>
+            <div>
+              <span>Escrow</span>
+              <b>Milestones & disputes</b>
+            </div>
           </div>
           <div className="map-node arc">
             <span>Arc / Circle</span>
@@ -811,7 +848,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
         </div>
         <div className="text-stack">
           <p>
-            Flow answers: how does a payment move safely from intent to settlement? Billing answers: how is every API call priced, invoiced and netted? Treasury answers: how do I control what my agents spend? Reputation
+            Flow answers: how does a payment move safely from intent to settlement? Escrow answers: how is value released against delivery? Billing answers: how is every API call priced, invoiced and netted? Treasury answers: how do I control what my agents spend? Reputation
             answers: which agents can services trust? Marketplace answers: where do
             agents find services to pay for?
           </p>

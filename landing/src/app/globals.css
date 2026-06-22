@@ -3378,6 +3378,376 @@ a.ops-history-run:hover {
   white-space: nowrap;
 }
 
+.escrow-shell {
+  max-width: 1380px;
+}
+
+.escrow-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(290px, 0.65fr);
+  gap: 28px;
+  align-items: end;
+  margin-bottom: 28px;
+}
+
+.escrow-heading h1 {
+  margin: 4px 0 12px;
+  font-size: 64px;
+}
+
+.escrow-heading p:not(.kicker) {
+  max-width: 760px;
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1.65;
+}
+
+.escrow-contract {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+  padding: 18px;
+  border: 1px solid rgba(250, 204, 21, 0.22);
+  border-radius: 8px;
+  background: rgba(250, 204, 21, 0.045);
+  color: var(--yellow);
+}
+
+.escrow-contract.is-live {
+  border-color: rgba(52, 211, 153, 0.26);
+  background: rgba(52, 211, 153, 0.055);
+  color: var(--green);
+}
+
+.escrow-contract svg {
+  width: 42px;
+  height: 42px;
+  padding: 9px;
+  border-radius: 50%;
+  background: rgba(250, 204, 21, 0.12);
+  color: var(--yellow);
+}
+
+.escrow-contract.is-live svg {
+  background: rgba(52, 211, 153, 0.12);
+  color: var(--green);
+}
+
+.escrow-contract span,
+.escrow-contract strong,
+.escrow-contract small {
+  display: block;
+}
+
+.escrow-contract span {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.escrow-contract strong {
+  margin: 4px 0;
+  color: var(--text);
+  font-size: 14px;
+}
+
+.escrow-contract small {
+  font-size: 11px;
+}
+
+.escrow-layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.68fr) minmax(0, 1.32fr);
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.escrow-lower {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.escrow-deal-list {
+  display: grid;
+  gap: 8px;
+}
+
+.escrow-deal-list button {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 5px 12px;
+  width: 100%;
+  padding: 13px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.018);
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.escrow-deal-list button.is-active {
+  border-color: rgba(95, 191, 255, 0.36);
+  background: rgba(95, 191, 255, 0.07);
+}
+
+.escrow-deal-list span,
+.escrow-deal-list small {
+  display: block;
+}
+
+.escrow-deal-list b {
+  font-size: 13px;
+}
+
+.escrow-deal-list small {
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.escrow-deal-list strong {
+  color: var(--green);
+  font-size: 12px;
+}
+
+.escrow-deal-list em,
+.escrow-status {
+  justify-self: start;
+  padding: 4px 7px;
+  border-radius: 999px;
+  background: rgba(95, 191, 255, 0.1);
+  color: var(--blue);
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.escrow-deal-list em {
+  grid-column: 1 / -1;
+}
+
+.escrow-deal-list em.is-disputed,
+.escrow-status.is-disputed {
+  background: rgba(248, 113, 113, 0.12);
+  color: var(--red);
+}
+
+.escrow-status.is-released {
+  background: rgba(52, 211, 153, 0.12);
+  color: var(--green);
+}
+
+.escrow-status.is-submitted {
+  background: rgba(250, 204, 21, 0.12);
+  color: var(--yellow);
+}
+
+.escrow-progress {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 18px;
+  margin-bottom: 18px;
+}
+
+.escrow-progress span {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.escrow-progress span:nth-child(2) {
+  text-align: right;
+}
+
+.escrow-progress b {
+  color: var(--text);
+}
+
+.escrow-progress > div {
+  grid-column: 1 / -1;
+  height: 5px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.escrow-progress i {
+  display: block;
+  height: 100%;
+  background: var(--green);
+}
+
+.escrow-milestones {
+  display: grid;
+  gap: 8px;
+}
+
+.escrow-milestones article {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) auto auto;
+  gap: 12px;
+  align-items: center;
+  min-height: 84px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.065);
+  border-radius: 7px;
+}
+
+.escrow-milestone-index {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(95, 191, 255, 0.1);
+  color: var(--blue);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.escrow-milestones h3 {
+  margin: 0;
+  font-size: 13px;
+}
+
+.escrow-milestones p {
+  margin: 4px 0 8px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.escrow-milestones > article > strong {
+  font-size: 12px;
+}
+
+.escrow-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.escrow-actions button {
+  display: grid;
+  width: 31px;
+  height: 31px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.025);
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.escrow-actions button:hover:not(:disabled) {
+  border-color: rgba(95, 191, 255, 0.3);
+  color: var(--blue);
+}
+
+.escrow-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.32;
+}
+
+.escrow-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 13px;
+}
+
+.escrow-form label {
+  display: grid;
+  gap: 7px;
+}
+
+.escrow-form label:first-child {
+  grid-column: 1 / -1;
+}
+
+.escrow-form span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.escrow-form input,
+.escrow-form select {
+  width: 100%;
+  min-height: 43px;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 6px;
+  background: #080d13;
+  color: var(--text);
+  font: inherit;
+}
+
+.escrow-events {
+  display: grid;
+  align-content: start;
+}
+
+.escrow-events > div:not(.flow-panel-title) {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr) auto;
+  gap: 11px;
+  align-items: center;
+  padding: 11px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.escrow-event-icon {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(95, 191, 255, 0.1);
+  color: var(--blue);
+}
+
+.escrow-event-icon.is-released {
+  background: rgba(52, 211, 153, 0.11);
+  color: var(--green);
+}
+
+.escrow-event-icon.is-disputed {
+  background: rgba(248, 113, 113, 0.11);
+  color: var(--red);
+}
+
+.escrow-events p,
+.escrow-events b,
+.escrow-events small {
+  display: block;
+}
+
+.escrow-events p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.escrow-events b {
+  margin-bottom: 3px;
+  color: var(--text);
+  text-transform: capitalize;
+}
+
+.escrow-events small {
+  margin-top: 4px;
+  font-size: 9px;
+}
+
+.escrow-events a,
+.escrow-events > div > strong {
+  color: var(--blue);
+  font-size: 10px;
+  font-weight: 800;
+}
+
 .logo-lab-hero {
   max-width: 820px;
   margin-bottom: 42px;
@@ -3569,7 +3939,10 @@ a.ops-history-run:hover {
   .flow-heading,
   .flow-layout,
   .billing-heading,
-  .billing-grid {
+  .billing-grid,
+  .escrow-heading,
+  .escrow-layout,
+  .escrow-lower {
     grid-template-columns: 1fr;
   }
 
@@ -3665,10 +4038,27 @@ a.ops-history-run:hover {
     font-size: 48px;
   }
 
+  .escrow-heading h1 {
+    font-size: 48px;
+  }
+
   .billing-topup,
   .billing-invoices > div,
   .billing-batches > div {
     grid-template-columns: 1fr;
+  }
+
+  .escrow-form,
+  .escrow-milestones article {
+    grid-template-columns: 1fr;
+  }
+
+  .escrow-form label:first-child {
+    grid-column: auto;
+  }
+
+  .escrow-actions {
+    justify-content: flex-start;
   }
 
   .ops-signal-grid {

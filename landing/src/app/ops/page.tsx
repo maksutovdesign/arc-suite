@@ -20,6 +20,7 @@ export default function OpsHealthPage() {
             <Link href="/">Product</Link>
             <Link href="/investors">Investors</Link>
             <Link href="/analytics">Analytics</Link>
+            <Link href="/escrow">Escrow</Link>
             <Link href="/billing">Billing</Link>
             <Link href="/shield">Shield</Link>
             <Link href="/flow">Flow</Link>

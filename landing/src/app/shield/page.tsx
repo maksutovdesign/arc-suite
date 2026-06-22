@@ -19,6 +19,7 @@ export default function ShieldPage() {
         <div className="nav-cluster">
           <div className="nav-links" aria-label="Shield navigation">
             <Link href="/">Product</Link>
+            <Link href="/escrow">Escrow</Link>
             <Link href="/billing">Billing</Link>
             <Link href="/flow">Flow</Link>
             <a href="https://treasury-umber.vercel.app">Treasury</a>
