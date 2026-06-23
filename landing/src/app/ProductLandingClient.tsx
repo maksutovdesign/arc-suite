@@ -112,6 +112,36 @@ const productDetails = [
     ],
     bullets: ["Milestone state machine", "Release, refund and disputes", "Arc onchain event receipts"],
   },
+  {
+    key: "gas",
+    name: "Arc Gas",
+    eyebrow: "Gas sponsorship",
+    title: "Agent-level gas policy for every sponsored transaction.",
+    text: "Route transactions through Circle Gas Station or Paymaster modes, enforce per-agent USDC limits and preserve every sponsor or deny decision for reporting.",
+    image: "",
+    imageAlt: "Arc Gas dashboard showing sponsorship limits, payment modes and transaction reporting",
+    stats: [
+      ["2", "Circle gas modes"],
+      ["3", "limit layers"],
+      ["100%", "decision-audited"],
+    ],
+    bullets: ["Per-agent gas limits", "Gas Station and Paymaster modes", "Sponsored transaction ledger"],
+  },
+  {
+    key: "wallets",
+    name: "Arc Wallet OS",
+    eyebrow: "Wallet lifecycle",
+    title: "One operating system for team, client and agent wallets.",
+    text: "Manage developer-controlled, user-controlled and modular Circle wallets with custody-aware roles, recovery paths, signing policies and an auditable lifecycle.",
+    image: "",
+    imageAlt: "Arc Wallet OS dashboard with custody models, signing policy, roles and lifecycle events",
+    stats: [
+      ["3", "custody models"],
+      ["4", "workspace roles"],
+      ["100%", "lifecycle-audited"],
+    ],
+    bullets: ["Circle wallet registry", "Roles, recovery and signing policy", "Provider-confirmed lifecycle"],
+  },
 ]
 
 const steps = [
@@ -122,7 +152,7 @@ const steps = [
 ]
 
 const metrics = [
-  ["7", "connected products"],
+  ["9", "connected products"],
   ["25,482", "agent transactions in demo"],
   ["24.8M", "marketplace request volume"],
   ["99.72%", "average uptime in marketplace stats"],
@@ -245,7 +275,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
   const activeProduct = liveProductDetails.find((product) => product.key === activeProductKey) ?? liveProductDetails[0]
   const liveMetrics = pilotSummary
     ? [
-        ["7", "connected products"],
+        ["9", "connected products"],
         [formatCompact(pilotSummary.marketplace.requests), "marketplace request volume"],
         [`${pilotSummary.marketplace.avgUptimePct}%`, "average uptime from API"],
         [apiStatus === "live" ? "Live" : "Fallback", "pilot API status"],
@@ -288,6 +318,8 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
             <a href="#loop">Loop</a>
             <a href="#proof">Proof</a>
             <a href="/escrow">Escrow</a>
+            <a href="/gas">Gas</a>
+            <a href="/wallets">Wallet OS</a>
             <a href="/billing">Billing</a>
             <a href="/flow">Flow</a>
             <a href="/shield">Shield</a>
@@ -336,7 +368,8 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
           <p className="hero-text">
             Arc Suite is a connected product system built for autonomous USDC commerce:
             Treasury controls spend, Shield screens counterparties, Reputation scores behavior,
-            Marketplace sells x402 API access, Billing meters usage, Escrow governs delivery, and Flow executes the complete policy pipeline.
+            Marketplace sells x402 API access, Billing meters usage, Escrow governs delivery,
+            Gas sponsors execution, Wallet OS governs custody, and Flow runs the complete policy pipeline.
           </p>
           <div className="hero-actions">
             <a
@@ -425,7 +458,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
       <section className="section" id="system">
         <div className="section-heading">
           <p className="kicker">The product system</p>
-          <h2>Seven connected products. One economic operating layer.</h2>
+          <h2>Nine connected products. One economic operating layer.</h2>
           <p>
             Arc Suite is designed around a shared cast of agents moving through the
             complete economic journey, from wallet spend to trust scoring to service access.

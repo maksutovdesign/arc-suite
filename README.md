@@ -1,6 +1,6 @@
 # Arc Suite — AI Agent Infrastructure for the Onchain Economy
 
-> **Seven interconnected products built on [Arc](https://arc.io) and [Circle](https://circle.com) — demonstrating what the agentic economy looks like when AI agents can spend, screen risk, earn trust, meter usage, govern delivery, and pay for services autonomously using USDC.**
+> **Nine interconnected products built on [Arc](https://arc.io) and [Circle](https://circle.com) — demonstrating what the agentic economy looks like when AI agents can spend, screen risk, earn trust, govern wallets, meter usage, sponsor gas, and pay for services autonomously using USDC.**
 
 Built with **Next.js 16**, **TypeScript**, **Tailwind CSS v4**, **shadcn/ui v4**, and the **Arc / Circle SDK**.
 
@@ -172,7 +172,7 @@ arc/
 
 Each app is an independent Next.js 16 project sharing:
 - **Design system**: Space Grotesk font, Arc dark theme, `ArcButton`, `ArcProgress`, `StatCard`, `PageHeader`
-- **EcosystemNav**: top bar linking all seven products together
+- **EcosystemNav**: top bar linking all nine products together
 - **LiveTicker**: animated real-time event feed in each app's header
 
 ---
@@ -367,11 +367,37 @@ The Escrow API records submissions and disputes in Supabase. `release` and `refu
 fail closed until the Circle Developer-Controlled Wallet confirms the contract
 execution and returns an Arc transaction hash.
 
+## Arc Gas sponsorship control
+
+Apply `landing/supabase/migrations/2026062301_arc_gas.sql`. Arc Gas provides:
+
+- per-agent per-transaction, daily and monthly gas limits;
+- Circle Gas Station and Paymaster policy modes;
+- atomic sponsor/deny decisions with idempotency;
+- a reporting ledger for estimated and confirmed gas fees.
+
+The endpoints are `GET /api/gas/overview`, `POST /api/gas/sponsorships`, and
+`PATCH /api/gas/policies`. Arc Testnet gas is denominated in USDC; provider
+receipts can be attached after Circle execution while policy decisions remain
+fail-closed in Supabase.
+
+## Arc Wallet OS
+
+Apply `landing/supabase/migrations/2026062302_arc_wallet_os.sql`. Arc Wallet OS provides:
+
+- developer-controlled, user-controlled and modular wallet inventory;
+- workspace roles and custody-specific recovery paths;
+- signing policies with approvals, USDC limits, Shield and reputation gates;
+- auditable lifecycle requests that remain pending until Circle confirms the provider operation.
+
+The endpoints are `GET /api/wallets/overview`, `POST /api/wallets/actions`, and
+`PATCH /api/wallets/policies`. The operator console is available at `/wallets`.
+
 ---
 
 ## Built for Arc/Circle
 
-These products were designed to showcase the Arc ecosystem to the **Arc community** and **Circle team** — demonstrating seven complementary products that together form an infrastructure layer for the agentic economy:
+These products were designed to showcase the Arc ecosystem to the **Arc community** and **Circle team** — demonstrating nine complementary products that together form an infrastructure layer for the agentic economy:
 
 - **Treasury** answers: *"How do I control what my agents spend?"*
 - **Reputation** answers: *"How do I know which agents I can trust?"*
@@ -380,6 +406,8 @@ These products were designed to showcase the Arc ecosystem to the **Arc communit
 - **Flow** answers: *"How does an approved payment move safely from intent to settlement?"*
 - **Billing** answers: *"How is every API call priced, invoiced, and netted for settlement?"*
 - **Escrow** answers: *"How is USDC released only when an agent completes agreed work?"*
+- **Gas** answers: *"Which agent transactions should receive gas sponsorship, and within what limits?"*
+- **Wallet OS** answers: *"Who controls each wallet, who may sign, and how is it recovered or retired?"*
 
 ---
 

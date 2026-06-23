@@ -1,38 +1,34 @@
 import Link from "next/link"
 
 import { BrandMark } from "../BrandMark"
-import { ShieldDashboardClient } from "./ShieldDashboardClient"
+import { GasDashboardClient } from "./GasDashboardClient"
 
 export const metadata = {
-  title: "Arc Shield — Compliance & Risk Engine",
-  description: "Circle-powered address screening and auditable policy decisions for Arc Suite.",
+  title: "Arc Gas — Agent Gas Sponsorship",
+  description: "USDC gas controls, per-agent limits, sponsored transactions and Circle-powered reporting.",
 }
 
-export default function ShieldPage() {
+export default function GasPage() {
   return (
     <main>
       <nav className="nav">
         <Link className="brand" href="/" aria-label="Arc Suite home">
-          <BrandMark idPrefix="shield-brand" />
+          <BrandMark idPrefix="gas-brand" />
           <span className="brand-name">Arc Suite</span>
         </Link>
         <div className="nav-cluster">
-          <div className="nav-links" aria-label="Shield navigation">
+          <div className="nav-links" aria-label="Gas navigation">
             <Link href="/">Product</Link>
             <Link href="/wallets">Wallet OS</Link>
-            <Link href="/gas">Gas</Link>
             <Link href="/escrow">Escrow</Link>
             <Link href="/billing">Billing</Link>
             <Link href="/flow">Flow</Link>
-            <a href="https://treasury-umber.vercel.app">Treasury</a>
-            <a href="https://reputation-five.vercel.app">Reputation</a>
-            <a href="https://marketplace-eosin-eight.vercel.app">Marketplace</a>
+            <Link href="/shield">Shield</Link>
             <Link href="/ops">Ops Health</Link>
           </div>
         </div>
       </nav>
-
-      <ShieldDashboardClient />
+      <GasDashboardClient />
     </main>
   )
 }

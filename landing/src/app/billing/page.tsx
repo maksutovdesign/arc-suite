@@ -19,6 +19,8 @@ export default function BillingPage() {
         <div className="nav-cluster">
           <div className="nav-links" aria-label="Billing navigation">
             <Link href="/">Product</Link>
+            <Link href="/wallets">Wallet OS</Link>
+            <Link href="/gas">Gas</Link>
             <Link href="/escrow">Escrow</Link>
             <Link href="/flow">Flow</Link>
             <Link href="/shield">Shield</Link>

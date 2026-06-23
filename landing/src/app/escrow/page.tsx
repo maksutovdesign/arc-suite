@@ -19,6 +19,8 @@ export default function EscrowPage() {
         <div className="nav-cluster">
           <div className="nav-links" aria-label="Escrow navigation">
             <Link href="/">Product</Link>
+            <Link href="/wallets">Wallet OS</Link>
+            <Link href="/gas">Gas</Link>
             <Link href="/billing">Billing</Link>
             <Link href="/flow">Flow</Link>
             <Link href="/shield">Shield</Link>

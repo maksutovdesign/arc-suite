@@ -20,6 +20,9 @@ import type {
   EscrowMilestone,
   EscrowOverview,
   FlowRun,
+  GasOverview,
+  GasPolicy,
+  GasSponsorship,
   ApiKeyScope,
   ApiListing,
   ApiProvider,
@@ -35,6 +38,11 @@ import type {
   ReputationProfile,
   ShieldScreening,
   Transaction,
+  WalletAccount,
+  WalletLifecycleEvent,
+  WalletOverview,
+  WalletRole,
+  WalletSigningPolicy,
   WorkspaceApiKey,
   WorkspaceApiKeyCreated,
   WorkspaceMember,
@@ -406,6 +414,108 @@ type BillingSummaryRow = {
   unbatched_usage_usdc: string | number
   active_accounts: string | number
   low_balance_accounts: string | number
+}
+
+type GasPolicyRow = {
+  id: string
+  workspace_id: string
+  agent_id: string
+  mode: GasPolicy["mode"]
+  status: GasPolicy["status"]
+  per_tx_limit_usdc: string | number
+  daily_limit_usdc: string | number
+  monthly_limit_usdc: string | number
+  daily_spent_usdc: string | number
+  monthly_spent_usdc: string | number
+  sponsored_count: string | number
+  denied_count: string | number
+  allowed_contracts: string[] | null
+  created_at: string
+  updated_at: string
+}
+
+type GasSponsorshipRow = {
+  id: string
+  workspace_id: string
+  policy_id: string
+  agent_id: string
+  idempotency_key: string
+  mode: GasSponsorship["mode"]
+  network: string
+  action: string
+  destination: string | null
+  estimated_fee_usdc: string | number
+  actual_fee_usdc: string | number | null
+  status: GasSponsorship["status"]
+  decision_reason: string
+  provider: string
+  provider_transaction_id: string | null
+  tx_hash: string | null
+  explorer_url: string | null
+  metadata: Record<string, unknown> | null
+  created_at: string
+  updated_at: string
+  confirmed_at: string | null
+}
+
+type WalletAccountRow = {
+  id: string
+  workspace_id: string
+  name: string
+  owner_label: string
+  custody_model: WalletAccount["custodyModel"]
+  account_type: WalletAccount["accountType"]
+  status: WalletAccount["status"]
+  network: string
+  address: string | null
+  circle_wallet_id: string | null
+  circle_wallet_set_id: string | null
+  auth_method: WalletAccount["authMethod"]
+  recovery_method: WalletAccount["recoveryMethod"]
+  created_at: string
+  updated_at: string
+  last_signed_at: string | null
+}
+
+type WalletRoleRow = {
+  id: string
+  workspace_id: string
+  wallet_id: string
+  principal: string
+  role: WalletRole["role"]
+  status: WalletRole["status"]
+  created_at: string
+  revoked_at: string | null
+}
+
+type WalletSigningPolicyRow = {
+  id: string
+  workspace_id: string
+  wallet_id: string
+  status: WalletSigningPolicy["status"]
+  approvals_required: number
+  transaction_limit_usdc: string | number
+  daily_limit_usdc: string | number
+  allowed_contracts: string[] | null
+  require_shield: boolean
+  require_reputation_score: number
+  updated_at: string
+}
+
+type WalletLifecycleEventRow = {
+  id: string
+  workspace_id: string
+  wallet_id: string
+  action: WalletLifecycleEvent["action"]
+  status: WalletLifecycleEvent["status"]
+  actor: string
+  detail: string
+  provider_operation_id: string | null
+  tx_hash: string | null
+  explorer_url: string | null
+  metadata: Record<string, unknown> | null
+  created_at: string
+  completed_at: string | null
 }
 
 type EscrowDealRow = {
@@ -921,6 +1031,182 @@ export async function checkSupabaseBillingReadiness() {
   if (!isSupabaseConfigured()) return false
   try {
     await getRows<Pick<BillingAccountRow, "id">>("billing_accounts", "select=id&limit=1")
+    return true
+  } catch {
+    return false
+  }
+}
+
+export async function getSupabaseGasOverview(limit = 100): Promise<GasOverview | null> {
+  if (!isSupabaseConfigured()) return null
+  try {
+    const [policyRows, sponsorshipRows] = await Promise.all([
+      getRows<GasPolicyRow>("gas_policies", `select=*&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&order=updated_at.desc`),
+      getRows<GasSponsorshipRow>("gas_sponsorships", `select=*&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&order=created_at.desc&limit=${limit}`),
+    ])
+    const policies = policyRows.map(mapGasPolicy)
+    const sponsorships = sponsorshipRows.map(mapGasSponsorship)
+    return {
+      policies,
+      sponsorships,
+      configuration: {
+        circleConfigured: Boolean(process.env.CIRCLE_API_KEY),
+        network: "ARC-TESTNET",
+        modes: ["gas_station", "paymaster"],
+      },
+      summary: {
+        sponsoredUsdc: sponsorships
+          .filter((item) => item.status !== "denied" && item.status !== "failed")
+          .reduce((total, item) => total + (item.actualFeeUsdc ?? item.estimatedFeeUsdc), 0),
+        sponsoredTransactions: sponsorships.filter((item) => item.status !== "denied" && item.status !== "failed").length,
+        deniedTransactions: sponsorships.filter((item) => item.status === "denied").length,
+        activePolicies: policies.filter((policy) => policy.status === "active").length,
+      },
+    }
+  } catch (error) {
+    logSupabaseError("gas overview", error)
+    return null
+  }
+}
+
+export async function requestSupabaseGasSponsorship(input: {
+  agentId: string
+  idempotencyKey: string
+  action: string
+  destination?: string | null
+  estimatedFeeUsdc: number
+  metadata?: Record<string, unknown>
+}): Promise<GasSponsorship | null> {
+  if (!isSupabaseConfigured()) return null
+  const row = await postRpc<GasSponsorshipRow>("request_gas_sponsorship", {
+    p_id: `gsp_${randomUUID()}`,
+    p_workspace_id: WORKSPACE_ID,
+    p_agent_id: input.agentId,
+    p_idempotency_key: input.idempotencyKey,
+    p_action: input.action,
+    p_destination: input.destination ?? null,
+    p_estimated_fee_usdc: input.estimatedFeeUsdc,
+    p_metadata: input.metadata ?? {},
+  })
+  return row ? mapGasSponsorship(row) : null
+}
+
+export async function updateSupabaseGasPolicy(input: {
+  agentId: string
+  mode: GasPolicy["mode"]
+  status: GasPolicy["status"]
+  perTxLimitUsdc: number
+  dailyLimitUsdc: number
+  monthlyLimitUsdc: number
+}): Promise<GasPolicy | null> {
+  if (!isSupabaseConfigured()) return null
+  const row = await postRpc<GasPolicyRow>("update_gas_policy", {
+    p_workspace_id: WORKSPACE_ID,
+    p_agent_id: input.agentId,
+    p_mode: input.mode,
+    p_status: input.status,
+    p_per_tx_limit_usdc: input.perTxLimitUsdc,
+    p_daily_limit_usdc: input.dailyLimitUsdc,
+    p_monthly_limit_usdc: input.monthlyLimitUsdc,
+  })
+  return row ? mapGasPolicy(row) : null
+}
+
+export async function checkSupabaseGasReadiness() {
+  if (!isSupabaseConfigured()) return false
+  try {
+    await getRows<Pick<GasPolicyRow, "id">>("gas_policies", "select=id&limit=1")
+    return true
+  } catch {
+    return false
+  }
+}
+
+export async function getSupabaseWalletOverview(limit = 100): Promise<WalletOverview | null> {
+  if (!isSupabaseConfigured()) return null
+  try {
+    const [walletRows, roleRows, policyRows, eventRows] = await Promise.all([
+      getRows<WalletAccountRow>("wallet_accounts", `select=*&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&order=updated_at.desc`),
+      getRows<WalletRoleRow>("wallet_roles", `select=*&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&order=created_at.asc`),
+      getRows<WalletSigningPolicyRow>("wallet_signing_policies", `select=*&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&order=updated_at.desc`),
+      getRows<WalletLifecycleEventRow>("wallet_lifecycle_events", `select=*&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&order=created_at.desc&limit=${limit}`),
+    ])
+    const wallets = walletRows.map(mapWalletAccount)
+    const roles = roleRows.map(mapWalletRole)
+    const policies = policyRows.map(mapWalletSigningPolicy)
+    const events = eventRows.map(mapWalletLifecycleEvent)
+    return {
+      wallets,
+      roles,
+      policies,
+      events,
+      configuration: {
+        circleConfigured: Boolean(process.env.CIRCLE_API_KEY),
+        network: "ARC-TESTNET",
+        custodyModels: ["developer", "user", "modular"],
+      },
+      summary: {
+        totalWallets: wallets.length,
+        activeWallets: wallets.filter((wallet) => wallet.status === "active").length,
+        userControlledWallets: wallets.filter((wallet) => wallet.custodyModel !== "developer").length,
+        pendingOperations: events.filter((event) => event.status === "requested" || event.status === "submitted").length,
+      },
+    }
+  } catch (error) {
+    logSupabaseError("wallet overview", error)
+    return null
+  }
+}
+
+export async function requestSupabaseWalletLifecycleAction(input: {
+  walletId: string
+  idempotencyKey: string
+  action: WalletLifecycleEvent["action"]
+  actor: string
+  detail: string
+  metadata?: Record<string, unknown>
+}): Promise<WalletLifecycleEvent | null> {
+  if (!isSupabaseConfigured()) return null
+  const row = await postRpc<WalletLifecycleEventRow>("request_wallet_lifecycle_action", {
+    p_event_id: `wevt_${randomUUID()}`,
+    p_workspace_id: WORKSPACE_ID,
+    p_wallet_id: input.walletId,
+    p_idempotency_key: input.idempotencyKey,
+    p_action: input.action,
+    p_actor: input.actor,
+    p_detail: input.detail,
+    p_metadata: input.metadata ?? {},
+  })
+  return row ? mapWalletLifecycleEvent(row) : null
+}
+
+export async function updateSupabaseWalletSigningPolicy(input: {
+  walletId: string
+  status: WalletSigningPolicy["status"]
+  approvalsRequired: number
+  transactionLimitUsdc: number
+  dailyLimitUsdc: number
+  requireShield: boolean
+  requireReputationScore: number
+}): Promise<WalletSigningPolicy | null> {
+  if (!isSupabaseConfigured()) return null
+  const row = await postRpc<WalletSigningPolicyRow>("update_wallet_signing_policy", {
+    p_workspace_id: WORKSPACE_ID,
+    p_wallet_id: input.walletId,
+    p_status: input.status,
+    p_approvals_required: input.approvalsRequired,
+    p_transaction_limit_usdc: input.transactionLimitUsdc,
+    p_daily_limit_usdc: input.dailyLimitUsdc,
+    p_require_shield: input.requireShield,
+    p_require_reputation_score: input.requireReputationScore,
+  })
+  return row ? mapWalletSigningPolicy(row) : null
+}
+
+export async function checkSupabaseWalletReadiness() {
+  if (!isSupabaseConfigured()) return false
+  try {
+    await getRows<Pick<WalletAccountRow, "id">>("wallet_accounts", "select=id&limit=1")
     return true
   } catch {
     return false
@@ -1819,6 +2105,120 @@ function mapBillingBatch(row: BillingBatchRow): BillingSettlementBatch {
     netAmountUsdc: toNumber(row.net_amount_usdc), settlementId: row.settlement_id,
     txHash: row.tx_hash, explorerUrl: row.explorer_url, createdAt: row.created_at,
     updatedAt: row.updated_at, settledAt: row.settled_at,
+  }
+}
+
+function mapGasPolicy(row: GasPolicyRow): GasPolicy {
+  return {
+    id: row.id,
+    workspaceId: row.workspace_id,
+    agentId: row.agent_id,
+    mode: row.mode,
+    status: row.status,
+    perTxLimitUsdc: toNumber(row.per_tx_limit_usdc),
+    dailyLimitUsdc: toNumber(row.daily_limit_usdc),
+    monthlyLimitUsdc: toNumber(row.monthly_limit_usdc),
+    dailySpentUsdc: toNumber(row.daily_spent_usdc),
+    monthlySpentUsdc: toNumber(row.monthly_spent_usdc),
+    sponsoredCount: toNumber(row.sponsored_count),
+    deniedCount: toNumber(row.denied_count),
+    allowedContracts: row.allowed_contracts ?? [],
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  }
+}
+
+function mapGasSponsorship(row: GasSponsorshipRow): GasSponsorship {
+  return {
+    id: row.id,
+    workspaceId: row.workspace_id,
+    policyId: row.policy_id,
+    agentId: row.agent_id,
+    idempotencyKey: row.idempotency_key,
+    mode: row.mode,
+    network: row.network,
+    action: row.action,
+    destination: row.destination,
+    estimatedFeeUsdc: toNumber(row.estimated_fee_usdc),
+    actualFeeUsdc: row.actual_fee_usdc === null ? null : toNumber(row.actual_fee_usdc),
+    status: row.status,
+    decisionReason: row.decision_reason,
+    provider: row.provider,
+    providerTransactionId: row.provider_transaction_id,
+    txHash: row.tx_hash,
+    explorerUrl: row.explorer_url,
+    metadata: row.metadata ?? {},
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+    confirmedAt: row.confirmed_at,
+  }
+}
+
+function mapWalletAccount(row: WalletAccountRow): WalletAccount {
+  return {
+    id: row.id,
+    workspaceId: row.workspace_id,
+    name: row.name,
+    ownerLabel: row.owner_label,
+    custodyModel: row.custody_model,
+    accountType: row.account_type,
+    status: row.status,
+    network: row.network,
+    address: row.address,
+    circleWalletId: row.circle_wallet_id,
+    circleWalletSetId: row.circle_wallet_set_id,
+    authMethod: row.auth_method,
+    recoveryMethod: row.recovery_method,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+    lastSignedAt: row.last_signed_at,
+  }
+}
+
+function mapWalletRole(row: WalletRoleRow): WalletRole {
+  return {
+    id: row.id,
+    workspaceId: row.workspace_id,
+    walletId: row.wallet_id,
+    principal: row.principal,
+    role: row.role,
+    status: row.status,
+    createdAt: row.created_at,
+    revokedAt: row.revoked_at,
+  }
+}
+
+function mapWalletSigningPolicy(row: WalletSigningPolicyRow): WalletSigningPolicy {
+  return {
+    id: row.id,
+    workspaceId: row.workspace_id,
+    walletId: row.wallet_id,
+    status: row.status,
+    approvalsRequired: row.approvals_required,
+    transactionLimitUsdc: toNumber(row.transaction_limit_usdc),
+    dailyLimitUsdc: toNumber(row.daily_limit_usdc),
+    allowedContracts: row.allowed_contracts ?? [],
+    requireShield: row.require_shield,
+    requireReputationScore: row.require_reputation_score,
+    updatedAt: row.updated_at,
+  }
+}
+
+function mapWalletLifecycleEvent(row: WalletLifecycleEventRow): WalletLifecycleEvent {
+  return {
+    id: row.id,
+    workspaceId: row.workspace_id,
+    walletId: row.wallet_id,
+    action: row.action,
+    status: row.status,
+    actor: row.actor,
+    detail: row.detail,
+    providerOperationId: row.provider_operation_id,
+    txHash: row.tx_hash,
+    explorerUrl: row.explorer_url,
+    metadata: row.metadata ?? {},
+    createdAt: row.created_at,
+    completedAt: row.completed_at,
   }
 }
 

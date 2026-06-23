@@ -365,6 +365,147 @@ export type BillingOverview = {
   }
 }
 
+export type GasPolicy = {
+  id: string
+  workspaceId: string
+  agentId: string
+  mode: "gas_station" | "paymaster"
+  status: "active" | "paused"
+  perTxLimitUsdc: number
+  dailyLimitUsdc: number
+  monthlyLimitUsdc: number
+  dailySpentUsdc: number
+  monthlySpentUsdc: number
+  sponsoredCount: number
+  deniedCount: number
+  allowedContracts: string[]
+  createdAt: string
+  updatedAt: string
+}
+
+export type GasSponsorship = {
+  id: string
+  workspaceId: string
+  policyId: string
+  agentId: string
+  idempotencyKey: string
+  mode: GasPolicy["mode"]
+  network: string
+  action: string
+  destination: string | null
+  estimatedFeeUsdc: number
+  actualFeeUsdc: number | null
+  status: "sponsored" | "denied" | "submitted" | "confirmed" | "failed"
+  decisionReason: string
+  provider: string
+  providerTransactionId: string | null
+  txHash: string | null
+  explorerUrl: string | null
+  metadata: Record<string, unknown>
+  createdAt: string
+  updatedAt: string
+  confirmedAt: string | null
+}
+
+export type GasOverview = {
+  policies: GasPolicy[]
+  sponsorships: GasSponsorship[]
+  configuration: {
+    circleConfigured: boolean
+    network: "ARC-TESTNET"
+    modes: Array<GasPolicy["mode"]>
+  }
+  summary: {
+    sponsoredUsdc: number
+    sponsoredTransactions: number
+    deniedTransactions: number
+    activePolicies: number
+  }
+}
+
+export type WalletCustodyModel = "developer" | "user" | "modular"
+export type WalletAccountType = "EOA" | "SCA" | "MSCA"
+export type WalletLifecycleStatus = "provisioning" | "active" | "recovery" | "suspended" | "retired"
+export type WalletRoleName = "owner" | "approver" | "operator" | "viewer"
+
+export type WalletAccount = {
+  id: string
+  workspaceId: string
+  name: string
+  ownerLabel: string
+  custodyModel: WalletCustodyModel
+  accountType: WalletAccountType
+  status: WalletLifecycleStatus
+  network: string
+  address: string | null
+  circleWalletId: string | null
+  circleWalletSetId: string | null
+  authMethod: "entity_secret" | "social" | "email_otp" | "pin" | "passkey"
+  recoveryMethod: "entity_secret_backup" | "security_questions" | "passkey_backup" | "admin_assisted"
+  createdAt: string
+  updatedAt: string
+  lastSignedAt: string | null
+}
+
+export type WalletRole = {
+  id: string
+  workspaceId: string
+  walletId: string
+  principal: string
+  role: WalletRoleName
+  status: "active" | "revoked"
+  createdAt: string
+  revokedAt: string | null
+}
+
+export type WalletSigningPolicy = {
+  id: string
+  workspaceId: string
+  walletId: string
+  status: "active" | "paused"
+  approvalsRequired: number
+  transactionLimitUsdc: number
+  dailyLimitUsdc: number
+  allowedContracts: string[]
+  requireShield: boolean
+  requireReputationScore: number
+  updatedAt: string
+}
+
+export type WalletLifecycleEvent = {
+  id: string
+  workspaceId: string
+  walletId: string
+  action: "provision" | "activate" | "sign" | "recover" | "suspend" | "resume" | "retire" | "role_changed" | "policy_changed"
+  status: "requested" | "submitted" | "confirmed" | "failed"
+  actor: string
+  detail: string
+  providerOperationId: string | null
+  txHash: string | null
+  explorerUrl: string | null
+  metadata: Record<string, unknown>
+  createdAt: string
+  completedAt: string | null
+}
+
+export type WalletOverview = {
+  wallets: WalletAccount[]
+  roles: WalletRole[]
+  policies: WalletSigningPolicy[]
+  events: WalletLifecycleEvent[]
+  configuration: {
+    circleConfigured: boolean
+    network: "ARC-TESTNET"
+    custodyModels: WalletCustodyModel[]
+  }
+  summary: {
+    totalWallets: number
+    activeWallets: number
+    userControlledWallets: number
+    pendingOperations: number
+  }
+}
+
 export type EscrowDeal = {
   id: string
   workspaceId: string
