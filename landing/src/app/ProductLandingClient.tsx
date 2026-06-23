@@ -1,6 +1,17 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import {
+  BadgeCheck,
+  Fuel,
+  Handshake,
+  Landmark,
+  ReceiptText,
+  ShieldCheck,
+  Store,
+  WalletCards,
+  Workflow,
+} from "lucide-react"
 import { BrandMark } from "./BrandMark"
 import { RequestPilotForm } from "./RequestPilotForm"
 import { trackLandingConversion } from "@/lib/analytics"
@@ -11,6 +22,7 @@ const productDetails = [
     key: "treasury",
     name: "Arc Treasury",
     eyebrow: "Spend control",
+    icon: Landmark,
     title: "Operator-grade spend control for AI-agent wallets.",
     text: "Set budgets, daily caps, alert thresholds and wallet rules before agents start buying data, compute, storage or API calls with USDC.",
     image: "/screenshots/treasury-dashboard-20260603.png",
@@ -26,6 +38,7 @@ const productDetails = [
     key: "reputation",
     name: "Arc Reputation",
     eyebrow: "Trust layer",
+    icon: BadgeCheck,
     title: "A live trust score for autonomous economic behavior.",
     text: "Score agents from 0-1000 using payment success, volume consistency, response time, dispute history and account age.",
     image: "/screenshots/reputation-leaderboard.png",
@@ -41,6 +54,7 @@ const productDetails = [
     key: "marketplace",
     name: "Arc Marketplace",
     eyebrow: "x402 access",
+    icon: Store,
     title: "A pay-per-use API market that can gate requests by trust.",
     text: "Help agents discover x402 APIs with pricing, uptime, provider profiles, request volume and integration-ready detail pages.",
     image: "/screenshots/marketplace-browse.png",
@@ -56,6 +70,7 @@ const productDetails = [
     key: "shield",
     name: "Arc Shield",
     eyebrow: "Compliance & risk",
+    icon: ShieldCheck,
     title: "Address screening and auditable policy decisions before value moves.",
     text: "Use Circle Compliance Engine signals to classify wallet risk, route manual review, block prohibited activity and preserve the provider response alongside the Arc Shield decision.",
     image: "/screenshots/shield-console.png",
@@ -71,6 +86,7 @@ const productDetails = [
     key: "flow",
     name: "Arc Flow",
     eyebrow: "Payment orchestration",
+    icon: Workflow,
     title: "One policy-gated path from intent to onchain settlement.",
     text: "Orchestrate Shield screening, reputation and budget access checks, Circle wallet execution, Arc Testnet receipts and the resulting reputation update under one run ID.",
     image: "",
@@ -86,6 +102,7 @@ const productDetails = [
     key: "billing",
     name: "Arc Billing",
     eyebrow: "x402 metering",
+    icon: ReceiptText,
     title: "Usage-based billing for APIs that software can buy autonomously.",
     text: "Meter every API call, deduct prepaid USDC credits atomically, issue invoices and aggregate nanopayments into settlement-ready provider batches.",
     image: "",
@@ -101,6 +118,7 @@ const productDetails = [
     key: "escrow",
     name: "Arc Escrow",
     eyebrow: "Programmable deals",
+    icon: Handshake,
     title: "Milestone contracts for autonomous commercial relationships.",
     text: "Create agent-to-agent agreements, hold value against delivery milestones, open disputes and release or refund USDC through confirmed Circle contract execution.",
     image: "",
@@ -116,6 +134,7 @@ const productDetails = [
     key: "gas",
     name: "Arc Gas",
     eyebrow: "Gas sponsorship",
+    icon: Fuel,
     title: "Agent-level gas policy for every sponsored transaction.",
     text: "Route transactions through Circle Gas Station or Paymaster modes, enforce per-agent USDC limits and preserve every sponsor or deny decision for reporting.",
     image: "",
@@ -131,6 +150,7 @@ const productDetails = [
     key: "wallets",
     name: "Arc Wallet OS",
     eyebrow: "Wallet lifecycle",
+    icon: WalletCards,
     title: "One operating system for team, client and agent wallets.",
     text: "Manage developer-controlled, user-controlled and modular Circle wallets with custody-aware roles, recovery paths, signing policies and an auditable lifecycle.",
     image: "",
@@ -467,21 +487,29 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
 
         <div className="product-switcher">
           <div className="product-tabs" role="tablist" aria-label="Arc Suite products">
-            {liveProductDetails.map((product) => (
-              <button
-                aria-controls={`panel-${product.key}`}
-                aria-selected={activeProduct.key === product.key}
-                className={activeProduct.key === product.key ? "is-active" : ""}
-                id={`tab-${product.key}`}
-                key={product.key}
-                onClick={() => setActiveProductKey(product.key)}
-                role="tab"
-                type="button"
-              >
-                <span>{product.eyebrow}</span>
-                <strong>{product.name}</strong>
-              </button>
-            ))}
+            {liveProductDetails.map((product) => {
+              const ProductIcon = product.icon
+              return (
+                <button
+                  aria-controls={`panel-${product.key}`}
+                  aria-selected={activeProduct.key === product.key}
+                  className={activeProduct.key === product.key ? "is-active" : ""}
+                  id={`tab-${product.key}`}
+                  key={product.key}
+                  onClick={() => setActiveProductKey(product.key)}
+                  role="tab"
+                  type="button"
+                >
+                  <span className="product-tab-head">
+                    <i className="product-tab-icon" aria-hidden="true">
+                      <ProductIcon size={18} strokeWidth={1.85} />
+                    </i>
+                    <span>{product.eyebrow}</span>
+                  </span>
+                  <strong>{product.name}</strong>
+                </button>
+              )
+            })}
           </div>
 
           <article
