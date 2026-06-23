@@ -1,0 +1,33 @@
+name: Arc Suite execution worker
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: arc-suite-execution-worker
+  cancel-in-progress: false
+
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Run production execution worker
+        if: ${{ secrets.ARC_CRON_SECRET != '' }}
+        env:
+          ARC_CRON_SECRET: ${{ secrets.ARC_CRON_SECRET }}
+        run: |
+          curl --fail-with-body --silent --show-error \
+            --retry 2 \
+            --max-time 60 \
+            -H "Authorization: Bearer ${ARC_CRON_SECRET}" \
+            "https://arcsuite-app.vercel.app/api/executions/worker?limit=25"
+
+      - name: Report missing worker secret
+        if: ${{ secrets.ARC_CRON_SECRET == '' }}
+        run: echo "ARC_CRON_SECRET is not configured; scheduled execution worker was skipped."

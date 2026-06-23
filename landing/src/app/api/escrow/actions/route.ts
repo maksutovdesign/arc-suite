@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { EscrowContractError, executeArcEscrowAction } from "@/lib/backend/arc-escrow"
 import { requireArcApiKey } from "@/lib/backend/auth"
 import { createRequestId, logOperationalEvent, requestIdHeaders } from "@/lib/backend/observability"
-import { applySupabaseEscrowAction } from "@/lib/backend/supabase"
+import { applySupabaseEscrowAction, enqueueSupabaseExecutionJob } from "@/lib/backend/supabase"
 
 export const runtime = "nodejs"
 export const maxDuration = 60
@@ -38,13 +38,25 @@ export async function POST(request: NextRequest) {
       providerReceipt: receipt?.providerReceipt,
     })
     if (!deal) throw new Error("Arc Escrow migration is required.")
+    const providerOperationId = receipt ? readProviderOperationId(receipt.providerReceipt) : null
+    const job = financial ? await enqueueSupabaseExecutionJob({
+      idempotencyKey: `escrow:${body.milestoneId}:${body.action}`,
+      kind: "escrow_contract",
+      resourceType: "escrow_milestone",
+      resourceId: body.milestoneId,
+      action: body.action,
+      providerOperationId,
+      payload: { dealId: body.dealId, milestoneId: body.milestoneId },
+      initialStatus: receipt ? "succeeded" : "waiting_provider",
+    }) : null
+    if (financial && !job) throw new Error("Execution worker migration is required.")
     logOperationalEvent({
       event: `escrow.${body.action}`,
       requestId,
       route: "/api/escrow/actions",
       details: { dealId: body.dealId, milestoneId: body.milestoneId, txHash: receipt?.txHash ?? null },
     })
-    return NextResponse.json({ deal, receipt }, { status: 201, headers: requestIdHeaders(requestId) })
+    return NextResponse.json({ deal, receipt, job }, { status: 201, headers: requestIdHeaders(requestId) })
   } catch (reason) {
     const error = reason instanceof EscrowContractError ? reason : null
     return NextResponse.json(
@@ -52,6 +64,14 @@ export async function POST(request: NextRequest) {
       { status: error?.code === "escrow_contract_not_configured" ? 409 : 502, headers: requestIdHeaders(requestId) },
     )
   }
+}
+
+function readProviderOperationId(receipt: Record<string, unknown>) {
+  return typeof receipt.id === "string"
+    ? receipt.id
+    : typeof receipt.transactionId === "string"
+      ? receipt.transactionId
+      : null
 }
 
 function validate(body: unknown) {

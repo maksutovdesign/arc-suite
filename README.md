@@ -393,6 +393,25 @@ Apply `landing/supabase/migrations/2026062302_arc_wallet_os.sql`. Arc Wallet OS 
 The endpoints are `GET /api/wallets/overview`, `POST /api/wallets/actions`, and
 `PATCH /api/wallets/policies`. The operator console is available at `/wallets`.
 
+## Unified Circle execution worker
+
+Apply `landing/supabase/migrations/2026062303_execution_worker.sql`. The execution
+layer provides one idempotent provider queue for Wallet OS, Escrow, Gas, and
+Billing, with leased jobs, bounded retries, Circle transaction reconciliation,
+and an at-least-once-safe webhook inbox.
+
+- Operator console: `/executions`
+- Queue worker: `GET /api/executions/worker`
+- Queue and webhook overview: `GET /api/executions/overview`
+- Circle webhook receiver: `POST /api/webhooks/circle`
+
+Set the Circle webhook destination to
+`https://arcsuite-app.vercel.app/api/webhooks/circle`. Deliveries are verified
+with Circle's `X-Circle-Key-Id` and `X-Circle-Signature` headers before they are
+deduplicated by `notificationId`. Vercel provides a daily fallback using
+`CRON_SECRET`; `.github/workflows/execution-worker.yml` invokes the worker every
+five minutes when the repository secret `ARC_CRON_SECRET` contains the same value.
+
 ---
 
 ## Built for Arc/Circle

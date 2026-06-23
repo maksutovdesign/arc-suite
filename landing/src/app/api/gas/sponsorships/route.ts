@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { requireArcApiKey } from "@/lib/backend/auth"
 import { createRequestId, logOperationalEvent, requestIdHeaders } from "@/lib/backend/observability"
 import { enforceRateLimit, rateLimitHeaders, rateLimitResponse } from "@/lib/backend/rate-limit"
-import { requestSupabaseGasSponsorship } from "@/lib/backend/supabase"
+import { enqueueSupabaseExecutionJob, requestSupabaseGasSponsorship } from "@/lib/backend/supabase"
 
 export async function POST(request: NextRequest) {
   const requestId = createRequestId(request)
@@ -43,6 +43,21 @@ export async function POST(request: NextRequest) {
       metadata: { source: body.source ?? "arc_gas_api" },
     })
     if (!sponsorship) throw new Error("Arc Gas migration is required.")
+    const job = sponsorship.status === "denied" ? null : await enqueueSupabaseExecutionJob({
+      idempotencyKey: `gas:${sponsorship.id}`,
+      kind: "gas_sponsorship",
+      resourceType: "gas_sponsorship",
+      resourceId: sponsorship.id,
+      action: sponsorship.action,
+      payload: {
+        agentId: sponsorship.agentId,
+        mode: sponsorship.mode,
+        destination: sponsorship.destination,
+        estimatedFeeUsdc: sponsorship.estimatedFeeUsdc,
+      },
+      initialStatus: "waiting_provider",
+    })
+    if (sponsorship.status !== "denied" && !job) throw new Error("Execution worker migration is required.")
     logOperationalEvent({
       event: sponsorship.status === "denied" ? "gas.sponsorship.denied" : "gas.sponsorship.approved",
       level: sponsorship.status === "denied" ? "warn" : "info",
@@ -55,7 +70,7 @@ export async function POST(request: NextRequest) {
       },
     })
     return NextResponse.json(
-      { sponsorship },
+      { sponsorship, job },
       { status: sponsorship.status === "denied" ? 403 : 201, headers: { ...rateLimitHeaders(rateLimit), ...requestIdHeaders(requestId) } },
     )
   } catch (reason) {

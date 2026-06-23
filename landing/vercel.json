@@ -1,6 +1,10 @@
 {
   "crons": [
     {
+      "path": "/api/executions/worker",
+      "schedule": "7 3 * * *"
+    },
+    {
       "path": "/api/ops/rate-limits/cleanup",
       "schedule": "0 3 * * *"
     }

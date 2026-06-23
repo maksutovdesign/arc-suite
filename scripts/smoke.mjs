@@ -51,6 +51,18 @@ const targets = [
   },
   {
     kind: "html",
+    name: "Arc Execution Control",
+    url: `${landingBase}/executions`,
+  },
+  {
+    expectedStatus: 401,
+    kind: "status",
+    method: "POST",
+    name: "Circle webhook signature guard",
+    url: `${landingBase}/api/webhooks/circle`,
+  },
+  {
+    kind: "html",
     name: "Treasury app",
     url: process.env.ARC_SMOKE_TREASURY_URL ?? DEFAULTS.treasury,
   },
@@ -97,6 +109,7 @@ async function checkTarget(target) {
     const response = await fetch(target.url, {
       cache: "no-store",
       headers: { "User-Agent": "arc-suite-smoke/1.0" },
+      method: target.method ?? "GET",
       signal: controller.signal,
     })
 

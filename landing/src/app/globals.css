@@ -4209,6 +4209,125 @@ a.ops-history-run:hover {
   background: rgba(248, 113, 113, 0.12);
 }
 
+.execution-shell {
+  padding-top: 54px;
+}
+
+.execution-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(330px, 0.45fr);
+  gap: 28px;
+  align-items: end;
+}
+
+.execution-heading h1 {
+  margin: 5px 0 12px;
+  font-size: 60px;
+}
+
+.execution-heading p:not(.kicker) {
+  max-width: 760px;
+  color: var(--muted);
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.execution-protocol {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 18px;
+  border: 1px solid rgba(167, 139, 250, 0.25);
+  border-radius: 8px;
+  background: rgba(167, 139, 250, 0.06);
+}
+
+.execution-protocol svg,
+.execution-table .flow-panel-title > svg {
+  flex: 0 0 auto;
+  color: #a78bfa;
+}
+
+.execution-protocol span,
+.execution-protocol strong,
+.execution-protocol small {
+  display: block;
+}
+
+.execution-protocol span {
+  color: #a78bfa;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.execution-protocol strong {
+  margin: 3px 0;
+  font-size: 16px;
+}
+
+.execution-protocol small {
+  color: var(--muted);
+}
+
+.execution-metrics {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+  margin: 18px 0;
+}
+
+.execution-metric {
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--panel);
+}
+
+.execution-metric span {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  color: var(--muted);
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.execution-metric span svg {
+  color: #a78bfa;
+}
+
+.execution-metric strong {
+  display: block;
+  margin-top: 12px;
+  font-size: 23px;
+}
+
+.execution-table {
+  margin-top: 16px;
+}
+
+.execution-status {
+  display: inline-flex;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-style: normal;
+  color: var(--amber);
+  background: rgba(251, 191, 36, 0.12);
+}
+
+.execution-status.is-succeeded,
+.execution-status.is-matched {
+  color: var(--green);
+  background: rgba(52, 211, 153, 0.12);
+}
+
+.execution-status.is-failed,
+.execution-status.is-dead {
+  color: var(--red);
+  background: rgba(248, 113, 113, 0.12);
+}
+
 .logo-lab-hero {
   max-width: 820px;
   margin-bottom: 42px;
@@ -4405,6 +4524,7 @@ a.ops-history-run:hover {
   .gas-grid,
   .wallet-heading,
   .wallet-grid,
+  .execution-heading,
   .escrow-heading,
   .escrow-layout,
   .escrow-lower {
@@ -4498,7 +4618,8 @@ a.ops-history-run:hover {
   .gas-metrics,
   .gas-form,
   .wallet-metrics,
-  .wallet-form {
+  .wallet-form,
+  .execution-metrics {
     grid-template-columns: 1fr;
   }
 
@@ -4512,6 +4633,10 @@ a.ops-history-run:hover {
 
   .wallet-wide {
     grid-column: auto;
+  }
+
+  .execution-heading h1 {
+    font-size: 48px;
   }
 
   .flow-heading h1 {

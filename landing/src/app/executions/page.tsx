@@ -1,35 +1,33 @@
 import Link from "next/link"
 
 import { BrandMark } from "../BrandMark"
-import { GasDashboardClient } from "./GasDashboardClient"
+import { ExecutionDashboardClient } from "./ExecutionDashboardClient"
 
 export const metadata = {
-  title: "Arc Gas — Agent Gas Sponsorship",
-  description: "USDC gas controls, per-agent limits, sponsored transactions and Circle-powered reporting.",
+  title: "Arc Executions — Provider Operations",
+  description: "Circle execution jobs, retries, reconciliation and signed webhook delivery.",
 }
 
-export default function GasPage() {
+export default function ExecutionsPage() {
   return (
     <main>
       <nav className="nav">
         <Link className="brand" href="/" aria-label="Arc Suite home">
-          <BrandMark idPrefix="gas-brand" />
+          <BrandMark idPrefix="execution-brand" />
           <span className="brand-name">Arc Suite</span>
         </Link>
         <div className="nav-cluster">
-          <div className="nav-links" aria-label="Gas navigation">
+          <div className="nav-links" aria-label="Execution navigation">
             <Link href="/">Product</Link>
             <Link href="/wallets">Wallet OS</Link>
-            <Link href="/executions">Executions</Link>
+            <Link href="/gas">Gas</Link>
             <Link href="/escrow">Escrow</Link>
             <Link href="/billing">Billing</Link>
-            <Link href="/flow">Flow</Link>
-            <Link href="/shield">Shield</Link>
             <Link href="/ops">Ops Health</Link>
           </div>
         </div>
       </nav>
-      <GasDashboardClient />
+      <ExecutionDashboardClient />
     </main>
   )
 }

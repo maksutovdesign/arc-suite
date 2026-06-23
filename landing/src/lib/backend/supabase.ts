@@ -19,6 +19,8 @@ import type {
   EscrowEvent,
   EscrowMilestone,
   EscrowOverview,
+  ExecutionJob,
+  ExecutionOverview,
   FlowRun,
   GasOverview,
   GasPolicy,
@@ -43,6 +45,7 @@ import type {
   WalletOverview,
   WalletRole,
   WalletSigningPolicy,
+  CircleWebhookEvent,
   WorkspaceApiKey,
   WorkspaceApiKeyCreated,
   WorkspaceMember,
@@ -516,6 +519,47 @@ type WalletLifecycleEventRow = {
   metadata: Record<string, unknown> | null
   created_at: string
   completed_at: string | null
+}
+
+type ExecutionJobRow = {
+  id: string
+  workspace_id: string
+  idempotency_key: string
+  kind: ExecutionJob["kind"]
+  resource_type: ExecutionJob["resourceType"]
+  resource_id: string
+  action: string
+  status: ExecutionJob["status"]
+  provider: ExecutionJob["provider"]
+  provider_operation_id: string | null
+  payload: Record<string, unknown> | null
+  provider_receipt: Record<string, unknown> | null
+  attempts: number
+  max_attempts: number
+  next_attempt_at: string
+  lease_owner: string | null
+  lease_expires_at: string | null
+  last_error_code: string | null
+  last_error_message: string | null
+  created_at: string
+  updated_at: string
+  completed_at: string | null
+}
+
+type CircleWebhookEventRow = {
+  id: string
+  workspace_id: string
+  notification_id: string
+  subscription_id: string | null
+  notification_type: string
+  provider_operation_id: string | null
+  signature_key_id: string | null
+  signature_verified: boolean
+  payload: Record<string, unknown>
+  processing_status: CircleWebhookEvent["processingStatus"]
+  processing_error: string | null
+  received_at: string
+  processed_at: string | null
 }
 
 type EscrowDealRow = {
@@ -1213,6 +1257,135 @@ export async function checkSupabaseWalletReadiness() {
   }
 }
 
+export async function enqueueSupabaseExecutionJob(input: {
+  idempotencyKey: string
+  kind: ExecutionJob["kind"]
+  resourceType: ExecutionJob["resourceType"]
+  resourceId: string
+  action: string
+  providerOperationId?: string | null
+  payload?: Record<string, unknown>
+  initialStatus?: "queued" | "waiting_provider" | "succeeded"
+}): Promise<ExecutionJob | null> {
+  if (!isSupabaseConfigured()) return null
+  const row = await postRpc<ExecutionJobRow>("enqueue_execution_job", {
+    p_id: `exec_${randomUUID()}`,
+    p_workspace_id: WORKSPACE_ID,
+    p_idempotency_key: input.idempotencyKey,
+    p_kind: input.kind,
+    p_resource_type: input.resourceType,
+    p_resource_id: input.resourceId,
+    p_action: input.action,
+    p_provider_operation_id: input.providerOperationId ?? null,
+    p_payload: input.payload ?? {},
+    p_initial_status: input.initialStatus ?? "queued",
+  })
+  return row ? mapExecutionJob(row) : null
+}
+
+export async function claimSupabaseExecutionJobs(input: {
+  workerId: string
+  limit?: number
+  leaseSeconds?: number
+}): Promise<ExecutionJob[] | null> {
+  if (!isSupabaseConfigured()) return null
+  const rows = await postRpc<ExecutionJobRow[]>("claim_execution_jobs", {
+    p_workspace_id: WORKSPACE_ID,
+    p_worker_id: input.workerId,
+    p_limit: input.limit ?? 10,
+    p_lease_seconds: input.leaseSeconds ?? 55,
+  })
+  return Array.isArray(rows) ? rows.map(mapExecutionJob) : []
+}
+
+export async function finishSupabaseExecutionJob(input: {
+  jobId: string
+  workerId: string
+  status: "waiting_provider" | "retry" | "succeeded" | "failed"
+  providerOperationId?: string | null
+  providerReceipt?: Record<string, unknown>
+  errorCode?: string | null
+  errorMessage?: string | null
+  retrySeconds?: number
+}): Promise<ExecutionJob | null> {
+  if (!isSupabaseConfigured()) return null
+  const row = await postRpc<ExecutionJobRow>("finish_execution_job", {
+    p_workspace_id: WORKSPACE_ID,
+    p_job_id: input.jobId,
+    p_worker_id: input.workerId,
+    p_status: input.status,
+    p_provider_operation_id: input.providerOperationId ?? null,
+    p_provider_receipt: input.providerReceipt ?? {},
+    p_error_code: input.errorCode ?? null,
+    p_error_message: input.errorMessage ?? null,
+    p_retry_seconds: input.retrySeconds ?? 60,
+  })
+  return row ? mapExecutionJob(row) : null
+}
+
+export async function recordSupabaseCircleWebhook(input: {
+  notificationId: string
+  subscriptionId?: string | null
+  notificationType: string
+  providerOperationId?: string | null
+  signatureKeyId?: string | null
+  signatureVerified: boolean
+  payload: Record<string, unknown>
+  providerState?: string | null
+  txHash?: string | null
+}): Promise<{ event: CircleWebhookEvent; duplicate: boolean; matched: number } | null> {
+  if (!isSupabaseConfigured()) return null
+  const result = await postRpc<{ event: CircleWebhookEventRow; duplicate: boolean; matched: number }>("record_circle_webhook", {
+    p_id: `wh_${randomUUID()}`,
+    p_workspace_id: WORKSPACE_ID,
+    p_notification_id: input.notificationId,
+    p_subscription_id: input.subscriptionId ?? null,
+    p_notification_type: input.notificationType,
+    p_provider_operation_id: input.providerOperationId ?? null,
+    p_signature_key_id: input.signatureKeyId ?? null,
+    p_signature_verified: input.signatureVerified,
+    p_payload: input.payload,
+    p_provider_state: input.providerState ?? null,
+    p_tx_hash: input.txHash ?? null,
+  })
+  return result ? { ...result, event: mapCircleWebhookEvent(result.event) } : null
+}
+
+export async function getSupabaseExecutionOverview(limit = 100): Promise<ExecutionOverview | null> {
+  if (!isSupabaseConfigured()) return null
+  try {
+    const [jobRows, webhookRows] = await Promise.all([
+      getRows<ExecutionJobRow>("execution_jobs", `select=*&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&order=created_at.desc&limit=${limit}`),
+      getRows<CircleWebhookEventRow>("circle_webhook_events", `select=*&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&order=received_at.desc&limit=${limit}`),
+    ])
+    const jobs = jobRows.map(mapExecutionJob)
+    return {
+      jobs,
+      webhooks: webhookRows.map(mapCircleWebhookEvent),
+      summary: {
+        queued: jobs.filter((job) => job.status === "queued" || job.status === "leased").length,
+        waitingProvider: jobs.filter((job) => job.status === "waiting_provider").length,
+        retrying: jobs.filter((job) => job.status === "retry").length,
+        succeeded: jobs.filter((job) => job.status === "succeeded").length,
+        failed: jobs.filter((job) => job.status === "failed" || job.status === "dead").length,
+      },
+    }
+  } catch (error) {
+    logSupabaseError("execution overview", error)
+    return null
+  }
+}
+
+export async function checkSupabaseExecutionReadiness() {
+  if (!isSupabaseConfigured()) return false
+  try {
+    await getRows<Pick<ExecutionJobRow, "id">>("execution_jobs", "select=id&limit=1")
+    return true
+  } catch {
+    return false
+  }
+}
+
 export async function getSupabaseEscrowOverview(configuration: EscrowOverview["configuration"], limit = 100): Promise<EscrowOverview | null> {
   if (!isSupabaseConfigured()) return null
   try {
@@ -1756,6 +1929,14 @@ export async function checkSupabaseReadiness() {
     "escrow_deals",
     "escrow_milestones",
     "escrow_events",
+    "gas_policies",
+    "gas_sponsorships",
+    "wallet_accounts",
+    "wallet_roles",
+    "wallet_signing_policies",
+    "wallet_lifecycle_events",
+    "execution_jobs",
+    "circle_webhook_events",
   ]
   const checks = await Promise.all(tables.map(async (table) => {
     try {
@@ -2219,6 +2400,51 @@ function mapWalletLifecycleEvent(row: WalletLifecycleEventRow): WalletLifecycleE
     metadata: row.metadata ?? {},
     createdAt: row.created_at,
     completedAt: row.completed_at,
+  }
+}
+
+function mapExecutionJob(row: ExecutionJobRow): ExecutionJob {
+  return {
+    id: row.id,
+    workspaceId: row.workspace_id,
+    idempotencyKey: row.idempotency_key,
+    kind: row.kind,
+    resourceType: row.resource_type,
+    resourceId: row.resource_id,
+    action: row.action,
+    status: row.status,
+    provider: row.provider,
+    providerOperationId: row.provider_operation_id,
+    payload: row.payload ?? {},
+    providerReceipt: row.provider_receipt ?? {},
+    attempts: row.attempts,
+    maxAttempts: row.max_attempts,
+    nextAttemptAt: row.next_attempt_at,
+    leaseOwner: row.lease_owner,
+    leaseExpiresAt: row.lease_expires_at,
+    lastErrorCode: row.last_error_code,
+    lastErrorMessage: row.last_error_message,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+    completedAt: row.completed_at,
+  }
+}
+
+function mapCircleWebhookEvent(row: CircleWebhookEventRow): CircleWebhookEvent {
+  return {
+    id: row.id,
+    workspaceId: row.workspace_id,
+    notificationId: row.notification_id,
+    subscriptionId: row.subscription_id,
+    notificationType: row.notification_type,
+    providerOperationId: row.provider_operation_id,
+    signatureKeyId: row.signature_key_id,
+    signatureVerified: row.signature_verified,
+    payload: row.payload ?? {},
+    processingStatus: row.processing_status,
+    processingError: row.processing_error,
+    receivedAt: row.received_at,
+    processedAt: row.processed_at,
   }
 }
 

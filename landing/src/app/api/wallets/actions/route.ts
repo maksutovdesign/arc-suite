@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 
 import { requireArcApiKey } from "@/lib/backend/auth"
 import { createRequestId, logOperationalEvent, requestIdHeaders } from "@/lib/backend/observability"
-import { requestSupabaseWalletLifecycleAction } from "@/lib/backend/supabase"
+import { enqueueSupabaseExecutionJob, requestSupabaseWalletLifecycleAction } from "@/lib/backend/supabase"
 
 const actions = ["sign", "recover", "suspend", "resume", "retire"] as const
 
@@ -25,13 +25,23 @@ export async function POST(request: NextRequest) {
       metadata: { source: body.source ?? "wallet_os_console" },
     })
     if (!event) throw new Error("Arc Wallet OS migration is required.")
+    const job = await enqueueSupabaseExecutionJob({
+      idempotencyKey: `wallet:${event.id}`,
+      kind: "wallet_operation",
+      resourceType: "wallet_event",
+      resourceId: event.id,
+      action: event.action,
+      payload: { walletId: event.walletId, actor: event.actor, detail: event.detail },
+      initialStatus: "waiting_provider",
+    })
+    if (!job) throw new Error("Execution worker migration is required.")
     logOperationalEvent({
       event: "wallet.lifecycle.requested",
       requestId,
       route: "/api/wallets/actions",
       details: { walletId: event.walletId, action: event.action },
     })
-    return NextResponse.json({ event }, { status: 201, headers: requestIdHeaders(requestId) })
+    return NextResponse.json({ event, job }, { status: 201, headers: requestIdHeaders(requestId) })
   } catch (reason) {
     const message = reason instanceof Error ? reason.message : "Wallet lifecycle request failed."
     return NextResponse.json(

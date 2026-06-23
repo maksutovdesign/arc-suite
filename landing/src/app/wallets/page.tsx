@@ -20,6 +20,7 @@ export default function WalletsPage() {
           <div className="nav-links" aria-label="Wallet OS navigation">
             <Link href="/">Product</Link>
             <Link href="/gas">Gas</Link>
+            <Link href="/executions">Executions</Link>
             <Link href="/escrow">Escrow</Link>
             <Link href="/billing">Billing</Link>
             <Link href="/flow">Flow</Link>

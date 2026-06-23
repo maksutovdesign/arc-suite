@@ -506,6 +506,62 @@ export type WalletOverview = {
   }
 }
 
+export type ExecutionJobStatus = "queued" | "leased" | "waiting_provider" | "retry" | "succeeded" | "failed" | "dead"
+export type ExecutionJobKind = "wallet_operation" | "escrow_contract" | "gas_sponsorship" | "billing_settlement"
+
+export type ExecutionJob = {
+  id: string
+  workspaceId: string
+  idempotencyKey: string
+  kind: ExecutionJobKind
+  resourceType: "wallet_event" | "escrow_milestone" | "gas_sponsorship" | "billing_batch"
+  resourceId: string
+  action: string
+  status: ExecutionJobStatus
+  provider: "circle"
+  providerOperationId: string | null
+  payload: Record<string, unknown>
+  providerReceipt: Record<string, unknown>
+  attempts: number
+  maxAttempts: number
+  nextAttemptAt: string
+  leaseOwner: string | null
+  leaseExpiresAt: string | null
+  lastErrorCode: string | null
+  lastErrorMessage: string | null
+  createdAt: string
+  updatedAt: string
+  completedAt: string | null
+}
+
+export type CircleWebhookEvent = {
+  id: string
+  workspaceId: string
+  notificationId: string
+  subscriptionId: string | null
+  notificationType: string
+  providerOperationId: string | null
+  signatureKeyId: string | null
+  signatureVerified: boolean
+  payload: Record<string, unknown>
+  processingStatus: "received" | "matched" | "ignored" | "failed"
+  processingError: string | null
+  receivedAt: string
+  processedAt: string | null
+}
+
+export type ExecutionOverview = {
+  jobs: ExecutionJob[]
+  webhooks: CircleWebhookEvent[]
+  summary: {
+    queued: number
+    waitingProvider: number
+    retrying: number
+    succeeded: number
+    failed: number
+  }
+}
+
 export type EscrowDeal = {
   id: string
   workspaceId: string
