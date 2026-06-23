@@ -591,6 +591,64 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
                   <div className="flow-preview-receipt"><span>Contract events</span><code>3 audited</code></div>
                   <a href="/escrow">Open live console</a>
                 </div>
+              ) : activeProduct.key === "gas" ? (
+                <div className="gas-product-preview" aria-label={activeProduct.imageAlt}>
+                  <div className="shield-preview-top"><span>ARC GAS / POLICY</span><strong>SPONSORING</strong></div>
+                  <div className="gas-preview-metrics">
+                    <div><span>Sponsored gas</span><strong>0.184 USDC</strong></div>
+                    <div><span>Sponsored tx</span><strong>23</strong></div>
+                    <div><span>Denied tx</span><strong>2</strong></div>
+                  </div>
+                  <div className="gas-preview-policy">
+                    <div><span>Agent policy</span><strong>DataHarvester-Pro</strong></div>
+                    <div className="gas-preview-mode"><i /> Gas Station · developer sponsored</div>
+                    <div className="gas-preview-limit"><span>Daily usage</span><b>0.042 / 0.250 USDC</b></div>
+                    <div className="gas-preview-bar"><i /></div>
+                  </div>
+                  {[
+                    ["Escrow release", "0.008 USDC", "SPONSORED"],
+                    ["Marketplace call", "0.004 USDC", "SPONSORED"],
+                    ["Contract deploy", "0.120 USDC", "DENIED"],
+                  ].map(([action, amount, status]) => (
+                    <div className="gas-preview-row" key={action}>
+                      <span><b>{action}</b><small>{amount}</small></span>
+                      <strong className={status === "DENIED" ? "is-denied" : ""}>{status}</strong>
+                    </div>
+                  ))}
+                  <a href="/gas">Open live console</a>
+                </div>
+              ) : activeProduct.key === "wallets" ? (
+                <div className="wallet-product-preview" aria-label={activeProduct.imageAlt}>
+                  <div className="shield-preview-top"><span>ARC WALLET OS / REGISTRY</span><strong>3 CUSTODY MODELS</strong></div>
+                  <div className="wallet-preview-summary">
+                    <div><span>Wallets</span><strong>6</strong></div>
+                    <div><span>Active</span><strong>5</strong></div>
+                    <div><span>Pending ops</span><strong>1</strong></div>
+                  </div>
+                  <div className="wallet-preview-grid">
+                    <div className="wallet-preview-list">
+                      {[
+                        ["Treasury Operator", "Developer-controlled", "ACTIVE"],
+                        ["Client Commerce", "User-controlled", "ACTIVE"],
+                        ["Agent Smart Account", "Modular", "PENDING"],
+                      ].map(([name, custody, status], index) => (
+                        <div className={index === 0 ? "is-active" : ""} key={name}>
+                          <span><b>{name}</b><small>{custody}</small></span>
+                          <em>{status}</em>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="wallet-preview-policy">
+                      <span>Signing policy</span>
+                      <strong>2 approvals required</strong>
+                      <p><i /> Arc Shield required</p>
+                      <p><i /> Reputation ≥ 750</p>
+                      <p><i /> 250 USDC daily limit</p>
+                    </div>
+                  </div>
+                  <div className="flow-preview-receipt"><span>Latest lifecycle event</span><code>SIGN · CONFIRMED</code></div>
+                  <a href="/wallets">Open live console</a>
+                </div>
               ) : (
                 <img src={activeProduct.image} alt={activeProduct.imageAlt} />
               )}
@@ -678,6 +736,70 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
               <p>Every API can show endpoint metadata, SLA stats, code snippets, reviews and provider trust context.</p>
             </div>
           </article>
+
+        </div>
+      </section>
+
+      <section className="section infrastructure-section">
+        <div className="section-heading">
+          <p className="kicker">Execution infrastructure</p>
+          <h2>The suite now operates wallets, gas and provider jobs.</h2>
+          <p>
+            The newest control plane turns product intent into observable provider
+            operations with policy checks, leased jobs, retries and signed Circle webhooks.
+          </p>
+        </div>
+
+        <div className="infrastructure-grid">
+          <article>
+            <span>01 · Wallet OS</span>
+            <h3>Custody-aware wallet operations</h3>
+            <p>Manage developer, user and modular wallets with roles, recovery paths and signing policy.</p>
+            <div><strong>3</strong><small>custody models</small></div>
+            <a href="/wallets">Open Wallet OS</a>
+          </article>
+          <article>
+            <span>02 · Arc Gas</span>
+            <h3>Agent-level sponsorship policy</h3>
+            <p>Approve or deny sponsored transactions under per-transaction, daily and monthly USDC limits.</p>
+            <div><strong>2</strong><small>Circle gas modes</small></div>
+            <a href="/gas">Open Arc Gas</a>
+          </article>
+          <article>
+            <span>03 · Execution Control</span>
+            <h3>One queue across four products</h3>
+            <p>Reconcile Wallet OS, Gas, Escrow and Billing operations with idempotent jobs and webhook delivery.</p>
+            <div><strong>4</strong><small>connected workflows</small></div>
+            <a href="/executions">Open Execution Control</a>
+          </article>
+        </div>
+      </section>
+
+      <section className="section execution-story-section">
+        <div className="execution-story-copy">
+          <p className="kicker">Provider lifecycle</p>
+          <h2>Every external operation has a visible state.</h2>
+          <p>
+            Arc Suite separates policy approval from provider completion. That makes
+            pending work, retries, failures and final onchain receipts explicit instead
+            of hiding them behind a loading spinner.
+          </p>
+          <a className="button secondary" href="/executions">Inspect execution jobs</a>
+        </div>
+        <div className="execution-story-flow" aria-label="Execution provider lifecycle">
+          {[
+            ["Policy", "Approved", "Shield, budget and signing rules pass"],
+            ["Queue", "Leased", "A worker owns the idempotent job"],
+            ["Circle", "Pending", "Provider operation is reconciled"],
+            ["Webhook", "Verified", "Signed delivery updates the job"],
+            ["Receipt", "Confirmed", "Transaction hash and state are stored"],
+          ].map(([label, state, detail], index) => (
+            <div key={label}>
+              <i>{String(index + 1).padStart(2, "0")}</i>
+              <span><b>{label}</b><small>{detail}</small></span>
+              <strong>{state}</strong>
+            </div>
+          ))}
         </div>
       </section>
 

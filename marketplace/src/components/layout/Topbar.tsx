@@ -19,7 +19,7 @@ export function Topbar() {
   const path = usePathname()
   return (
     <header className="border-b shrink-0" style={{ background: "linear-gradient(180deg,#1a2d3e,#162436)", borderColor: "rgba(255,255,255,0.06)" }}>
-      <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between gap-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center gap-3 lg:gap-6 overflow-hidden">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 shrink-0">
           <div className="size-7 rounded-lg flex items-center justify-center"
@@ -33,7 +33,7 @@ export function Topbar() {
         </Link>
 
         {/* Nav */}
-        <nav className="flex items-center gap-0.5">
+        <nav className="flex min-w-0 flex-1 items-center gap-0.5 overflow-x-auto">
           {NAV.map(({ href, label }) => {
             const active = path === href || (href !== "/" && path.startsWith(href))
             return (
@@ -49,10 +49,12 @@ export function Topbar() {
         </nav>
 
         {/* Live ticker */}
-        <LiveTicker />
+        <div className="hidden xl:block">
+          <LiveTicker />
+        </div>
 
         {/* Arc + Circle badge */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="hidden items-center gap-2 shrink-0 xl:flex">
           <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg"
             style={{ background: "rgba(95,191,255,0.08)", border: "1px solid rgba(95,191,255,0.18)" }}>
             <Zap className="size-3" style={{ color: "#5FBFFF" }} />

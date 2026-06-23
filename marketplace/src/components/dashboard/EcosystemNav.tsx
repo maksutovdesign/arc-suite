@@ -90,7 +90,7 @@ export function EcosystemNav({ current }: { current: "treasury" | "reputation" |
         borderBottom: "1px solid rgba(255,255,255,0.06)",
       }}
     >
-      <div className="flex min-w-0 items-center gap-1">
+      <div className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto">
         <span className="mr-2 hidden text-[10px] font-medium lg:inline" style={{ color: "#3d5468" }}>
           Arc Suite
         </span>

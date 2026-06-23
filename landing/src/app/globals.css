@@ -867,8 +867,345 @@ h3 {
   font-weight: 800;
 }
 
+.gas-product-preview,
+.wallet-product-preview {
+  display: grid;
+  align-content: start;
+  min-height: 430px;
+  padding: 22px;
+  background: #081018;
+}
+
+.gas-preview-metrics,
+.wallet-preview-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 18px 0 12px;
+}
+
+.gas-preview-metrics div,
+.wallet-preview-summary div {
+  padding: 13px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: rgba(95, 191, 255, 0.045);
+}
+
+.gas-preview-metrics span,
+.wallet-preview-summary span,
+.gas-preview-policy span,
+.wallet-preview-policy > span {
+  display: block;
+  color: var(--muted);
+  font-size: 9px;
+  text-transform: uppercase;
+}
+
+.gas-preview-metrics strong,
+.wallet-preview-summary strong {
+  display: block;
+  margin-top: 7px;
+  color: var(--cyan);
+  font-size: 17px;
+}
+
+.gas-preview-policy {
+  margin-bottom: 8px;
+  padding: 15px;
+  border-left: 3px solid var(--cyan);
+  background: rgba(95, 191, 255, 0.055);
+}
+
+.gas-preview-policy > div:first-child,
+.gas-preview-limit {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.gas-preview-policy > div:first-child strong {
+  font-size: 12px;
+}
+
+.gas-preview-mode {
+  margin: 12px 0;
+  color: var(--text);
+  font-size: 10px;
+}
+
+.gas-preview-mode i,
+.wallet-preview-policy p i {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 7px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 12px rgba(52, 211, 153, 0.55);
+}
+
+.gas-preview-limit b {
+  color: var(--text);
+  font-size: 10px;
+}
+
+.gas-preview-bar {
+  height: 5px;
+  margin-top: 9px;
+  overflow: hidden;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.gas-preview-bar i {
+  display: block;
+  width: 17%;
+  height: 100%;
+  background: var(--cyan);
+}
+
+.gas-preview-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 48px;
+  border-bottom: 1px solid var(--line);
+}
+
+.gas-preview-row span,
+.gas-preview-row small {
+  display: block;
+}
+
+.gas-preview-row b {
+  font-size: 11px;
+}
+
+.gas-preview-row small {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.gas-preview-row strong {
+  color: var(--green);
+  font-size: 9px;
+}
+
+.gas-preview-row strong.is-denied {
+  color: var(--red);
+}
+
+.wallet-preview-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(150px, 0.75fr);
+  gap: 10px;
+}
+
+.wallet-preview-list {
+  display: grid;
+  gap: 7px;
+}
+
+.wallet-preview-list > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 56px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.018);
+}
+
+.wallet-preview-list > div.is-active {
+  border-color: rgba(95, 191, 255, 0.34);
+  background: rgba(95, 191, 255, 0.07);
+}
+
+.wallet-preview-list span,
+.wallet-preview-list small {
+  display: block;
+}
+
+.wallet-preview-list b {
+  font-size: 10px;
+}
+
+.wallet-preview-list small {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 8px;
+}
+
+.wallet-preview-list em {
+  color: var(--green);
+  font-size: 8px;
+  font-style: normal;
+}
+
+.wallet-preview-policy {
+  padding: 14px;
+  border: 1px solid rgba(167, 139, 250, 0.2);
+  border-radius: 7px;
+  background: rgba(167, 139, 250, 0.055);
+}
+
+.wallet-preview-policy strong {
+  display: block;
+  margin: 8px 0 13px;
+  font-size: 12px;
+}
+
+.wallet-preview-policy p {
+  margin: 9px 0;
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.gas-product-preview > a,
+.wallet-product-preview > a {
+  justify-self: start;
+  margin-top: 16px;
+  color: var(--cyan);
+  font-size: 12px;
+  font-weight: 800;
+}
+
 .story-section {
   border-top: 1px solid var(--line);
+}
+
+.infrastructure-section,
+.execution-story-section {
+  border-top: 1px solid var(--line);
+}
+
+.infrastructure-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.infrastructure-grid article {
+  display: flex;
+  min-height: 310px;
+  flex-direction: column;
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(10, 17, 25, 0.78);
+}
+
+.infrastructure-grid article > span {
+  color: var(--cyan);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.infrastructure-grid h3 {
+  margin: 28px 0 14px;
+  font-size: 26px;
+  line-height: 1.08;
+}
+
+.infrastructure-grid p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.infrastructure-grid article > div {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  margin-top: auto;
+  padding-top: 24px;
+}
+
+.infrastructure-grid article > div strong {
+  color: var(--green);
+  font-size: 30px;
+}
+
+.infrastructure-grid article > div small {
+  color: var(--muted);
+}
+
+.infrastructure-grid a {
+  margin-top: 18px;
+  color: var(--cyan);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.execution-story-section {
+  display: grid;
+  grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.28fr);
+  gap: 42px;
+  align-items: center;
+}
+
+.execution-story-copy p:not(.kicker) {
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.execution-story-copy .button {
+  display: inline-flex;
+  margin-top: 18px;
+}
+
+.execution-story-flow {
+  display: grid;
+  border-top: 1px solid var(--line);
+}
+
+.execution-story-flow > div {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  min-height: 78px;
+  border-bottom: 1px solid var(--line);
+}
+
+.execution-story-flow i {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border: 1px solid rgba(95, 191, 255, 0.24);
+  border-radius: 50%;
+  color: var(--cyan);
+  font-size: 9px;
+  font-style: normal;
+}
+
+.execution-story-flow span,
+.execution-story-flow small {
+  display: block;
+}
+
+.execution-story-flow b {
+  font-size: 13px;
+}
+
+.execution-story-flow small {
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.execution-story-flow strong {
+  color: var(--green);
+  font-size: 10px;
+  text-transform: uppercase;
 }
 
 .story-lede {
@@ -4633,6 +4970,15 @@ a.ops-history-run:hover {
 
   .wallet-wide {
     grid-column: auto;
+  }
+
+  .wallet-preview-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .infrastructure-grid,
+  .execution-story-section {
+    grid-template-columns: 1fr;
   }
 
   .execution-heading h1 {

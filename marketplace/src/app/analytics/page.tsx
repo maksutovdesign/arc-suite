@@ -13,6 +13,7 @@ import { ARC_CARD } from "@/lib/styles"
 export default function AnalyticsPage() {
   const topByRequests  = [...APIS_ALL].sort((a, b) => b.totalRequests - a.totalRequests).slice(0, 5)
   const topByRating    = [...APIS_ALL].sort((a, b) => b.rating - a.rating).slice(0, 5)
+  const maxCategoryCount = Math.max(...CATEGORIES.map((category) => category.count), 1)
 
   return (
     <div className="min-h-full" style={{ background: "linear-gradient(180deg,#162436 0%,#0f1c2a 100%)" }}>
@@ -29,7 +30,7 @@ export default function AnalyticsPage() {
 
       <div className="max-w-7xl mx-auto px-6 py-6 space-y-5">
         {/* KPI strip */}
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
           {[
             { label: "Total APIs",       value: String(STATS.totalApis),         color: "#C7C5D1" },
             { label: "Total Providers",  value: String(STATS.totalProviders),    color: "#a78bfa" },
@@ -44,8 +45,8 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Category bar + distribution */}
-        <div className="grid grid-cols-3 gap-5">
-          <div className="col-span-2 p-5 rounded-2xl" style={ARC_CARD}>
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
+          <div className="p-5 rounded-2xl lg:col-span-2" style={ARC_CARD}>
             <p className="text-sm font-semibold text-white mb-4">Requests by Category (thousands)</p>
             <ArcBarChart data={CATEGORY_BAR_DATA} height={220} formatValue={(v) => `${v}K`} />
           </div>
@@ -55,14 +56,14 @@ export default function AnalyticsPage() {
             <div className="space-y-3">
               {CATEGORIES.map((cat) => {
                 const color = CAT_COLORS[cat.id] ?? "#7a8fa8"
-                const pct = Math.round((cat.count / STATS.totalApis) * 100)
+                const pct = Math.min(100, Math.round((cat.count / maxCategoryCount) * 100))
                 return (
                   <div key={cat.id}>
                     <div className="flex items-center justify-between text-[11px] mb-1">
                       <span style={{ color: "#7a8fa8" }}>{cat.label}</span>
                       <span className="font-semibold" style={{ color }}>{cat.count}</span>
                     </div>
-                    <div className="h-1.5 rounded-full" style={{ background: "rgba(255,255,255,0.05)" }}>
+                    <div className="h-1.5 overflow-hidden rounded-full" style={{ background: "rgba(255,255,255,0.05)" }}>
                       <div className="h-full rounded-full" style={{ width: `${pct}%`, background: `linear-gradient(90deg,${color}cc,${color})`, boxShadow: `0 0 6px ${color}50` }} />
                     </div>
                   </div>
@@ -73,7 +74,7 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Top APIs tables */}
-        <div className="grid grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
           {/* Top by requests */}
           <div className="p-5 rounded-2xl" style={ARC_CARD}>
             <div className="flex items-center gap-2 mb-4">
@@ -146,14 +147,14 @@ export default function AnalyticsPage() {
               const color = CAT_COLORS[api.category] ?? "#5FBFFF"
               const variant = api.uptime >= 99.9 ? "success" as const : api.uptime >= 99 ? "default" as const : "warning" as const
               return (
-                <div key={api.id} className="flex items-center gap-4">
+                <div key={api.id} className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 sm:grid-cols-[auto_11rem_minmax(0,1fr)_3.5rem_3.5rem] sm:gap-4">
                   <div className="size-1.5 rounded-full shrink-0" style={{ background: color }} />
-                  <p className="text-xs w-44 truncate text-white">{api.name}</p>
-                  <div className="flex-1">
+                  <p className="text-xs min-w-0 truncate text-white">{api.name}</p>
+                  <div className="col-span-3 sm:col-span-1">
                     <ArcProgress value={api.uptime} size="sm" variant={variant} />
                   </div>
-                  <span className="text-xs font-bold w-14 text-right" style={{ color: "#34d399" }}>{api.uptime}%</span>
-                  <span className="text-[10px] w-14 text-right" style={{ color: "#7a8fa8" }}>{api.latencyMs}ms</span>
+                  <span className="text-xs font-bold text-right" style={{ color: "#34d399" }}>{api.uptime}%</span>
+                  <span className="hidden text-[10px] text-right sm:block" style={{ color: "#7a8fa8" }}>{api.latencyMs}ms</span>
                 </div>
               )
             })}
