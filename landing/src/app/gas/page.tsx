@@ -1,6 +1,7 @@
 import Link from "next/link"
 
 import { BrandMark } from "../BrandMark"
+import { EcosystemNav } from "../EcosystemNav"
 import { GasDashboardClient } from "./GasDashboardClient"
 
 export const metadata = {
@@ -11,6 +12,7 @@ export const metadata = {
 export default function GasPage() {
   return (
     <main>
+      <EcosystemNav current="gas" />
       <nav className="nav">
         <Link className="brand" href="/" aria-label="Arc Suite home">
           <BrandMark idPrefix="gas-brand" />

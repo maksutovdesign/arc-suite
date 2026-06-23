@@ -1,6 +1,7 @@
 import Link from "next/link"
 
 import { BrandMark } from "../BrandMark"
+import { EcosystemNav } from "../EcosystemNav"
 import { BillingDashboardClient } from "./BillingDashboardClient"
 
 export const metadata = {
@@ -11,6 +12,7 @@ export const metadata = {
 export default function BillingPage() {
   return (
     <main>
+      <EcosystemNav current="billing" />
       <nav className="nav">
         <Link className="brand" href="/" aria-label="Arc Suite home">
           <BrandMark idPrefix="billing-brand" />

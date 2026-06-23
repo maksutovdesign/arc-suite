@@ -1,6 +1,7 @@
 import Link from "next/link"
 
 import { BrandMark } from "../BrandMark"
+import { EcosystemNav } from "../EcosystemNav"
 import { WalletDashboardClient } from "./WalletDashboardClient"
 
 export const metadata = {
@@ -11,6 +12,7 @@ export const metadata = {
 export default function WalletsPage() {
   return (
     <main>
+      <EcosystemNav current="wallets" />
       <nav className="nav">
         <Link className="brand" href="/" aria-label="Arc Suite home">
           <BrandMark idPrefix="wallet-brand" />
