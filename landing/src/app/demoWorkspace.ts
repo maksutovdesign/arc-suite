@@ -1,0 +1,231 @@
+import type {
+  Agent,
+  ApiListing,
+  BillingOverview,
+  EscrowOverview,
+  FlowRun,
+  FlowSummary,
+  GasOverview,
+  ShieldScreening,
+  ShieldSummary,
+  WalletOverview,
+} from "@/lib/backend/schema"
+import { agents, apiListings, WORKSPACE } from "@/lib/backend/seed"
+
+export const demoAgents: Agent[] = agents
+
+export const demoApis: Array<ApiListing & { providerName: string }> = apiListings.map((api, index) => ({
+  ...api,
+  providerName: ["ChainData Labs", "ModelStack", "Atmo API", "ComputeGrid", "OracleHub"][index] ?? "Arc Provider",
+}))
+
+export const demoSettlementConfig = {
+  configured: false,
+  defaultRecipient: "0x55e0dd25cd5f917e24de571d98d97c3b243709b2",
+  allowedRecipients: ["0x55e0dd25cd5f917e24de571d98d97c3b243709b2"],
+  maxAmountUsdc: 0.1,
+}
+
+export const demoFlowPayload: { auditStorage: boolean; runs: FlowRun[]; summary: FlowSummary } = {
+  auditStorage: true,
+  summary: { total: 4, completed: 2, review: 1, blocked: 1, failed: 0, lastRunAt: "2026-06-23T09:40:00Z" },
+  runs: [
+    {
+      id: "flow_demo_001",
+      workspaceId: WORKSPACE.id,
+      idempotencyKey: "flow-demo:001",
+      agentId: "agt_01",
+      apiId: "api_01",
+      recipientAddress: demoSettlementConfig.defaultRecipient,
+      screeningChain: "ETH-SEPOLIA",
+      amountUsdc: 0.012,
+      status: "completed",
+      currentStep: "reputation",
+      steps: [
+        { key: "screening", label: "Shield screening", status: "passed", detail: "Recipient risk check passed", completedAt: "2026-06-23T09:39:21Z" },
+        { key: "access", label: "Access policy", status: "passed", detail: "Score 961 >= required 700", completedAt: "2026-06-23T09:39:24Z" },
+        { key: "settlement", label: "Arc settlement", status: "passed", detail: "USDC transfer confirmed", completedAt: "2026-06-23T09:39:33Z" },
+        { key: "reputation", label: "Reputation update", status: "passed", detail: "Payment success signal +3", completedAt: "2026-06-23T09:39:36Z" },
+      ],
+      screeningId: "scr_demo_001",
+      screeningDecision: "allow",
+      accessDecisionId: "dec_demo_001",
+      accessAllowed: true,
+      settlementId: "set_demo_001",
+      txHash: "0x84de219dc51c9942a54a33c7fb56d12c18c884b7e998abb812943e923aa3a921",
+      explorerUrl: "https://arcscan.app/tx/0x84de219dc51c9942a54a33c7fb56d12c18c884b7e998abb812943e923aa3a921",
+      reputationScoreBefore: 958,
+      reputationScoreAfter: 961,
+      errorCode: null,
+      errorMessage: null,
+      requestId: "req_demo_flow_001",
+      createdAt: "2026-06-23T09:39:20Z",
+      updatedAt: "2026-06-23T09:39:36Z",
+      completedAt: "2026-06-23T09:39:36Z",
+    },
+    {
+      id: "flow_demo_002",
+      workspaceId: WORKSPACE.id,
+      idempotencyKey: "flow-demo:002",
+      agentId: "agt_02",
+      apiId: "api_02",
+      recipientAddress: demoSettlementConfig.defaultRecipient,
+      screeningChain: "ETH-SEPOLIA",
+      amountUsdc: 0.018,
+      status: "blocked",
+      currentStep: "access",
+      steps: [
+        { key: "screening", label: "Shield screening", status: "passed", detail: "No sanctions or high-risk category", completedAt: "2026-06-23T09:35:11Z" },
+        { key: "access", label: "Access policy", status: "blocked", detail: "Score 812 below required 850", completedAt: "2026-06-23T09:35:13Z" },
+        { key: "settlement", label: "Arc settlement", status: "skipped", detail: "No value moved", completedAt: null },
+        { key: "reputation", label: "Reputation update", status: "skipped", detail: "Blocked before payment", completedAt: null },
+      ],
+      screeningId: "scr_demo_002",
+      screeningDecision: "allow",
+      accessDecisionId: "dec_demo_002",
+      accessAllowed: false,
+      settlementId: null,
+      txHash: null,
+      explorerUrl: null,
+      reputationScoreBefore: 812,
+      reputationScoreAfter: null,
+      errorCode: "ACCESS_DENIED",
+      errorMessage: "Required reputation threshold was not met.",
+      requestId: "req_demo_flow_002",
+      createdAt: "2026-06-23T09:35:10Z",
+      updatedAt: "2026-06-23T09:35:13Z",
+      completedAt: "2026-06-23T09:35:13Z",
+    },
+  ],
+}
+
+export const demoShieldPayload: {
+  configuration: { configured: boolean; auditStorage: boolean; arcNativeScreening: boolean; supportedChains: string[] }
+  screenings: ShieldScreening[]
+  summary: ShieldSummary
+} = {
+  configuration: { configured: true, auditStorage: true, arcNativeScreening: false, supportedChains: ["ETH-SEPOLIA", "MATIC-AMOY", "ARB-SEPOLIA"] },
+  summary: { total: 5, allowed: 3, review: 1, blocked: 1, providerErrors: 0, lastScreenedAt: "2026-06-23T09:39:21Z" },
+  screenings: [
+    {
+      id: "scr_demo_001",
+      workspaceId: WORKSPACE.id,
+      idempotencyKey: "shield-demo:001",
+      address: "0x55e0dd25cd5f917e24de571d98d97c3b243709b2",
+      chain: "ETH-SEPOLIA",
+      provider: "circle_compliance_engine",
+      providerScreeningId: "circle_scr_demo_001",
+      providerResult: "APPROVED",
+      providerStatus: "completed",
+      decision: "allow",
+      decisionReason: "Provider returned no high-risk signals.",
+      ruleName: "Default allow",
+      actions: ["ALLOW_SETTLEMENT"],
+      riskScore: "LOW",
+      riskCategories: [],
+      reasons: [],
+      alertId: null,
+      rawResponse: { demo: true },
+      requestId: "req_demo_shield_001",
+      createdAt: "2026-06-23T09:39:21Z",
+    },
+    {
+      id: "scr_demo_002",
+      workspaceId: WORKSPACE.id,
+      idempotencyKey: "shield-demo:002",
+      address: "0x7fb49965753A9eC3646fd5d004ee5AeD6Cc89999",
+      chain: "ETH-SEPOLIA",
+      provider: "circle_compliance_engine",
+      providerScreeningId: "circle_scr_demo_002",
+      providerResult: "DENIED",
+      providerStatus: "completed",
+      decision: "block",
+      decisionReason: "Sanctions blocklist simulation for operator testing.",
+      ruleName: "Sanctions blocklist",
+      actions: ["DENY_SETTLEMENT", "OPEN_REVIEW"],
+      riskScore: "BLOCKLIST",
+      riskCategories: ["SANCTIONS"],
+      reasons: [],
+      alertId: "alert_demo_sanctions",
+      rawResponse: { demo: true },
+      requestId: "req_demo_shield_002",
+      createdAt: "2026-06-23T09:34:00Z",
+    },
+  ],
+}
+
+export const demoBillingOverview: BillingOverview = {
+  plans: [
+    { id: "plan_growth", workspaceId: WORKSPACE.id, name: "Growth API", monthlyFeeUsdc: 25, includedUnits: 10000, discountBps: 500, active: true, createdAt: "2026-06-01T00:00:00Z" },
+    { id: "plan_enterprise", workspaceId: WORKSPACE.id, name: "Enterprise API", monthlyFeeUsdc: 150, includedUnits: 100000, discountBps: 1500, active: true, createdAt: "2026-06-01T00:00:00Z" },
+  ],
+  accounts: [
+    { id: "bill_acct_01", workspaceId: WORKSPACE.id, agentId: "agt_01", planId: "plan_growth", prepaidBalanceUsdc: 49.973, lowBalanceThresholdUsdc: 10, status: "active", currentPeriodStart: "2026-06-01T00:00:00Z", currentPeriodEnd: "2026-07-01T00:00:00Z", createdAt: "2026-06-01T00:00:00Z", updatedAt: "2026-06-23T09:39:00Z" },
+    { id: "bill_acct_02", workspaceId: WORKSPACE.id, agentId: "agt_02", planId: "plan_enterprise", prepaidBalanceUsdc: 7.4, lowBalanceThresholdUsdc: 15, status: "active", currentPeriodStart: "2026-06-01T00:00:00Z", currentPeriodEnd: "2026-07-01T00:00:00Z", createdAt: "2026-06-01T00:00:00Z", updatedAt: "2026-06-23T09:34:00Z" },
+  ],
+  usage: [
+    { id: "use_demo_001", workspaceId: WORKSPACE.id, billingAccountId: "bill_acct_01", agentId: "agt_01", apiId: "api_01", idempotencyKey: "use-demo:001", units: 12, unitPriceUsdc: 0.003, grossAmountUsdc: 0.036, discountUsdc: 0.0018, netAmountUsdc: 0.0342, pricingUnit: "request", invoiceId: "inv_demo_001", batchId: null, metadata: { demo: true }, occurredAt: "2026-06-23T09:39:00Z", createdAt: "2026-06-23T09:39:00Z" },
+    { id: "use_demo_002", workspaceId: WORKSPACE.id, billingAccountId: "bill_acct_02", agentId: "agt_02", apiId: "api_02", idempotencyKey: "use-demo:002", units: 1500, unitPriceUsdc: 0.012, grossAmountUsdc: 18, discountUsdc: 2.7, netAmountUsdc: 15.3, pricingUnit: "1k tokens", invoiceId: "inv_demo_002", batchId: null, metadata: { demo: true }, occurredAt: "2026-06-23T09:32:00Z", createdAt: "2026-06-23T09:32:00Z" },
+  ],
+  invoices: [
+    { id: "inv_demo_001", workspaceId: WORKSPACE.id, billingAccountId: "bill_acct_01", agentId: "agt_01", periodStart: "2026-06-01T00:00:00Z", periodEnd: "2026-07-01T00:00:00Z", status: "draft", usageCount: 12, subtotalUsdc: 0.036, discountUsdc: 0.0018, totalUsdc: 0.0342, batchId: null, createdAt: "2026-06-23T09:39:00Z", updatedAt: "2026-06-23T09:39:00Z" },
+    { id: "inv_demo_002", workspaceId: WORKSPACE.id, billingAccountId: "bill_acct_02", agentId: "agt_02", periodStart: "2026-06-01T00:00:00Z", periodEnd: "2026-07-01T00:00:00Z", status: "ready", usageCount: 1, subtotalUsdc: 18, discountUsdc: 2.7, totalUsdc: 15.3, batchId: null, createdAt: "2026-06-23T09:32:00Z", updatedAt: "2026-06-23T09:32:00Z" },
+  ],
+  batches: [
+    { id: "batch_demo_001", workspaceId: WORKSPACE.id, status: "ready", usageCount: 42, invoiceCount: 3, grossAmountUsdc: 24.88, netAmountUsdc: 21.44, settlementId: null, txHash: null, explorerUrl: null, createdAt: "2026-06-23T09:30:00Z", updatedAt: "2026-06-23T09:30:00Z", settledAt: null },
+  ],
+  summary: { prepaidBalanceUsdc: 57.373, meteredUsageUsdc: 15.3342, unbatchedUsageUsdc: 15.3342, activeAccounts: 2, lowBalanceAccounts: 1 },
+}
+
+export const demoEscrowOverview: EscrowOverview = {
+  configuration: { onchainConfigured: false, chain: "ARC-TESTNET", contractAddress: null, missing: ["ARC_ESCROW_CONTRACT_ADDRESS"] },
+  summary: { lockedUsdc: 9, releasedUsdc: 3, disputedUsdc: 0, activeDeals: 2 },
+  deals: [
+    { id: "deal_demo_001", workspaceId: WORKSPACE.id, idempotencyKey: "deal-demo:001", title: "Agent data stream delivery", description: "Premium market-data provider deal.", buyerAgentId: "agt_02", sellerAgentId: "agt_01", totalAmountUsdc: 12, releasedAmountUsdc: 3, refundedAmountUsdc: 0, status: "active", contractAddress: null, contractDealId: null, fundingTxHash: null, explorerUrl: null, disputeReason: null, createdAt: "2026-06-22T18:00:00Z", updatedAt: "2026-06-23T09:20:00Z", completedAt: null },
+    { id: "deal_demo_002", workspaceId: WORKSPACE.id, idempotencyKey: "deal-demo:002", title: "IoT oracle integration", description: "Sensor data delivery to an oracle feed.", buyerAgentId: "agt_05", sellerAgentId: "agt_03", totalAmountUsdc: 6, releasedAmountUsdc: 0, refundedAmountUsdc: 0, status: "active", contractAddress: null, contractDealId: null, fundingTxHash: null, explorerUrl: null, disputeReason: null, createdAt: "2026-06-22T17:10:00Z", updatedAt: "2026-06-22T17:10:00Z", completedAt: null },
+  ],
+  milestones: [
+    { id: "ms_demo_001", workspaceId: WORKSPACE.id, dealId: "deal_demo_001", position: 0, title: "Schema delivery", description: "API schema and sample payloads delivered.", amountUsdc: 3, status: "released", dueAt: null, submittedAt: "2026-06-22T20:00:00Z", releasedAt: "2026-06-23T08:00:00Z", refundedAt: null, txHash: "0x84de219dc51c9942a54a33c7fb56d12c18c884b7e998abb812943e923aa3a921", explorerUrl: "https://arcscan.app/tx/0x84de219dc51c9942a54a33c7fb56d12c18c884b7e998abb812943e923aa3a921", createdAt: "2026-06-22T18:00:00Z", updatedAt: "2026-06-23T08:00:00Z" },
+    { id: "ms_demo_002", workspaceId: WORKSPACE.id, dealId: "deal_demo_001", position: 1, title: "Live stream validation", description: "24h sample stream with uptime proof.", amountUsdc: 6, status: "submitted", dueAt: null, submittedAt: "2026-06-23T09:10:00Z", releasedAt: null, refundedAt: null, txHash: null, explorerUrl: null, createdAt: "2026-06-22T18:00:00Z", updatedAt: "2026-06-23T09:10:00Z" },
+    { id: "ms_demo_003", workspaceId: WORKSPACE.id, dealId: "deal_demo_001", position: 2, title: "Production handoff", description: "Provider keys and monitoring handoff.", amountUsdc: 3, status: "pending", dueAt: null, submittedAt: null, releasedAt: null, refundedAt: null, txHash: null, explorerUrl: null, createdAt: "2026-06-22T18:00:00Z", updatedAt: "2026-06-22T18:00:00Z" },
+  ],
+  events: [
+    { id: "evt_demo_001", workspaceId: WORKSPACE.id, dealId: "deal_demo_001", milestoneId: "ms_demo_001", type: "released", actor: "operator", detail: "Schema milestone released after validation.", amountUsdc: 3, txHash: "0x84de219dc51c9942a54a33c7fb56d12c18c884b7e998abb812943e923aa3a921", explorerUrl: "https://arcscan.app/tx/0x84de219dc51c9942a54a33c7fb56d12c18c884b7e998abb812943e923aa3a921", providerReceipt: { demo: true }, createdAt: "2026-06-23T08:00:00Z" },
+    { id: "evt_demo_002", workspaceId: WORKSPACE.id, dealId: "deal_demo_001", milestoneId: "ms_demo_002", type: "submitted", actor: "DataHarvester-Pro", detail: "Seller submitted live stream proof.", amountUsdc: 6, txHash: null, explorerUrl: null, providerReceipt: { demo: true }, createdAt: "2026-06-23T09:10:00Z" },
+  ],
+}
+
+export const demoGasOverview: GasOverview = {
+  configuration: { circleConfigured: true, network: "ARC-TESTNET", modes: ["gas_station", "paymaster"] },
+  summary: { sponsoredUsdc: 0.184, sponsoredTransactions: 23, deniedTransactions: 2, activePolicies: 4 },
+  policies: [
+    { id: "gas_pol_001", workspaceId: WORKSPACE.id, agentId: "agt_01", mode: "gas_station", status: "active", perTxLimitUsdc: 0.025, dailyLimitUsdc: 0.25, monthlyLimitUsdc: 4, dailySpentUsdc: 0.042, monthlySpentUsdc: 0.184, sponsoredCount: 19, deniedCount: 0, allowedContracts: ["0x55e0dd25cd5f917e24de571d98d97c3b243709b2"], createdAt: "2026-06-20T00:00:00Z", updatedAt: "2026-06-23T09:40:00Z" },
+    { id: "gas_pol_002", workspaceId: WORKSPACE.id, agentId: "agt_02", mode: "paymaster", status: "active", perTxLimitUsdc: 0.01, dailyLimitUsdc: 0.05, monthlyLimitUsdc: 1, dailySpentUsdc: 0.049, monthlySpentUsdc: 0.41, sponsoredCount: 4, deniedCount: 2, allowedContracts: [], createdAt: "2026-06-20T00:00:00Z", updatedAt: "2026-06-23T09:34:00Z" },
+  ],
+  sponsorships: [
+    { id: "gas_sp_001", workspaceId: WORKSPACE.id, policyId: "gas_pol_001", agentId: "agt_01", idempotencyKey: "gas-demo:001", mode: "gas_station", network: "ARC-TESTNET", action: "Escrow release", destination: "0x55e0dd25cd5f917e24de571d98d97c3b243709b2", estimatedFeeUsdc: 0.008, actualFeeUsdc: 0.0074, status: "confirmed", decisionReason: "Within policy limits", provider: "circle_gas_station", providerTransactionId: "circle_gas_demo_001", txHash: "0x84de219dc51c9942a54a33c7fb56d12c18c884b7e998abb812943e923aa3a921", explorerUrl: "https://arcscan.app/tx/0x84de219dc51c9942a54a33c7fb56d12c18c884b7e998abb812943e923aa3a921", metadata: { demo: true }, createdAt: "2026-06-23T09:40:00Z", updatedAt: "2026-06-23T09:40:08Z", confirmedAt: "2026-06-23T09:40:08Z" },
+    { id: "gas_sp_002", workspaceId: WORKSPACE.id, policyId: "gas_pol_002", agentId: "agt_02", idempotencyKey: "gas-demo:002", mode: "paymaster", network: "ARC-TESTNET", action: "Contract deploy", destination: null, estimatedFeeUsdc: 0.12, actualFeeUsdc: null, status: "denied", decisionReason: "Per transaction limit exceeded", provider: "circle_paymaster", providerTransactionId: null, txHash: null, explorerUrl: null, metadata: { demo: true }, createdAt: "2026-06-23T09:33:00Z", updatedAt: "2026-06-23T09:33:00Z", confirmedAt: null },
+  ],
+}
+
+export const demoWalletOverview: WalletOverview = {
+  configuration: { circleConfigured: true, network: "ARC-TESTNET", custodyModels: ["developer", "user", "modular"] },
+  summary: { totalWallets: 3, activeWallets: 2, userControlledWallets: 1, pendingOperations: 1 },
+  wallets: [
+    { id: "wal_demo_001", workspaceId: WORKSPACE.id, name: "Treasury Operator", ownerLabel: "Arc Corp", custodyModel: "developer", accountType: "EOA", status: "active", network: "ARC-TESTNET", address: "0xe587fe4875e8ce65a5473c66488b6bc7d54b80a8", circleWalletId: "circle_wallet_demo_001", circleWalletSetId: "circle_set_demo_001", authMethod: "entity_secret", recoveryMethod: "entity_secret_backup", createdAt: "2026-06-21T05:40:00Z", updatedAt: "2026-06-23T09:40:00Z", lastSignedAt: "2026-06-23T09:39:00Z" },
+    { id: "wal_demo_002", workspaceId: WORKSPACE.id, name: "Client Commerce", ownerLabel: "Pilot customer", custodyModel: "user", accountType: "EOA", status: "active", network: "ARC-TESTNET", address: "0x55e0dd25cd5f917e24de571d98d97c3b243709b2", circleWalletId: "circle_wallet_demo_002", circleWalletSetId: "circle_set_demo_002", authMethod: "passkey", recoveryMethod: "passkey_backup", createdAt: "2026-06-22T12:00:00Z", updatedAt: "2026-06-23T09:20:00Z", lastSignedAt: "2026-06-23T09:10:00Z" },
+    { id: "wal_demo_003", workspaceId: WORKSPACE.id, name: "Agent Smart Account", ownerLabel: "DataHarvester-Pro", custodyModel: "modular", accountType: "MSCA", status: "provisioning", network: "ARC-TESTNET", address: null, circleWalletId: null, circleWalletSetId: "circle_set_demo_003", authMethod: "entity_secret", recoveryMethod: "admin_assisted", createdAt: "2026-06-23T08:45:00Z", updatedAt: "2026-06-23T08:45:00Z", lastSignedAt: null },
+  ],
+  roles: [
+    { id: "role_demo_001", workspaceId: WORKSPACE.id, walletId: "wal_demo_001", principal: "ops@arcsuite.app", role: "owner", status: "active", createdAt: "2026-06-21T05:40:00Z", revokedAt: null },
+    { id: "role_demo_002", workspaceId: WORKSPACE.id, walletId: "wal_demo_001", principal: "finance@arcsuite.app", role: "approver", status: "active", createdAt: "2026-06-21T05:40:00Z", revokedAt: null },
+  ],
+  policies: [
+    { id: "wallet_pol_001", workspaceId: WORKSPACE.id, walletId: "wal_demo_001", status: "active", approvalsRequired: 2, transactionLimitUsdc: 250, dailyLimitUsdc: 1000, allowedContracts: ["0x55e0dd25cd5f917e24de571d98d97c3b243709b2"], requireShield: true, requireReputationScore: 750, updatedAt: "2026-06-23T09:40:00Z" },
+    { id: "wallet_pol_002", workspaceId: WORKSPACE.id, walletId: "wal_demo_002", status: "active", approvalsRequired: 1, transactionLimitUsdc: 50, dailyLimitUsdc: 100, allowedContracts: [], requireShield: true, requireReputationScore: 650, updatedAt: "2026-06-23T09:20:00Z" },
+  ],
+  events: [
+    { id: "wallet_evt_001", workspaceId: WORKSPACE.id, walletId: "wal_demo_001", action: "sign", status: "confirmed", actor: "Arc Operator", detail: "Signed Arc Flow settlement.", providerOperationId: "circle_op_demo_001", txHash: "0x84de219dc51c9942a54a33c7fb56d12c18c884b7e998abb812943e923aa3a921", explorerUrl: "https://arcscan.app/tx/0x84de219dc51c9942a54a33c7fb56d12c18c884b7e998abb812943e923aa3a921", metadata: { demo: true }, createdAt: "2026-06-23T09:39:00Z", completedAt: "2026-06-23T09:39:36Z" },
+    { id: "wallet_evt_002", workspaceId: WORKSPACE.id, walletId: "wal_demo_003", action: "provision", status: "submitted", actor: "Arc Operator", detail: "Creating modular smart account.", providerOperationId: "circle_op_demo_002", txHash: null, explorerUrl: null, metadata: { demo: true }, createdAt: "2026-06-23T08:45:00Z", completedAt: null },
+  ],
+}

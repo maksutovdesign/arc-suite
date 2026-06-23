@@ -98,7 +98,7 @@ export function ExecutionDashboardClient() {
       <section className="wallet-panel execution-table">
         <div className="flow-panel-title"><div><span>Circle webhooks</span><h2>Signed delivery inbox</h2></div><Webhook size={20} /></div>
         <div className="shield-table-wrap"><table className="shield-table"><thead><tr><th>Notification</th><th>Type</th><th>Provider ID</th><th>Signature</th><th>Processing</th><th>Received</th></tr></thead><tbody>
-          {(overview?.webhooks ?? []).length === 0 ? <tr><td className="shield-table-empty" colSpan={6}>No Circle webhooks received yet.</td></tr> : overview?.webhooks.map((event) => <tr key={event.id}><td><code>{event.notificationId}</code></td><td>{event.notificationType}</td><td><code>{event.providerOperationId ?? "—"}</code></td><td>{event.signatureVerified ? "verified" : "rejected"}</td><td><em className={`execution-status is-${event.processingStatus}`}>{event.processingStatus}</em></td><td>{new Date(event.receivedAt).toLocaleString()}</td></tr>)}
+          {(overview?.webhooks ?? []).length === 0 ? <tr><td className="shield-table-empty" colSpan={6}>No Circle webhooks received yet.</td></tr> : overview?.webhooks.map((event) => <tr key={event.id}><td><code>{event.notificationId}</code></td><td>{event.notificationType}</td><td><code>{event.providerOperationId ?? "—"}</code></td><td>{event.signatureVerified ? "verified" : "rejected"}</td><td><em className={`execution-status is-${event.processingStatus}`}>{event.processingStatus}</em></td><td>{formatDate(event.receivedAt)}</td></tr>)}
         </tbody></table></div>
       </section>
     </section>
@@ -107,4 +107,5 @@ export function ExecutionDashboardClient() {
 
 function Metric({ icon, label, value }: { icon: React.ReactNode; label: string; value: number }) { return <div className="execution-metric"><span>{icon}{label}</span><strong>{value}</strong></div> }
 function kindName(kind: string) { return kind.replaceAll("_", " ").replace(/^\w/, (letter) => letter.toUpperCase()) }
+function formatDate(value: string) { return new Date(value).toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" }) }
 function readStoredApiKey() { return typeof window === "undefined" ? "" : window.sessionStorage.getItem(API_KEY_STORAGE) ?? window.sessionStorage.getItem("arc_wallet_os_key") ?? window.sessionStorage.getItem("arc_gas_key") ?? "" }

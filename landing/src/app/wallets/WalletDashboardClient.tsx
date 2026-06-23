@@ -4,14 +4,15 @@ import { Fingerprint, KeyRound, RefreshCw, Save, ShieldCheck, UserRoundCog, Wall
 import { useCallback, useEffect, useRef, useState } from "react"
 
 import type { WalletAccount, WalletLifecycleEvent, WalletOverview, WalletSigningPolicy } from "@/lib/backend/schema"
+import { demoWalletOverview } from "../demoWorkspace"
 
 const API_KEY_STORAGE = "arc_wallet_os_key"
 
 export function WalletDashboardClient() {
   const [apiKey, setApiKey] = useState(readStoredApiKey)
-  const [overview, setOverview] = useState<WalletOverview | null>(null)
-  const [walletId, setWalletId] = useState("")
-  const [policy, setPolicy] = useState<WalletSigningPolicy | null>(null)
+  const [overview, setOverview] = useState<WalletOverview | null>(demoWalletOverview)
+  const [walletId, setWalletId] = useState(demoWalletOverview.wallets[0]?.id ?? "")
+  const [policy, setPolicy] = useState<WalletSigningPolicy | null>(demoWalletOverview.policies[0] ?? null)
   const [action, setAction] = useState<WalletLifecycleEvent["action"]>("sign")
   const [actor, setActor] = useState("Arc Operator")
   const [detail, setDetail] = useState("Request Circle wallet operation under the active signing policy")
@@ -120,6 +121,7 @@ export function WalletDashboardClient() {
         <label><span>Arc API key</span><input autoComplete="off" placeholder="arc_live_..." type="password" value={apiKey} onChange={(event) => setApiKey(event.target.value)} /></label>
         <button className="button secondary" disabled={busy === "connect"} onClick={() => void connect()} type="button"><RefreshCw size={16} /> Connect</button>
       </div>
+      {!apiKey.trim() && <div className="demo-mode-banner">Demo workspace is loaded in read-only mode. Connect an Arc API key to request Circle wallet operations and edit signing policy.</div>}
       {error && <div className="analytics-error">{error}</div>}
       {notice && <div className="billing-notice">{notice}</div>}
 
@@ -151,7 +153,7 @@ export function WalletDashboardClient() {
             <label><span>Actor</span><input value={actor} onChange={(event) => setActor(event.target.value)} /></label>
             <label className="wallet-wide"><span>Reason</span><input value={detail} onChange={(event) => setDetail(event.target.value)} /></label>
           </div>
-          <button className="button primary wallet-action" disabled={busy === "action" || !wallet} onClick={() => void requestAction()} type="button"><KeyRound size={16} /> Request operation</button>
+          <button className="button primary wallet-action" disabled={!apiKey.trim() || busy === "action" || !wallet} onClick={() => void requestAction()} type="button"><KeyRound size={16} /> Request operation</button>
         </section>
       </div>
 
@@ -167,7 +169,7 @@ export function WalletDashboardClient() {
               <NumberField label="Minimum reputation" value={policy.requireReputationScore} onChange={(value) => setPolicy({ ...policy, requireReputationScore: value })} step="1" />
               <label className="wallet-check"><input checked={policy.requireShield} onChange={(event) => setPolicy({ ...policy, requireShield: event.target.checked })} type="checkbox" /><span>Require Arc Shield</span></label>
             </div>
-            <button className="button secondary wallet-action" disabled={busy === "policy"} onClick={() => void savePolicy()} type="button"><Save size={16} /> Save policy</button>
+            <button className="button secondary wallet-action" disabled={!apiKey.trim() || busy === "policy"} onClick={() => void savePolicy()} type="button"><Save size={16} /> Save policy</button>
           </> : <p>Connect with an API key to edit policy.</p>}
         </section>
 
@@ -183,7 +185,7 @@ export function WalletDashboardClient() {
       <section className="wallet-panel wallet-events">
         <PanelHead eyebrow="Audit timeline" title="Wallet lifecycle events" icon={<RefreshCw size={20} />} />
         <div className="shield-table-wrap"><table className="shield-table"><thead><tr><th>Wallet</th><th>Action</th><th>Actor</th><th>Status</th><th>Detail</th><th>Time</th></tr></thead><tbody>
-          {(overview?.events ?? []).length === 0 ? <tr><td className="shield-table-empty" colSpan={6}>No lifecycle events yet.</td></tr> : overview?.events.map((event) => <tr key={event.id}><td>{walletName(overview.wallets, event.walletId)}</td><td>{actionLabel(event.action)}</td><td>{event.actor}</td><td><em className={`wallet-status is-${event.status}`}>{event.status}</em></td><td>{event.detail}</td><td>{new Date(event.createdAt).toLocaleString()}</td></tr>)}
+          {(overview?.events ?? []).length === 0 ? <tr><td className="shield-table-empty" colSpan={6}>No lifecycle events yet.</td></tr> : overview?.events.map((event) => <tr key={event.id}><td>{walletName(overview.wallets, event.walletId)}</td><td>{actionLabel(event.action)}</td><td>{event.actor}</td><td><em className={`wallet-status is-${event.status}`}>{event.status}</em></td><td>{event.detail}</td><td>{formatDate(event.createdAt)}</td></tr>)}
         </tbody></table></div>
       </section>
     </section>
@@ -196,4 +198,5 @@ function NumberField({ label, value, onChange, step = "0.01" }: { label: string;
 function custodyName(value: WalletAccount["custodyModel"]) { return value === "developer" ? "Developer-controlled" : value === "user" ? "User-controlled" : "Modular" }
 function actionLabel(value: WalletLifecycleEvent["action"]) { return value.replaceAll("_", " ").replace(/^\w/, (letter) => letter.toUpperCase()) }
 function walletName(wallets: WalletAccount[], id: string) { return wallets.find((wallet) => wallet.id === id)?.name ?? id }
+function formatDate(value: string) { return new Date(value).toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" }) }
 function readStoredApiKey() { return typeof window === "undefined" ? "" : window.sessionStorage.getItem(API_KEY_STORAGE) ?? window.sessionStorage.getItem("arc_gas_key") ?? window.sessionStorage.getItem("arc_shield_key") ?? "" }

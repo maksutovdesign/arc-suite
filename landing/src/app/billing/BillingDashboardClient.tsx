@@ -14,6 +14,7 @@ import {
 import { type ReactNode, useCallback, useEffect, useRef, useState } from "react"
 
 import type { Agent, ApiListing, BillingOverview } from "@/lib/backend/schema"
+import { demoAgents, demoApis, demoBillingOverview } from "../demoWorkspace"
 
 const API_KEY_STORAGE = "arc_shield_key"
 
@@ -22,12 +23,12 @@ type ApiPayload = { apis: Array<ApiListing & { providerName: string }> }
 
 export function BillingDashboardClient() {
   const [apiKey, setApiKey] = useState(readStoredApiKey)
-  const [overview, setOverview] = useState<BillingOverview | null>(null)
+  const [overview, setOverview] = useState<BillingOverview | null>(demoBillingOverview)
   const [configured, setConfigured] = useState(false)
-  const [agents, setAgents] = useState<Agent[]>([])
-  const [apis, setApis] = useState<ApiPayload["apis"]>([])
-  const [agentId, setAgentId] = useState("")
-  const [apiId, setApiId] = useState("")
+  const [agents, setAgents] = useState<Agent[]>(demoAgents)
+  const [apis, setApis] = useState<ApiPayload["apis"]>(demoApis)
+  const [agentId, setAgentId] = useState(demoAgents[0]?.id ?? "")
+  const [apiId, setApiId] = useState(demoApis[0]?.id ?? "")
   const [units, setUnits] = useState("1")
   const [topUpAmount, setTopUpAmount] = useState("10")
   const [error, setError] = useState<string | null>(null)
@@ -155,6 +156,7 @@ export function BillingDashboardClient() {
         <label><span>Arc API key</span><input autoComplete="off" placeholder="arc_live_..." type="password" value={apiKey} onChange={(event) => setApiKey(event.target.value)} /></label>
         <button className="button secondary" disabled={busy === "connect"} onClick={() => void connect()} type="button"><RefreshCw size={16} /> Connect</button>
       </div>
+      {!apiKey.trim() && <div className="demo-mode-banner">Demo workspace is loaded in read-only mode. Connect an Arc API key to meter live usage, top up balances and create settlement batches.</div>}
 
       {error && <div className="analytics-error">{error}</div>}
       {notice && <div className="billing-notice">{notice}</div>}
@@ -175,7 +177,7 @@ export function BillingDashboardClient() {
             <label><span>Usage units</span><input min="0.000001" step="1" type="number" value={units} onChange={(event) => setUnits(event.target.value)} /></label>
             <div className="billing-quote"><span>Rate</span><strong>{selectedApi ? `${formatUsdc(selectedApi.priceUsdc)} / ${selectedApi.pricingUnit}` : "—"}</strong></div>
           </div>
-          <button className="button primary billing-action" disabled={!configured || busy === "usage"} onClick={() => void meterUsage()} type="button"><Plus size={16} /> Meter usage event</button>
+          <button className="button primary billing-action" disabled={!apiKey.trim() || !configured || busy === "usage"} onClick={() => void meterUsage()} type="button"><Plus size={16} /> Meter usage event</button>
         </section>
 
         <section className="billing-panel">
@@ -185,7 +187,7 @@ export function BillingDashboardClient() {
               <div key={account.id}><span>{agentName(agents, account.agentId)}</span><strong>{formatUsdc(account.prepaidBalanceUsdc)}</strong><small>{planName(overview, account.planId)}</small></div>
             ))}
           </div>
-          <div className="billing-topup"><input min="0.01" step="1" type="number" value={topUpAmount} onChange={(event) => setTopUpAmount(event.target.value)} /><button className="button secondary" disabled={busy === "topup"} onClick={() => void topUp()} type="button">Top up selected</button></div>
+          <div className="billing-topup"><input min="0.01" step="1" type="number" value={topUpAmount} onChange={(event) => setTopUpAmount(event.target.value)} /><button className="button secondary" disabled={!apiKey.trim() || busy === "topup"} onClick={() => void topUp()} type="button">Top up selected</button></div>
         </section>
       </div>
 
@@ -201,7 +203,7 @@ export function BillingDashboardClient() {
         <section className="billing-panel">
           <PanelHead eyebrow="Batched settlement" title="Net nanopayments" icon={<Boxes size={20} />} />
           <p className="billing-copy">Aggregate many tiny x402 charges into one settlement-ready provider batch.</p>
-          <button className="button primary billing-action" disabled={busy === "batch" || summary.unbatchedUsageUsdc <= 0} onClick={() => void createBatch()} type="button"><Boxes size={16} /> Create settlement batch</button>
+          <button className="button primary billing-action" disabled={!apiKey.trim() || busy === "batch" || summary.unbatchedUsageUsdc <= 0} onClick={() => void createBatch()} type="button"><Boxes size={16} /> Create settlement batch</button>
           <div className="billing-batches">{(overview?.batches ?? []).slice(0, 3).map((batch) => <div key={batch.id}><code>{batch.id.slice(0, 18)}...</code><span>{batch.usageCount} events</span><strong>{formatUsdc(batch.netAmountUsdc)}</strong></div>)}</div>
         </section>
       </div>

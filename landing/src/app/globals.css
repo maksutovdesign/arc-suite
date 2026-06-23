@@ -2357,6 +2357,20 @@ h3 {
   font-weight: 700;
 }
 
+.demo-mode-banner {
+  margin: 14px 0 18px;
+  padding: 13px 15px;
+  border: 1px solid rgba(95, 191, 255, 0.24);
+  border-radius: 8px;
+  background:
+    linear-gradient(90deg, rgba(95, 191, 255, 0.12), rgba(167, 139, 250, 0.055)),
+    rgba(255, 255, 255, 0.025);
+  color: #b7c9dc;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
 .analytics-lock {
   max-width: 720px;
   padding: 26px;

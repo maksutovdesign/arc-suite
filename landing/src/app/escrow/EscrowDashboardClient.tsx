@@ -16,17 +16,18 @@ import {
 import { type ReactNode, useCallback, useEffect, useRef, useState } from "react"
 
 import type { Agent, EscrowDeal, EscrowMilestone, EscrowOverview } from "@/lib/backend/schema"
+import { demoAgents, demoEscrowOverview } from "../demoWorkspace"
 
 const API_KEY_STORAGE = "arc_shield_key"
 type Payload = { configured: boolean; overview: EscrowOverview | null }
 
 export function EscrowDashboardClient() {
   const [apiKey, setApiKey] = useState(readStoredApiKey)
-  const [overview, setOverview] = useState<EscrowOverview | null>(null)
-  const [agents, setAgents] = useState<Agent[]>([])
-  const [selectedDealId, setSelectedDealId] = useState("")
-  const [buyerAgentId, setBuyerAgentId] = useState("")
-  const [sellerAgentId, setSellerAgentId] = useState("")
+  const [overview, setOverview] = useState<EscrowOverview | null>(demoEscrowOverview)
+  const [agents, setAgents] = useState<Agent[]>(demoAgents)
+  const [selectedDealId, setSelectedDealId] = useState(demoEscrowOverview.deals[0]?.id ?? "")
+  const [buyerAgentId, setBuyerAgentId] = useState(demoAgents[0]?.id ?? "")
+  const [sellerAgentId, setSellerAgentId] = useState(demoAgents[1]?.id ?? "")
   const [title, setTitle] = useState("Agent API delivery")
   const [milestoneTitle, setMilestoneTitle] = useState("Production delivery")
   const [milestoneAmount, setMilestoneAmount] = useState("5")
@@ -153,6 +154,7 @@ export function EscrowDashboardClient() {
         <label><span>Arc API key</span><input autoComplete="off" placeholder="arc_live_..." type="password" value={apiKey} onChange={(event) => setApiKey(event.target.value)} /></label>
         <button className="button secondary" disabled={busy === "connect"} onClick={() => void connect()} type="button"><RefreshCw size={16} /> Connect</button>
       </div>
+      {!apiKey.trim() && <div className="demo-mode-banner">Demo workspace is loaded in read-only mode. Connect an Arc API key to create deals and record milestone actions.</div>}
       {error && <div className="analytics-error">{error}</div>}
       {notice && <div className="billing-notice">{notice}</div>}
 
@@ -193,10 +195,10 @@ export function EscrowDashboardClient() {
                     <div><h3>{milestone.title}</h3><p>{milestone.description}</p><span className={`escrow-status is-${milestone.status}`}>{milestone.status}</span></div>
                     <strong>{formatUsdc(milestone.amountUsdc)}</strong>
                     <div className="escrow-actions">
-                      {milestone.status === "pending" && <button title="Submit milestone" onClick={() => void runAction(milestone, "submit")} type="button"><Send size={15} /></button>}
+                      {milestone.status === "pending" && <button disabled={!apiKey.trim()} title="Submit milestone" onClick={() => void runAction(milestone, "submit")} type="button"><Send size={15} /></button>}
                       {["submitted", "disputed"].includes(milestone.status) && <button disabled={!onchain} title={onchain ? "Release on Arc" : "Configure Circle contract to release"} onClick={() => void runAction(milestone, "release")} type="button"><CheckCircle2 size={15} /></button>}
                       {["pending", "submitted", "disputed"].includes(milestone.status) && <button disabled={!onchain} title={onchain ? "Refund on Arc" : "Configure Circle contract to refund"} onClick={() => void runAction(milestone, "refund")} type="button"><RotateCcw size={15} /></button>}
-                      {["pending", "submitted"].includes(milestone.status) && <button title="Open dispute" onClick={() => void runAction(milestone, "dispute")} type="button"><AlertTriangle size={15} /></button>}
+                      {["pending", "submitted"].includes(milestone.status) && <button disabled={!apiKey.trim()} title="Open dispute" onClick={() => void runAction(milestone, "dispute")} type="button"><AlertTriangle size={15} /></button>}
                     </div>
                   </article>
                 ))}
@@ -216,7 +218,7 @@ export function EscrowDashboardClient() {
             <label><span>First milestone</span><input value={milestoneTitle} onChange={(event) => setMilestoneTitle(event.target.value)} /></label>
             <label><span>Amount, USDC</span><input min="0.01" step="0.01" type="number" value={milestoneAmount} onChange={(event) => setMilestoneAmount(event.target.value)} /></label>
           </div>
-          <button className="button primary billing-action" disabled={busy === "create"} onClick={() => void createDeal()} type="button"><Plus size={16} /> Create deal</button>
+          <button className="button primary billing-action" disabled={!apiKey.trim() || busy === "create"} onClick={() => void createDeal()} type="button"><Plus size={16} /> Create deal</button>
         </section>
 
         <section className="billing-panel escrow-events">

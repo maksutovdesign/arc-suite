@@ -14,6 +14,7 @@ import {
 import { useCallback, useEffect, useRef, useState } from "react"
 
 import type { Agent, ApiListing, FlowRun, FlowSummary } from "@/lib/backend/schema"
+import { demoAgents, demoApis, demoFlowPayload, demoSettlementConfig } from "../demoWorkspace"
 
 const API_KEY_STORAGE = "arc_shield_key"
 
@@ -34,15 +35,15 @@ type SettlementConfig = {
 
 export function FlowDashboardClient() {
   const [apiKey, setApiKey] = useState(readStoredApiKey)
-  const [payload, setPayload] = useState<FlowPayload | null>(null)
-  const [agents, setAgents] = useState<Agent[]>([])
-  const [apis, setApis] = useState<ApiPayload["apis"]>([])
-  const [config, setConfig] = useState<SettlementConfig | null>(null)
-  const [agentId, setAgentId] = useState("")
-  const [apiId, setApiId] = useState("")
-  const [recipientAddress, setRecipientAddress] = useState("")
+  const [payload, setPayload] = useState<FlowPayload | null>(demoFlowPayload)
+  const [agents, setAgents] = useState<Agent[]>(demoAgents)
+  const [apis, setApis] = useState<ApiPayload["apis"]>(demoApis)
+  const [config, setConfig] = useState<SettlementConfig | null>(demoSettlementConfig)
+  const [agentId, setAgentId] = useState(demoAgents[0]?.id ?? "")
+  const [apiId, setApiId] = useState(demoApis[0]?.id ?? "")
+  const [recipientAddress, setRecipientAddress] = useState(demoSettlementConfig.defaultRecipient ?? "")
   const [amountUsdc, setAmountUsdc] = useState("0.01")
-  const [latest, setLatest] = useState<FlowRun | null>(null)
+  const [latest, setLatest] = useState<FlowRun | null>(demoFlowPayload.runs[0] ?? null)
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isRunning, setIsRunning] = useState(false)
@@ -155,6 +156,7 @@ export function FlowDashboardClient() {
           <RefreshCw size={16} /> {isLoading ? "Loading" : "Connect"}
         </button>
       </div>
+      {!apiKey.trim() && <div className="demo-mode-banner">Demo workspace is loaded in read-only mode. Connect an Arc API key to run live policy and settlement actions.</div>}
 
       {error && <div className="analytics-error">{error}</div>}
 

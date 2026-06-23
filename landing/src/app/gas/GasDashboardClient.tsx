@@ -14,6 +14,7 @@ import {
 import { type ReactNode, useCallback, useEffect, useRef, useState } from "react"
 
 import type { Agent, GasOverview, GasPolicy } from "@/lib/backend/schema"
+import { demoAgents, demoGasOverview } from "../demoWorkspace"
 
 const API_KEY_STORAGE = "arc_gas_key"
 const defaultDestination = "0x55e0dd25cd5f917e24de571d98d97c3b243709b2"
@@ -22,13 +23,13 @@ type OverviewPayload = { configured: boolean; overview: GasOverview | null }
 
 export function GasDashboardClient() {
   const [apiKey, setApiKey] = useState(readStoredApiKey)
-  const [overview, setOverview] = useState<GasOverview | null>(null)
-  const [agents, setAgents] = useState<Agent[]>([])
-  const [agentId, setAgentId] = useState("")
+  const [overview, setOverview] = useState<GasOverview | null>(demoGasOverview)
+  const [agents, setAgents] = useState<Agent[]>(demoAgents)
+  const [agentId, setAgentId] = useState(demoGasOverview.policies[0]?.agentId ?? demoAgents[0]?.id ?? "")
   const [action, setAction] = useState("Escrow milestone release")
   const [destination, setDestination] = useState(defaultDestination)
   const [estimatedFee, setEstimatedFee] = useState("0.008")
-  const [policyDraft, setPolicyDraft] = useState<GasPolicy | null>(null)
+  const [policyDraft, setPolicyDraft] = useState<GasPolicy | null>(demoGasOverview.policies[0] ?? null)
   const [error, setError] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
   const [busy, setBusy] = useState<string | null>(null)
@@ -148,6 +149,7 @@ export function GasDashboardClient() {
         <label><span>Arc API key</span><input autoComplete="off" placeholder="arc_live_..." type="password" value={apiKey} onChange={(event) => setApiKey(event.target.value)} /></label>
         <button className="button secondary" disabled={busy === "connect"} onClick={() => void connect()} type="button"><RefreshCw size={16} /> Connect</button>
       </div>
+      {!apiKey.trim() && <div className="demo-mode-banner">Demo workspace is loaded in read-only mode. Connect an Arc API key to run sponsorship checks and save gas policies.</div>}
 
       {error && <div className="analytics-error">{error}</div>}
       {notice && <div className="billing-notice">{notice}</div>}
@@ -168,7 +170,7 @@ export function GasDashboardClient() {
             <label className="gas-wide"><span>Destination contract</span><input value={destination} onChange={(event) => setDestination(event.target.value)} /></label>
             <label><span>Estimated fee, USDC</span><input min="0" step="0.001" type="number" value={estimatedFee} onChange={(event) => setEstimatedFee(event.target.value)} /></label>
           </div>
-          <button className="button primary gas-action" disabled={busy === "sponsor"} onClick={() => void requestSponsorship()} type="button"><Zap size={16} /> Run sponsorship check</button>
+          <button className="button primary gas-action" disabled={!apiKey.trim() || busy === "sponsor"} onClick={() => void requestSponsorship()} type="button"><Zap size={16} /> Run sponsorship check</button>
         </section>
 
         <section className="gas-panel">
@@ -183,7 +185,7 @@ export function GasDashboardClient() {
                 <Limit label="Monthly" value={policyDraft.monthlyLimitUsdc} onChange={(value) => setPolicyDraft({ ...policyDraft, monthlyLimitUsdc: value })} />
               </div>
               <div className="gas-usage"><span>Today <b>{formatUsdc(policyDraft.dailySpentUsdc)}</b></span><span>This month <b>{formatUsdc(policyDraft.monthlySpentUsdc)}</b></span></div>
-              <button className="button secondary gas-action" disabled={busy === "policy"} onClick={() => void savePolicy()} type="button"><Save size={16} /> Save policy</button>
+              <button className="button secondary gas-action" disabled={!apiKey.trim() || busy === "policy"} onClick={() => void savePolicy()} type="button"><Save size={16} /> Save policy</button>
             </>
           ) : <p>Connect with an API key to edit policy.</p>}
         </section>

@@ -14,6 +14,7 @@ import {
 import { type ReactNode, useCallback, useEffect, useRef, useState } from "react"
 
 import type { ShieldScreening, ShieldSummary } from "@/lib/backend/schema"
+import { demoShieldPayload } from "../demoWorkspace"
 
 const API_KEY_STORAGE = "arc_shield_key"
 const DEFAULT_TEST_ADDRESS = "0x7fb49965753A9eC3646fd5d004ee5AeD6Cc89999"
@@ -33,8 +34,8 @@ export function ShieldDashboardClient() {
   const [apiKey, setApiKey] = useState(readStoredApiKey)
   const [address, setAddress] = useState(DEFAULT_TEST_ADDRESS)
   const [chain, setChain] = useState("ETH-SEPOLIA")
-  const [payload, setPayload] = useState<ShieldPayload | null>(null)
-  const [latest, setLatest] = useState<ShieldScreening | null>(null)
+  const [payload, setPayload] = useState<ShieldPayload | null>(demoShieldPayload)
+  const [latest, setLatest] = useState<ShieldScreening | null>(demoShieldPayload.screenings[0] ?? null)
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isScreening, setIsScreening] = useState(false)
@@ -167,6 +168,7 @@ export function ShieldDashboardClient() {
         </button>
         <button className="button ghost" onClick={clearSession} type="button">Clear</button>
       </div>
+      {!apiKey.trim() && <div className="demo-mode-banner">Demo workspace is loaded in read-only mode. Connect an Arc API key to run live Circle screening checks.</div>}
 
       {error && <div className="analytics-error">{error}</div>}
 
@@ -202,7 +204,7 @@ export function ShieldDashboardClient() {
             </label>
           </div>
           <div className="shield-form-footer">
-            <button className="button primary" disabled={isScreening} onClick={() => void runScreening()} type="button">
+            <button className="button primary" disabled={!apiKey.trim() || isScreening} onClick={() => void runScreening()} type="button">
               <ShieldCheck size={17} />
               {isScreening ? "Screening..." : "Run screening"}
             </button>
