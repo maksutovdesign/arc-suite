@@ -74,6 +74,12 @@ const targets = [
     url: `${landingBase}/private`,
   },
   {
+    expectedText: ["Builder reference templates", "Six reference flows"],
+    kind: "html",
+    name: "Arc Blueprints",
+    url: `${landingBase}/blueprints`,
+  },
+  {
     expectedStatus: 401,
     kind: "status",
     method: "POST",

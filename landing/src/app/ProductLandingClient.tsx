@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react"
 import {
   BadgeCheck,
+  Boxes,
   Fuel,
   Handshake,
   Landmark,
@@ -196,6 +197,22 @@ const productDetails = [
     ],
     bullets: ["Private payment intents", "Selective disclosure model", "Shield and Flow ready"],
   },
+  {
+    key: "blueprints",
+    name: "Arc Blueprints",
+    eyebrow: "Builder templates",
+    icon: Boxes,
+    title: "Reference templates for the strongest Arc builder patterns.",
+    text: "Convert Radar research into repeatable implementation paths for checkout, agent x402, escrow, FX/RWA, machine payments and private invoices.",
+    image: "",
+    imageAlt: "Arc Blueprints console showing template cards, module stacks, build cadence and Circle primitive map",
+    stats: [
+      ["6", "templates"],
+      ["14d", "pilot path"],
+      ["1", "repeatable method"],
+    ],
+    bullets: ["Payments and x402 templates", "Circle primitive map", "Pilot launch cadence"],
+  },
 ]
 
 const steps = [
@@ -206,7 +223,7 @@ const steps = [
 ]
 
 const metrics = [
-  ["11", "connected products"],
+  ["12", "connected products"],
   ["25,482", "agent transactions in demo"],
   ["24.8M", "marketplace request volume"],
   ["99.72%", "average uptime in marketplace stats"],
@@ -329,7 +346,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
   const activeProduct = liveProductDetails.find((product) => product.key === activeProductKey) ?? liveProductDetails[0]
   const liveMetrics = pilotSummary
     ? [
-        ["11", "connected products"],
+        ["12", "connected products"],
         [formatCompact(pilotSummary.marketplace.requests), "marketplace request volume"],
         [`${pilotSummary.marketplace.avgUptimePct}%`, "average uptime from API"],
         [apiStatus === "live" ? "Live" : "Fallback", "pilot API status"],
@@ -376,6 +393,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
             <a href="/wallets">Wallet OS</a>
             <a href="/radar">Radar</a>
             <a href="/private">Private</a>
+            <a href="/blueprints">Blueprints</a>
             <a href="/billing">Billing</a>
             <a href="/flow">Flow</a>
             <a href="/shield">Shield</a>
@@ -426,7 +444,8 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
             Treasury controls spend, Shield screens counterparties, Reputation scores behavior,
             Marketplace sells x402 API access, Billing meters usage, Escrow governs delivery,
             Gas sponsors execution, Wallet OS governs custody, Radar maps the builder ecosystem,
-            Private protects sensitive payment context, and Flow runs the complete policy pipeline.
+            Private protects sensitive payment context, Blueprints turns patterns into templates,
+            and Flow runs the complete policy pipeline.
           </p>
           <div className="hero-actions">
             <a
@@ -515,7 +534,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
       <section className="section" id="system">
         <div className="section-heading">
           <p className="kicker">The product system</p>
-          <h2>Eleven connected products. One economic operating layer.</h2>
+          <h2>Twelve connected products. One economic operating layer.</h2>
           <p>
             Arc Suite is designed around a shared cast of agents moving through the
             complete economic journey, from wallet spend to trust scoring to service access.
@@ -764,6 +783,24 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
                     </div>
                   ))}
                   <a href="/private">Open private payments</a>
+                </div>
+              ) : activeProduct.key === "blueprints" ? (
+                <div className="blueprints-product-preview" aria-label={activeProduct.imageAlt}>
+                  <div className="shield-preview-top"><span>ARC BLUEPRINTS / TEMPLATES</span><strong>6 PATTERNS</strong></div>
+                  <div className="blueprint-preview-stack">
+                    {["Checkout", "x402 API", "Escrow", "FX Desk", "M2M", "Private invoice"].map((item, index) => (
+                      <div key={item}>
+                        <i>{String(index + 1).padStart(2, "0")}</i>
+                        <span>{item}</span>
+                        <strong>{index < 2 ? "P0" : "MVP"}</strong>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="blueprint-preview-band">
+                    <span>Repeatable path</span>
+                    <strong>{"Radar -> Blueprint -> API -> Pilot"}</strong>
+                  </div>
+                  <a href="/blueprints">Open blueprints</a>
                 </div>
               ) : (
                 <img src={activeProduct.image} alt={activeProduct.imageAlt} />

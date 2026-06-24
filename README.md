@@ -1,6 +1,6 @@
 # Arc Suite — AI Agent Infrastructure for the Onchain Economy
 
-> **Eleven interconnected products built on [Arc](https://arc.io) and [Circle](https://circle.com) — demonstrating what the agentic economy looks like when AI agents can spend, screen risk, earn trust, govern wallets, meter usage, sponsor gas, map ecosystem demand, preserve payment privacy, and pay for services autonomously using USDC.**
+> **Twelve interconnected products built on [Arc](https://arc.io) and [Circle](https://circle.com) — demonstrating what the agentic economy looks like when AI agents can spend, screen risk, earn trust, govern wallets, meter usage, sponsor gas, map ecosystem demand, preserve payment privacy, convert builder patterns into templates, and pay for services autonomously using USDC.**
 
 Built with **Next.js 16**, **TypeScript**, **Tailwind CSS v4**, **shadcn/ui v4**, and the **Arc / Circle SDK**.
 
@@ -22,6 +22,7 @@ Built with **Next.js 16**, **TypeScript**, **Tailwind CSS v4**, **shadcn/ui v4**
 | **Execution Control** | [arcsuite-app.vercel.app/executions](https://arcsuite-app.vercel.app/executions) | Unified Circle provider queue, retries and webhook reconciliation |
 | **Arc Radar** | [arcsuite-app.vercel.app/radar](https://arcsuite-app.vercel.app/radar) | Arc builder intelligence, primitive usage, traction signals and opportunity gaps |
 | **Arc Private** | [arcsuite-app.vercel.app/private](https://arcsuite-app.vercel.app/private) | Private stablecoin payment intents, selective disclosure and policy-safe proof |
+| **Arc Blueprints** | [arcsuite-app.vercel.app/blueprints](https://arcsuite-app.vercel.app/blueprints) | Builder reference templates for checkout, x402, escrow, FX, M2M and private invoice flows |
 
 ---
 
@@ -199,6 +200,18 @@ Arc Private turns the largest Radar gap into a product surface: private, complia
 - Integration map across Shield, Flow, Billing, Escrow, Wallet OS and Radar
 - Practical MVP framing for privacy without overpromising network-level confidentiality
 
+### Arc Blueprints — Builder Templates
+
+**`/landing/src/app/blueprints`** · [Live](https://arcsuite-app.vercel.app/blueprints)
+
+Arc Blueprints converts ecosystem intelligence into reusable product templates. It takes the strongest visible builder patterns from Radar and turns them into repeatable implementation paths for checkout links, agentic x402 APIs, escrow milestones, stablecoin FX desks, machine payments and private invoices.
+
+**Key features:**
+- Six reference flows mapped from public Arc builder patterns
+- Module stack for each template across Billing, Flow, Shield, Private, Escrow, Wallet OS, Gas and Ops
+- 1/3/7/14 day build cadence from static template to pilot-ready MVP
+- Circle primitive map for Wallets, x402/Gateway, CCTP/StableFX, Gas Station/Paymaster and Compliance Engine
+
 ---
 
 ## Monorepo Structure
@@ -215,7 +228,7 @@ arc-suite/
 
 Each app is an independent Next.js 16 project sharing:
 - **Design system**: Space Grotesk font, Arc dark theme, `ArcButton`, `ArcProgress`, `StatCard`, `PageHeader`
-- **EcosystemNav**: top bar linking all eleven products together
+- **EcosystemNav**: top bar linking all twelve products together
 - **LiveTicker**: animated real-time event feed in each app's header
 
 ---
@@ -318,7 +331,7 @@ npm run dev --workspace=marketplace # → http://localhost:3003
 `monitor:prod` checks production health, Supabase data source, readiness access
 guards, CORS preflight, security headers, the three standalone apps, and every
 product dashboard exposed by the landing app: Shield, Flow, Billing, Escrow, Gas,
-Wallet OS, Execution Control, Radar, and Private. GitHub Actions also runs this monitor every 30
+Wallet OS, Execution Control, Radar, Private, and Blueprints. GitHub Actions also runs this monitor every 30
 minutes through `Arc Suite Production Monitor`.
 The monitor records per-check latency, writes a Markdown run summary in GitHub
 Actions, warns above `ARC_MONITOR_LATENCY_WARN_MS` (default `5000`) and fails above
@@ -461,7 +474,7 @@ five minutes when the repository secret `ARC_CRON_SECRET` contains the same valu
 
 ## Built for Arc/Circle
 
-These products were designed to showcase the Arc ecosystem to the **Arc community** and **Circle team** — demonstrating eleven complementary products that together form an infrastructure layer for the agentic economy:
+These products were designed to showcase the Arc ecosystem to the **Arc community** and **Circle team** — demonstrating twelve complementary products that together form an infrastructure layer for the agentic economy:
 
 - **Treasury** answers: *"How do I control what my agents spend?"*
 - **Reputation** answers: *"How do I know which agents I can trust?"*
@@ -474,6 +487,7 @@ These products were designed to showcase the Arc ecosystem to the **Arc communit
 - **Wallet OS** answers: *"Who controls each wallet, who may sign, and how is it recovered or retired?"*
 - **Radar** answers: *"Where are Arc builders active, which gaps are open, and where does Arc Suite fit?"*
 - **Private** answers: *"How do agents pay with USDC without exposing every commercial detail to every participant?"*
+- **Blueprints** answers: *"How do we turn ecosystem demand into repeatable builder templates?"*
 
 ---
 
