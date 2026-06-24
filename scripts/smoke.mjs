@@ -20,36 +20,43 @@ const targets = [
     url: `${landingBase}/api/readiness`,
   },
   {
+    expectedText: ["Arc Shield", "Demo workspace"],
     kind: "html",
     name: "Arc Shield console",
     url: `${landingBase}/shield`,
   },
   {
+    expectedText: ["Arc Flow", "Demo workspace"],
     kind: "html",
     name: "Arc Flow console",
     url: `${landingBase}/flow`,
   },
   {
+    expectedText: ["Arc Billing", "Demo workspace"],
     kind: "html",
     name: "Arc Billing console",
     url: `${landingBase}/billing`,
   },
   {
+    expectedText: ["Arc Escrow", "Demo workspace"],
     kind: "html",
     name: "Arc Escrow console",
     url: `${landingBase}/escrow`,
   },
   {
+    expectedText: ["Arc Gas", "Demo workspace"],
     kind: "html",
     name: "Arc Gas console",
     url: `${landingBase}/gas`,
   },
   {
+    expectedText: ["Arc Wallet OS", "Demo workspace"],
     kind: "html",
     name: "Arc Wallet OS console",
     url: `${landingBase}/wallets`,
   },
   {
+    expectedText: ["Execution Control", "Demo workspace"],
     kind: "html",
     name: "Arc Execution Control",
     url: `${landingBase}/executions`,
@@ -138,6 +145,13 @@ async function checkTarget(target) {
     if (!html.includes("<html")) {
       throw new Error(`${target.name} did not return an HTML page`)
     }
+
+    for (const expectedText of target.expectedText ?? []) {
+      if (!html.includes(expectedText)) {
+        throw new Error(`${target.name} did not include ${expectedText}`)
+      }
+    }
+
     console.log(`OK ${target.name}`)
   } finally {
     clearTimeout(timeout)

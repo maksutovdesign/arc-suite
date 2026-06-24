@@ -3,6 +3,7 @@
 import { Activity, CircleCheck, Clock3, RefreshCw, RotateCcw, Webhook, XCircle } from "lucide-react"
 import { useCallback, useEffect, useRef, useState } from "react"
 
+import { demoExecutionOverview } from "@/app/demoWorkspace"
 import type { ExecutionOverview } from "@/lib/backend/schema"
 
 const API_KEY_STORAGE = "arc_execution_key"
@@ -14,6 +15,8 @@ export function ExecutionDashboardClient() {
   const [error, setError] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
   const loaded = useRef(false)
+  const liveMode = Boolean(overview)
+  const visibleOverview = overview ?? demoExecutionOverview
 
   const connect = useCallback(async (nextKey = apiKey) => {
     const key = nextKey.trim()
@@ -59,7 +62,7 @@ export function ExecutionDashboardClient() {
     }
   }
 
-  const summary = overview?.summary ?? { queued: 0, waitingProvider: 0, retrying: 0, succeeded: 0, failed: 0 }
+  const summary = visibleOverview.summary
 
   return (
     <section className="analytics-shell execution-shell">
@@ -75,8 +78,13 @@ export function ExecutionDashboardClient() {
       <div className="shield-authbar">
         <label><span>Arc API key</span><input autoComplete="off" placeholder="arc_live_..." type="password" value={apiKey} onChange={(event) => setApiKey(event.target.value)} /></label>
         <button className="button secondary" disabled={busy === "connect"} onClick={() => void connect()} type="button"><RefreshCw size={16} /> Connect</button>
-        <button className="button primary" disabled={busy === "worker"} onClick={() => void runWorker()} type="button"><RotateCcw size={16} /> Run worker</button>
+        <button className="button primary" disabled={!liveMode || busy === "worker"} onClick={() => void runWorker()} type="button"><RotateCcw size={16} /> Run worker</button>
       </div>
+      {!liveMode && (
+        <div className="demo-mode-banner">
+          Demo workspace is active. Connect an Arc API key to run the live provider worker.
+        </div>
+      )}
       {error && <div className="analytics-error">{error}</div>}
       {notice && <div className="billing-notice">{notice}</div>}
 
@@ -91,14 +99,14 @@ export function ExecutionDashboardClient() {
       <section className="wallet-panel execution-table">
         <div className="flow-panel-title"><div><span>Execution jobs</span><h2>Provider lifecycle</h2></div><Activity size={20} /></div>
         <div className="shield-table-wrap"><table className="shield-table"><thead><tr><th>Product</th><th>Action</th><th>Resource</th><th>Status</th><th>Attempts</th><th>Provider ID</th><th>Last error</th></tr></thead><tbody>
-          {(overview?.jobs ?? []).length === 0 ? <tr><td className="shield-table-empty" colSpan={7}>No execution jobs yet.</td></tr> : overview?.jobs.map((job) => <tr key={job.id}><td>{kindName(job.kind)}</td><td>{job.action}</td><td><code>{job.resourceId}</code></td><td><em className={`execution-status is-${job.status}`}>{job.status}</em></td><td>{job.attempts}/{job.maxAttempts}</td><td><code>{job.providerOperationId ?? "awaiting submission"}</code></td><td>{job.lastErrorMessage ?? "—"}</td></tr>)}
+          {visibleOverview.jobs.length === 0 ? <tr><td className="shield-table-empty" colSpan={7}>No execution jobs yet.</td></tr> : visibleOverview.jobs.map((job) => <tr key={job.id}><td>{kindName(job.kind)}</td><td>{job.action}</td><td><code>{job.resourceId}</code></td><td><em className={`execution-status is-${job.status}`}>{job.status}</em></td><td>{job.attempts}/{job.maxAttempts}</td><td><code>{job.providerOperationId ?? "awaiting submission"}</code></td><td>{job.lastErrorMessage ?? "—"}</td></tr>)}
         </tbody></table></div>
       </section>
 
       <section className="wallet-panel execution-table">
         <div className="flow-panel-title"><div><span>Circle webhooks</span><h2>Signed delivery inbox</h2></div><Webhook size={20} /></div>
         <div className="shield-table-wrap"><table className="shield-table"><thead><tr><th>Notification</th><th>Type</th><th>Provider ID</th><th>Signature</th><th>Processing</th><th>Received</th></tr></thead><tbody>
-          {(overview?.webhooks ?? []).length === 0 ? <tr><td className="shield-table-empty" colSpan={6}>No Circle webhooks received yet.</td></tr> : overview?.webhooks.map((event) => <tr key={event.id}><td><code>{event.notificationId}</code></td><td>{event.notificationType}</td><td><code>{event.providerOperationId ?? "—"}</code></td><td>{event.signatureVerified ? "verified" : "rejected"}</td><td><em className={`execution-status is-${event.processingStatus}`}>{event.processingStatus}</em></td><td>{formatDate(event.receivedAt)}</td></tr>)}
+          {visibleOverview.webhooks.length === 0 ? <tr><td className="shield-table-empty" colSpan={6}>No Circle webhooks received yet.</td></tr> : visibleOverview.webhooks.map((event) => <tr key={event.id}><td><code>{event.notificationId}</code></td><td>{event.notificationType}</td><td><code>{event.providerOperationId ?? "—"}</code></td><td>{event.signatureVerified ? "verified" : "rejected"}</td><td><em className={`execution-status is-${event.processingStatus}`}>{event.processingStatus}</em></td><td>{formatDate(event.receivedAt)}</td></tr>)}
         </tbody></table></div>
       </section>
     </section>

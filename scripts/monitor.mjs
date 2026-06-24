@@ -65,6 +65,34 @@ const checks = [
     run: async () => checkHtmlPage(`${bases.landing}/`, "Arc Suite"),
   },
   {
+    name: "Arc Flow page",
+    run: async () => checkHtmlPage(`${bases.landing}/flow`, ["Arc Flow", "Demo workspace"]),
+  },
+  {
+    name: "Arc Billing page",
+    run: async () => checkHtmlPage(`${bases.landing}/billing`, ["Arc Billing", "Demo workspace"]),
+  },
+  {
+    name: "Arc Escrow page",
+    run: async () => checkHtmlPage(`${bases.landing}/escrow`, ["Arc Escrow", "Demo workspace"]),
+  },
+  {
+    name: "Arc Shield page",
+    run: async () => checkHtmlPage(`${bases.landing}/shield`, ["Arc Shield", "Demo workspace"]),
+  },
+  {
+    name: "Arc Gas page",
+    run: async () => checkHtmlPage(`${bases.landing}/gas`, ["Arc Gas", "Demo workspace"]),
+  },
+  {
+    name: "Arc Wallet OS page",
+    run: async () => checkHtmlPage(`${bases.landing}/wallets`, ["Arc Wallet OS", "Demo workspace"]),
+  },
+  {
+    name: "Arc Execution Control page",
+    run: async () => checkHtmlPage(`${bases.landing}/executions`, ["Execution Control", "Demo workspace"]),
+  },
+  {
     name: "Treasury page headers",
     run: async () => checkHtmlPage(`${bases.treasury}/`, "Arc Treasury"),
   },
@@ -160,7 +188,9 @@ async function checkHtmlPage(url, expectedText) {
 
   const html = await response.text()
   assert(html.includes("<html"), `${url} returns HTML`)
-  assert(html.includes(expectedText), `${url} includes ${expectedText}`)
+  for (const text of Array.isArray(expectedText) ? expectedText : [expectedText]) {
+    assert(html.includes(text), `${url} includes ${text}`)
+  }
   return "200 headers ok"
 }
 
