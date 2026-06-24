@@ -3,6 +3,7 @@ import {
   Fuel,
   Handshake,
   Landmark,
+  LockKeyhole,
   Radar,
   ReceiptText,
   ShieldCheck,
@@ -23,6 +24,7 @@ export type ArcProductId =
   | "gas"
   | "wallets"
   | "radar"
+  | "private"
 
 const isProduction = process.env.NODE_ENV === "production"
 const suiteUrl = process.env.NEXT_PUBLIC_ARC_SUITE_URL ?? (
@@ -40,6 +42,7 @@ const products = [
   { id: "gas", label: "Gas", href: `${suiteUrl}/gas`, color: "#38bdf8", icon: Fuel },
   { id: "wallets", label: "Wallet OS", href: `${suiteUrl}/wallets`, color: "#c084fc", icon: WalletCards },
   { id: "radar", label: "Radar", href: `${suiteUrl}/radar`, color: "#f472b6", icon: Radar },
+  { id: "private", label: "Private", href: `${suiteUrl}/private`, color: "#2dd4bf", icon: LockKeyhole },
 ] satisfies Array<{
   id: ArcProductId
   label: string

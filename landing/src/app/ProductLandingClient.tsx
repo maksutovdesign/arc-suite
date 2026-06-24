@@ -6,6 +6,7 @@ import {
   Fuel,
   Handshake,
   Landmark,
+  LockKeyhole,
   Radar,
   ReceiptText,
   ShieldCheck,
@@ -179,6 +180,22 @@ const productDetails = [
     ],
     bullets: ["Builder and primitive map", "Opportunity gap analysis", "Arc Suite integration fit"],
   },
+  {
+    key: "private",
+    name: "Arc Private",
+    eyebrow: "Private payments",
+    icon: LockKeyhole,
+    title: "Private, compliant USDC payment intents for agents and APIs.",
+    text: "Preserve sensitive commercial context while exposing policy-safe proof: screened, paid, within limits and selectively revealable to operators, providers and auditors.",
+    image: "",
+    imageAlt: "Arc Private console showing encrypted payment intent, policy decision, scoped proof and USDC settlement status",
+    stats: [
+      ["4", "proof scopes"],
+      ["1", "privacy wedge"],
+      ["P0", "strategic gap"],
+    ],
+    bullets: ["Private payment intents", "Selective disclosure model", "Shield and Flow ready"],
+  },
 ]
 
 const steps = [
@@ -189,7 +206,7 @@ const steps = [
 ]
 
 const metrics = [
-  ["10", "connected products"],
+  ["11", "connected products"],
   ["25,482", "agent transactions in demo"],
   ["24.8M", "marketplace request volume"],
   ["99.72%", "average uptime in marketplace stats"],
@@ -312,7 +329,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
   const activeProduct = liveProductDetails.find((product) => product.key === activeProductKey) ?? liveProductDetails[0]
   const liveMetrics = pilotSummary
     ? [
-        ["10", "connected products"],
+        ["11", "connected products"],
         [formatCompact(pilotSummary.marketplace.requests), "marketplace request volume"],
         [`${pilotSummary.marketplace.avgUptimePct}%`, "average uptime from API"],
         [apiStatus === "live" ? "Live" : "Fallback", "pilot API status"],
@@ -358,6 +375,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
             <a href="/gas">Gas</a>
             <a href="/wallets">Wallet OS</a>
             <a href="/radar">Radar</a>
+            <a href="/private">Private</a>
             <a href="/billing">Billing</a>
             <a href="/flow">Flow</a>
             <a href="/shield">Shield</a>
@@ -408,7 +426,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
             Treasury controls spend, Shield screens counterparties, Reputation scores behavior,
             Marketplace sells x402 API access, Billing meters usage, Escrow governs delivery,
             Gas sponsors execution, Wallet OS governs custody, Radar maps the builder ecosystem,
-            and Flow runs the complete policy pipeline.
+            Private protects sensitive payment context, and Flow runs the complete policy pipeline.
           </p>
           <div className="hero-actions">
             <a
@@ -497,7 +515,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
       <section className="section" id="system">
         <div className="section-heading">
           <p className="kicker">The product system</p>
-          <h2>Ten connected products. One economic operating layer.</h2>
+          <h2>Eleven connected products. One economic operating layer.</h2>
           <p>
             Arc Suite is designed around a shared cast of agents moving through the
             complete economic journey, from wallet spend to trust scoring to service access.
@@ -720,6 +738,32 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
                     <strong>Private, compliant stablecoin payments</strong>
                   </div>
                   <a href="/radar">Open builder radar</a>
+                </div>
+              ) : activeProduct.key === "private" ? (
+                <div className="private-product-preview" aria-label={activeProduct.imageAlt}>
+                  <div className="shield-preview-top"><span>ARC PRIVATE / INTENT</span><strong>SCOPED PROOF</strong></div>
+                  <div className="private-preview-lock">
+                    <LockKeyhole size={30} />
+                    <span>Encrypted commercial context</span>
+                    <strong>amount · counterparty · invoice</strong>
+                  </div>
+                  <div className="private-preview-grid">
+                    <div><span>Policy</span><strong>ALLOW</strong></div>
+                    <div><span>Receipt</span><strong>PAID</strong></div>
+                    <div><span>Reveal</span><strong>SCOPED</strong></div>
+                  </div>
+                  {[
+                    ["Operator", "Full audit trail"],
+                    ["Provider", "Paid receipt"],
+                    ["Auditor", "Policy proof"],
+                    ["Public", "Minimal reference"],
+                  ].map(([party, proof]) => (
+                    <div className="private-preview-row" key={party}>
+                      <span><b>{party}</b><small>{proof}</small></span>
+                      <strong>READY</strong>
+                    </div>
+                  ))}
+                  <a href="/private">Open private payments</a>
                 </div>
               ) : (
                 <img src={activeProduct.image} alt={activeProduct.imageAlt} />

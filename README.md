@@ -1,6 +1,6 @@
 # Arc Suite — AI Agent Infrastructure for the Onchain Economy
 
-> **Ten interconnected products built on [Arc](https://arc.io) and [Circle](https://circle.com) — demonstrating what the agentic economy looks like when AI agents can spend, screen risk, earn trust, govern wallets, meter usage, sponsor gas, map ecosystem demand, and pay for services autonomously using USDC.**
+> **Eleven interconnected products built on [Arc](https://arc.io) and [Circle](https://circle.com) — demonstrating what the agentic economy looks like when AI agents can spend, screen risk, earn trust, govern wallets, meter usage, sponsor gas, map ecosystem demand, preserve payment privacy, and pay for services autonomously using USDC.**
 
 Built with **Next.js 16**, **TypeScript**, **Tailwind CSS v4**, **shadcn/ui v4**, and the **Arc / Circle SDK**.
 
@@ -21,6 +21,7 @@ Built with **Next.js 16**, **TypeScript**, **Tailwind CSS v4**, **shadcn/ui v4**
 | **Arc Wallet OS** | [arcsuite-app.vercel.app/wallets](https://arcsuite-app.vercel.app/wallets) | Developer/user/modular wallet lifecycle, roles and signing policies |
 | **Execution Control** | [arcsuite-app.vercel.app/executions](https://arcsuite-app.vercel.app/executions) | Unified Circle provider queue, retries and webhook reconciliation |
 | **Arc Radar** | [arcsuite-app.vercel.app/radar](https://arcsuite-app.vercel.app/radar) | Arc builder intelligence, primitive usage, traction signals and opportunity gaps |
+| **Arc Private** | [arcsuite-app.vercel.app/private](https://arcsuite-app.vercel.app/private) | Private stablecoin payment intents, selective disclosure and policy-safe proof |
 
 ---
 
@@ -186,6 +187,18 @@ Arc Radar turns ecosystem research into a product map. It tracks public Arc buil
 - Opportunity gap analysis for private, compliant stablecoin payments
 - Arc Suite fit matrix showing where Shield, Flow, Billing, Escrow, Gas, Wallet OS and Execution Control can serve other builders
 
+### Arc Private — Private Stablecoin Payments
+
+**`/landing/src/app/private`** · [Live](https://arcsuite-app.vercel.app/private)
+
+Arc Private turns the largest Radar gap into a product surface: private, compliant USDC payment intents for agents, x402 APIs, invoices and escrow milestones. It is intentionally forward-compatible: sensitive commercial context can be hidden while policy-safe proof remains available to operators, providers and auditors.
+
+**Key features:**
+- Reference flow for `screen -> encrypt intent -> settle -> reveal proof`
+- Selective disclosure matrix for operators, providers, auditors and public references
+- Integration map across Shield, Flow, Billing, Escrow, Wallet OS and Radar
+- Practical MVP framing for privacy without overpromising network-level confidentiality
+
 ---
 
 ## Monorepo Structure
@@ -202,7 +215,7 @@ arc-suite/
 
 Each app is an independent Next.js 16 project sharing:
 - **Design system**: Space Grotesk font, Arc dark theme, `ArcButton`, `ArcProgress`, `StatCard`, `PageHeader`
-- **EcosystemNav**: top bar linking all ten products together
+- **EcosystemNav**: top bar linking all eleven products together
 - **LiveTicker**: animated real-time event feed in each app's header
 
 ---
@@ -305,7 +318,7 @@ npm run dev --workspace=marketplace # → http://localhost:3003
 `monitor:prod` checks production health, Supabase data source, readiness access
 guards, CORS preflight, security headers, the three standalone apps, and every
 product dashboard exposed by the landing app: Shield, Flow, Billing, Escrow, Gas,
-Wallet OS, Execution Control, and Radar. GitHub Actions also runs this monitor every 30
+Wallet OS, Execution Control, Radar, and Private. GitHub Actions also runs this monitor every 30
 minutes through `Arc Suite Production Monitor`.
 The monitor records per-check latency, writes a Markdown run summary in GitHub
 Actions, warns above `ARC_MONITOR_LATENCY_WARN_MS` (default `5000`) and fails above
@@ -448,7 +461,7 @@ five minutes when the repository secret `ARC_CRON_SECRET` contains the same valu
 
 ## Built for Arc/Circle
 
-These products were designed to showcase the Arc ecosystem to the **Arc community** and **Circle team** — demonstrating ten complementary products that together form an infrastructure layer for the agentic economy:
+These products were designed to showcase the Arc ecosystem to the **Arc community** and **Circle team** — demonstrating eleven complementary products that together form an infrastructure layer for the agentic economy:
 
 - **Treasury** answers: *"How do I control what my agents spend?"*
 - **Reputation** answers: *"How do I know which agents I can trust?"*
@@ -460,6 +473,7 @@ These products were designed to showcase the Arc ecosystem to the **Arc communit
 - **Gas** answers: *"Which agent transactions should receive gas sponsorship, and within what limits?"*
 - **Wallet OS** answers: *"Who controls each wallet, who may sign, and how is it recovered or retired?"*
 - **Radar** answers: *"Where are Arc builders active, which gaps are open, and where does Arc Suite fit?"*
+- **Private** answers: *"How do agents pay with USDC without exposing every commercial detail to every participant?"*
 
 ---
 

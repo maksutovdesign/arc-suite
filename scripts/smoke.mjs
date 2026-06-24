@@ -68,6 +68,12 @@ const targets = [
     url: `${landingBase}/radar`,
   },
   {
+    expectedText: ["Private stablecoin payments", "Selective disclosure"],
+    kind: "html",
+    name: "Arc Private",
+    url: `${landingBase}/private`,
+  },
+  {
     expectedStatus: 401,
     kind: "status",
     method: "POST",
