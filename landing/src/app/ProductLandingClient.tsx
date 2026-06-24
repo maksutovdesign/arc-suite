@@ -6,6 +6,7 @@ import {
   Fuel,
   Handshake,
   Landmark,
+  Radar,
   ReceiptText,
   ShieldCheck,
   Store,
@@ -162,6 +163,22 @@ const productDetails = [
     ],
     bullets: ["Circle wallet registry", "Roles, recovery and signing policy", "Provider-confirmed lifecycle"],
   },
+  {
+    key: "radar",
+    name: "Arc Radar",
+    eyebrow: "Builder intelligence",
+    icon: Radar,
+    title: "A live map of Arc builders, primitives, traction and open gaps.",
+    text: "Turn ecosystem research into a product asset: map active builders, detect crowded categories, identify privacy gaps and show where Arc Suite can become the operating layer.",
+    image: "",
+    imageAlt: "Arc Radar dashboard showing Arc builder categories, primitives, opportunity gaps and Arc Suite fit",
+    stats: [
+      ["17", "mapped builders"],
+      ["9", "categories"],
+      ["1", "privacy wedge"],
+    ],
+    bullets: ["Builder and primitive map", "Opportunity gap analysis", "Arc Suite integration fit"],
+  },
 ]
 
 const steps = [
@@ -172,7 +189,7 @@ const steps = [
 ]
 
 const metrics = [
-  ["9", "connected products"],
+  ["10", "connected products"],
   ["25,482", "agent transactions in demo"],
   ["24.8M", "marketplace request volume"],
   ["99.72%", "average uptime in marketplace stats"],
@@ -295,7 +312,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
   const activeProduct = liveProductDetails.find((product) => product.key === activeProductKey) ?? liveProductDetails[0]
   const liveMetrics = pilotSummary
     ? [
-        ["9", "connected products"],
+        ["10", "connected products"],
         [formatCompact(pilotSummary.marketplace.requests), "marketplace request volume"],
         [`${pilotSummary.marketplace.avgUptimePct}%`, "average uptime from API"],
         [apiStatus === "live" ? "Live" : "Fallback", "pilot API status"],
@@ -340,6 +357,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
             <a href="/escrow">Escrow</a>
             <a href="/gas">Gas</a>
             <a href="/wallets">Wallet OS</a>
+            <a href="/radar">Radar</a>
             <a href="/billing">Billing</a>
             <a href="/flow">Flow</a>
             <a href="/shield">Shield</a>
@@ -389,7 +407,8 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
             Arc Suite is a connected product system built for autonomous USDC commerce:
             Treasury controls spend, Shield screens counterparties, Reputation scores behavior,
             Marketplace sells x402 API access, Billing meters usage, Escrow governs delivery,
-            Gas sponsors execution, Wallet OS governs custody, and Flow runs the complete policy pipeline.
+            Gas sponsors execution, Wallet OS governs custody, Radar maps the builder ecosystem,
+            and Flow runs the complete policy pipeline.
           </p>
           <div className="hero-actions">
             <a
@@ -478,7 +497,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
       <section className="section" id="system">
         <div className="section-heading">
           <p className="kicker">The product system</p>
-          <h2>Nine connected products. One economic operating layer.</h2>
+          <h2>Ten connected products. One economic operating layer.</h2>
           <p>
             Arc Suite is designed around a shared cast of agents moving through the
             complete economic journey, from wallet spend to trust scoring to service access.
@@ -676,6 +695,31 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
                   </div>
                   <div className="flow-preview-receipt"><span>Latest lifecycle event</span><code>SIGN · CONFIRMED</code></div>
                   <a href="/wallets">Open live console</a>
+                </div>
+              ) : activeProduct.key === "radar" ? (
+                <div className="radar-product-preview" aria-label={activeProduct.imageAlt}>
+                  <div className="shield-preview-top"><span>ARC RADAR / RESEARCH</span><strong>BUILDER MAP</strong></div>
+                  <div className="radar-preview-grid">
+                    <div><span>Builders</span><strong>17</strong></div>
+                    <div><span>Categories</span><strong>9</strong></div>
+                    <div><span>Privacy refs</span><strong>1</strong></div>
+                  </div>
+                  {[
+                    ["Payments", "crowded", "5 refs"],
+                    ["Agentic x402", "active", "2 refs"],
+                    ["Infrastructure", "high signal", "2 refs"],
+                    ["Privacy", "open gap", "1 ref"],
+                  ].map(([label, state, count]) => (
+                    <div className="radar-preview-row" key={label}>
+                      <span><b>{label}</b><small>{state}</small></span>
+                      <strong>{count}</strong>
+                    </div>
+                  ))}
+                  <div className="radar-preview-gap">
+                    <span>Strategic wedge</span>
+                    <strong>Private, compliant stablecoin payments</strong>
+                  </div>
+                  <a href="/radar">Open builder radar</a>
                 </div>
               ) : (
                 <img src={activeProduct.image} alt={activeProduct.imageAlt} />

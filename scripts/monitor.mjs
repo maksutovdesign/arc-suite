@@ -93,6 +93,10 @@ const checks = [
     run: async () => checkHtmlPage(`${bases.landing}/executions`, ["Execution Control", "Demo workspace"]),
   },
   {
+    name: "Arc Radar page",
+    run: async () => checkHtmlPage(`${bases.landing}/radar`, ["Arc builder intelligence", "Private payments"]),
+  },
+  {
     name: "Treasury page headers",
     run: async () => checkHtmlPage(`${bases.treasury}/`, "Arc Treasury"),
   },

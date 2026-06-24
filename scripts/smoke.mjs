@@ -62,6 +62,12 @@ const targets = [
     url: `${landingBase}/executions`,
   },
   {
+    expectedText: ["Arc builder intelligence", "Private payments"],
+    kind: "html",
+    name: "Arc Radar",
+    url: `${landingBase}/radar`,
+  },
+  {
     expectedStatus: 401,
     kind: "status",
     method: "POST",
