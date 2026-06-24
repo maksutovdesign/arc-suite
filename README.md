@@ -17,6 +17,9 @@ Built with **Next.js 16**, **TypeScript**, **Tailwind CSS v4**, **shadcn/ui v4**
 | **Arc Flow** | [arcsuite-app.vercel.app/flow](https://arcsuite-app.vercel.app/flow) | Compliance-to-settlement payment orchestration |
 | **Arc Billing** | [arcsuite-app.vercel.app/billing](https://arcsuite-app.vercel.app/billing) | x402 usage metering, prepaid balances, invoices and settlement batches |
 | **Arc Escrow** | [arcsuite-app.vercel.app/escrow](https://arcsuite-app.vercel.app/escrow) | Programmable agent deals, milestones, disputes and contract events |
+| **Arc Gas** | [arcsuite-app.vercel.app/gas](https://arcsuite-app.vercel.app/gas) | Gas sponsorship policy, Paymaster/Gas Station limits and reporting |
+| **Arc Wallet OS** | [arcsuite-app.vercel.app/wallets](https://arcsuite-app.vercel.app/wallets) | Developer/user/modular wallet lifecycle, roles and signing policies |
+| **Execution Control** | [arcsuite-app.vercel.app/executions](https://arcsuite-app.vercel.app/executions) | Unified Circle provider queue, retries and webhook reconciliation |
 
 ---
 
@@ -128,6 +131,19 @@ Arc Shield uses Circle Compliance Engine address screening as a provider signal 
 
 Circle currently does not list Arc Testnet in the standalone Address Screening chain enum. Shield therefore treats supported-chain screening as a cross-chain identity signal and keeps Arc settlement enforcement in monitor mode.
 
+### Arc Flow — Autonomous Payment Orchestration
+
+**`/landing/src/app/flow`** · [Live](https://arcsuite-app.vercel.app/flow)
+
+Arc Flow is the full intent-to-settlement workflow. It chains Shield screening, reputation policy, Marketplace access decisions, Circle wallet settlement and reputation updates into one auditable run.
+
+**Key features:**
+- End-to-end policy check → access check → Arc Testnet USDC settlement → reputation update
+- Step-by-step execution timeline with allow, review, blocked and completed states
+- Arcscan transaction links when settlement is confirmed
+- Supabase audit trail for every flow run and policy step
+- Read-only demo workspace by default; live execution unlocks with a scoped Arc API key
+
 ### Arc Billing — x402 Metering & Subscriptions
 
 **`/landing/src/app/billing`** · [Live](https://arcsuite-app.vercel.app/billing)
@@ -161,7 +177,7 @@ Arc Escrow coordinates commercial delivery between agents. The Supabase state ma
 ## Monorepo Structure
 
 ```
-arc/
+arc-suite/
 ├── landing/         # Landing, backend API, Shield, Ops, Analytics
 ├── treasury/        # Next.js app — Agent Budget Manager
 ├── reputation/      # Next.js app — Agent Trust Layer
@@ -253,8 +269,8 @@ include an invisible honeypot field to filter simple bot submissions.
 
 ```bash
 # Clone
-git clone https://github.com/maksutovdesign/arc.git
-cd arc
+git clone https://github.com/maksutovdesign/arc-suite.git
+cd arc-suite
 
 # Install all workspaces
 npm install
@@ -273,8 +289,10 @@ npm run dev --workspace=marketplace # → http://localhost:3003
 ```
 
 `monitor:prod` checks production health, Supabase data source, readiness access
-guards, CORS preflight, security headers, and the four public app surfaces. GitHub
-Actions also runs this monitor every 30 minutes through `Arc Suite Production Monitor`.
+guards, CORS preflight, security headers, the three standalone apps, and every
+product dashboard exposed by the landing app: Shield, Flow, Billing, Escrow, Gas,
+Wallet OS, and Execution Control. GitHub Actions also runs this monitor every 30
+minutes through `Arc Suite Production Monitor`.
 The monitor records per-check latency, writes a Markdown run summary in GitHub
 Actions, warns above `ARC_MONITOR_LATENCY_WARN_MS` (default `5000`) and fails above
 `ARC_MONITOR_LATENCY_FAIL_MS` (default `15000`).
