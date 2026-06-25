@@ -1,6 +1,3 @@
-import Link from "next/link"
-
-import { BrandMark } from "../BrandMark"
 import { EcosystemNav } from "../EcosystemNav"
 import { BillingDashboardClient } from "./BillingDashboardClient"
 
@@ -13,26 +10,6 @@ export default function BillingPage() {
   return (
     <main>
       <EcosystemNav current="billing" />
-      <nav className="nav">
-        <Link className="brand" href="/" aria-label="Arc Suite home">
-          <BrandMark idPrefix="billing-brand" />
-          <span className="brand-name">Arc Suite</span>
-        </Link>
-        <div className="nav-cluster">
-          <div className="nav-links" aria-label="Billing navigation">
-            <Link href="/">Product</Link>
-            <Link href="/wallets">Wallet OS</Link>
-            <Link href="/executions">Executions</Link>
-            <Link href="/gas">Gas</Link>
-            <Link href="/escrow">Escrow</Link>
-            <Link href="/flow">Flow</Link>
-            <Link href="/shield">Shield</Link>
-            <a href="https://marketplace-eosin-eight.vercel.app">Marketplace</a>
-            <a href="https://treasury-umber.vercel.app">Treasury</a>
-            <Link href="/ops">Ops Health</Link>
-          </div>
-        </div>
-      </nav>
       <BillingDashboardClient />
     </main>
   )

@@ -14,7 +14,6 @@ import {
   Zap,
 } from "lucide-react"
 
-import { BrandMark } from "../BrandMark"
 import { EcosystemNav } from "../EcosystemNav"
 
 export const metadata = {
@@ -99,25 +98,6 @@ export default function BlueprintsPage() {
   return (
     <main>
       <EcosystemNav current="blueprints" />
-      <nav className="nav">
-        <Link className="brand" href="/" aria-label="Arc Suite home">
-          <BrandMark idPrefix="blueprints-brand" />
-          <span className="brand-name">Arc Suite</span>
-        </Link>
-        <div className="nav-cluster">
-          <div className="nav-links" aria-label="Blueprint navigation">
-            <Link href="/">Product</Link>
-            <Link href="/radar">Radar</Link>
-            <Link href="/private">Private</Link>
-            <Link href="/flow">Flow</Link>
-            <Link href="/billing">Billing</Link>
-            <Link href="/escrow">Escrow</Link>
-            <Link href="/ops">Ops Health</Link>
-            <Link href="/investors">Investors</Link>
-          </div>
-        </div>
-      </nav>
-
       <section className="blueprints-shell">
         <div className="blueprints-hero">
           <div>

@@ -1,6 +1,3 @@
-import Link from "next/link"
-
-import { BrandMark } from "../BrandMark"
 import { EcosystemNav } from "../EcosystemNav"
 import { WalletDashboardClient } from "./WalletDashboardClient"
 
@@ -13,24 +10,6 @@ export default function WalletsPage() {
   return (
     <main>
       <EcosystemNav current="wallets" />
-      <nav className="nav">
-        <Link className="brand" href="/" aria-label="Arc Suite home">
-          <BrandMark idPrefix="wallet-brand" />
-          <span className="brand-name">Arc Suite</span>
-        </Link>
-        <div className="nav-cluster">
-          <div className="nav-links" aria-label="Wallet OS navigation">
-            <Link href="/">Product</Link>
-            <Link href="/gas">Gas</Link>
-            <Link href="/executions">Executions</Link>
-            <Link href="/escrow">Escrow</Link>
-            <Link href="/billing">Billing</Link>
-            <Link href="/flow">Flow</Link>
-            <Link href="/shield">Shield</Link>
-            <Link href="/ops">Ops Health</Link>
-          </div>
-        </div>
-      </nav>
       <WalletDashboardClient />
     </main>
   )

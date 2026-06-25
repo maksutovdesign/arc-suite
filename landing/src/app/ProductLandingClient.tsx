@@ -726,45 +726,18 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
                   <a href="/radar">Open builder radar</a>
                 </div>
               ) : activeProduct.key === "private" ? (
-                <div className="private-product-preview" aria-label={activeProduct.imageAlt}>
-                  <div className="shield-preview-top"><span>ARC PRIVATE / INVOICE</span><strong>PAYMENT VERIFIED</strong></div>
-                  <div className="private-preview-receipt">
-                    <div>
-                      <span>Private invoice</span>
-                      <strong>INV-ARC-2048</strong>
-                    </div>
-                    <div>
-                      <span>Amount</span>
-                      <strong>128.40 USDC</strong>
-                    </div>
-                    <div>
-                      <span>Payer</span>
-                      <strong>•••• 7F2A</strong>
-                    </div>
-                    <div>
-                      <span>Provider</span>
-                      <strong>•••• 91C0</strong>
-                    </div>
-                  </div>
-                  <div className="private-preview-grid">
-                    <div><span>Screening</span><strong>PASS</strong></div>
-                    <div><span>Budget</span><strong>OK</strong></div>
-                    <div><span>Reveal</span><strong>SCOPED</strong></div>
-                  </div>
-                  {[
-                    ["Operator", "Full private audit trail", "READY"],
-                    ["Provider", "Paid receipt only", "SHARED"],
-                    ["Auditor", "Policy proof on request", "LOCKED"],
-                  ].map(([party, proof, status]) => (
-                    <div className="private-preview-row" key={party}>
-                      <span><b>{party}</b><small>{proof}</small></span>
-                      <strong>{status}</strong>
-                    </div>
-                  ))}
-                  <div className="private-preview-hash">
-                    <span>Settlement reference</span>
-                    <strong>0x9c4e...71b2</strong>
-                  </div>
+                <div className="product-panel-minimal" aria-label={activeProduct.imageAlt}>
+                  <span>ARC PRIVATE</span>
+                  <strong>No decorative illustration.</strong>
+                  <p>
+                    The product story is the policy model: private payment intents,
+                    scoped disclosure, Shield checks, Flow settlement and auditable proofs.
+                  </p>
+                  <ul>
+                    <li>Private invoice context stays scoped.</li>
+                    <li>Operators keep policy and audit visibility.</li>
+                    <li>Providers only receive the proof needed to serve the request.</li>
+                  </ul>
                   <a href="/private">Open private payments</a>
                 </div>
               ) : activeProduct.key === "blueprints" ? (

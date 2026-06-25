@@ -11,7 +11,6 @@ import {
   Workflow,
 } from "lucide-react"
 
-import { BrandMark } from "../BrandMark"
 import { EcosystemNav } from "../EcosystemNav"
 
 export const metadata = {
@@ -77,25 +76,6 @@ export default function PrivatePage() {
   return (
     <main>
       <EcosystemNav current="private" />
-      <nav className="nav">
-        <Link className="brand" href="/" aria-label="Arc Suite home">
-          <BrandMark idPrefix="private-brand" />
-          <span className="brand-name">Arc Suite</span>
-        </Link>
-        <div className="nav-cluster">
-          <div className="nav-links" aria-label="Private navigation">
-            <Link href="/">Product</Link>
-            <Link href="/radar">Radar</Link>
-            <Link href="/shield">Shield</Link>
-            <Link href="/flow">Flow</Link>
-            <Link href="/billing">Billing</Link>
-            <Link href="/escrow">Escrow</Link>
-            <Link href="/wallets">Wallet OS</Link>
-            <Link href="/investors">Investors</Link>
-          </div>
-        </div>
-      </nav>
-
       <section className="private-shell">
         <div className="private-hero">
           <div>

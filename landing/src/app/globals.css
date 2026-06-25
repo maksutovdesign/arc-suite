@@ -1130,7 +1130,8 @@ h3 {
 .wallet-product-preview,
 .radar-product-preview,
 .private-product-preview,
-.blueprints-product-preview {
+.blueprints-product-preview,
+.product-panel-minimal {
   display: grid;
   align-content: start;
   min-height: 430px;
@@ -1333,12 +1334,45 @@ h3 {
 .wallet-product-preview > a,
 .radar-product-preview > a,
 .private-product-preview > a,
-.blueprints-product-preview > a {
+.blueprints-product-preview > a,
+.product-panel-minimal > a {
   justify-self: start;
   margin-top: 16px;
   color: var(--cyan);
   font-size: 12px;
   font-weight: 800;
+}
+
+.product-panel-minimal {
+  gap: 18px;
+  border-left: 3px solid rgba(45, 212, 191, 0.8);
+}
+
+.product-panel-minimal > span {
+  color: #2dd4bf;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+}
+
+.product-panel-minimal > strong {
+  max-width: 560px;
+  color: var(--text);
+  font-size: clamp(30px, 4vw, 52px);
+  line-height: 1;
+}
+
+.product-panel-minimal > p,
+.product-panel-minimal li {
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.product-panel-minimal ul {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding-left: 18px;
 }
 
 .blueprint-preview-stack {
