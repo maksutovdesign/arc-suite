@@ -244,8 +244,8 @@ export function OpsHealthClient() {
           <p className="kicker">Ops Health</p>
           <h1>MVP control center</h1>
           <p>
-            One protected operator view for production availability, Supabase readiness, GitHub
-            monitor state, Sentry runtime configuration, Slack alert routing, and investor signals.
+            One protected operator view for production availability, Supabase readiness,
+            CI monitor state, Sentry runtime configuration, Slack alert routing, and investor signals.
           </p>
         </div>
         <form
@@ -353,14 +353,12 @@ export function OpsHealthClient() {
 
             <div className="analytics-card">
               <div className="analytics-card-head">
-                <h2>GitHub Actions</h2>
-                <a href={summary.services.github.url}>Open</a>
+                <h2>CI Monitor</h2>
               </div>
               <div className="ops-status-list">
                 {summary.services.github.workflows.map((workflow) => (
                   <ServiceRow
                     detail={workflow.detail}
-                    href={workflow.runUrl}
                     key={workflow.id}
                     label={workflow.label}
                     meta={workflow.updatedAt ? formatDate(workflow.updatedAt) : workflow.workflowFile}

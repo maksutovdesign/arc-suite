@@ -89,7 +89,7 @@ export async function GET(request: NextRequest) {
         apps,
         github: {
           repo: "maksutovdesign/arc-suite",
-          url: "https://github.com/maksutovdesign/arc-suite/actions",
+          url: "",
           workflows,
         },
         monitor: opsHistory,
@@ -161,7 +161,7 @@ async function checkGithubWorkflow(workflow: (typeof GITHUB_WORKFLOWS)[number]) 
       ...workflow,
       conclusion: null,
       detail: response.error ?? `GitHub API HTTP ${response.status ?? "unknown"}`,
-      runUrl: "https://github.com/maksutovdesign/arc-suite/actions",
+      runUrl: "",
       status: "warning" as ServiceStatus,
       updatedAt: null,
     }
@@ -173,7 +173,7 @@ async function checkGithubWorkflow(workflow: (typeof GITHUB_WORKFLOWS)[number]) 
       ...workflow,
       conclusion: null,
       detail: "No recent workflow runs found",
-      runUrl: "https://github.com/maksutovdesign/arc-suite/actions",
+      runUrl: "",
       status: "warning" as ServiceStatus,
       updatedAt: null,
     }

@@ -156,9 +156,8 @@ export function AnalyticsDashboardClient() {
               <BarList
                 items={[
                   ["Investors", summary.funnel.investorClicks],
-                  ["GitHub", summary.funnel.githubClicks],
-                  ["X", summary.funnel.xClicks],
                   ["Demo", summary.funnel.demoClicks],
+                  ["Run Access Check", summary.funnel.accessCheckRuns],
                 ]}
               />
             </div>

@@ -62,9 +62,10 @@ export function EcosystemNav({ current }: { current: ProductId }) {
     >
       <a
         href={suiteUrl}
-        className="mr-2 hidden shrink-0 text-[10px] font-semibold tracking-wide text-[#526a80] transition-colors hover:text-white lg:block"
+        className="mr-2 hidden shrink-0 items-center gap-2 text-[10px] font-semibold tracking-wide text-[#7f94aa] transition-colors hover:text-white lg:flex"
       >
-        Arc Suite
+        <span className="grid size-6 place-items-center rounded-md bg-gradient-to-br from-[#7dd3fc] to-[#3b82f6] text-[22px] font-black leading-none text-white shadow-[0_0_18px_rgba(95,191,255,0.22)]">a</span>
+        <span>Arc Suite</span>
       </a>
       <div className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {products.map((product) => {

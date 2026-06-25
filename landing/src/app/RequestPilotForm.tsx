@@ -60,7 +60,7 @@ export function RequestPilotForm() {
       setForm(initialForm)
       setStatus("success")
     } catch {
-      setError("Could not send the request. Try again or use the GitHub/X links in the header.")
+      setError("Could not send the request. Try again from the demo workspace or contact flow.")
       setStatus("error")
     }
   }
