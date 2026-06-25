@@ -2059,40 +2059,43 @@ h3 {
 }
 
 .private-shell {
-  width: min(100% - 48px, 1420px);
+  display: grid;
+  gap: 34px;
+  width: min(1420px, calc(100% - 48px));
   margin: 0 auto;
-  padding: 54px 0 90px;
+  padding: 42px 0 80px;
 }
 
 .private-hero,
 .private-split {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(360px, 0.74fr);
-  gap: 22px;
+  grid-template-columns: minmax(0, 1.05fr) minmax(360px, 0.95fr);
+  gap: 28px;
   align-items: stretch;
 }
 
 .private-hero {
-  padding: 26px;
+  padding: 28px;
   border: 1px solid rgba(45, 212, 191, 0.18);
-  border-radius: 10px;
+  border-radius: 8px;
   background:
     radial-gradient(circle at 18% 8%, rgba(45, 212, 191, 0.14), transparent 34%),
-    linear-gradient(135deg, rgba(95, 191, 255, 0.06), rgba(3, 6, 10, 0.82));
+    linear-gradient(135deg, rgba(95, 191, 255, 0.09), rgba(3, 6, 10, 0.9) 44%),
+    #071019;
 }
 
 .private-hero h1 {
-  max-width: 920px;
-  margin: 8px 0 18px;
-  font-size: clamp(46px, 8vw, 102px);
-  line-height: 0.88;
+  max-width: 900px;
+  margin: 0;
+  font-size: clamp(42px, 6vw, 82px);
+  line-height: 0.92;
 }
 
-.private-hero p {
-  max-width: 780px;
+.private-hero p:not(.kicker) {
+  max-width: 760px;
   color: var(--muted);
-  font-size: 19px;
-  line-height: 1.55;
+  font-size: 18px;
+  line-height: 1.65;
 }
 
 .private-proof-card,
@@ -2403,40 +2406,43 @@ h3 {
 }
 
 .blueprints-shell {
-  width: min(100% - 48px, 1420px);
+  display: grid;
+  gap: 34px;
+  width: min(1420px, calc(100% - 48px));
   margin: 0 auto;
-  padding: 54px 0 90px;
+  padding: 42px 0 80px;
 }
 
 .blueprints-hero,
 .blueprints-split {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(360px, 0.72fr);
-  gap: 22px;
+  grid-template-columns: minmax(0, 1.05fr) minmax(360px, 0.95fr);
+  gap: 28px;
   align-items: stretch;
 }
 
 .blueprints-hero {
-  padding: 26px;
+  padding: 28px;
   border: 1px solid rgba(96, 165, 250, 0.18);
-  border-radius: 10px;
+  border-radius: 8px;
   background:
     radial-gradient(circle at 14% 12%, rgba(96, 165, 250, 0.15), transparent 36%),
-    linear-gradient(135deg, rgba(95, 191, 255, 0.055), rgba(3, 6, 10, 0.84));
+    linear-gradient(135deg, rgba(95, 191, 255, 0.09), rgba(3, 6, 10, 0.9) 44%),
+    #071019;
 }
 
 .blueprints-hero h1 {
-  max-width: 980px;
-  margin: 8px 0 18px;
-  font-size: clamp(46px, 8vw, 104px);
-  line-height: 0.88;
+  max-width: 900px;
+  margin: 0;
+  font-size: clamp(42px, 6vw, 82px);
+  line-height: 0.92;
 }
 
-.blueprints-hero p {
-  max-width: 780px;
+.blueprints-hero p:not(.kicker) {
+  max-width: 760px;
   color: var(--muted);
-  font-size: 19px;
-  line-height: 1.55;
+  font-size: 18px;
+  line-height: 1.65;
 }
 
 .blueprints-stack-card,

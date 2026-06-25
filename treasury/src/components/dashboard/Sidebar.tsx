@@ -6,7 +6,7 @@ import { useState } from "react"
 import {
   LayoutDashboard, Bot, ArrowLeftRight, PieChart,
   Wallet, Bell, Settings, ChevronRight, Zap,
-  Menu, X,
+  Building2, CreditCard, KeyRound, LifeBuoy, LogOut, Menu, Users, X,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { AGENTS, ALERTS } from "@/data/mock"
@@ -29,6 +29,7 @@ const NAV = [
 export function Sidebar({ isDemo = false }: { isDemo?: boolean }) {
   const path = usePathname()
   const [isOpen, setIsOpen] = useState(false)
+  const [isWorkspaceMenuOpen, setIsWorkspaceMenuOpen] = useState(false)
 
   return (
     <>
@@ -147,14 +148,67 @@ export function Sidebar({ isDemo = false }: { isDemo?: boolean }) {
       </nav>
 
       {/* Footer */}
-      <div className="p-3 border-t" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+      <div className="relative p-3 border-t" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
         <div className="flex items-center gap-1.5 mb-2 px-1">
           <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
           <span className="text-[10px] font-medium" style={{ color: "#34d399" }}>Arc Testnet</span>
           <span style={{ color: "#3d5468" }}>·</span>
           <span className="text-[10px]" style={{ color: "#7a8fa8" }}>USDC by Circle</span>
         </div>
-        <div className="flex items-center gap-2.5 p-2.5 rounded-xl cursor-pointer transition-all hover:bg-white/5">
+        {isWorkspaceMenuOpen && (
+          <div
+            className="absolute bottom-[76px] left-3 right-3 z-40 overflow-hidden rounded-2xl border shadow-2xl"
+            style={{
+              background: "linear-gradient(180deg, rgba(16,30,45,0.98), rgba(8,15,24,0.98))",
+              borderColor: "rgba(95,191,255,0.22)",
+              boxShadow: "0 24px 60px rgba(0,0,0,0.46), 0 0 30px rgba(95,191,255,0.12)",
+            }}
+          >
+            <div className="border-b px-3 py-3" style={{ borderColor: "rgba(255,255,255,0.07)" }}>
+              <p className="text-sm font-semibold text-white">Arc Corp</p>
+              <p className="mt-1 text-[11px]" style={{ color: "#8fa3b8" }}>
+                {isDemo ? "Demo workspace · Read-only" : "Pro Plan · Testnet"}
+              </p>
+            </div>
+            {[
+              { icon: Building2, label: "Workspace overview", meta: "Preview" },
+              { icon: Users, label: "Members & roles", meta: "4 seats" },
+              { icon: KeyRound, label: "API keys", meta: isDemo ? "Locked" : "Manage" },
+              { icon: CreditCard, label: "Plan & billing", meta: "Pro" },
+              { icon: LifeBuoy, label: "Support", meta: "Docs" },
+            ].map((item) => {
+              const Icon = item.icon
+              return (
+                <button
+                  className="flex w-full items-center gap-2.5 px-3 py-2.5 text-left transition-colors hover:bg-white/5"
+                  disabled
+                  key={item.label}
+                  type="button"
+                >
+                  <Icon className="size-4 shrink-0" style={{ color: "#5FBFFF" }} />
+                  <span className="min-w-0 flex-1 text-xs font-semibold text-white">{item.label}</span>
+                  <span className="text-[10px]" style={{ color: "#7a8fa8" }}>{item.meta}</span>
+                </button>
+              )
+            })}
+            <button
+              className="flex w-full items-center gap-2.5 border-t px-3 py-2.5 text-left transition-colors hover:bg-white/5"
+              disabled
+              style={{ borderColor: "rgba(255,255,255,0.07)" }}
+              type="button"
+            >
+              <LogOut className="size-4 shrink-0" style={{ color: "#f87171" }} />
+              <span className="min-w-0 flex-1 text-xs font-semibold text-white">Sign out</span>
+              <span className="text-[10px]" style={{ color: "#7a8fa8" }}>Soon</span>
+            </button>
+          </div>
+        )}
+        <button
+          aria-expanded={isWorkspaceMenuOpen}
+          className="flex w-full items-center gap-2.5 p-2.5 rounded-xl cursor-pointer text-left transition-all hover:bg-white/5"
+          onClick={() => setIsWorkspaceMenuOpen((current) => !current)}
+          type="button"
+        >
           <div
             className="size-8 rounded-full flex items-center justify-center text-[11px] font-bold text-white shrink-0"
             style={{ background: "linear-gradient(135deg, #4d8ee9, #5FBFFF)" }}
@@ -167,8 +221,8 @@ export function Sidebar({ isDemo = false }: { isDemo?: boolean }) {
               {isDemo ? "Demo Workspace · Read-only" : "Pro Plan · Testnet"}
             </p>
           </div>
-          <ChevronRight className="size-3 shrink-0" style={{ color: "#7a8fa8" }} />
-        </div>
+          <ChevronRight className={cn("size-3 shrink-0 transition-transform", isWorkspaceMenuOpen && "rotate-90")} style={{ color: "#7a8fa8" }} />
+        </button>
       </div>
       </aside>
     </>
