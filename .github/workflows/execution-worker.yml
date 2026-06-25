@@ -18,16 +18,17 @@ jobs:
     timeout-minutes: 3
     steps:
       - name: Run production execution worker
-        if: ${{ secrets.ARC_CRON_SECRET != '' }}
         env:
           ARC_CRON_SECRET: ${{ secrets.ARC_CRON_SECRET }}
+        shell: bash
         run: |
+          if [ -z "${ARC_CRON_SECRET}" ]; then
+            echo "ARC_CRON_SECRET is not configured; scheduled execution worker was skipped."
+            exit 0
+          fi
+
           curl --fail-with-body --silent --show-error \
             --retry 2 \
             --max-time 60 \
             -H "Authorization: Bearer ${ARC_CRON_SECRET}" \
             "https://arcsuite-app.vercel.app/api/executions/worker?limit=25"
-
-      - name: Report missing worker secret
-        if: ${{ secrets.ARC_CRON_SECRET == '' }}
-        run: echo "ARC_CRON_SECRET is not configured; scheduled execution worker was skipped."

@@ -1,6 +1,10 @@
+"use client"
+
 import {
   BadgeCheck,
   Boxes,
+  PanelLeftClose,
+  PanelLeftOpen,
   Fuel,
   Handshake,
   Landmark,
@@ -12,6 +16,7 @@ import {
   WalletCards,
   Workflow,
 } from "lucide-react"
+import { useState } from "react"
 import type { CSSProperties } from "react"
 
 export type ArcProductId =
@@ -55,9 +60,25 @@ const products = [
 }>
 
 export function EcosystemNav({ current }: { current: ArcProductId }) {
+  const [isCollapsed, setIsCollapsed] = useState(false)
+
   return (
-    <div className="ecosystem-nav" aria-label="Arc Suite products">
-      <a className="ecosystem-home" href={suiteUrl}>Arc Suite</a>
+    <aside className={isCollapsed ? "ecosystem-nav is-collapsed" : "ecosystem-nav"} aria-label="Arc Suite products">
+      <div className="ecosystem-nav-head">
+        <a className="ecosystem-home" href={suiteUrl} title="Arc Suite">
+          <span className="ecosystem-home-mark">a</span>
+          <span>Arc Suite</span>
+        </a>
+        <button
+          className="ecosystem-collapse"
+          type="button"
+          aria-label={isCollapsed ? "Expand services menu" : "Collapse services menu"}
+          aria-pressed={isCollapsed}
+          onClick={() => setIsCollapsed((value) => !value)}
+        >
+          {isCollapsed ? <PanelLeftOpen aria-hidden="true" size={17} /> : <PanelLeftClose aria-hidden="true" size={17} />}
+        </button>
+      </div>
       <div className="ecosystem-products">
         {products.map((product) => {
           const Icon = product.icon
@@ -69,16 +90,16 @@ export function EcosystemNav({ current }: { current: ArcProductId }) {
               key={product.id}
               aria-current={isCurrent ? "page" : undefined}
               style={{ "--product-color": product.color } as CSSProperties}
-              title={`Open Arc ${product.label}`}
+              title={`Arc ${product.label}`}
             >
-              <Icon aria-hidden="true" size={14} strokeWidth={1.8} />
-              <span>Arc {product.label}</span>
+              <Icon aria-hidden="true" size={17} strokeWidth={1.9} />
+              <span>{product.label}</span>
               {isCurrent && <i />}
             </a>
           )
         })}
       </div>
       <span className="ecosystem-network">Arc Testnet · USDC by Circle</span>
-    </div>
+    </aside>
   )
 }

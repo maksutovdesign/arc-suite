@@ -388,15 +388,6 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
             <a href="#system">Product</a>
             <a href="#loop">Loop</a>
             <a href="#proof">Proof</a>
-            <a href="/escrow">Escrow</a>
-            <a href="/gas">Gas</a>
-            <a href="/wallets">Wallet OS</a>
-            <a href="/radar">Radar</a>
-            <a href="/private">Private</a>
-            <a href="/blueprints">Blueprints</a>
-            <a href="/billing">Billing</a>
-            <a href="/flow">Flow</a>
-            <a href="/shield">Shield</a>
             <a href="/investors" onClick={() => trackLandingConversion({ eventName: "investors_click", placement: "nav" })}>Investors</a>
           </div>
           <a
@@ -760,28 +751,44 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
                 </div>
               ) : activeProduct.key === "private" ? (
                 <div className="private-product-preview" aria-label={activeProduct.imageAlt}>
-                  <div className="shield-preview-top"><span>ARC PRIVATE / INTENT</span><strong>SCOPED PROOF</strong></div>
-                  <div className="private-preview-lock">
-                    <LockKeyhole size={30} />
-                    <span>Encrypted commercial context</span>
-                    <strong>amount · counterparty · invoice</strong>
+                  <div className="shield-preview-top"><span>ARC PRIVATE / INVOICE</span><strong>PAYMENT VERIFIED</strong></div>
+                  <div className="private-preview-receipt">
+                    <div>
+                      <span>Private invoice</span>
+                      <strong>INV-ARC-2048</strong>
+                    </div>
+                    <div>
+                      <span>Amount</span>
+                      <strong>128.40 USDC</strong>
+                    </div>
+                    <div>
+                      <span>Payer</span>
+                      <strong>•••• 7F2A</strong>
+                    </div>
+                    <div>
+                      <span>Provider</span>
+                      <strong>•••• 91C0</strong>
+                    </div>
                   </div>
                   <div className="private-preview-grid">
-                    <div><span>Policy</span><strong>ALLOW</strong></div>
-                    <div><span>Receipt</span><strong>PAID</strong></div>
+                    <div><span>Screening</span><strong>PASS</strong></div>
+                    <div><span>Budget</span><strong>OK</strong></div>
                     <div><span>Reveal</span><strong>SCOPED</strong></div>
                   </div>
                   {[
-                    ["Operator", "Full audit trail"],
-                    ["Provider", "Paid receipt"],
-                    ["Auditor", "Policy proof"],
-                    ["Public", "Minimal reference"],
-                  ].map(([party, proof]) => (
+                    ["Operator", "Full private audit trail", "READY"],
+                    ["Provider", "Paid receipt only", "SHARED"],
+                    ["Auditor", "Policy proof on request", "LOCKED"],
+                  ].map(([party, proof, status]) => (
                     <div className="private-preview-row" key={party}>
                       <span><b>{party}</b><small>{proof}</small></span>
-                      <strong>READY</strong>
+                      <strong>{status}</strong>
                     </div>
                   ))}
+                  <div className="private-preview-hash">
+                    <span>Settlement reference</span>
+                    <strong>0x9c4e...71b2</strong>
+                  </div>
                   <a href="/private">Open private payments</a>
                 </div>
               ) : activeProduct.key === "blueprints" ? (

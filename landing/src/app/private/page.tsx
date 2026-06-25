@@ -118,15 +118,32 @@ export default function PrivatePage() {
               <span>ARC PRIVATE / PAYMENT INTENT</span>
               <strong>POLICY-SAFE</strong>
             </div>
-            <div className="private-proof-lock">
-              <LockKeyhole size={42} />
-              <strong>Encrypted commercial context</strong>
-              <span>Amount, counterparty, invoice and agent wallet details stay scoped.</span>
+            <div className="private-proof-receipt">
+              <div>
+                <span>Private invoice</span>
+                <strong>INV-ARC-2048</strong>
+              </div>
+              <div>
+                <span>Amount</span>
+                <strong>128.40 USDC</strong>
+              </div>
+              <div>
+                <span>Payer</span>
+                <strong>•••• 7F2A</strong>
+              </div>
+              <div>
+                <span>Provider</span>
+                <strong>•••• 91C0</strong>
+              </div>
             </div>
             <div className="private-proof-grid">
-              <div><span>Policy</span><strong>ALLOW</strong></div>
-              <div><span>Receipt</span><strong>PAID</strong></div>
+              <div><span>Screening</span><strong>PASS</strong></div>
+              <div><span>Budget</span><strong>OK</strong></div>
               <div><span>Reveal</span><strong>SCOPED</strong></div>
+            </div>
+            <div className="private-proof-hash">
+              <span>Settlement reference</span>
+              <strong>0x9c4e...71b2</strong>
             </div>
           </div>
         </div>
