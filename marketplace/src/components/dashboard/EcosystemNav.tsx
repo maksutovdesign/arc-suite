@@ -21,6 +21,25 @@ type ProductId =
   | "gas"
   | "wallets"
 
+function ArcSuiteMark() {
+  return (
+    <span className="grid size-6 shrink-0 place-items-center" aria-hidden="true">
+      <svg viewBox="0 0 48 48" role="img" className="block size-6">
+        <rect x="3" y="3" width="42" height="42" rx="14" fill="#5fbfff" />
+        <text
+          x="24"
+          y="38.5"
+          textAnchor="middle"
+          fill="#ffffff"
+          style={{ fontFamily: "\"Space Grotesk\", \"Aptos\", system-ui, sans-serif", fontSize: 43, fontWeight: 700 }}
+        >
+          a
+        </text>
+      </svg>
+    </span>
+  )
+}
+
 export function EcosystemNav({ current }: { current: ProductId }) {
   const suiteUrl = process.env.NEXT_PUBLIC_ARC_SUITE_URL ?? (
     process.env.NODE_ENV === "production" ? "https://arcsuite-app.vercel.app" : "http://localhost:3100"
@@ -64,7 +83,7 @@ export function EcosystemNav({ current }: { current: ProductId }) {
         href={suiteUrl}
         className="mr-2 hidden shrink-0 items-center gap-2 text-[10px] font-semibold tracking-wide text-[#7f94aa] transition-colors hover:text-white lg:flex"
       >
-        <span className="grid size-6 place-items-center rounded-md bg-gradient-to-br from-[#7dd3fc] to-[#3b82f6] text-[22px] font-black leading-none text-white shadow-[0_0_18px_rgba(95,191,255,0.22)]">a</span>
+        <ArcSuiteMark />
         <span>Arc Suite</span>
       </a>
       <div className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">

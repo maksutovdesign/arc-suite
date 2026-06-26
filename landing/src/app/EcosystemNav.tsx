@@ -18,6 +18,7 @@ import {
 } from "lucide-react"
 import { useState } from "react"
 import type { CSSProperties } from "react"
+import { BrandMark } from "./BrandMark"
 
 export type ArcProductId =
   | "treasury"
@@ -66,7 +67,7 @@ export function EcosystemNav({ current }: { current: ArcProductId }) {
     <aside className={isCollapsed ? "ecosystem-nav is-collapsed" : "ecosystem-nav"} aria-label="Arc Suite products">
       <div className="ecosystem-nav-head">
         <a className="ecosystem-home" href={suiteUrl} title="Arc Suite">
-          <span className="ecosystem-home-mark">a</span>
+          <BrandMark idPrefix="ecosystem-nav-brand" />
           <span>Arc Suite</span>
         </a>
         <button
