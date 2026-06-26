@@ -424,6 +424,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
             >
               Launch live demo
             </a>
+            <a className="button secondary" href="/agentic-workflow">Agentic workflow</a>
             <a className="button secondary" href="#system">Explore the product</a>
             <a
               className="button secondary"
@@ -606,7 +607,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
                     </div>
                   ))}
                   <div className="flow-preview-receipt"><span>Arc Testnet receipt</span><code>0x84de...3a921</code></div>
-                  <a href="/flow">Open live console</a>
+                  <a href="/agentic-workflow">Open workflow demo</a>
                 </div>
               ) : activeProduct.key === "billing" ? (
                 <div className="billing-product-preview" aria-label={activeProduct.imageAlt}>

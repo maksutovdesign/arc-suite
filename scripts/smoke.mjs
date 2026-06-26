@@ -32,6 +32,12 @@ const targets = [
     url: `${landingBase}/flow`,
   },
   {
+    expectedText: ["Agentic workflow demo", "x402 + Arc proof"],
+    kind: "html",
+    name: "Agentic Workflow Demo",
+    url: `${landingBase}/agentic-workflow`,
+  },
+  {
     expectedText: ["Arc Billing", "Demo workspace"],
     kind: "html",
     name: "Arc Billing console",
