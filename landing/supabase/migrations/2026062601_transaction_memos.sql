@@ -1,57 +1,16 @@
--- Real Arc Testnet settlement audit trail.
--- The finalize function atomically records the transaction and updates Treasury/Reputation.
+-- Arc transaction memos: structured business context for reconciliation.
 
-alter table transactions add column if not exists explorer_url text;
-alter table transactions add column if not exists source_address text;
-alter table transactions add column if not exists chain_id bigint;
-alter table transactions add column if not exists settlement_id text;
 alter table transactions add column if not exists memo_label text;
 alter table transactions add column if not exists memo jsonb not null default '{}'::jsonb;
 
-create unique index if not exists transactions_settlement_idx
-  on transactions(settlement_id)
-  where settlement_id is not null;
+alter table arc_settlements add column if not exists memo_label text;
+alter table arc_settlements add column if not exists memo jsonb not null default '{}'::jsonb;
 
-create table if not exists arc_settlements (
-  id text primary key,
-  workspace_id text not null references workspaces(id),
-  idempotency_key text not null,
-  agent_id text not null references agents(id),
-  api_id text not null references api_listings(id),
-  access_decision_id text references access_decisions(id),
-  transaction_id text references transactions(id),
-  source_address text not null,
-  recipient_address text not null,
-  amount_usdc numeric(18, 6) not null check (amount_usdc > 0),
-  chain_id bigint not null default 5042002,
-  network text not null default 'Arc Testnet' check (network = 'Arc Testnet'),
-  provider text not null default 'circle_wallets_sdk' check (provider = 'circle_wallets_sdk'),
-  status text not null check (status in ('policy_denied', 'approved', 'submitted', 'confirmed', 'failed')),
-  tx_hash text,
-  explorer_url text,
-  gas_estimate jsonb not null default '{}'::jsonb,
-  provider_receipt jsonb not null default '{}'::jsonb,
-  reputation_score_before integer,
-  reputation_score_after integer,
-  error_code text,
-  error_message text,
-  memo_label text,
-  memo jsonb not null default '{}'::jsonb,
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now(),
-  confirmed_at timestamptz,
-  unique (workspace_id, idempotency_key)
-);
+create index if not exists transactions_memo_gin_idx
+  on transactions using gin (memo);
 
-create unique index if not exists arc_settlements_tx_hash_idx
-  on arc_settlements(tx_hash)
-  where tx_hash is not null;
-
-create index if not exists arc_settlements_workspace_time_idx
-  on arc_settlements(workspace_id, created_at desc);
-
-create index if not exists arc_settlements_agent_time_idx
-  on arc_settlements(agent_id, created_at desc);
+create index if not exists arc_settlements_memo_gin_idx
+  on arc_settlements using gin (memo);
 
 create or replace function finalize_arc_settlement(
   p_settlement_id text,

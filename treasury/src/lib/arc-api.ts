@@ -33,6 +33,8 @@ type ApiTransaction = {
   sourceAddress?: string | null
   chainId?: number | null
   settlementId?: string | null
+  memoLabel?: string | null
+  memo?: Record<string, unknown>
 }
 
 type ApiSummary = {
@@ -110,6 +112,8 @@ export type ArcSettlementOutcome = {
       explorerUrl: string | null
       reputationScoreBefore: number | null
       reputationScoreAfter: number | null
+      memoLabel?: string | null
+      memo?: Record<string, unknown>
     }
     transaction: ApiTransaction
   }
@@ -260,6 +264,8 @@ export async function runArcSettlement(input: {
   amountUsdc: number
   recipientAddress: string
   idempotencyKey: string
+  memoLabel?: string
+  memo?: Record<string, unknown>
 }) {
   const response = await fetch(`${API_BASE_URL}/api/settlements/arc`, {
     body: JSON.stringify(input),
@@ -357,6 +363,8 @@ function mapTransaction(transaction: ApiTransaction): Transaction {
     sourceAddress: transaction.sourceAddress,
     chainId: transaction.chainId,
     settlementId: transaction.settlementId,
+    memoLabel: transaction.memoLabel,
+    memo: transaction.memo,
   }
 }
 

@@ -54,6 +54,8 @@ export type Transaction = {
   sourceAddress?: string | null
   chainId?: number | null
   settlementId?: string | null
+  memoLabel?: string | null
+  memo?: Record<string, unknown>
 }
 
 export type BudgetAlert = {
@@ -175,6 +177,8 @@ export type ArcSettlement = {
   reputationScoreAfter: number | null
   errorCode: string | null
   errorMessage: string | null
+  memoLabel: string | null
+  memo: Record<string, unknown>
   createdAt: string
   updatedAt: string
   confirmedAt: string | null

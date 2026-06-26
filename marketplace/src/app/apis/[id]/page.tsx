@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation"
 import Link from "next/link"
-import { Star, Zap, CheckCircle, Clock, ArrowLeft, Code, Copy, Globe, Activity, Shield } from "lucide-react"
+import { Star, Zap, CheckCircle, Clock, ArrowLeft, Code, Copy, Globe, Activity, Shield, Fingerprint } from "lucide-react"
 import { ArcProgress } from "@/components/ui/ArcProgress"
 import { ArcButton } from "@/components/ui/ArcButton"
 import { RequestAccessButton } from "@/components/browse/RequestAccessButton"
@@ -37,6 +37,7 @@ export default async function ApiDetailPage({ params }: { params: Promise<{ id: 
   const reviews = REVIEWS.filter(r => r.apiId === api.id)
   const sc = statusColor(api.status)
   const catColor = CAT_COLORS[api.category] ?? "#5FBFFF"
+  const minScore = minReputationScore(api.category)
 
   return (
     <div className="min-h-full" style={{ background: "linear-gradient(180deg,#162436 0%,#0f1c2a 100%)" }}>
@@ -125,10 +126,18 @@ export default async function ApiDetailPage({ params }: { params: Promise<{ id: 
 {`import { createWalletClient } from "@circle-fin/arc-sdk"
 
 const wallet = await createWalletClient({ network: "arc" })
+const agentPassport = "erc8004:arc:agt_01"
+const memo = {
+  invoiceId: "inv_${api.id}_001",
+  apiId: "${api.id}",
+  purpose: "x402_api_payment"
+}
 
 // x402 handles payment automatically
 const res = await fetch("${api.endpoint}", {
   headers: {
+    "x-agent-passport": agentPassport,
+    "x-arc-memo": JSON.stringify(memo),
     "x-payment-token": await wallet.signPayment({
       amount: "${api.price}",
       recipient: "${api.providerAddress}"
@@ -185,6 +194,26 @@ const data = await res.json()
             <RequestAccessButton apiId={api.id} amountUsdc={api.price} />
           </div>
 
+          {/* Agent Passport policy */}
+          <div className="rounded-2xl p-4"
+            style={{ background: "rgba(167,139,250,0.05)", border: "1px solid rgba(167,139,250,0.14)" }}>
+            <div className="flex items-center gap-2 mb-3">
+              <Fingerprint className="size-4" style={{ color: "#a78bfa" }} />
+              <p className="text-sm font-semibold text-white">Agent Passport Policy</p>
+            </div>
+            {[
+              `Minimum reputation score ${minScore}`,
+              "Verified agent identity preferred",
+              "Memo receipt required for reconciliation",
+              "Budget policy checked before payment",
+            ].map((item) => (
+              <div key={item} className="flex items-center gap-2 mb-1.5 last:mb-0">
+                <CheckCircle className="size-3 shrink-0" style={{ color: "#a78bfa" }} />
+                <span className="text-[11px]" style={{ color: "#94a3b8" }}>{item}</span>
+              </div>
+            ))}
+          </div>
+
           {/* SLA stats */}
           <div className="rounded-2xl p-4 space-y-4"
             style={{ background: "linear-gradient(160deg,#1e3247,#162436)", border: "1px solid rgba(255,255,255,0.08)" }}>
@@ -234,4 +263,11 @@ const data = await res.json()
       </div>
     </div>
   )
+}
+
+function minReputationScore(category: string) {
+  if (category === "finance" || category === "oracle") return 850
+  if (category === "compute" || category === "ai") return 820
+  if (category === "identity") return 760
+  return 700
 }

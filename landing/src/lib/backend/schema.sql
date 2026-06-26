@@ -39,7 +39,9 @@ create table transactions (
   occurred_at timestamptz not null,
   tx_hash text not null,
   network text not null,
-  recipient text not null
+  recipient text not null,
+  memo_label text,
+  memo jsonb not null default '{}'::jsonb
 );
 
 create table budget_alerts (

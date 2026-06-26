@@ -190,6 +190,37 @@ export default async function SettingsPage() {
                 ))}
               </div>
             </div>
+
+            <div className="mt-5 rounded-2xl p-4"
+              style={{ background: "rgba(95,191,255,0.05)", border: "1px solid rgba(95,191,255,0.14)" }}>
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-sm font-semibold text-white">Post-Quantum Readiness</p>
+                  <p className="mt-1 text-xs leading-relaxed" style={{ color: "#94a3b8" }}>
+                    Roadmap controls for long-lived wallets, agent identities, and settlement infrastructure as Arc and vendor support matures.
+                  </p>
+                </div>
+                <span className="rounded-full px-2.5 py-1 text-[10px] font-semibold"
+                  style={{ background: "rgba(245,158,11,0.1)", border: "1px solid rgba(245,158,11,0.25)", color: "#f59e0b" }}>
+                  Roadmap
+                </span>
+              </div>
+
+              <div className="mt-4 grid grid-cols-4 gap-2">
+                {[
+                  { label: "Signatures", value: "Migration plan" },
+                  { label: "Transport", value: "PQ-safe TLS watch" },
+                  { label: "Custody", value: "Key rotation" },
+                  { label: "Recovery", value: "Wallet migration" },
+                ].map((item) => (
+                  <div key={item.label} className="min-w-0 rounded-xl px-3 py-2"
+                    style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.06)" }}>
+                    <p className="truncate text-[10px] uppercase tracking-widest" style={{ color: "#7a8fa8" }}>{item.label}</p>
+                    <p className="mt-1 truncate text-xs font-semibold text-white">{item.value}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
           </SectionCard>
         </div>
       </div>

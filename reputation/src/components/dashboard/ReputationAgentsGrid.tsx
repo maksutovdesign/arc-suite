@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useState } from "react"
-import { ShieldCheck, CheckCircle, Activity, TrendingUp, TrendingDown, Clock, Search, X } from "lucide-react"
+import { ShieldCheck, CheckCircle, Activity, TrendingUp, TrendingDown, Clock, Search, X, Fingerprint } from "lucide-react"
 import { PageHeader } from "@/components/dashboard/PageHeader"
 import { ArcButton } from "@/components/ui/ArcButton"
 import { ArcProgress } from "@/components/ui/ArcProgress"
@@ -161,6 +161,10 @@ export function ReputationAgentsGrid({ agents, source }: Props) {
                             {agent.verified && <CheckCircle className="size-3 shrink-0" style={{ color: "#34d399" }} />}
                           </div>
                           <p className="text-[10px] font-mono mt-0.5" style={{ color: "#3d5a74" }}>{agent.address}</p>
+                          <div className="mt-1 flex items-center gap-1 text-[10px]" style={{ color: "#5FBFFF" }}>
+                            <Fingerprint className="size-3" />
+                            <span>Agent Passport</span>
+                          </div>
                         </div>
                       </div>
                       <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 ${tier.bg} ${tier.color}`}

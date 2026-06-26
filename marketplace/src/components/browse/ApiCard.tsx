@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Star, Zap, CheckCircle, TrendingUp, Clock, ArrowRight } from "lucide-react"
+import { Star, Zap, CheckCircle, TrendingUp, Clock, ArrowRight, Fingerprint } from "lucide-react"
 import { ArcProgress } from "@/components/ui/ArcProgress"
 import { VolumeSparkline } from "@/components/charts/VolumeSparkline"
 import { RequestAccessButton } from "@/components/browse/RequestAccessButton"
@@ -19,6 +19,7 @@ interface Props {
 export function ApiCard({ api, volume = [], featured = false }: Props) {
   const sc = statusColor(api.status)
   const catColor = CAT_COLORS[api.category] ?? "#5FBFFF"
+  const minScore = minReputationScore(api.category)
 
   return (
     <div className="block group">
@@ -91,6 +92,13 @@ export function ApiCard({ api, volume = [], featured = false }: Props) {
                 {formatPrice(api.price, api.unit)}
               </span>
             </div>
+            <div className="mt-1.5 flex items-center justify-between text-[10px]" style={{ color: "#a78bfa" }}>
+              <span className="flex items-center gap-1">
+                <Fingerprint className="size-3" />
+                Agent Passport
+              </span>
+              <span>{minScore}+ score</span>
+            </div>
           </div>
 
           {/* Stats */}
@@ -147,4 +155,11 @@ export function ApiCard({ api, volume = [], featured = false }: Props) {
       </div>
     </div>
   )
+}
+
+function minReputationScore(category: ApiListing["category"]) {
+  if (category === "finance" || category === "oracle") return 850
+  if (category === "compute" || category === "ai") return 820
+  if (category === "identity") return 760
+  return 700
 }

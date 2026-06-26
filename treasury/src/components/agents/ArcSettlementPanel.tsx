@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
-import { CheckCircle2, Database, ExternalLink, Send, Sparkles, XCircle, type LucideIcon } from "lucide-react"
+import { CheckCircle2, Database, ExternalLink, ReceiptText, Send, Sparkles, XCircle, type LucideIcon } from "lucide-react"
 import { ArcButton } from "@/components/ui/ArcButton"
 import type { Agent } from "@/data/mock"
 import type { ApiListing, ArcSettlementConfiguration, ArcSettlementOutcome } from "@/lib/arc-api"
@@ -22,6 +22,7 @@ export function ArcSettlementPanel({ agent, apiListings, isDemo = false }: Props
   const activeApi = useMemo(() => apiListings.find((api) => api.id === apiId) ?? apiListings[0], [apiId, apiListings])
   const [amount, setAmount] = useState(activeApi ? String(activeApi.priceUsdc) : "0.003")
   const [recipient, setRecipient] = useState("")
+  const [memoReference, setMemoReference] = useState(`inv_${agent.id}_${Date.now().toString(36)}`)
   const [outcome, setOutcome] = useState<ArcSettlementOutcome | null>(null)
   const [error, setError] = useState<string | null>(null)
 
@@ -63,6 +64,13 @@ export function ArcSettlementPanel({ agent, apiListings, isDemo = false }: Props
             amountUsdc: Number(amount),
             recipientAddress: recipient,
             idempotencyKey: `treasury:${agent.id}:${crypto.randomUUID()}`,
+            memoLabel: `${activeApi?.name ?? apiId} payment`,
+            memo: {
+              invoiceId: memoReference,
+              customerId: agent.id,
+              accountId: agent.address,
+              purpose: "x402_api_payment",
+            },
           }),
           headers: { "Content-Type": "application/json" },
           method: "POST",
@@ -77,7 +85,7 @@ export function ArcSettlementPanel({ agent, apiListings, isDemo = false }: Props
     })
   }
 
-  const disabled = isDemo || isPending || !config?.configured || !apiId || !recipient || Number(amount) <= 0
+  const disabled = isDemo || isPending || !config?.configured || !apiId || !recipient || !memoReference.trim() || Number(amount) <= 0
   const result = outcome?.result
 
   return (
@@ -133,10 +141,23 @@ export function ArcSettlementPanel({ agent, apiListings, isDemo = false }: Props
         </select>
       </label>
 
+      <label className="block space-y-1">
+        <span className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: "#7a8fa8" }}>Memo reference</span>
+        <div className="flex items-center gap-2 rounded-lg px-2" style={fieldStyle}>
+          <ReceiptText className="size-3.5 shrink-0" style={{ color: "#a78bfa" }} />
+          <input
+            className="h-9 min-w-0 flex-1 bg-transparent font-mono text-[10px] text-white outline-none"
+            maxLength={80}
+            onChange={(event) => setMemoReference(event.target.value)}
+            value={memoReference}
+          />
+        </div>
+      </label>
+
       <div className="grid grid-cols-3 gap-2">
         <Metric label="Chain" value={`Arc ${config?.chainId ?? 5042002}`} />
         <Metric label="Min score" value={String(activeApi?.minReputationScore ?? "—")} />
-        <Metric label="Maximum" value={config ? formatUSDC(config.maxAmountUsdc) : "—"} />
+        <Metric label="Memo" value={memoReference ? "Attached" : "Required"} />
       </div>
 
       <ArcButton className="w-full justify-center" disabled={disabled} icon={Send} onClick={executeSettlement} size="sm" variant="primary">
@@ -152,6 +173,7 @@ export function ArcSettlementPanel({ agent, apiListings, isDemo = false }: Props
           <Step icon={outcome.decision.allowed ? CheckCircle2 : XCircle} ok={outcome.decision.allowed} label={`Policy ${outcome.decision.allowed ? "approved" : "denied"}`} />
           <Step icon={Send} ok={Boolean(result)} label={result ? `${formatUSDC(result.transaction.amountUsdc)} settled on Arc` : "Transfer not executed"} />
           <Step icon={Database} ok={Boolean(result)} label={result ? "Transaction recorded in Supabase" : "No transaction record created"} />
+          <Step icon={ReceiptText} ok={Boolean(result?.transaction.memoLabel)} label={result?.transaction.memoLabel ? `Memo: ${result.transaction.memoLabel}` : "Memo not emitted"} />
           <Step icon={Sparkles} ok={Boolean(result)} label={result ? `Reputation +${result.scoreDelta}` : "Reputation unchanged"} />
           {result?.settlement.explorerUrl && result.settlement.txHash && (
             <a

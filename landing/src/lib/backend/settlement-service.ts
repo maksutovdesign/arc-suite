@@ -31,6 +31,8 @@ export async function executeArcSettlement(input: {
   amountUsdc: number
   recipientAddress: string
   idempotencyKey: string
+  memoLabel?: string
+  memo?: Record<string, unknown>
 }): Promise<ExecuteArcSettlementResult> {
   if (!isSupabaseConfigured()) {
     throw new SettlementExecutionError("supabase_required", "Supabase is required before an onchain transfer can be executed", 503)
@@ -57,6 +59,12 @@ export async function executeArcSettlement(input: {
   }
 
   const settlementId = `set_${randomUUID()}`
+  const memo = buildSettlementMemo({
+    ...input,
+    accessDecisionId: decision.decisionId,
+    amountUsdc: decision.amountUsdc,
+    settlementId,
+  })
   const settlement = await insertSupabaseArcSettlement({
     id: settlementId,
     idempotencyKey: input.idempotencyKey,
@@ -67,6 +75,11 @@ export async function executeArcSettlement(input: {
     recipientAddress: input.recipientAddress.toLowerCase(),
     amountUsdc: decision.amountUsdc,
     status: decision.allowed ? "approved" : "policy_denied",
+    memoLabel: input.memoLabel ?? memo.label,
+    memo: {
+      ...memo.data,
+      ...(input.memo ?? {}),
+    },
   })
   if (!settlement) {
     throw new SettlementExecutionError("settlement_audit_unavailable", "Settlement audit record could not be created; transfer was not sent", 503)
@@ -239,4 +252,29 @@ export class SettlementExecutionError extends Error {
 
 function transactionIdForSettlement(settlementId: string) {
   return `tx_arc_${settlementId.replace(/^set_/, "").replaceAll("-", "")}`
+}
+
+function buildSettlementMemo(input: {
+  agentId: string
+  apiId: string
+  accessDecisionId: string | null
+  settlementId: string
+  idempotencyKey: string
+  amountUsdc: number
+}) {
+  return {
+    label: `API ${input.apiId} payment`,
+    data: {
+      schema: "arc-suite.memo.v1",
+      purpose: "x402_api_payment",
+      agentId: input.agentId,
+      apiId: input.apiId,
+      accessDecisionId: input.accessDecisionId,
+      settlementId: input.settlementId,
+      invoiceId: `inv_${input.settlementId.replace(/^set_/, "").slice(0, 12)}`,
+      paymentReference: input.idempotencyKey,
+      amountUsdc: input.amountUsdc,
+      workflow: "policy_check.usdc_settlement.reputation_update",
+    },
+  }
 }

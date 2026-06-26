@@ -50,6 +50,8 @@ export async function POST(request: NextRequest) {
       amountUsdc: body.amountUsdc,
       recipientAddress: body.recipientAddress,
       idempotencyKey: body.idempotencyKey,
+      memoLabel: typeof body.memoLabel === "string" ? body.memoLabel : undefined,
+      memo: isRecord(body.memo) ? body.memo : undefined,
     })
 
     logOperationalEvent({
@@ -109,5 +111,13 @@ function validateRequest(body: unknown) {
   if (typeof data.idempotencyKey !== "string" || !/^[a-zA-Z0-9._:-]{12,120}$/.test(data.idempotencyKey)) {
     return "idempotencyKey must be 12-120 safe characters"
   }
+  if (data.memoLabel !== undefined && (typeof data.memoLabel !== "string" || data.memoLabel.trim().length > 120)) {
+    return "memoLabel must be a string up to 120 characters"
+  }
+  if (data.memo !== undefined && !isRecord(data.memo)) return "memo must be a JSON object"
   return null
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value && typeof value === "object" && !Array.isArray(value))
 }

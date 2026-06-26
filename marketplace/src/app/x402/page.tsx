@@ -7,18 +7,20 @@ const FLOW_STEPS = [
   {
     n: "01", icon: Bot, color: "#a78bfa",
     title: "Agent sends request",
-    desc: "AI agent calls an x402-enabled API endpoint — same as any HTTP request.",
+    desc: "AI agent calls an x402-enabled API endpoint with its Agent Passport and memo context.",
     code: `GET https://api.weather.io/v1/current?lat=48.8&lng=2.3
-// No auth headers needed`,
+X-Agent-Passport: erc8004:arc:agt_01
+X-Arc-Memo: {"invoiceId":"inv_weather_001"}`,
   },
   {
     n: "02", icon: Server, color: "#f59e0b",
     title: "Server returns 402",
-    desc: "The API responds with HTTP 402, specifying the price and payment address.",
+    desc: "The API responds with HTTP 402, specifying the price, payment address, and policy requirement.",
     code: `HTTP/1.1 402 Payment Required
 X-Payment-Price: 0.001
 X-Payment-Network: arc
-X-Payment-Address: 0xWeather...`,
+X-Payment-Address: 0xWeather...
+X-Min-Reputation-Score: 700`,
   },
   {
     n: "03", icon: DollarSign, color: "#34d399",
@@ -34,7 +36,7 @@ const token = await wallet.signPayment({
   {
     n: "04", icon: CheckCircle, color: "#5FBFFF",
     title: "Access granted",
-    desc: "API verifies the payment token and returns the response. Done.",
+    desc: "API verifies passport, policy, payment token, and memo receipt before returning the response.",
     code: `HTTP/1.1 200 OK
 { "temp": 18.4, "condition": "cloudy",
   "humidity": 72 }

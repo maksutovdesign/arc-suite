@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 export const metadata: Metadata = { title: "Transactions — Arc Treasury" }
 
-import { ArrowLeftRight, Clock, CheckCircle2, XCircle, Loader2, SlidersHorizontal, Download, ExternalLink } from "lucide-react"
+import { ArrowLeftRight, Clock, CheckCircle2, XCircle, Loader2, SlidersHorizontal, Download, ExternalLink, ReceiptText, Layers3 } from "lucide-react"
 import { PageHeader } from "@/components/dashboard/PageHeader"
 import { ArcButton } from "@/components/ui/ArcButton"
 import { getTreasuryDashboardData } from "@/lib/arc-api"
@@ -32,17 +32,27 @@ function StatusIndicator({ status }: { status: "completed" | "pending" | "failed
   )
 }
 
+function memoSummary(memo: Record<string, unknown> | undefined) {
+  if (!memo) return null
+  const primary = ["invoiceId", "payoutReference", "paymentReference", "strategyId"]
+    .map((key) => [key, memo[key]] as const)
+    .find(([, value]) => typeof value === "string" && value.length > 0)
+  if (!primary) return null
+  return `${primary[0]}: ${primary[1]}`
+}
+
 export default async function TransactionsPage() {
   const { transactions, source } = await getTreasuryDashboardData()
   const total = transactions.reduce((sum, transaction) => transaction.status === "completed" ? sum + transaction.amount : sum, 0)
   const failed = transactions.filter((transaction) => transaction.status === "failed").length
   const pending = transactions.filter((transaction) => transaction.status === "pending").length
+  const memoCount = transactions.filter((transaction) => transaction.memoLabel || memoSummary(transaction.memo)).length
 
   return (
     <div className="flex flex-col min-h-full">
       <PageHeader
         title="Transactions"
-        subtitle={`${transactions.length} total · ${formatUSDC(total)} settled · ${failed} failed · ${pending} pending · ${source === "api" ? "Live pilot API" : "Mock fallback"}`}
+        subtitle={`${transactions.length} total · ${formatUSDC(total)} settled · ${memoCount} memo receipts · ${failed} failed · ${pending} pending · ${source === "api" ? "Live pilot API" : "Mock fallback"}`}
         icon={ArrowLeftRight}
         glow
         actions={
@@ -58,6 +68,7 @@ export default async function TransactionsPage() {
         {[
           { label: "Total settled",  value: formatUSDC(total),   color: "#5FBFFF" },
           { label: "Completed",      value: `${transactions.filter((transaction) => transaction.status === "completed").length}`, color: "#34d399" },
+          { label: "Memo receipts",  value: String(memoCount), color: "#a78bfa" },
           { label: "Pending",        value: String(pending),     color: "#f59e0b" },
           { label: "Failed",         value: String(failed),      color: "#f87171" },
         ].map(s => (
@@ -70,6 +81,37 @@ export default async function TransactionsPage() {
 
       {/* Table */}
       <div className="p-6">
+        <div
+          className="mb-4 grid gap-3 rounded-2xl p-4 md:grid-cols-[1.2fr_1fr]"
+          style={{ background: "linear-gradient(160deg,#263a52,#1e3247)", border: "1px solid rgba(167,139,250,0.16)" }}
+        >
+          <div className="flex items-start gap-3">
+            <div className="flex size-9 shrink-0 items-center justify-center rounded-xl"
+              style={{ background: "rgba(167,139,250,0.12)", border: "1px solid rgba(167,139,250,0.22)" }}>
+              <Layers3 className="size-4" style={{ color: "#a78bfa" }} />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-white">Batch Spend Workflow</p>
+              <p className="mt-1 text-xs leading-relaxed" style={{ color: "#94a3b8" }}>
+                One agent can group API calls, data-feed payouts, or treasury actions into a single workflow while preserving a memo receipt for every call.
+              </p>
+            </div>
+          </div>
+          <div className="grid grid-cols-3 gap-2">
+            {[
+              { label: "Calls", value: "3" },
+              { label: "Policy", value: "Per call" },
+              { label: "Memos", value: "Call level" },
+            ].map((item) => (
+              <div key={item.label} className="rounded-xl px-3 py-2"
+                style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.06)" }}>
+                <p className="text-[10px] uppercase tracking-widest" style={{ color: "#7a8fa8" }}>{item.label}</p>
+                <p className="mt-1 text-xs font-semibold text-white">{item.value}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
         <div
           className="overflow-x-auto rounded-2xl"
           style={{ border: "1px solid rgba(255,255,255,0.07)", background: "linear-gradient(160deg, #263a52 0%, #1e3247 100%)" }}
@@ -100,6 +142,7 @@ export default async function TransactionsPage() {
             const cat = CAT_STYLE[tx.category] ?? CAT_STYLE.unknown
             const isLast = i === transactions.length - 1
             const isFailed = tx.status === "failed"
+            const memoText = memoSummary(tx.memo)
 
             return (
               <div
@@ -137,6 +180,12 @@ export default async function TransactionsPage() {
                       </a>
                     ) : (
                       <p className="text-[10px] font-mono truncate mt-0.5" style={{ color: "#3d5a74" }}>{tx.txHash}</p>
+                    )}
+                    {(tx.memoLabel || memoText) && (
+                      <div className="mt-1 flex min-w-0 items-center gap-1.5 text-[10px]" style={{ color: "#a78bfa" }}>
+                        <ReceiptText className="size-3 shrink-0" />
+                        <span className="truncate">{tx.memoLabel ?? "Memo receipt"}{memoText ? ` · ${memoText}` : ""}</span>
+                      </div>
                     )}
                   </div>
                 </div>

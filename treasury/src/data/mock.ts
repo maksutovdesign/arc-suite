@@ -35,6 +35,8 @@ export interface Transaction {
   sourceAddress?: string | null
   chainId?: number | null
   settlementId?: string | null
+  memoLabel?: string | null
+  memo?: Record<string, unknown>
 }
 
 export interface BudgetAlert {
@@ -178,9 +180,9 @@ export const AGENT_BAR_DATA = [
 ]
 
 export const TRANSACTIONS: Transaction[] = [
-  { id: "tx_001", agentId: "agt_01", agentName: "DataHarvester-Pro", amount: 0.003, category: "api_call", description: "Weather API — real-time data fetch", status: "completed", timestamp: "2026-06-01T10:42:00Z", txHash: "0xabc1...ef01", network: "Arc", recipient: "0xWeatherAPI" },
-  { id: "tx_002", agentId: "agt_05", agentName: "IoT-Gateway-01", amount: 0.001, category: "data_feed", description: "Sensor stream — temperature batch", status: "completed", timestamp: "2026-06-01T10:41:30Z", txHash: "0xdef2...ab02", network: "Arc", recipient: "0xSensorHub" },
-  { id: "tx_003", agentId: "agt_02", agentName: "TradeBot-Alpha", amount: 12.5, category: "swap", description: "USDC → ETH swap via DEX", status: "completed", timestamp: "2026-06-01T10:40:00Z", txHash: "0xghi3...cd03", network: "Arc", recipient: "0xUniswap" },
+  { id: "tx_001", agentId: "agt_01", agentName: "DataHarvester-Pro", amount: 0.003, category: "api_call", description: "Weather API — real-time data fetch", status: "completed", timestamp: "2026-06-01T10:42:00Z", txHash: "0xabc1...ef01", network: "Arc", recipient: "0xWeatherAPI", memoLabel: "Weather feed invoice", memo: { schema: "arc-suite.memo.v1", purpose: "x402_api_payment", invoiceId: "inv_weather_1042", apiId: "api_03", agentId: "agt_01", workflow: "policy_check.usdc_settlement.reputation_update" } },
+  { id: "tx_002", agentId: "agt_05", agentName: "IoT-Gateway-01", amount: 0.001, category: "data_feed", description: "Sensor stream — temperature batch", status: "completed", timestamp: "2026-06-01T10:41:30Z", txHash: "0xdef2...ab02", network: "Arc", recipient: "0xSensorHub", memoLabel: "Sensor batch payout", memo: { schema: "arc-suite.memo.v1", purpose: "batch_data_feed", payoutReference: "iot_batch_20260601_01", deviceGroup: "factory-floor-a", agentId: "agt_05" } },
+  { id: "tx_003", agentId: "agt_02", agentName: "TradeBot-Alpha", amount: 12.5, category: "swap", description: "USDC → ETH swap via DEX", status: "completed", timestamp: "2026-06-01T10:40:00Z", txHash: "0xghi3...cd03", network: "Arc", recipient: "0xUniswap", memoLabel: "Rebalance route", memo: { schema: "arc-suite.memo.v1", purpose: "agent_swap", strategyId: "strat_delta_hedge", route: "USDC/ETH", venue: "Uniswap", agentId: "agt_02" } },
   { id: "tx_004", agentId: "agt_03", agentName: "ContentGen-v2", amount: 0.05, category: "compute", description: "LLM inference — 10k tokens", status: "completed", timestamp: "2026-06-01T10:38:00Z", txHash: "0xjkl4...ef04", network: "Ethereum", recipient: "0xOpenAI" },
   { id: "tx_005", agentId: "agt_01", agentName: "DataHarvester-Pro", amount: 0.002, category: "api_call", description: "CoinGecko price feed", status: "completed", timestamp: "2026-06-01T10:35:00Z", txHash: "0xmno5...gh05", network: "Arc", recipient: "0xCoinGecko" },
   { id: "tx_006", agentId: "agt_02", agentName: "TradeBot-Alpha", amount: 8.75, category: "swap", description: "ETH → USDC rebalance", status: "pending", timestamp: "2026-06-01T10:32:00Z", txHash: "0xpqr6...ij06", network: "Arc", recipient: "0xCurve" },

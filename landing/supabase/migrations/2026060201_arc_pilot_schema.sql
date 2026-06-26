@@ -38,7 +38,9 @@ create table if not exists transactions (
   occurred_at timestamptz not null,
   tx_hash text not null,
   network text not null check (network in ('Arc', 'Ethereum')),
-  recipient text not null
+  recipient text not null,
+  memo_label text,
+  memo jsonb not null default '{}'::jsonb
 );
 
 create table if not exists budget_alerts (

@@ -4,7 +4,7 @@ import {
   ArrowLeft, Bot, Wallet, Activity, Clock,
   Settings2, Zap, ArrowLeftRight,
   CheckCircle2, XCircle, Loader2, TrendingUp,
-  ExternalLink,
+  ExternalLink, Shuffle, ShieldCheck,
 } from "lucide-react"
 import { AGENTS, AGENT_SPARKLINES } from "@/data/mock"
 import { getTreasuryDashboardData } from "@/lib/arc-api"
@@ -177,6 +177,7 @@ export default async function AgentDetailPage({ params }: { params: Promise<{ id
 
             <AccessCheckSimulator agent={agent} apiListings={apiListings} />
             <ArcSettlementPanel agent={agent} apiListings={apiListings} isDemo={isDemo} />
+            {agent.tags.includes("defi") && <SwapControlsCard monthlyPct={mPct} dailyPct={dPct} />}
 
             {/* Agent info */}
             <div className="p-4 rounded-2xl space-y-3" style={arcCard}>
@@ -315,6 +316,63 @@ export default async function AgentDetailPage({ params }: { params: Promise<{ id
             </div>
           )}
         </div>
+      </div>
+    </div>
+  )
+}
+
+function SwapControlsCard({ monthlyPct, dailyPct }: { monthlyPct: number; dailyPct: number }) {
+  const routeEnabled = monthlyPct < 95 && dailyPct < 95
+
+  return (
+    <div className="p-4 rounded-2xl space-y-4" style={arcCard}>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <div className="flex items-center gap-2">
+            <Shuffle className="size-4" style={{ color: "#34d399" }} />
+            <span className="text-sm font-semibold text-white">Uniswap Swap Controls</span>
+          </div>
+          <p className="mt-1 text-[11px]" style={{ color: "#7a8fa8" }}>
+            Policy guardrails for autonomous swap and rebalance routes on Arc.
+          </p>
+        </div>
+        <span
+          className="rounded-full px-2 py-1 text-[9px] font-bold uppercase tracking-widest"
+          style={{
+            background: routeEnabled ? "rgba(52,211,153,0.1)" : "rgba(245,158,11,0.1)",
+            border: `1px solid ${routeEnabled ? "rgba(52,211,153,0.25)" : "rgba(245,158,11,0.25)"}`,
+            color: routeEnabled ? "#34d399" : "#f59e0b",
+          }}
+        >
+          {routeEnabled ? "Route enabled" : "Review"}
+        </span>
+      </div>
+
+      <div className="grid grid-cols-3 gap-2">
+        {[
+          { label: "Venue", value: "Uniswap" },
+          { label: "Per swap", value: "$25" },
+          { label: "Slippage", value: "0.50%" },
+        ].map((item) => (
+          <div key={item.label} className="min-w-0 rounded-lg px-2 py-1.5"
+            style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.05)" }}>
+            <p className="truncate text-[9px] uppercase tracking-widest" style={{ color: "#7a8fa8" }}>{item.label}</p>
+            <p className="truncate text-[11px] font-semibold text-white">{item.value}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="space-y-2">
+        {[
+          "USDC base asset required",
+          "Memo must include strategyId and route",
+          "Budget policy checked before route execution",
+        ].map((item) => (
+          <div key={item} className="flex items-center gap-2 text-[11px]" style={{ color: "#C7C5D1" }}>
+            <ShieldCheck className="size-3.5 shrink-0" style={{ color: "#34d399" }} />
+            <span>{item}</span>
+          </div>
+        ))}
       </div>
     </div>
   )

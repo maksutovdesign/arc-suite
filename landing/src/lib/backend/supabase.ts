@@ -93,6 +93,8 @@ type TransactionRow = {
   source_address?: string | null
   chain_id?: string | number | null
   settlement_id?: string | null
+  memo_label?: string | null
+  memo?: Record<string, unknown> | null
 }
 
 type AlertRow = {
@@ -269,6 +271,8 @@ type ArcSettlementRow = {
   reputation_score_after: number | null
   error_code: string | null
   error_message: string | null
+  memo_label?: string | null
+  memo?: Record<string, unknown> | null
   created_at: string
   updated_at: string
   confirmed_at: string | null
@@ -775,6 +779,8 @@ export async function insertSupabaseArcSettlement(input: {
   recipientAddress: string
   amountUsdc: number
   status: ArcSettlementStatus
+  memoLabel?: string | null
+  memo?: Record<string, unknown>
 }): Promise<ArcSettlement | null> {
   if (!isSupabaseConfigured()) return null
 
@@ -794,6 +800,8 @@ export async function insertSupabaseArcSettlement(input: {
         network: "Arc Testnet",
         provider: "circle_wallets_sdk",
         status: input.status,
+        memo_label: input.memoLabel ?? null,
+        memo: input.memo ?? {},
       },
     ])
     return rows[0] ? mapArcSettlement(rows[0]) : null
@@ -2150,6 +2158,8 @@ function mapTransaction(row: TransactionRow): Transaction {
     sourceAddress: row.source_address ?? null,
     chainId: row.chain_id === null || row.chain_id === undefined ? null : toNumber(row.chain_id),
     settlementId: row.settlement_id ?? null,
+    memoLabel: row.memo_label ?? null,
+    memo: row.memo ?? {},
   }
 }
 
@@ -2177,6 +2187,8 @@ function mapArcSettlement(row: ArcSettlementRow): ArcSettlement {
     reputationScoreAfter: row.reputation_score_after,
     errorCode: row.error_code,
     errorMessage: row.error_message,
+    memoLabel: row.memo_label ?? null,
+    memo: row.memo ?? {},
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     confirmedAt: row.confirmed_at,
