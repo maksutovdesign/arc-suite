@@ -143,7 +143,7 @@ Arc Flow is the full intent-to-settlement workflow. It chains Shield screening, 
 
 **Key features:**
 - End-to-end policy check → access check → Arc Testnet USDC settlement → reputation update
-- Grant-ready `/agentic-workflow` demo that packages the loop as an x402 receipt, Arc transaction proof and trust-score delta
+- Grant-ready `/agentic-workflow` demo that packages the loop as a signed x402 offer, agent payment authorization, provider receipt, Arc transaction proof and trust-score delta
 - Step-by-step execution timeline with allow, review, blocked and completed states
 - Arcscan transaction links when settlement is confirmed
 - Supabase audit trail for every flow run and policy step

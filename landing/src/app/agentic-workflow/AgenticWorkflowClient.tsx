@@ -9,12 +9,14 @@ import {
   FileCheck2,
   LockKeyhole,
   Play,
+  Shield,
   ReceiptText,
   ShieldCheck,
   Store,
   WalletCards,
   Workflow,
 } from "lucide-react"
+import type { ReactNode } from "react"
 import { useEffect, useMemo, useState } from "react"
 
 import {
@@ -45,18 +47,22 @@ const screening = demoShieldPayload.screenings.find((item) => item.id === run.sc
 export function AgenticWorkflowClient() {
   const [activeStage, setActiveStage] = useState(workflowStages.length - 1)
   const [isRunning, setIsRunning] = useState(false)
-  const [receiptId, setReceiptId] = useState("rcpt_arc_flow_demo_001")
+  const [runNonce, setRunNonce] = useState("demo_001")
 
   const proof = useMemo(() => {
     const now = new Date().toISOString()
+    const offer = createSignedOffer(runNonce)
+    const authorization = createPaymentAuthorization(offer)
+    const receipt = createSignedReceipt(offer, authorization, now)
     return {
       amount: `${run.amountUsdc.toFixed(3)} USDC`,
       apiName: api.name,
       agentName: agent.name,
+      authorization,
       billingEvent: usage.id,
       budget: `${agent.dailySpentUsdc.toFixed(2)} / ${agent.dailyLimitUsdc.toFixed(2)} USDC daily`,
       generatedAt: now,
-      invoice: "x402-invoice-flow-demo-001",
+      offer,
       payer: shortAddress(agent.address),
       policy: screening.decision.toUpperCase(),
       price: `${api.priceUsdc.toFixed(3)} USDC / ${api.pricingUnit}`,
@@ -64,13 +70,13 @@ export function AgenticWorkflowClient() {
       recipient: shortAddress(run.recipientAddress || demoSettlementConfig.defaultRecipient),
       reputation: `${run.reputationScoreBefore} -> ${run.reputationScoreAfter}`,
       requestId: run.requestId ?? "req_demo_flow_001",
-      receiptId,
+      receipt,
       screening: screening.providerResult ?? "APPROVED",
       settlementId: run.settlementId ?? "set_demo_001",
       txHash: run.txHash ?? "",
       workflowId: run.id,
     }
-  }, [receiptId])
+  }, [runNonce])
 
   useEffect(() => {
     if (!isRunning) return
@@ -80,7 +86,7 @@ export function AgenticWorkflowClient() {
         setActiveStage(index)
         if (index === workflowStages.length - 1) {
           setIsRunning(false)
-          setReceiptId(`rcpt_arc_${crypto.randomUUID().slice(0, 8)}`)
+          setRunNonce(crypto.randomUUID().slice(0, 8))
         }
       }, index * 520),
     )
@@ -109,7 +115,7 @@ export function AgenticWorkflowClient() {
         <div className="agentic-outcome" aria-label="Workflow outcome">
           <span><Database size={16} /> Audit trail</span>
           <strong>Supabase run + x402 receipt</strong>
-          <small>{proof.workflowId} · {proof.receiptId}</small>
+          <small>{proof.workflowId} · {proof.receipt.receiptId}</small>
         </div>
       </div>
 
@@ -156,11 +162,52 @@ export function AgenticWorkflowClient() {
             <ProofItem label="Amount settled" value={proof.amount} tone="success" />
             <ProofItem label="Reputation" value={proof.reputation} tone="success" />
           </div>
+          <div className="agentic-x402-chain" aria-label="x402 signed offer and receipt simulation">
+            <ProtocolCard
+              eyebrow="01 / Marketplace"
+              title="Signed offer"
+              icon={<Store size={18} />}
+              rows={[
+                ["offer id", proof.offer.offerId],
+                ["scheme", proof.offer.scheme],
+                ["amount", `${proof.offer.amountUsdc} USDC`],
+                ["valid until", proof.offer.expiresAt],
+                ["signature", proof.offer.signature],
+              ]}
+            />
+            <ProtocolCard
+              eyebrow="02 / Agent wallet"
+              title="Authorization"
+              icon={<Shield size={18} />}
+              rows={[
+                ["payer", proof.authorization.payer],
+                ["budget lock", proof.authorization.budgetLockId],
+                ["nonce", proof.authorization.nonce],
+                ["digest", proof.authorization.digest],
+                ["signature", proof.authorization.signature],
+              ]}
+            />
+            <ProtocolCard
+              eyebrow="03 / Provider"
+              title="Signed receipt"
+              icon={<FileCheck2 size={18} />}
+              rows={[
+                ["receipt id", proof.receipt.receiptId],
+                ["settlement", proof.receipt.settlementId],
+                ["tx hash", shortHash(proof.receipt.txHash)],
+                ["verified", proof.receipt.verified ? "true" : "false"],
+                ["signature", proof.receipt.signature],
+              ]}
+            />
+          </div>
           <div className="agentic-terminal" aria-label="Receipt payload">
             <span>{`{`}</span>
             <span>{`  "workflowId": "${proof.workflowId}",`}</span>
-            <span>{`  "x402Invoice": "${proof.invoice}",`}</span>
-            <span>{`  "receiptId": "${proof.receiptId}",`}</span>
+            <span>{`  "x402Offer": "${proof.offer.offerId}",`}</span>
+            <span>{`  "offerSignature": "${proof.offer.signature}",`}</span>
+            <span>{`  "paymentAuthorization": "${proof.authorization.signature}",`}</span>
+            <span>{`  "receiptId": "${proof.receipt.receiptId}",`}</span>
+            <span>{`  "receiptSignature": "${proof.receipt.signature}",`}</span>
             <span>{`  "settlementId": "${proof.settlementId}",`}</span>
             <span>{`  "requestId": "${proof.requestId}",`}</span>
             <span>{`  "generatedAt": "${proof.generatedAt}"`}</span>
@@ -204,7 +251,105 @@ function ProofItem({ label, value, tone = "default" }: { label: string; value: s
   )
 }
 
+function ProtocolCard({
+  eyebrow,
+  icon,
+  rows,
+  title,
+}: {
+  eyebrow: string
+  icon: ReactNode
+  rows: Array<[string, string]>
+  title: string
+}) {
+  return (
+    <div className="agentic-protocol-card">
+      <div className="agentic-protocol-head">
+        <span>{eyebrow}</span>
+        {icon}
+      </div>
+      <strong>{title}</strong>
+      <dl>
+        {rows.map(([label, value]) => (
+          <div key={label}>
+            <dt>{label}</dt>
+            <dd>{value}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  )
+}
+
 function shortAddress(value: string | null) {
   if (!value) return "not configured"
   return `${value.slice(0, 6)}...${value.slice(-4)}`
+}
+
+function shortHash(value: string) {
+  return value ? `${value.slice(0, 8)}...${value.slice(-5)}` : "pending"
+}
+
+function createSignedOffer(nonce: string) {
+  const offerId = `offer_x402_${stableDigest(`offer:${run.id}:${api.id}:${nonce}`).slice(0, 10)}`
+  const payload = [
+    "x402",
+    "exact",
+    "ARC-TESTNET",
+    api.id,
+    agent.id,
+    run.amountUsdc.toFixed(6),
+    run.recipientAddress,
+    nonce,
+  ].join(":")
+
+  return {
+    amountUsdc: run.amountUsdc.toFixed(3),
+    apiId: api.id,
+    expiresAt: "2026-06-27T23:59:59Z",
+    offerId,
+    payloadHash: stableDigest(payload),
+    scheme: "x402/exact-usdc-arc-testnet",
+    signature: `sig_marketplace_${stableDigest(`marketplace:${payload}`).slice(0, 24)}`,
+  }
+}
+
+function createPaymentAuthorization(offer: ReturnType<typeof createSignedOffer>) {
+  const nonce = `auth_${stableDigest(`auth:${offer.offerId}:${agent.address}`).slice(0, 12)}`
+  const digest = stableDigest(`${offer.payloadHash}:${agent.address}:${usage.id}:${nonce}`)
+
+  return {
+    budgetLockId: `lock_${stableDigest(`budget:${offer.offerId}:${usage.id}`).slice(0, 10)}`,
+    digest,
+    nonce,
+    payer: shortAddress(agent.address),
+    signature: `sig_agent_${digest.slice(0, 24)}`,
+  }
+}
+
+function createSignedReceipt(
+  offer: ReturnType<typeof createSignedOffer>,
+  authorization: ReturnType<typeof createPaymentAuthorization>,
+  generatedAt: string,
+) {
+  const receiptId = `rcpt_arc_${stableDigest(`receipt:${offer.offerId}:${authorization.digest}:${run.txHash}`).slice(0, 10)}`
+  const digest = stableDigest(`${receiptId}:${run.settlementId}:${run.txHash}:${generatedAt}`)
+
+  return {
+    digest,
+    receiptId,
+    settlementId: run.settlementId ?? "set_demo_001",
+    signature: `sig_provider_${digest.slice(0, 24)}`,
+    txHash: run.txHash ?? "",
+    verified: Boolean(run.txHash && authorization.signature && offer.signature),
+  }
+}
+
+function stableDigest(value: string) {
+  let hash = 0x811c9dc5
+  for (let index = 0; index < value.length; index += 1) {
+    hash ^= value.charCodeAt(index)
+    hash = Math.imul(hash, 0x01000193)
+  }
+  return Math.abs(hash >>> 0).toString(16).padStart(8, "0") + Math.abs((hash ^ value.length) >>> 0).toString(16).padStart(8, "0")
 }

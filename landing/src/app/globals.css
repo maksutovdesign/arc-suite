@@ -5207,6 +5207,78 @@ a.ops-history-run:hover {
   color: var(--green);
 }
 
+.agentic-x402-chain {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.agentic-protocol-card {
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid rgba(95, 191, 255, 0.14);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(95, 191, 255, 0.045), transparent 58%),
+    rgba(255, 255, 255, 0.018);
+}
+
+.agentic-protocol-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+  color: var(--blue);
+}
+
+.agentic-protocol-head span {
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.agentic-protocol-card > strong {
+  display: block;
+  margin-bottom: 12px;
+  font-size: 16px;
+}
+
+.agentic-protocol-card dl {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+}
+
+.agentic-protocol-card dl div {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.agentic-protocol-card dt {
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.agentic-protocol-card dd {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  color: rgba(232, 241, 255, 0.92);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .agentic-terminal {
   display: grid;
   gap: 5px;
@@ -6747,6 +6819,7 @@ a.ops-history-run:hover {
   .private-fit-grid,
   .blueprints-grid,
   .agentic-proof-grid,
+  .agentic-x402-chain,
   .agentic-proof-strip {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -6855,6 +6928,7 @@ a.ops-history-run:hover {
   .blueprints-grid,
   .blueprints-split,
   .agentic-proof-grid,
+  .agentic-x402-chain,
   .agentic-proof-strip,
   .execution-metrics {
     grid-template-columns: 1fr;
