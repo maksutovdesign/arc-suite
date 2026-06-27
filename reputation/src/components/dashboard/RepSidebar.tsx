@@ -3,7 +3,24 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useState } from "react"
-import { LayoutDashboard, Trophy, Activity, ShieldCheck, Settings, ChevronRight, BarChart2, ArrowLeftRight, Code, Menu, X } from "lucide-react"
+import {
+  Activity,
+  ArrowLeftRight,
+  BarChart2,
+  ChevronRight,
+  ChevronUp,
+  Code,
+  CreditCard,
+  KeyRound,
+  LayoutDashboard,
+  LogOut,
+  Menu,
+  Settings,
+  ShieldCheck,
+  Trophy,
+  UserRound,
+  X,
+} from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const NAV = [
@@ -20,6 +37,7 @@ const NAV = [
 export function RepSidebar() {
   const path = usePathname()
   const [isOpen, setIsOpen] = useState(false)
+  const [workspaceOpen, setWorkspaceOpen] = useState(false)
 
   return (
     <>
@@ -100,22 +118,92 @@ export function RepSidebar() {
       </nav>
 
       {/* Arc / Circle attribution */}
-      <div className="px-3 py-2.5 border-t" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+      <div className="relative px-3 py-2.5 border-t" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+        {workspaceOpen && (
+          <div
+            className="absolute bottom-[76px] left-3 right-3 z-10 overflow-hidden rounded-2xl border shadow-2xl"
+            style={{
+              background: "linear-gradient(180deg,rgba(26,45,62,0.98),rgba(14,23,35,0.98))",
+              borderColor: "rgba(167,139,250,0.24)",
+              boxShadow: "0 18px 50px rgba(0,0,0,0.42), 0 0 22px rgba(167,139,250,0.12)",
+            }}
+          >
+            <div className="border-b px-3 py-2.5" style={{ borderColor: "rgba(255,255,255,0.07)" }}>
+              <p className="text-xs font-semibold text-white">Arc Corp workspace</p>
+              <p className="mt-0.5 text-[10px]" style={{ color: "#7a8fa8" }}>Demo account · reputation operator</p>
+            </div>
+            {[
+              { href: "/settings", label: "Workspace settings", detail: "Profile, members, keys", icon: UserRound },
+              { href: "/docs", label: "API credentials", detail: "Reputation API docs", icon: KeyRound },
+              { href: "/reports", label: "Usage and reports", detail: "Trust score exports", icon: CreditCard },
+            ].map((item) => {
+              const Icon = item.icon
+              return (
+                <Link
+                  className="flex items-center gap-2.5 px-3 py-2.5 text-left transition-colors hover:bg-white/[0.04]"
+                  href={item.href}
+                  key={item.label}
+                  onClick={() => {
+                    setWorkspaceOpen(false)
+                    setIsOpen(false)
+                  }}
+                >
+                  <span
+                    className="grid size-8 shrink-0 place-items-center rounded-xl border"
+                    style={{ background: "rgba(167,139,250,0.1)", borderColor: "rgba(167,139,250,0.18)", color: "#a78bfa" }}
+                  >
+                    <Icon size={15} />
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block text-xs font-semibold text-white">{item.label}</span>
+                    <span className="block truncate text-[10px]" style={{ color: "#7a8fa8" }}>{item.detail}</span>
+                  </span>
+                </Link>
+              )
+            })}
+            <button
+              className="flex w-full items-center gap-2.5 border-t px-3 py-2.5 text-left transition-colors hover:bg-white/[0.04]"
+              style={{ borderColor: "rgba(255,255,255,0.07)" }}
+              type="button"
+            >
+              <span
+                className="grid size-8 shrink-0 place-items-center rounded-xl border"
+                style={{ background: "rgba(56,189,248,0.08)", borderColor: "rgba(56,189,248,0.18)", color: "#38bdf8" }}
+              >
+                <LogOut size={15} />
+              </span>
+              <span>
+                <span className="block text-xs font-semibold text-white">Demo session</span>
+                <span className="block text-[10px]" style={{ color: "#7a8fa8" }}>Read-only mode</span>
+              </span>
+            </button>
+          </div>
+        )}
         <div className="flex items-center gap-1.5 mb-2.5 px-1">
           <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
           <span className="text-[10px] font-medium" style={{ color: "#34d399" }}>Arc Testnet</span>
           <span className="text-[10px]" style={{ color: "#3d5468" }}>·</span>
           <span className="text-[10px]" style={{ color: "#7a8fa8" }}>USDC by Circle</span>
         </div>
-        <div className="flex items-center gap-2.5 p-2.5 rounded-xl cursor-pointer hover:bg-white/5 transition-all">
+        <button
+          aria-expanded={workspaceOpen}
+          aria-label="Open workspace menu"
+          className="flex w-full items-center gap-2.5 rounded-xl p-2.5 text-left transition-all hover:bg-white/5"
+          onClick={() => setWorkspaceOpen((current) => !current)}
+          type="button"
+        >
           <div className="size-8 rounded-full flex items-center justify-center text-[11px] font-bold text-white shrink-0"
             style={{ background: "linear-gradient(135deg,#a78bfa,#38bdf8)" }}>RC</div>
           <div className="flex-1 min-w-0">
             <p className="text-xs font-semibold text-white">Arc Corp</p>
             <p className="text-[10px]" style={{ color: "#7a8fa8" }}>Trust Score: 961</p>
           </div>
-          <ChevronRight className="size-3 shrink-0" style={{ color: "#7a8fa8" }} />
-        </div>
+          {workspaceOpen ? (
+            <ChevronUp className="size-3 shrink-0" style={{ color: "#a78bfa" }} />
+          ) : (
+            <ChevronRight className="size-3 shrink-0" style={{ color: "#7a8fa8" }} />
+          )}
+        </button>
       </div>
       </aside>
     </>
