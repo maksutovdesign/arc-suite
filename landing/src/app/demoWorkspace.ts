@@ -1,5 +1,9 @@
 import type {
   Agent,
+  ArcAgentIdentity,
+  ArcAgentJob,
+  ArcAgentJobArtifact,
+  ArcAgentJobValidation,
   ApiListing,
   BillingOverview,
   EscrowOverview,
@@ -19,6 +23,117 @@ export const demoApis: Array<ApiListing & { providerName: string }> = apiListing
   ...api,
   providerName: ["ChainData Labs", "ModelStack", "Atmo API", "ComputeGrid", "OracleHub"][index] ?? "Arc Provider",
 }))
+
+export const demoArcAgentModel: {
+  identities: ArcAgentIdentity[]
+  jobs: ArcAgentJob[]
+  artifacts: ArcAgentJobArtifact[]
+  validations: ArcAgentJobValidation[]
+} = {
+  identities: [
+    {
+      id: "arc_agent_id_001",
+      workspaceId: WORKSPACE.id,
+      agentId: "agt_01",
+      standard: "erc_8004_compatible",
+      registryAddress: "0x8004A11ce00000000000000000000000000000001",
+      agentUri: "ipfs://arc-suite/agents/dataharvester-pro.json",
+      serviceEndpoint: "https://arcsuite-app.vercel.app/api/agents/agt_01",
+      walletAddress: "0xe587fe4875e8ce65a5473c66488b6bc7d54b80a8",
+      validationEndpoint: "https://arcsuite-app.vercel.app/api/flow/runs",
+      reputationEndpoint: "https://arcsuite-app.vercel.app/api/reputation/agt_01",
+      capabilities: ["x402.api.purchase", "arc.usdc.settlement", "compliance.screened", "reputation.scored"],
+      trustModel: {
+        identityRegistry: "ERC-8004 Identity",
+        reputationRegistry: "Arc Reputation",
+        validationRegistry: "Arc Flow Validation",
+      },
+      metadata: { name: "DataHarvester-Pro", network: "Arc Testnet", custody: "Circle developer wallet" },
+      status: "active",
+      registeredAt: "2026-06-23T09:38:00Z",
+      updatedAt: "2026-06-23T09:39:36Z",
+    },
+  ],
+  jobs: [
+    {
+      id: "arc_job_001",
+      workspaceId: WORKSPACE.id,
+      agentIdentityId: "arc_agent_id_001",
+      requesterAgentId: "agt_01",
+      providerAgentId: "agt_03",
+      apiId: "api_01",
+      flowRunId: "flow_demo_001",
+      executionJobId: "exec_demo_001",
+      standard: "erc_8183_compatible",
+      kind: "api_request",
+      status: "validated",
+      requestedCapability: "finance.market_data.latest",
+      amountUsdc: 0.012,
+      inputHash: "0xinput7c62f0d31d5b4c91b8e97f3a0eaa0001",
+      outputHash: "0xoutputdf57a9e2c41a4b36ad0dd8549ac0001",
+      policyHash: "0xpolicy5a71bc920d3e44a69bb0e99a4da0001",
+      receiptHash: "0xreceiptb9f0d4e9c2a74bd28a1a51907d0001",
+      settlementId: "set_demo_001",
+      txHash: "0x84de219dc51c9942a54a33c7fb56d12c18c884b7e998abb812943e923aa3a921",
+      constraints: {
+        maxSpendUsdc: 0.05,
+        requiredReputation: 700,
+        requireComplianceScreening: true,
+        deadlineAt: "2026-06-23T09:45:00Z",
+      },
+      metadata: { x402: true, pricingUnit: "request", provider: "ChainData Labs" },
+      createdAt: "2026-06-23T09:39:20Z",
+      updatedAt: "2026-06-23T09:39:36Z",
+      completedAt: "2026-06-23T09:39:36Z",
+    },
+  ],
+  artifacts: [
+    {
+      id: "arc_artifact_001",
+      workspaceId: WORKSPACE.id,
+      jobId: "arc_job_001",
+      type: "x402_offer",
+      uri: "supabase://arc_agent_jobs/arc_job_001/artifacts/x402_offer",
+      digest: "0xofferf94203fdfb2c4a9f995a0e914d0001",
+      signature: "sig_marketplace_2f7b10e9a4d05a1f",
+      createdAt: "2026-06-23T09:39:21Z",
+    },
+    {
+      id: "arc_artifact_002",
+      workspaceId: WORKSPACE.id,
+      jobId: "arc_job_001",
+      type: "payment_authorization",
+      uri: "supabase://arc_agent_jobs/arc_job_001/artifacts/payment_authorization",
+      digest: "0xauth2c6b1e75a90d4e0f9f87cabd20001",
+      signature: "sig_agent_0f87d4e2a6c1b95a",
+      createdAt: "2026-06-23T09:39:24Z",
+    },
+    {
+      id: "arc_artifact_003",
+      workspaceId: WORKSPACE.id,
+      jobId: "arc_job_001",
+      type: "receipt",
+      uri: "supabase://arc_agent_jobs/arc_job_001/artifacts/receipt",
+      digest: "0xreceiptb9f0d4e9c2a74bd28a1a51907d0001",
+      signature: "sig_provider_a1e4f8b902c6814d",
+      createdAt: "2026-06-23T09:39:36Z",
+    },
+  ],
+  validations: [
+    {
+      id: "arc_validation_001",
+      workspaceId: WORKSPACE.id,
+      jobId: "arc_job_001",
+      validatorAgentId: null,
+      result: "pass",
+      score: 961,
+      evidenceUri: "supabase://flow_runs/flow_demo_001",
+      evidenceHash: "0xvalidation0d14b30c92ae4c84b7b7a10c0001",
+      signature: "sig_validator_8004_91a7e4b02d3f",
+      createdAt: "2026-06-23T09:39:36Z",
+    },
+  ],
+}
 
 export const demoSettlementConfig = {
   configured: false,

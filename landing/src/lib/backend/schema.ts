@@ -19,6 +19,10 @@ export type BillingBatchStatus = "ready" | "processing" | "settled" | "failed"
 export type EscrowDealStatus = "draft" | "active" | "disputed" | "completed" | "refunded" | "cancelled"
 export type EscrowMilestoneStatus = "pending" | "submitted" | "released" | "refunded" | "disputed"
 export type EscrowEventType = "created" | "funded" | "submitted" | "released" | "refunded" | "disputed" | "resolved"
+export type ArcAgentIdentityStatus = "registered" | "active" | "suspended" | "retired"
+export type ArcAgentJobStatus = "requested" | "accepted" | "running" | "settled" | "validated" | "failed" | "disputed"
+export type ArcAgentJobArtifactType = "input" | "output" | "x402_offer" | "payment_authorization" | "receipt" | "validation"
+export type ArcAgentValidationResult = "pass" | "warn" | "fail"
 
 export type Agent = {
   id: string
@@ -36,6 +40,85 @@ export type Agent = {
   tags: string[]
   createdAt: string
   lastActiveAt: string | null
+}
+
+export type ArcAgentIdentity = {
+  id: string
+  workspaceId: string
+  agentId: string
+  standard: "erc_8004_compatible"
+  registryAddress: string | null
+  agentUri: string
+  serviceEndpoint: string
+  walletAddress: string
+  validationEndpoint: string
+  reputationEndpoint: string
+  capabilities: string[]
+  trustModel: {
+    identityRegistry: string
+    reputationRegistry: string
+    validationRegistry: string
+  }
+  metadata: Record<string, unknown>
+  status: ArcAgentIdentityStatus
+  registeredAt: string
+  updatedAt: string
+}
+
+export type ArcAgentJob = {
+  id: string
+  workspaceId: string
+  agentIdentityId: string
+  requesterAgentId: string
+  providerAgentId: string
+  apiId: string
+  flowRunId: string | null
+  executionJobId: string | null
+  standard: "erc_8183_compatible"
+  kind: "api_request" | "data_delivery" | "settlement" | "validation"
+  status: ArcAgentJobStatus
+  requestedCapability: string
+  amountUsdc: number
+  inputHash: string
+  outputHash: string | null
+  policyHash: string
+  receiptHash: string | null
+  settlementId: string | null
+  txHash: string | null
+  constraints: {
+    maxSpendUsdc: number
+    requiredReputation: number
+    requireComplianceScreening: boolean
+    deadlineAt: string
+  }
+  metadata: Record<string, unknown>
+  createdAt: string
+  updatedAt: string
+  completedAt: string | null
+}
+
+export type ArcAgentJobArtifact = {
+  id: string
+  workspaceId: string
+  jobId: string
+  type: ArcAgentJobArtifactType
+  uri: string
+  digest: string
+  signature: string | null
+  createdAt: string
+}
+
+export type ArcAgentJobValidation = {
+  id: string
+  workspaceId: string
+  jobId: string
+  validatorAgentId: string | null
+  result: ArcAgentValidationResult
+  score: number
+  evidenceUri: string
+  evidenceHash: string
+  signature: string
+  createdAt: string
 }
 
 export type Transaction = {

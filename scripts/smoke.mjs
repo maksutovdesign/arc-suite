@@ -32,7 +32,7 @@ const targets = [
     url: `${landingBase}/flow`,
   },
   {
-    expectedText: ["Agentic workflow demo", "Signed offer", "Signed receipt"],
+    expectedText: ["Agentic workflow demo", "Signed offer", "ERC-8004 identity"],
     kind: "html",
     name: "Agentic Workflow Demo",
     url: `${landingBase}/agentic-workflow`,

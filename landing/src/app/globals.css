@@ -5334,6 +5334,119 @@ a.ops-history-run:hover {
   line-height: 1.55;
 }
 
+.agentic-model {
+  margin-top: 16px;
+  padding: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.085);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(167, 139, 250, 0.07), transparent 44%),
+    rgba(8, 13, 19, 0.92);
+}
+
+.agentic-model-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.agentic-model-card {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid rgba(167, 139, 250, 0.16);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.022);
+}
+
+.agentic-model-card > span {
+  color: #a78bfa;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.agentic-model-card > strong {
+  display: block;
+  margin: 8px 0 14px;
+  overflow-wrap: anywhere;
+  font-size: 18px;
+}
+
+.agentic-model-card dl {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+
+.agentic-model-card dl div {
+  display: grid;
+  grid-template-columns: minmax(92px, 0.42fr) minmax(0, 1fr);
+  gap: 10px;
+  align-items: baseline;
+}
+
+.agentic-model-card dt {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.agentic-model-card dd {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  color: rgba(232, 241, 255, 0.92);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.agentic-artifacts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.agentic-artifacts div {
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid rgba(95, 191, 255, 0.13);
+  border-radius: 8px;
+  background: rgba(95, 191, 255, 0.035);
+}
+
+.agentic-artifacts span,
+.agentic-artifacts strong,
+.agentic-artifacts code {
+  display: block;
+}
+
+.agentic-artifacts span {
+  color: var(--blue);
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.agentic-artifacts strong {
+  margin: 8px 0 6px;
+  font-size: 14px;
+}
+
+.agentic-artifacts code {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .billing-shell {
   max-width: 1380px;
 }
@@ -6820,6 +6933,8 @@ a.ops-history-run:hover {
   .blueprints-grid,
   .agentic-proof-grid,
   .agentic-x402-chain,
+  .agentic-model-grid,
+  .agentic-artifacts,
   .agentic-proof-strip {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -6929,6 +7044,8 @@ a.ops-history-run:hover {
   .blueprints-split,
   .agentic-proof-grid,
   .agentic-x402-chain,
+  .agentic-model-grid,
+  .agentic-artifacts,
   .agentic-proof-strip,
   .execution-metrics {
     grid-template-columns: 1fr;

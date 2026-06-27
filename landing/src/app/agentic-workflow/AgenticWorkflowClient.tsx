@@ -21,6 +21,7 @@ import { useEffect, useMemo, useState } from "react"
 
 import {
   demoAgents,
+  demoArcAgentModel,
   demoApis,
   demoBillingOverview,
   demoFlowPayload,
@@ -43,6 +44,9 @@ const agent = demoAgents.find((item) => item.id === run.agentId) ?? demoAgents[0
 const api = demoApis.find((item) => item.id === run.apiId) ?? demoApis[0]
 const usage = demoBillingOverview.usage.find((item) => item.id === "use_demo_001") ?? demoBillingOverview.usage[0]
 const screening = demoShieldPayload.screenings.find((item) => item.id === run.screeningId) ?? demoShieldPayload.screenings[0]
+const agentIdentity = demoArcAgentModel.identities[0]
+const agentJob = demoArcAgentModel.jobs[0]
+const agentValidation = demoArcAgentModel.validations[0]
 
 export function AgenticWorkflowClient() {
   const [activeStage, setActiveStage] = useState(workflowStages.length - 1)
@@ -238,6 +242,60 @@ export function AgenticWorkflowClient() {
           <span>The successful payment becomes a new reputation signal for future access checks.</span>
         </div>
       </section>
+
+      <section className="agentic-model" aria-label="Arc Agent and Job model">
+        <div className="flow-panel-title">
+          <div>
+            <span>Agent / Job model</span>
+            <h2>ERC-8004 identity + ERC-8183 job envelope</h2>
+          </div>
+          <Workflow size={21} />
+        </div>
+        <div className="agentic-model-grid">
+          <ModelCard
+            eyebrow="Agent identity"
+            title={proof.agentName}
+            rows={[
+              ["standard", agentIdentity.standard],
+              ["registry", shortAddress(agentIdentity.registryAddress)],
+              ["agent uri", agentIdentity.agentUri],
+              ["wallet", shortAddress(agentIdentity.walletAddress)],
+              ["status", agentIdentity.status],
+            ]}
+          />
+          <ModelCard
+            eyebrow="Job envelope"
+            title={agentJob.id}
+            rows={[
+              ["standard", agentJob.standard],
+              ["capability", agentJob.requestedCapability],
+              ["status", agentJob.status],
+              ["input hash", shortHash(agentJob.inputHash)],
+              ["policy hash", shortHash(agentJob.policyHash)],
+            ]}
+          />
+          <ModelCard
+            eyebrow="Validation registry"
+            title={agentValidation.id}
+            rows={[
+              ["result", agentValidation.result],
+              ["score", String(agentValidation.score)],
+              ["evidence", agentValidation.evidenceUri],
+              ["evidence hash", shortHash(agentValidation.evidenceHash)],
+              ["signature", agentValidation.signature],
+            ]}
+          />
+        </div>
+        <div className="agentic-artifacts">
+          {demoArcAgentModel.artifacts.map((artifact) => (
+            <div key={artifact.id}>
+              <span>{artifact.type}</span>
+              <strong>{shortHash(artifact.digest)}</strong>
+              <code>{artifact.signature ?? "unsigned"}</code>
+            </div>
+          ))}
+        </div>
+      </section>
     </section>
   )
 }
@@ -268,6 +326,23 @@ function ProtocolCard({
         <span>{eyebrow}</span>
         {icon}
       </div>
+      <strong>{title}</strong>
+      <dl>
+        {rows.map(([label, value]) => (
+          <div key={label}>
+            <dt>{label}</dt>
+            <dd>{value}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  )
+}
+
+function ModelCard({ eyebrow, rows, title }: { eyebrow: string; rows: Array<[string, string]>; title: string }) {
+  return (
+    <div className="agentic-model-card">
+      <span>{eyebrow}</span>
       <strong>{title}</strong>
       <dl>
         {rows.map(([label, value]) => (
