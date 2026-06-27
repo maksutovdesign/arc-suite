@@ -1,6 +1,8 @@
-# Arc Suite — AI Agent Infrastructure for the Onchain Economy
+# Arc Suite — End-to-End Agentic Payments on Arc
 
-> **Twelve interconnected products built on [Arc](https://arc.io) and [Circle](https://circle.com) — demonstrating what the agentic economy looks like when AI agents can spend, screen risk, earn trust, govern wallets, meter usage, sponsor gas, map ecosystem demand, preserve payment privacy, convert builder patterns into templates, and pay for services autonomously using USDC.**
+> **Arc Suite demonstrates one complete autonomous USDC operation on [Arc](https://arc.io) and [Circle](https://circle.com): an AI agent requests a paid x402 API, receives a signed offer, passes policy and compliance checks, settles USDC on Arc Testnet, receives a signed receipt, updates reputation, and leaves a reviewer-ready proof trail.**
+
+The suite still contains multiple product surfaces, but the grant narrative is intentionally centered on a single proof-producing workflow rather than disconnected dashboards.
 
 Built with **Next.js 16**, **TypeScript**, **Tailwind CSS v4**, **shadcn/ui v4**, and the **Arc / Circle SDK**.
 
@@ -28,16 +30,36 @@ Built with **Next.js 16**, **TypeScript**, **Tailwind CSS v4**, **shadcn/ui v4**
 
 ---
 
+## Grant Reviewer Path
+
+Start here:
+
+1. **Run the workflow:** [arcsuite-app.vercel.app/agentic-workflow](https://arcsuite-app.vercel.app/agentic-workflow)
+2. **Inspect the proof:** [arcsuite-app.vercel.app/proof](https://arcsuite-app.vercel.app/proof)
+3. **Open the live operator console:** [arcsuite-app.vercel.app/flow](https://arcsuite-app.vercel.app/flow)
+
+The demonstrated operation is:
+
+`AI agent identity -> x402 signed offer -> Treasury budget check -> Shield screening -> Billing usage event -> Arc Testnet USDC settlement -> signed receipt -> Reputation update -> proof page`
+
+This gives Arc/Circle reviewers a concrete artifact to evaluate: one payment, one transaction hash, one policy chain, and one receipt bundle.
+
+---
+
 ## The Story
 
-Three AI agents — **DataHarvester-Pro**, **TradeBot-Alpha**, and **IoT-Gateway-01** — exist across the Suite. Follow their journey:
+**DataHarvester-Pro** is an autonomous agent buying a market-data API from an x402 provider. The user-facing story is no longer "look at twelve separate dashboards"; it is a single economic action that moves through the whole system:
 
-1. **Shield**: the counterparty wallet is screened and routed to allow, review, or block.
-2. **Treasury**: TradeBot-Alpha has consumed 95% of its monthly budget and triggered 3 critical alerts.
-3. **Reputation**: TradeBot-Alpha's trust score is declining (-23 pts in 30 days, tier: Gold).
-4. **Marketplace**: A premium data API **rejects** TradeBot-Alpha — trust score 812 is below the required threshold of 850.
+1. **Identity:** the agent is represented by an ERC-8004-compatible identity record with service, reputation and validation endpoints.
+2. **Job:** the API request is wrapped as an ERC-8183-compatible job envelope with input, policy and receipt hashes.
+3. **Offer:** Marketplace produces a signed x402 offer with exact USDC pricing.
+4. **Policy:** Treasury, Reputation and Shield decide whether the payment may proceed.
+5. **Settlement:** Flow executes the Arc Testnet USDC transfer through the Circle wallet path.
+6. **Receipt:** the provider signs the x402 receipt and the transaction hash is linked to the job.
+7. **Reputation:** the successful payment becomes a score update and future access signal.
+8. **Proof:** the `/proof` page exposes the tx hash, receipt JSON, policy chain and validation artifacts.
 
-This is the enforcement loop: *screen risk, control spend, score behavior, and gate access.*
+This is the core thesis: *agentic commerce needs more than a payment button; it needs identity, policy, settlement, receipt and reputation in one auditable loop.*
 
 ---
 
@@ -142,6 +164,13 @@ Circle currently does not list Arc Testnet in the standalone Address Screening c
 
 Arc Flow is the full intent-to-settlement workflow. It chains Shield screening, reputation policy, Marketplace access decisions, Circle wallet settlement and reputation updates into one auditable run.
 
+**What the end-to-end workflow proves:**
+- AI agents can buy services with USDC while remaining bounded by operator policy.
+- x402 pricing can be represented as a signed offer and signed receipt rather than a loose UI claim.
+- Arc Testnet settlement can be connected to the same workflow id, agent job id and proof artifact.
+- Circle-powered wallet, compliance and execution primitives can sit behind a product-grade operator surface.
+- Reputation is not a decorative score; it becomes a live access and post-settlement feedback signal.
+
 **Key features:**
 - End-to-end policy check → access check → Arc Testnet USDC settlement → reputation update
 - Grant-ready `/agentic-workflow` demo that packages the loop as a signed x402 offer, agent payment authorization, provider receipt, Arc transaction proof and trust-score delta
@@ -233,7 +262,7 @@ arc-suite/
 
 Each app is an independent Next.js 16 project sharing:
 - **Design system**: Space Grotesk font, Arc dark theme, `ArcButton`, `ArcProgress`, `StatCard`, `PageHeader`
-- **EcosystemNav**: top bar linking all twelve products together
+- **EcosystemNav**: shared navigation linking the product consoles and proof surfaces
 - **LiveTicker**: animated real-time event feed in each app's header
 
 ---
@@ -280,6 +309,10 @@ landing/supabase/migrations/2026062102_arc_shield.sql
 landing/supabase/migrations/2026062201_arc_flow.sql
 landing/supabase/migrations/2026062202_arc_billing.sql
 landing/supabase/migrations/2026062203_arc_escrow.sql
+landing/supabase/migrations/2026062301_arc_gas.sql
+landing/supabase/migrations/2026062302_arc_wallet_os.sql
+landing/supabase/migrations/2026062303_execution_worker.sql
+landing/supabase/migrations/2026062701_arc_agent_jobs.sql
 landing/supabase/seed.sql
 ```
 
@@ -479,20 +512,26 @@ five minutes when the repository secret `ARC_CRON_SECRET` contains the same valu
 
 ## Built for Arc/Circle
 
-These products were designed to showcase the Arc ecosystem to the **Arc community** and **Circle team** — demonstrating twelve complementary products that together form an infrastructure layer for the agentic economy:
+Arc Suite is designed for the **Arc community** and **Circle team** as a proof that agentic payments need a complete execution path:
 
-- **Treasury** answers: *"How do I control what my agents spend?"*
-- **Reputation** answers: *"How do I know which agents I can trust?"*
-- **Marketplace** answers: *"Where do agents find services to pay for?"*
-- **Shield** answers: *"Should this wallet be allowed to transact?"*
-- **Flow** answers: *"How does an approved payment move safely from intent to settlement?"*
-- **Billing** answers: *"How is every API call priced, invoiced, and netted for settlement?"*
-- **Escrow** answers: *"How is USDC released only when an agent completes agreed work?"*
-- **Gas** answers: *"Which agent transactions should receive gas sponsorship, and within what limits?"*
-- **Wallet OS** answers: *"Who controls each wallet, who may sign, and how is it recovered or retired?"*
-- **Radar** answers: *"Where are Arc builders active, which gaps are open, and where does Arc Suite fit?"*
-- **Private** answers: *"How do agents pay with USDC without exposing every commercial detail to every participant?"*
-- **Blueprints** answers: *"How do we turn ecosystem demand into repeatable builder templates?"*
+- **Arc Testnet settlement:** the workflow ends in a transaction hash and explorer link, not a simulated success toast.
+- **Circle Wallets:** the product model assumes developer-controlled wallet execution and idempotent backend transfer policy.
+- **Circle Compliance Engine:** Shield records screening provider output and keeps Arc policy decisions separate and auditable.
+- **x402 / Gateway pattern:** Marketplace and Billing model signed offers, per-request metering, receipts and settlement batches.
+- **USDC-native gas and operations:** Gas, Wallet OS and Execution Control define the policies needed to run agent wallets in production.
+- **ERC-8004 / ERC-8183 readiness:** the demo includes agent identity, job envelope, artifacts and validation evidence so the workflow can align with emerging agent standards.
+
+Each product answers one question inside that same loop:
+
+- **Treasury:** can this agent spend this amount right now?
+- **Reputation:** should this agent be trusted by this provider?
+- **Marketplace:** what service is being bought and under what x402 terms?
+- **Shield:** is the counterparty wallet policy-safe?
+- **Flow:** can the approved intent become one confirmed Arc settlement?
+- **Billing:** was the request priced, metered and invoiceable?
+- **Proof:** can an external reviewer verify the tx hash, receipt and policy chain?
+- **Wallet OS / Gas / Execution:** can the same pattern be operated with real wallet custody, sponsored execution and provider reconciliation?
+- **Radar / Private / Blueprints:** where does this workflow expand next for builders, privacy and reusable templates?
 
 ---
 
