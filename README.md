@@ -6,6 +6,36 @@ The suite still contains multiple product surfaces, but the grant narrative is i
 
 Built with **Next.js 16**, **TypeScript**, **Tailwind CSS v4**, **shadcn/ui v4**, and the **Arc / Circle SDK**.
 
+For a short hackathon submission view, see [`HACKATHON.md`](HACKATHON.md).
+
+---
+
+## Hackathon Submission Snapshot
+
+**Track:** Agentic Economy
+
+**One-line pitch:** Arc Suite is an operating layer for AI agents that need to buy services with USDC safely: identity, x402 offer, policy checks, Arc settlement, signed receipt, reputation update and proof in one workflow.
+
+**Repository:** [github.com/maksutovdesign/arc-suite](https://github.com/maksutovdesign/arc-suite)
+
+**Primary demo flow:**
+
+1. Open [Agentic Workflow Demo](https://arcsuite-app.vercel.app/agentic-workflow).
+2. Click **Run agentic workflow**.
+3. Inspect the signed x402 offer, agent authorization and provider receipt.
+4. Open [Proof Page](https://arcsuite-app.vercel.app/proof) to verify the transaction hash, receipt JSON, policy chain and validation artifacts.
+5. Open [Arc Flow](https://arcsuite-app.vercel.app/flow) to see the operator console behind the same workflow model.
+
+**Agentic Economy Track features:**
+- Autonomous agent purchase of an x402 API using USDC.
+- ERC-8004-compatible agent identity and reputation/validation registry surface.
+- ERC-8183-compatible job envelope with input, policy, output, receipt and validation hashes.
+- Policy-gated payment path: Treasury budget, Reputation access, Shield compliance screening.
+- Arc Testnet settlement proof with tx hash and explorer link.
+- Signed offer, payment authorization and provider receipt simulation.
+- Post-payment reputation update that becomes a future access signal.
+- Operator-ready proof page for judges, auditors and providers.
+
 ---
 
 ## Live Demos
