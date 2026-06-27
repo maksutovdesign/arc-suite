@@ -5447,6 +5447,224 @@ a.ops-history-run:hover {
   white-space: nowrap;
 }
 
+.proof-shell {
+  width: min(100% - 48px, 1320px);
+  margin: 0 auto;
+  padding: 58px 0 96px;
+}
+
+.proof-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);
+  gap: 28px;
+  align-items: end;
+  margin-bottom: 18px;
+}
+
+.proof-hero h1 {
+  max-width: 920px;
+  margin: 4px 0 14px;
+  font-size: clamp(44px, 6vw, 82px);
+  line-height: 0.96;
+}
+
+.proof-hero p:not(.kicker) {
+  max-width: 760px;
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1.68;
+}
+
+.proof-verdict,
+.proof-panel {
+  border: 1px solid rgba(255, 255, 255, 0.085);
+  border-radius: 8px;
+  background: rgba(8, 13, 19, 0.92);
+}
+
+.proof-verdict {
+  display: grid;
+  gap: 8px;
+  padding: 22px;
+  border-color: rgba(52, 211, 153, 0.24);
+  background:
+    linear-gradient(135deg, rgba(52, 211, 153, 0.13), rgba(95, 191, 255, 0.05)),
+    rgba(8, 13, 19, 0.92);
+}
+
+.proof-verdict span {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  color: var(--green);
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.proof-verdict strong {
+  font-size: 26px;
+}
+
+.proof-verdict small {
+  overflow-wrap: anywhere;
+  color: var(--muted);
+}
+
+.proof-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.78fr) minmax(0, 1.22fr);
+  gap: 16px;
+}
+
+.proof-panel {
+  min-width: 0;
+  padding: 22px;
+}
+
+.proof-transaction code {
+  display: block;
+  padding: 16px;
+  overflow-wrap: anywhere;
+  border: 1px solid rgba(95, 191, 255, 0.18);
+  border-radius: 8px;
+  background: #05080c;
+  color: #9ccfff;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.proof-transaction a {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 14px;
+  color: var(--blue);
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.proof-receipt-json {
+  display: grid;
+  gap: 5px;
+  padding: 16px;
+  overflow-x: auto;
+  border: 1px solid rgba(95, 191, 255, 0.18);
+  border-radius: 8px;
+  background: #05080c;
+  color: #9ccfff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.proof-chain,
+.proof-artifacts {
+  margin-top: 16px;
+}
+
+.proof-chain-list {
+  display: grid;
+  gap: 8px;
+}
+
+.proof-chain-step {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr) auto auto;
+  gap: 12px;
+  align-items: center;
+  min-height: 72px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.065);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.018);
+}
+
+.proof-chain-icon {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border-radius: 8px;
+  background: rgba(52, 211, 153, 0.12);
+  color: var(--green);
+}
+
+.proof-chain-step strong,
+.proof-chain-step span {
+  display: block;
+}
+
+.proof-chain-step strong {
+  font-size: 14px;
+}
+
+.proof-chain-step span {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.proof-chain-step code {
+  color: rgba(255, 255, 255, 0.32);
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.proof-chain-step em {
+  padding: 5px 8px;
+  border-radius: 999px;
+  color: var(--green);
+  background: rgba(52, 211, 153, 0.11);
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.proof-artifact-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.proof-artifact-grid div {
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid rgba(95, 191, 255, 0.13);
+  border-radius: 8px;
+  background: rgba(95, 191, 255, 0.035);
+}
+
+.proof-artifact-grid span,
+.proof-artifact-grid strong,
+.proof-artifact-grid code {
+  display: block;
+}
+
+.proof-artifact-grid span {
+  color: var(--blue);
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.proof-artifact-grid strong {
+  margin: 8px 0 6px;
+  font-size: 14px;
+}
+
+.proof-artifact-grid code {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .billing-shell {
   max-width: 1380px;
 }
@@ -6935,6 +7153,8 @@ a.ops-history-run:hover {
   .agentic-x402-chain,
   .agentic-model-grid,
   .agentic-artifacts,
+  .proof-hero,
+  .proof-grid,
   .agentic-proof-strip {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -7046,6 +7266,9 @@ a.ops-history-run:hover {
   .agentic-x402-chain,
   .agentic-model-grid,
   .agentic-artifacts,
+  .proof-hero,
+  .proof-grid,
+  .proof-artifact-grid,
   .agentic-proof-strip,
   .execution-metrics {
     grid-template-columns: 1fr;
@@ -7069,6 +7292,25 @@ a.ops-history-run:hover {
 
   .agentic-stage code {
     display: none;
+  }
+
+  .proof-shell {
+    width: min(100% - 28px, 1320px);
+    padding-top: 28px;
+  }
+
+  .proof-hero h1 {
+    font-size: 44px;
+  }
+
+  .proof-chain-step {
+    grid-template-columns: 38px minmax(0, 1fr);
+  }
+
+  .proof-chain-step code,
+  .proof-chain-step em {
+    justify-self: start;
+    grid-column: 2;
   }
 
   .radar-hero,

@@ -15,7 +15,7 @@ export function SiteHeader({ idPrefix = "site-header" }: { idPrefix?: string }) 
         <div className="nav-links" aria-label="Primary navigation">
           <Link href="/">Product</Link>
           <Link href="/#loop">Loop</Link>
-          <Link href="/#proof">Proof</Link>
+          <Link href="/proof">Proof</Link>
           <Link href="/investors">Investors</Link>
         </div>
         <a className="nav-demo" href={liveDemoUrl} target="_blank" rel="noreferrer">

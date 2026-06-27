@@ -16,6 +16,7 @@ Built with **Next.js 16**, **TypeScript**, **Tailwind CSS v4**, **shadcn/ui v4**
 | **Arc Shield** | [arcsuite-app.vercel.app/shield](https://arcsuite-app.vercel.app/shield) | Circle-powered compliance screening and risk policy |
 | **Arc Flow** | [arcsuite-app.vercel.app/flow](https://arcsuite-app.vercel.app/flow) | Compliance-to-settlement payment orchestration |
 | **Agentic Workflow Demo** | [arcsuite-app.vercel.app/agentic-workflow](https://arcsuite-app.vercel.app/agentic-workflow) | One-click AI agent purchase with policy, x402 receipt, Arc settlement and reputation update |
+| **Proof Page** | [arcsuite-app.vercel.app/proof](https://arcsuite-app.vercel.app/proof) | Reviewer-ready tx hash, x402 receipt, policy chain and validation evidence |
 | **Arc Billing** | [arcsuite-app.vercel.app/billing](https://arcsuite-app.vercel.app/billing) | x402 usage metering, prepaid balances, invoices and settlement batches |
 | **Arc Escrow** | [arcsuite-app.vercel.app/escrow](https://arcsuite-app.vercel.app/escrow) | Programmable agent deals, milestones, disputes and contract events |
 | **Arc Gas** | [arcsuite-app.vercel.app/gas](https://arcsuite-app.vercel.app/gas) | Gas sponsorship policy, Paymaster/Gas Station limits and reporting |
@@ -145,6 +146,7 @@ Arc Flow is the full intent-to-settlement workflow. It chains Shield screening, 
 - End-to-end policy check → access check → Arc Testnet USDC settlement → reputation update
 - Grant-ready `/agentic-workflow` demo that packages the loop as a signed x402 offer, agent payment authorization, provider receipt, Arc transaction proof and trust-score delta
 - ERC-8004-compatible agent identity and ERC-8183-compatible job envelope model for registry, artifacts and validation evidence
+- `/proof` page that exposes the full transaction hash, x402 receipt JSON, policy chain and validation artifacts for external review
 - Step-by-step execution timeline with allow, review, blocked and completed states
 - Arcscan transaction links when settlement is confirmed
 - Supabase audit trail for every flow run and policy step

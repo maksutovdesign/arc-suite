@@ -38,6 +38,12 @@ const targets = [
     url: `${landingBase}/agentic-workflow`,
   },
   {
+    expectedText: ["Transaction proof", "Transaction hash", "Policy chain"],
+    kind: "html",
+    name: "Proof page",
+    url: `${landingBase}/proof`,
+  },
+  {
     expectedText: ["Arc Billing", "Demo workspace"],
     kind: "html",
     name: "Arc Billing console",

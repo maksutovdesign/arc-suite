@@ -387,7 +387,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
           <div className="nav-links" aria-label="Primary navigation">
             <a href="#system">Product</a>
             <a href="#loop">Loop</a>
-            <a href="#proof">Proof</a>
+            <a href="/proof">Proof</a>
             <a href="/investors" onClick={() => trackLandingConversion({ eventName: "investors_click", placement: "nav" })}>Investors</a>
           </div>
           <a
