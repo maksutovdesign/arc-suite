@@ -6,6 +6,10 @@ import type {
   AnalyticsEvent,
   AnalyticsEventInput,
   AnalyticsSource,
+  ArcAgentIdentity,
+  ArcAgentJob,
+  ArcAgentJobArtifact,
+  ArcAgentJobValidation,
   ArcSettlement,
   ArcSettlementResult,
   ArcSettlementStatus,
@@ -50,6 +54,7 @@ import type {
   WorkspaceApiKeyCreated,
   WorkspaceMember,
 } from "./schema"
+import type { StoredAgenticProof } from "../agentic-demo-proof"
 
 type WorkspaceRow = {
   id: string
@@ -335,6 +340,76 @@ type FlowRunRow = {
   created_at: string
   updated_at: string
   completed_at: string | null
+}
+
+type ArcAgentIdentityRow = {
+  id: string
+  workspace_id: string
+  agent_id: string
+  standard: ArcAgentIdentity["standard"]
+  registry_address: string | null
+  agent_uri: string
+  service_endpoint: string
+  wallet_address: string
+  validation_endpoint: string
+  reputation_endpoint: string
+  capabilities: string[] | null
+  trust_model: ArcAgentIdentity["trustModel"] | null
+  metadata: Record<string, unknown> | null
+  status: ArcAgentIdentity["status"]
+  registered_at: string
+  updated_at: string
+}
+
+type ArcAgentJobRow = {
+  id: string
+  workspace_id: string
+  agent_identity_id: string
+  requester_agent_id: string
+  provider_agent_id: string
+  api_id: string
+  flow_run_id: string | null
+  execution_job_id: string | null
+  standard: ArcAgentJob["standard"]
+  kind: ArcAgentJob["kind"]
+  status: ArcAgentJob["status"]
+  requested_capability: string
+  amount_usdc: string | number
+  input_hash: string
+  output_hash: string | null
+  policy_hash: string
+  receipt_hash: string | null
+  settlement_id: string | null
+  tx_hash: string | null
+  constraints: ArcAgentJob["constraints"] | null
+  metadata: Record<string, unknown> | null
+  created_at: string
+  updated_at: string
+  completed_at: string | null
+}
+
+type ArcAgentJobArtifactRow = {
+  id: string
+  workspace_id: string
+  job_id: string
+  type: ArcAgentJobArtifact["type"]
+  uri: string
+  digest: string
+  signature: string | null
+  created_at: string
+}
+
+type ArcAgentJobValidationRow = {
+  id: string
+  workspace_id: string
+  job_id: string
+  validator_agent_id: string | null
+  result: ArcAgentJobValidation["result"]
+  score: string | number
+  evidence_uri: string
+  evidence_hash: string
+  signature: string
+  created_at: string
 }
 
 type BillingPlanRow = {
@@ -993,6 +1068,130 @@ export async function checkSupabaseFlowReadiness() {
   if (!isSupabaseConfigured()) return false
   try {
     await getRows<Pick<FlowRunRow, "id">>("flow_runs", "select=id&limit=1")
+    return true
+  } catch {
+    return false
+  }
+}
+
+export async function ensureSupabaseArcAgentIdentity(identity: ArcAgentIdentity): Promise<ArcAgentIdentity | null> {
+  if (!isSupabaseConfigured()) return null
+  try {
+    const existing = await getRows<ArcAgentIdentityRow>(
+      "arc_agent_identities",
+      `select=*&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&id=eq.${encodeURIComponent(identity.id)}&limit=1`,
+    )
+    if (existing[0]) return mapArcAgentIdentity(existing[0])
+
+    const rows = await postRows<ArcAgentIdentityRow>("arc_agent_identities", [toArcAgentIdentityRow(identity)])
+    return rows[0] ? mapArcAgentIdentity(rows[0]) : null
+  } catch (error) {
+    logSupabaseError("arc agent identity upsert", error)
+    return null
+  }
+}
+
+export async function insertSupabaseArcAgentJob(job: ArcAgentJob): Promise<ArcAgentJob | null> {
+  if (!isSupabaseConfigured()) return null
+  try {
+    const rows = await postRows<ArcAgentJobRow>("arc_agent_jobs", [toArcAgentJobRow(job)])
+    return rows[0] ? mapArcAgentJob(rows[0]) : null
+  } catch (error) {
+    logSupabaseError("arc agent job insert", error)
+    return null
+  }
+}
+
+export async function insertSupabaseArcAgentJobArtifacts(artifacts: ArcAgentJobArtifact[]): Promise<ArcAgentJobArtifact[] | null> {
+  if (!isSupabaseConfigured()) return null
+  try {
+    const rows = await postRows<ArcAgentJobArtifactRow>("arc_agent_job_artifacts", artifacts.map(toArcAgentJobArtifactRow))
+    return rows.map(mapArcAgentJobArtifact)
+  } catch (error) {
+    logSupabaseError("arc agent job artifact insert", error)
+    return null
+  }
+}
+
+export async function insertSupabaseArcAgentJobValidation(
+  validation: ArcAgentJobValidation,
+): Promise<ArcAgentJobValidation | null> {
+  if (!isSupabaseConfigured()) return null
+  try {
+    const rows = await postRows<ArcAgentJobValidationRow>("arc_agent_job_validations", [toArcAgentJobValidationRow(validation)])
+    return rows[0] ? mapArcAgentJobValidation(rows[0]) : null
+  } catch (error) {
+    logSupabaseError("arc agent job validation insert", error)
+    return null
+  }
+}
+
+export async function getSupabaseAgenticProof(id: string): Promise<StoredAgenticProof | null> {
+  if (!isSupabaseConfigured()) return null
+  try {
+    const flowRows = await getRows<FlowRunRow>(
+      "flow_runs",
+      `select=*&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&id=eq.${encodeURIComponent(id)}&limit=1`,
+    )
+    const flowRun = flowRows[0] ? mapFlowRun(flowRows[0]) : null
+
+    const jobRows = await getOptionalRows<ArcAgentJobRow>(
+      "arc_agent_jobs",
+      flowRun
+        ? `select=*&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&flow_run_id=eq.${encodeURIComponent(flowRun.id)}&limit=1`
+        : `select=*&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&id=eq.${encodeURIComponent(id)}&limit=1`,
+      "agentic proof job lookup",
+    )
+    const job = jobRows[0] ? mapArcAgentJob(jobRows[0]) : null
+    if (!flowRun && !job) return null
+
+    const resolvedFlowRun = flowRun
+    const artifactRows = job
+      ? await getOptionalRows<ArcAgentJobArtifactRow>(
+          "arc_agent_job_artifacts",
+          `select=*&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&job_id=eq.${encodeURIComponent(job.id)}&order=created_at.asc`,
+          "agentic proof artifact lookup",
+        )
+      : []
+    const validationRows = job
+      ? await getOptionalRows<ArcAgentJobValidationRow>(
+          "arc_agent_job_validations",
+          `select=*&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&job_id=eq.${encodeURIComponent(job.id)}&order=created_at.desc&limit=1`,
+          "agentic proof validation lookup",
+        )
+      : []
+    const identityRows = job
+      ? await getOptionalRows<ArcAgentIdentityRow>(
+          "arc_agent_identities",
+          `select=*&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&id=eq.${encodeURIComponent(job.agentIdentityId)}&limit=1`,
+          "agentic proof identity lookup",
+        )
+      : []
+
+    if (!resolvedFlowRun) return null
+
+    return {
+      artifacts: artifactRows.map(mapArcAgentJobArtifact),
+      flowRun: resolvedFlowRun,
+      identity: identityRows[0] ? mapArcAgentIdentity(identityRows[0]) : null,
+      job,
+      validation: validationRows[0] ? mapArcAgentJobValidation(validationRows[0]) : null,
+    }
+  } catch (error) {
+    logSupabaseError("agentic proof lookup", error)
+    return null
+  }
+}
+
+export async function checkSupabaseArcAgentReadiness() {
+  if (!isSupabaseConfigured()) return false
+  try {
+    await Promise.all([
+      getRows<Pick<ArcAgentIdentityRow, "id">>("arc_agent_identities", "select=id&limit=1"),
+      getRows<Pick<ArcAgentJobRow, "id">>("arc_agent_jobs", "select=id&limit=1"),
+      getRows<Pick<ArcAgentJobArtifactRow, "id">>("arc_agent_job_artifacts", "select=id&limit=1"),
+      getRows<Pick<ArcAgentJobValidationRow, "id">>("arc_agent_job_validations", "select=id&limit=1"),
+    ])
     return true
   } catch {
     return false
@@ -1945,6 +2144,10 @@ export async function checkSupabaseReadiness() {
     "wallet_lifecycle_events",
     "execution_jobs",
     "circle_webhook_events",
+    "arc_agent_identities",
+    "arc_agent_jobs",
+    "arc_agent_job_artifacts",
+    "arc_agent_job_validations",
   ]
   const checks = await Promise.all(tables.map(async (table) => {
     try {
@@ -1971,6 +2174,15 @@ async function getRows<T>(table: string, query: string): Promise<T[]> {
 
   if (!response.ok) throw new Error(`Supabase read failed for ${table}`)
   return response.json() as Promise<T[]>
+}
+
+async function getOptionalRows<T>(table: string, query: string, scope: string): Promise<T[]> {
+  try {
+    return await getRows<T>(table, query)
+  } catch (error) {
+    logSupabaseError(scope, error)
+    return []
+  }
 }
 
 async function postRows<T>(table: string, rows: unknown[]): Promise<T[]> {
@@ -2248,6 +2460,93 @@ function mapFlowRun(row: FlowRunRow): FlowRun {
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     completedAt: row.completed_at,
+  }
+}
+
+function mapArcAgentIdentity(row: ArcAgentIdentityRow): ArcAgentIdentity {
+  return {
+    agentId: row.agent_id,
+    agentUri: row.agent_uri,
+    capabilities: row.capabilities ?? [],
+    id: row.id,
+    metadata: row.metadata ?? {},
+    registeredAt: row.registered_at,
+    registryAddress: row.registry_address,
+    reputationEndpoint: row.reputation_endpoint,
+    serviceEndpoint: row.service_endpoint,
+    standard: row.standard,
+    status: row.status,
+    trustModel: row.trust_model ?? {
+      identityRegistry: "pending",
+      reputationRegistry: "pending",
+      validationRegistry: "pending",
+    },
+    updatedAt: row.updated_at,
+    validationEndpoint: row.validation_endpoint,
+    walletAddress: row.wallet_address,
+    workspaceId: row.workspace_id,
+  }
+}
+
+function mapArcAgentJob(row: ArcAgentJobRow): ArcAgentJob {
+  return {
+    agentIdentityId: row.agent_identity_id,
+    amountUsdc: toNumber(row.amount_usdc),
+    apiId: row.api_id,
+    completedAt: row.completed_at,
+    constraints: row.constraints ?? {
+      deadlineAt: row.created_at,
+      maxSpendUsdc: toNumber(row.amount_usdc),
+      requireComplianceScreening: true,
+      requiredReputation: 0,
+    },
+    createdAt: row.created_at,
+    executionJobId: row.execution_job_id,
+    flowRunId: row.flow_run_id,
+    id: row.id,
+    inputHash: row.input_hash,
+    kind: row.kind,
+    metadata: row.metadata ?? {},
+    outputHash: row.output_hash,
+    policyHash: row.policy_hash,
+    providerAgentId: row.provider_agent_id,
+    receiptHash: row.receipt_hash,
+    requestedCapability: row.requested_capability,
+    requesterAgentId: row.requester_agent_id,
+    settlementId: row.settlement_id,
+    standard: row.standard,
+    status: row.status,
+    txHash: row.tx_hash,
+    updatedAt: row.updated_at,
+    workspaceId: row.workspace_id,
+  }
+}
+
+function mapArcAgentJobArtifact(row: ArcAgentJobArtifactRow): ArcAgentJobArtifact {
+  return {
+    createdAt: row.created_at,
+    digest: row.digest,
+    id: row.id,
+    jobId: row.job_id,
+    signature: row.signature,
+    type: row.type,
+    uri: row.uri,
+    workspaceId: row.workspace_id,
+  }
+}
+
+function mapArcAgentJobValidation(row: ArcAgentJobValidationRow): ArcAgentJobValidation {
+  return {
+    createdAt: row.created_at,
+    evidenceHash: row.evidence_hash,
+    evidenceUri: row.evidence_uri,
+    id: row.id,
+    jobId: row.job_id,
+    result: row.result,
+    score: toNumber(row.score),
+    signature: row.signature,
+    validatorAgentId: row.validator_agent_id,
+    workspaceId: row.workspace_id,
   }
 }
 
@@ -2604,6 +2903,84 @@ function toAgentRow(agent: Agent): AgentRow {
     tags: agent.tags,
     created_at: agent.createdAt,
     last_active_at: agent.lastActiveAt,
+  }
+}
+
+function toArcAgentIdentityRow(identity: ArcAgentIdentity): ArcAgentIdentityRow {
+  return {
+    agent_id: identity.agentId,
+    agent_uri: identity.agentUri,
+    capabilities: identity.capabilities,
+    id: identity.id,
+    metadata: identity.metadata,
+    registered_at: identity.registeredAt,
+    registry_address: identity.registryAddress,
+    reputation_endpoint: identity.reputationEndpoint,
+    service_endpoint: identity.serviceEndpoint,
+    standard: identity.standard,
+    status: identity.status,
+    trust_model: identity.trustModel,
+    updated_at: identity.updatedAt,
+    validation_endpoint: identity.validationEndpoint,
+    wallet_address: identity.walletAddress,
+    workspace_id: WORKSPACE_ID,
+  }
+}
+
+function toArcAgentJobRow(job: ArcAgentJob): ArcAgentJobRow {
+  return {
+    agent_identity_id: job.agentIdentityId,
+    amount_usdc: job.amountUsdc,
+    api_id: job.apiId,
+    completed_at: job.completedAt,
+    constraints: job.constraints,
+    created_at: job.createdAt,
+    execution_job_id: job.executionJobId,
+    flow_run_id: job.flowRunId,
+    id: job.id,
+    input_hash: job.inputHash,
+    kind: job.kind,
+    metadata: job.metadata,
+    output_hash: job.outputHash,
+    policy_hash: job.policyHash,
+    provider_agent_id: job.providerAgentId,
+    receipt_hash: job.receiptHash,
+    requested_capability: job.requestedCapability,
+    requester_agent_id: job.requesterAgentId,
+    settlement_id: null,
+    standard: job.standard,
+    status: job.status,
+    tx_hash: job.txHash,
+    updated_at: job.updatedAt,
+    workspace_id: WORKSPACE_ID,
+  }
+}
+
+function toArcAgentJobArtifactRow(artifact: ArcAgentJobArtifact): ArcAgentJobArtifactRow {
+  return {
+    created_at: artifact.createdAt,
+    digest: artifact.digest,
+    id: artifact.id,
+    job_id: artifact.jobId,
+    signature: artifact.signature,
+    type: artifact.type,
+    uri: artifact.uri,
+    workspace_id: WORKSPACE_ID,
+  }
+}
+
+function toArcAgentJobValidationRow(validation: ArcAgentJobValidation): ArcAgentJobValidationRow {
+  return {
+    created_at: validation.createdAt,
+    evidence_hash: validation.evidenceHash,
+    evidence_uri: validation.evidenceUri,
+    id: validation.id,
+    job_id: validation.jobId,
+    result: validation.result,
+    score: validation.score,
+    signature: validation.signature,
+    validator_agent_id: validation.validatorAgentId,
+    workspace_id: WORKSPACE_ID,
   }
 }
 

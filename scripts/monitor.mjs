@@ -69,6 +69,18 @@ const checks = [
     run: async () => checkHtmlPage(`${bases.landing}/flow`, ["Arc Flow", "Demo workspace"]),
   },
   {
+    name: "Agentic Workflow page",
+    run: async () => checkHtmlPage(`${bases.landing}/agentic-workflow`, ["Agentic workflow demo", "Signed offer", "ERC-8004 identity"]),
+  },
+  {
+    name: "Proof page",
+    run: async () => checkHtmlPage(`${bases.landing}/proof`, ["Transaction proof", "Transaction hash", "Policy chain"]),
+  },
+  {
+    name: "Judge mode page",
+    run: async () => checkHtmlPage(`${bases.landing}/judge`, ["Judge mode", "Run workflow", "Live demo surface"]),
+  },
+  {
     name: "Arc Billing page",
     run: async () => checkHtmlPage(`${bases.landing}/billing`, ["Arc Billing", "Demo workspace"]),
   },

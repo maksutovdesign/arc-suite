@@ -10,14 +10,8 @@ import {
   Workflow,
 } from "lucide-react"
 
-import {
-  demoAgents,
-  demoArcAgentModel,
-  demoApis,
-  demoBillingOverview,
-  demoFlowPayload,
-  demoShieldPayload,
-} from "../demoWorkspace"
+import { buildAgenticDemoProof, buildAgenticProofFromStored, shortHash } from "@/lib/agentic-demo-proof"
+import { getSupabaseAgenticProof } from "@/lib/backend/supabase"
 import { SiteHeader } from "../SiteHeader"
 
 export const metadata = {
@@ -25,76 +19,83 @@ export const metadata = {
   description: "Arc Suite proof page with transaction hash, x402 receipt and policy chain.",
 }
 
-const flowRun = demoFlowPayload.runs[0]
-const agent = demoAgents.find((item) => item.id === flowRun.agentId) ?? demoAgents[0]
-const api = demoApis.find((item) => item.id === flowRun.apiId) ?? demoApis[0]
-const screening = demoShieldPayload.screenings.find((item) => item.id === flowRun.screeningId) ?? demoShieldPayload.screenings[0]
-const usage = demoBillingOverview.usage.find((item) => item.id === "use_demo_001") ?? demoBillingOverview.usage[0]
-const agentJob = demoArcAgentModel.jobs[0]
-const validation = demoArcAgentModel.validations[0]
-const artifacts = demoArcAgentModel.artifacts
+export const dynamic = "force-dynamic"
 
-const receipt = {
-  workflowId: flowRun.id,
-  agentJobId: agentJob.id,
-  agentIdentity: demoArcAgentModel.identities[0].id,
-  x402OfferDigest: artifacts.find((item) => item.type === "x402_offer")?.digest ?? "pending",
-  paymentAuthorizationDigest: artifacts.find((item) => item.type === "payment_authorization")?.digest ?? "pending",
-  receiptDigest: agentJob.receiptHash ?? artifacts.find((item) => item.type === "receipt")?.digest ?? "pending",
-  settlementId: flowRun.settlementId ?? "pending",
-  txHash: flowRun.txHash ?? "pending",
-  explorerUrl: flowRun.explorerUrl ?? "",
-  policyDecision: flowRun.accessAllowed ? "allow" : "deny",
-  validationResult: validation.result,
-  reputationDelta: `${flowRun.reputationScoreBefore} -> ${flowRun.reputationScoreAfter}`,
+type ProofPageProps = {
+  searchParams?: Promise<{ id?: string }> | { id?: string }
 }
 
-const policyChain = [
-  {
-    label: "Treasury budget",
-    detail: `${agent.dailySpentUsdc.toFixed(2)} / ${agent.dailyLimitUsdc.toFixed(2)} USDC daily spend`,
-    result: "passed",
-    icon: WalletCards,
-  },
-  {
-    label: "Reputation access",
-    detail: `Score ${flowRun.reputationScoreAfter ?? flowRun.reputationScoreBefore} >= API threshold ${api.minReputationScore}`,
-    result: "passed",
-    icon: BadgeCheck,
-  },
-  {
-    label: "Shield screening",
-    detail: `${screening.providerResult ?? "APPROVED"} by Circle Compliance Engine simulation`,
-    result: screening.decision,
-    icon: ShieldCheck,
-  },
-  {
-    label: "x402 signed offer",
-    detail: `${api.priceUsdc.toFixed(3)} USDC per ${api.pricingUnit} from ${api.providerName}`,
-    result: "signed",
-    icon: ReceiptText,
-  },
-  {
-    label: "Billing metering",
-    detail: `${usage.units} ${usage.pricingUnit} recorded as ${usage.id}`,
-    result: "recorded",
-    icon: FileCheck2,
-  },
-  {
-    label: "Arc settlement",
-    detail: `${flowRun.amountUsdc.toFixed(3)} USDC confirmed on Arc Testnet`,
-    result: "confirmed",
-    icon: CircleDollarSign,
-  },
-  {
-    label: "Validation registry",
-    detail: `Evidence ${shortHash(validation.evidenceHash)} scored ${validation.score}`,
-    result: validation.result,
-    icon: Workflow,
-  },
-]
+export default async function ProofPage({ searchParams }: ProofPageProps) {
+  const params = await searchParams
+  const requestedId = typeof params?.id === "string" ? params.id : null
+  const stored = requestedId ? await getSupabaseAgenticProof(requestedId) : null
+  const proof = stored ? buildAgenticProofFromStored(stored) : buildAgenticDemoProof()
+  const flowRun = proof.flowRun
+  const agent = proof.agent
+  const api = proof.api
+  const screening = proof.screeningRecord
+  const usage = proof.usage
+  const validation = proof.agentValidation
+  const artifacts = proof.artifacts
+  const receipt = {
+    agentIdentity: proof.agentIdentity.id,
+    agentJobId: proof.agentJob.id,
+    explorerUrl: flowRun.explorerUrl ?? "",
+    paymentAuthorizationDigest: artifacts.find((item) => item.type === "payment_authorization")?.digest ?? proof.authorization.digest,
+    policyDecision: flowRun.accessAllowed ? "allow" : "deny",
+    receiptDigest: proof.agentJob.receiptHash ?? artifacts.find((item) => item.type === "receipt")?.digest ?? proof.receipt.digest,
+    reputationDelta: `${flowRun.reputationScoreBefore} -> ${flowRun.reputationScoreAfter}`,
+    settlementId: proof.settlementId,
+    txHash: proof.txHash || "pending",
+    validationResult: validation.result,
+    workflowId: flowRun.id,
+    x402OfferDigest: artifacts.find((item) => item.type === "x402_offer")?.digest ?? proof.offer.payloadHash,
+  }
+  const policyChain = [
+    {
+      label: "Treasury budget",
+      detail: `${agent.dailySpentUsdc.toFixed(2)} / ${agent.dailyLimitUsdc.toFixed(2)} USDC daily spend`,
+      result: "passed",
+      icon: WalletCards,
+    },
+    {
+      label: "Reputation access",
+      detail: `Score ${flowRun.reputationScoreAfter ?? flowRun.reputationScoreBefore} >= API threshold ${api.minReputationScore}`,
+      result: "passed",
+      icon: BadgeCheck,
+    },
+    {
+      label: "Shield screening",
+      detail: `${screening.providerResult ?? "APPROVED"} by Circle Compliance Engine simulation`,
+      result: screening.decision,
+      icon: ShieldCheck,
+    },
+    {
+      label: "x402 signed offer",
+      detail: `${api.priceUsdc.toFixed(3)} USDC per ${api.pricingUnit} from ${proof.provider}`,
+      result: "signed",
+      icon: ReceiptText,
+    },
+    {
+      label: "Billing metering",
+      detail: `${usage.units} ${usage.pricingUnit} recorded as ${usage.id}`,
+      result: "recorded",
+      icon: FileCheck2,
+    },
+    {
+      label: "Arc settlement",
+      detail: `${flowRun.amountUsdc.toFixed(3)} USDC confirmed on Arc Testnet`,
+      result: "confirmed",
+      icon: CircleDollarSign,
+    },
+    {
+      label: "Validation registry",
+      detail: `Evidence ${shortHash(validation.evidenceHash)} scored ${validation.score}`,
+      result: validation.result,
+      icon: Workflow,
+    },
+  ]
 
-export default function ProofPage() {
   return (
     <main>
       <SiteHeader idPrefix="proof-brand" />
@@ -110,7 +111,7 @@ export default function ProofPage() {
             </p>
           </div>
           <div className="proof-verdict">
-            <span><Check size={16} /> Verified demo proof</span>
+            <span><Check size={16} /> {proof.proofSource === "supabase" ? "Verified live proof" : "Verified demo proof"}</span>
             <strong>{receipt.policyDecision.toUpperCase()} · {receipt.validationResult.toUpperCase()}</strong>
             <small>{receipt.workflowId} · {receipt.agentJobId}</small>
           </div>
@@ -145,6 +146,7 @@ export default function ProofPage() {
               <span>{`{`}</span>
               <span>{`  "workflowId": "${receipt.workflowId}",`}</span>
               <span>{`  "agentJobId": "${receipt.agentJobId}",`}</span>
+              <span>{`  "source": "${proof.proofSource}",`}</span>
               <span>{`  "x402OfferDigest": "${receipt.x402OfferDigest}",`}</span>
               <span>{`  "paymentAuthorizationDigest": "${receipt.paymentAuthorizationDigest}",`}</span>
               <span>{`  "receiptDigest": "${receipt.receiptDigest}",`}</span>
@@ -208,8 +210,4 @@ export default function ProofPage() {
       </section>
     </main>
   )
-}
-
-function shortHash(value: string) {
-  return value.length > 16 ? `${value.slice(0, 8)}...${value.slice(-5)}` : value
 }

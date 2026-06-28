@@ -44,6 +44,12 @@ const targets = [
     url: `${landingBase}/proof`,
   },
   {
+    expectedText: ["Judge mode", "Run workflow", "Live demo surface"],
+    kind: "html",
+    name: "Judge mode",
+    url: `${landingBase}/judge`,
+  },
+  {
     expectedText: ["Arc Billing", "Demo workspace"],
     kind: "html",
     name: "Arc Billing console",

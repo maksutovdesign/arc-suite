@@ -20,10 +20,10 @@ For a short hackathon submission view, see [`HACKATHON.md`](HACKATHON.md).
 
 **Primary demo flow:**
 
-1. Open [Agentic Workflow Demo](https://arcsuite-app.vercel.app/agentic-workflow).
+1. Open [Judge Mode](https://arcsuite-app.vercel.app/judge).
 2. Click **Run agentic workflow**.
 3. Inspect the signed x402 offer, agent authorization and provider receipt.
-4. Open [Proof Page](https://arcsuite-app.vercel.app/proof) to verify the transaction hash, receipt JSON, policy chain and validation artifacts.
+4. Click **Open proof page** to verify the transaction hash, receipt JSON, policy chain and validation artifacts for that run.
 5. Open [Arc Flow](https://arcsuite-app.vercel.app/flow) to see the operator console behind the same workflow model.
 
 **Agentic Economy Track features:**
@@ -47,6 +47,7 @@ For a short hackathon submission view, see [`HACKATHON.md`](HACKATHON.md).
 | 🛒 **Arc Marketplace** | [marketplace-eosin-eight.vercel.app](https://marketplace-eosin-eight.vercel.app) | Discovery platform for x402-enabled APIs |
 | **Arc Shield** | [arcsuite-app.vercel.app/shield](https://arcsuite-app.vercel.app/shield) | Circle-powered compliance screening and risk policy |
 | **Arc Flow** | [arcsuite-app.vercel.app/flow](https://arcsuite-app.vercel.app/flow) | Compliance-to-settlement payment orchestration |
+| **Judge Mode** | [arcsuite-app.vercel.app/judge](https://arcsuite-app.vercel.app/judge) | One-page reviewer path with pitch, click path and embedded workflow demo |
 | **Agentic Workflow Demo** | [arcsuite-app.vercel.app/agentic-workflow](https://arcsuite-app.vercel.app/agentic-workflow) | One-click AI agent purchase with policy, x402 receipt, Arc settlement and reputation update |
 | **Proof Page** | [arcsuite-app.vercel.app/proof](https://arcsuite-app.vercel.app/proof) | Reviewer-ready tx hash, x402 receipt, policy chain and validation evidence |
 | **Arc Billing** | [arcsuite-app.vercel.app/billing](https://arcsuite-app.vercel.app/billing) | x402 usage metering, prepaid balances, invoices and settlement batches |
@@ -64,9 +65,10 @@ For a short hackathon submission view, see [`HACKATHON.md`](HACKATHON.md).
 
 Start here:
 
-1. **Run the workflow:** [arcsuite-app.vercel.app/agentic-workflow](https://arcsuite-app.vercel.app/agentic-workflow)
-2. **Inspect the proof:** [arcsuite-app.vercel.app/proof](https://arcsuite-app.vercel.app/proof)
-3. **Open the live operator console:** [arcsuite-app.vercel.app/flow](https://arcsuite-app.vercel.app/flow)
+1. **Open Judge Mode:** [arcsuite-app.vercel.app/judge](https://arcsuite-app.vercel.app/judge)
+2. **Run the workflow:** [arcsuite-app.vercel.app/agentic-workflow](https://arcsuite-app.vercel.app/agentic-workflow)
+3. **Inspect the generated proof:** use the proof link returned by the workflow, or open [arcsuite-app.vercel.app/proof](https://arcsuite-app.vercel.app/proof)
+4. **Open the live operator console:** [arcsuite-app.vercel.app/flow](https://arcsuite-app.vercel.app/flow)
 
 The demonstrated operation is:
 

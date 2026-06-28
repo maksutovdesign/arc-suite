@@ -17,17 +17,14 @@ import {
   Workflow,
 } from "lucide-react"
 import type { ReactNode } from "react"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 
 import {
-  demoAgents,
-  demoArcAgentModel,
-  demoApis,
-  demoBillingOverview,
-  demoFlowPayload,
-  demoSettlementConfig,
-  demoShieldPayload,
-} from "../demoWorkspace"
+  buildAgenticDemoProof,
+  shortAddress,
+  shortHash,
+  type AgenticWorkflowProof,
+} from "@/lib/agentic-demo-proof"
 
 const workflowStages = [
   { key: "intent", label: "Agent intent", detail: "DataHarvester-Pro asks for paid market data.", icon: Workflow },
@@ -39,48 +36,13 @@ const workflowStages = [
   { key: "reputation", label: "Reputation update", detail: "Successful payment raises the agent trust score.", icon: BadgeCheck },
 ] as const
 
-const run = demoFlowPayload.runs[0]
-const agent = demoAgents.find((item) => item.id === run.agentId) ?? demoAgents[0]
-const api = demoApis.find((item) => item.id === run.apiId) ?? demoApis[0]
-const usage = demoBillingOverview.usage.find((item) => item.id === "use_demo_001") ?? demoBillingOverview.usage[0]
-const screening = demoShieldPayload.screenings.find((item) => item.id === run.screeningId) ?? demoShieldPayload.screenings[0]
-const agentIdentity = demoArcAgentModel.identities[0]
-const agentJob = demoArcAgentModel.jobs[0]
-const agentValidation = demoArcAgentModel.validations[0]
-
 export function AgenticWorkflowClient() {
   const [activeStage, setActiveStage] = useState(workflowStages.length - 1)
   const [isRunning, setIsRunning] = useState(false)
-  const [runNonce, setRunNonce] = useState("demo_001")
-
-  const proof = useMemo(() => {
-    const now = new Date().toISOString()
-    const offer = createSignedOffer(runNonce)
-    const authorization = createPaymentAuthorization(offer)
-    const receipt = createSignedReceipt(offer, authorization, now)
-    return {
-      amount: `${run.amountUsdc.toFixed(3)} USDC`,
-      apiName: api.name,
-      agentName: agent.name,
-      authorization,
-      billingEvent: usage.id,
-      budget: `${agent.dailySpentUsdc.toFixed(2)} / ${agent.dailyLimitUsdc.toFixed(2)} USDC daily`,
-      generatedAt: now,
-      offer,
-      payer: shortAddress(agent.address),
-      policy: screening.decision.toUpperCase(),
-      price: `${api.priceUsdc.toFixed(3)} USDC / ${api.pricingUnit}`,
-      provider: api.providerName,
-      recipient: shortAddress(run.recipientAddress || demoSettlementConfig.defaultRecipient),
-      reputation: `${run.reputationScoreBefore} -> ${run.reputationScoreAfter}`,
-      requestId: run.requestId ?? "req_demo_flow_001",
-      receipt,
-      screening: screening.providerResult ?? "APPROVED",
-      settlementId: run.settlementId ?? "set_demo_001",
-      txHash: run.txHash ?? "",
-      workflowId: run.id,
-    }
-  }, [runNonce])
+  const [isPersisting, setIsPersisting] = useState(false)
+  const [proof, setProof] = useState<AgenticWorkflowProof>(() => buildAgenticDemoProof())
+  const [proofUrl, setProofUrl] = useState(`/proof?id=${encodeURIComponent(proof.workflowId)}`)
+  const [runError, setRunError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!isRunning) return
@@ -90,12 +52,45 @@ export function AgenticWorkflowClient() {
         setActiveStage(index)
         if (index === workflowStages.length - 1) {
           setIsRunning(false)
-          setRunNonce(crypto.randomUUID().slice(0, 8))
         }
       }, index * 520),
     )
     return () => timers.forEach((timer) => window.clearTimeout(timer))
   }, [isRunning])
+
+  async function runWorkflow() {
+    if (isRunning || isPersisting) return
+    setRunError(null)
+    setIsRunning(true)
+    setIsPersisting(true)
+
+    try {
+      const response = await fetch("/api/agentic/workflows", {
+        body: JSON.stringify({ sessionId: getSessionId() }),
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+      })
+      const payload = await response.json() as {
+        proof?: AgenticWorkflowProof
+        proofUrl?: string
+        stored?: boolean
+      }
+
+      if (!response.ok || !payload.proof) {
+        throw new Error("Workflow endpoint did not return a proof")
+      }
+
+      setProof(payload.proof)
+      setProofUrl(payload.proofUrl ?? `/proof?id=${encodeURIComponent(payload.proof.workflowId)}`)
+    } catch (error) {
+      const fallback = buildAgenticDemoProof({ nonce: crypto.randomUUID().slice(0, 8) })
+      setProof(fallback)
+      setProofUrl(`/proof?id=${encodeURIComponent(fallback.workflowId)}`)
+      setRunError(error instanceof Error ? error.message : "Workflow endpoint unavailable")
+    } finally {
+      setIsPersisting(false)
+    }
+  }
 
   return (
     <section className="analytics-shell agentic-shell">
@@ -109,16 +104,18 @@ export function AgenticWorkflowClient() {
             writes a reputation event back into the workspace.
           </p>
           <div className="agentic-actions">
-            <button className="button primary" disabled={isRunning} onClick={() => setIsRunning(true)} type="button">
-              <Play size={17} /> {isRunning ? "Running workflow..." : "Run agentic workflow"}
+            <button className="button primary" disabled={isRunning || isPersisting} onClick={runWorkflow} type="button">
+              <Play size={17} /> {isRunning || isPersisting ? "Running live workflow..." : "Run agentic workflow"}
             </button>
+            <a className="button secondary" href={proofUrl}>Open proof page</a>
             <a className="button secondary" href="/flow">Open Flow console</a>
           </div>
+          {runError && <p className="agentic-status-note">Demo fallback is active: {runError}</p>}
         </div>
 
         <div className="agentic-outcome" aria-label="Workflow outcome">
           <span><Database size={16} /> Audit trail</span>
-          <strong>Supabase run + x402 receipt</strong>
+          <strong>{proof.stored ? "Supabase run + x402 receipt" : "Demo receipt fallback"}</strong>
           <small>{proof.workflowId} · {proof.receipt.receiptId}</small>
         </div>
       </div>
@@ -217,8 +214,8 @@ export function AgenticWorkflowClient() {
             <span>{`  "generatedAt": "${proof.generatedAt}"`}</span>
             <span>{`}`}</span>
           </div>
-          {run.explorerUrl && (
-            <a className="agentic-explorer" href={run.explorerUrl} target="_blank" rel="noreferrer">
+          {proof.flowRun.explorerUrl && (
+            <a className="agentic-explorer" href={proof.flowRun.explorerUrl} target="_blank" rel="noreferrer">
               View Arc Testnet transaction <ArrowUpRight size={15} />
             </a>
           )}
@@ -256,38 +253,38 @@ export function AgenticWorkflowClient() {
             eyebrow="Agent identity"
             title={proof.agentName}
             rows={[
-              ["standard", agentIdentity.standard],
-              ["registry", shortAddress(agentIdentity.registryAddress)],
-              ["agent uri", agentIdentity.agentUri],
-              ["wallet", shortAddress(agentIdentity.walletAddress)],
-              ["status", agentIdentity.status],
+              ["standard", proof.agentIdentity.standard],
+              ["registry", shortAddress(proof.agentIdentity.registryAddress)],
+              ["agent uri", proof.agentIdentity.agentUri],
+              ["wallet", shortAddress(proof.agentIdentity.walletAddress)],
+              ["status", proof.agentIdentity.status],
             ]}
           />
           <ModelCard
             eyebrow="Job envelope"
-            title={agentJob.id}
+            title={proof.agentJob.id}
             rows={[
-              ["standard", agentJob.standard],
-              ["capability", agentJob.requestedCapability],
-              ["status", agentJob.status],
-              ["input hash", shortHash(agentJob.inputHash)],
-              ["policy hash", shortHash(agentJob.policyHash)],
+              ["standard", proof.agentJob.standard],
+              ["capability", proof.agentJob.requestedCapability],
+              ["status", proof.agentJob.status],
+              ["input hash", shortHash(proof.agentJob.inputHash)],
+              ["policy hash", shortHash(proof.agentJob.policyHash)],
             ]}
           />
           <ModelCard
             eyebrow="Validation registry"
-            title={agentValidation.id}
+            title={proof.agentValidation.id}
             rows={[
-              ["result", agentValidation.result],
-              ["score", String(agentValidation.score)],
-              ["evidence", agentValidation.evidenceUri],
-              ["evidence hash", shortHash(agentValidation.evidenceHash)],
-              ["signature", agentValidation.signature],
+              ["result", proof.agentValidation.result],
+              ["score", String(proof.agentValidation.score)],
+              ["evidence", proof.agentValidation.evidenceUri],
+              ["evidence hash", shortHash(proof.agentValidation.evidenceHash)],
+              ["signature", proof.agentValidation.signature],
             ]}
           />
         </div>
         <div className="agentic-artifacts">
-          {demoArcAgentModel.artifacts.map((artifact) => (
+          {proof.artifacts.map((artifact) => (
             <div key={artifact.id}>
               <span>{artifact.type}</span>
               <strong>{shortHash(artifact.digest)}</strong>
@@ -298,6 +295,16 @@ export function AgenticWorkflowClient() {
       </section>
     </section>
   )
+}
+
+function getSessionId() {
+  if (typeof window === "undefined") return "server"
+  const key = "arc_suite_demo_session"
+  const existing = window.localStorage.getItem(key)
+  if (existing) return existing
+  const next = crypto.randomUUID()
+  window.localStorage.setItem(key, next)
+  return next
 }
 
 function ProofItem({ label, value, tone = "default" }: { label: string; value: string; tone?: "default" | "success" }) {
@@ -354,77 +361,4 @@ function ModelCard({ eyebrow, rows, title }: { eyebrow: string; rows: Array<[str
       </dl>
     </div>
   )
-}
-
-function shortAddress(value: string | null) {
-  if (!value) return "not configured"
-  return `${value.slice(0, 6)}...${value.slice(-4)}`
-}
-
-function shortHash(value: string) {
-  return value ? `${value.slice(0, 8)}...${value.slice(-5)}` : "pending"
-}
-
-function createSignedOffer(nonce: string) {
-  const offerId = `offer_x402_${stableDigest(`offer:${run.id}:${api.id}:${nonce}`).slice(0, 10)}`
-  const payload = [
-    "x402",
-    "exact",
-    "ARC-TESTNET",
-    api.id,
-    agent.id,
-    run.amountUsdc.toFixed(6),
-    run.recipientAddress,
-    nonce,
-  ].join(":")
-
-  return {
-    amountUsdc: run.amountUsdc.toFixed(3),
-    apiId: api.id,
-    expiresAt: "2026-06-27T23:59:59Z",
-    offerId,
-    payloadHash: stableDigest(payload),
-    scheme: "x402/exact-usdc-arc-testnet",
-    signature: `sig_marketplace_${stableDigest(`marketplace:${payload}`).slice(0, 24)}`,
-  }
-}
-
-function createPaymentAuthorization(offer: ReturnType<typeof createSignedOffer>) {
-  const nonce = `auth_${stableDigest(`auth:${offer.offerId}:${agent.address}`).slice(0, 12)}`
-  const digest = stableDigest(`${offer.payloadHash}:${agent.address}:${usage.id}:${nonce}`)
-
-  return {
-    budgetLockId: `lock_${stableDigest(`budget:${offer.offerId}:${usage.id}`).slice(0, 10)}`,
-    digest,
-    nonce,
-    payer: shortAddress(agent.address),
-    signature: `sig_agent_${digest.slice(0, 24)}`,
-  }
-}
-
-function createSignedReceipt(
-  offer: ReturnType<typeof createSignedOffer>,
-  authorization: ReturnType<typeof createPaymentAuthorization>,
-  generatedAt: string,
-) {
-  const receiptId = `rcpt_arc_${stableDigest(`receipt:${offer.offerId}:${authorization.digest}:${run.txHash}`).slice(0, 10)}`
-  const digest = stableDigest(`${receiptId}:${run.settlementId}:${run.txHash}:${generatedAt}`)
-
-  return {
-    digest,
-    receiptId,
-    settlementId: run.settlementId ?? "set_demo_001",
-    signature: `sig_provider_${digest.slice(0, 24)}`,
-    txHash: run.txHash ?? "",
-    verified: Boolean(run.txHash && authorization.signature && offer.signature),
-  }
-}
-
-function stableDigest(value: string) {
-  let hash = 0x811c9dc5
-  for (let index = 0; index < value.length; index += 1) {
-    hash ^= value.charCodeAt(index)
-    hash = Math.imul(hash, 0x01000193)
-  }
-  return Math.abs(hash >>> 0).toString(16).padStart(8, "0") + Math.abs((hash ^ value.length) >>> 0).toString(16).padStart(8, "0")
 }

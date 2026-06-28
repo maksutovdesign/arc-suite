@@ -12,18 +12,19 @@ Arc Suite is an operating layer for autonomous AI-agent commerce on Arc. It show
 
 - **GitHub:** [github.com/maksutovdesign/arc-suite](https://github.com/maksutovdesign/arc-suite)
 - **Main landing:** [arcsuite-app.vercel.app](https://arcsuite-app.vercel.app)
+- **Judge mode:** [arcsuite-app.vercel.app/judge](https://arcsuite-app.vercel.app/judge)
 - **Agentic workflow demo:** [arcsuite-app.vercel.app/agentic-workflow](https://arcsuite-app.vercel.app/agentic-workflow)
 - **Proof page:** [arcsuite-app.vercel.app/proof](https://arcsuite-app.vercel.app/proof)
 - **Flow operator console:** [arcsuite-app.vercel.app/flow](https://arcsuite-app.vercel.app/flow)
 
 ## Demo Flow
 
-1. Open the **Agentic Workflow Demo**.
+1. Open **Judge Mode**.
 2. Click **Run agentic workflow**.
 3. Watch the pipeline move through:
    `Agent intent -> x402 offer -> Treasury budget -> Shield screening -> Billing usage -> Arc settlement -> Reputation update`.
 4. Inspect the signed offer, agent payment authorization and signed provider receipt.
-5. Open the **Proof Page** to verify:
+5. Click **Open proof page** to verify the generated run:
    - Arc Testnet transaction hash
    - x402 receipt JSON
    - policy chain
