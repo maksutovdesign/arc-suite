@@ -3,6 +3,7 @@ import type { CircleDeveloperControlledWalletsClient, Transaction as CircleTrans
 const ARC_CHAIN_ID = 5042002
 const ARC_CHAIN = "Arc_Testnet" as const
 const ARC_EXPLORER_BASE_URL = "https://testnet.arcscan.app"
+const ARC_USDC_TOKEN_ADDRESS = "0x3600000000000000000000000000000000000000"
 const DEFAULT_MAX_SETTLEMENT_USDC = 0.1
 
 export type ArcSettlementConfiguration = {
@@ -10,7 +11,9 @@ export type ArcSettlementConfiguration = {
   chain: typeof ARC_CHAIN
   chainId: number
   explorerBaseUrl: string
+  sourceWalletId: string | null
   sourceAddress: string | null
+  usdcTokenAddress: string
   defaultRecipient: string | null
   allowedRecipients: string[]
   maxAmountUsdc: number
@@ -25,7 +28,9 @@ export type ArcTransferReceipt = {
 }
 
 export function getArcSettlementConfiguration(): ArcSettlementConfiguration {
+  const sourceWalletId = process.env.ARC_SOURCE_WALLET_ID?.trim() || null
   const sourceAddress = normalizeAddress(process.env.ARC_SOURCE_WALLET_ADDRESS)
+  const usdcTokenAddress = normalizeAddress(process.env.ARC_USDC_TOKEN_ADDRESS) ?? ARC_USDC_TOKEN_ADDRESS
   const defaultRecipient = normalizeAddress(process.env.ARC_SETTLEMENT_DEFAULT_RECIPIENT)
   const allowedRecipients = Array.from(new Set([
     ...parseAddressList(process.env.ARC_SETTLEMENT_ALLOWED_RECIPIENTS),
@@ -35,6 +40,7 @@ export function getArcSettlementConfiguration(): ArcSettlementConfiguration {
 
   if (!process.env.CIRCLE_API_KEY) missing.push("CIRCLE_API_KEY")
   if (!process.env.CIRCLE_ENTITY_SECRET) missing.push("CIRCLE_ENTITY_SECRET")
+  if (!sourceWalletId) missing.push("ARC_SOURCE_WALLET_ID")
   if (!sourceAddress) missing.push("ARC_SOURCE_WALLET_ADDRESS")
   if (allowedRecipients.length === 0) missing.push("ARC_SETTLEMENT_DEFAULT_RECIPIENT or ARC_SETTLEMENT_ALLOWED_RECIPIENTS")
 
@@ -43,7 +49,9 @@ export function getArcSettlementConfiguration(): ArcSettlementConfiguration {
     chain: ARC_CHAIN,
     chainId: ARC_CHAIN_ID,
     explorerBaseUrl: ARC_EXPLORER_BASE_URL,
+    sourceWalletId,
     sourceAddress,
+    usdcTokenAddress,
     defaultRecipient,
     allowedRecipients,
     maxAmountUsdc: parsePositiveNumber(process.env.ARC_MAX_SETTLEMENT_USDC, DEFAULT_MAX_SETTLEMENT_USDC),
@@ -57,7 +65,7 @@ export async function sendArcTestnetUsdc(input: {
   providerIdempotencyKey: string
 }): Promise<ArcTransferReceipt> {
   const config = getArcSettlementConfiguration()
-  if (!config.configured || !config.sourceAddress) {
+  if (!config.configured || !config.sourceAddress || !config.sourceWalletId) {
     throw new ArcTransferError("arc_not_configured", `Arc settlement is not configured: ${config.missing.join(", ")}`)
   }
 
@@ -75,7 +83,6 @@ export async function sendArcTestnetUsdc(input: {
   const client = await createCircleClient()
   const createResponse = await client.createTransaction({
     amount: [formatUsdcAmount(input.amountUsdc)],
-    blockchain: "ARC-TESTNET",
     destinationAddress: recipientAddress,
     fee: {
       type: "level",
@@ -85,7 +92,8 @@ export async function sendArcTestnetUsdc(input: {
     },
     idempotencyKey: input.providerIdempotencyKey,
     refId: `arc-suite:${input.providerIdempotencyKey}`,
-    walletAddress: config.sourceAddress,
+    tokenAddress: config.usdcTokenAddress,
+    walletId: config.sourceWalletId,
   })
   const circleTransactionId = createResponse.data?.id
   if (!circleTransactionId) {
