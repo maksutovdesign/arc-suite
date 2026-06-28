@@ -81,20 +81,29 @@ export async function sendArcTestnetUsdc(input: {
   }
 
   const client = await createCircleClient()
-  const createResponse = await client.createTransaction({
-    amount: [formatUsdcAmount(input.amountUsdc)],
-    destinationAddress: recipientAddress,
-    fee: {
-      type: "level",
-      config: {
-        feeLevel: "MEDIUM",
+  let createResponse: Awaited<ReturnType<CircleDeveloperControlledWalletsClient["createTransaction"]>>
+  try {
+    createResponse = await client.createTransaction({
+      amount: [formatUsdcAmount(input.amountUsdc)],
+      destinationAddress: recipientAddress,
+      fee: {
+        type: "level",
+        config: {
+          feeLevel: "MEDIUM",
+        },
       },
-    },
-    idempotencyKey: input.providerIdempotencyKey,
-    refId: `arc-suite:${input.providerIdempotencyKey}`,
-    tokenAddress: config.usdcTokenAddress,
-    walletId: config.sourceWalletId,
-  })
+      idempotencyKey: input.providerIdempotencyKey,
+      refId: `arc-suite:${input.providerIdempotencyKey}`,
+      tokenAddress: config.usdcTokenAddress,
+      walletId: config.sourceWalletId,
+    })
+  } catch (error) {
+    throw new ArcTransferError(
+      "circle_transaction_create_failed",
+      "Circle Wallets rejected the Arc transfer request",
+      toSafeCircleError(error),
+    )
+  }
   const circleTransactionId = createResponse.data?.id
   if (!circleTransactionId) {
     throw new ArcTransferError("circle_transaction_missing", "Circle Wallets did not return a transaction id", toJsonRecord(createResponse))
@@ -232,4 +241,49 @@ async function createCircleClient() {
 function toJsonRecord(value: unknown): Record<string, unknown> {
   const normalized = JSON.parse(JSON.stringify(value, (_key, item) => typeof item === "bigint" ? item.toString() : item))
   return normalized && typeof normalized === "object" && !Array.isArray(normalized) ? normalized : { value: normalized }
+}
+
+function toSafeCircleError(error: unknown): Record<string, unknown> {
+  if (!error || typeof error !== "object") {
+    return { message: String(error) }
+  }
+
+  const source = error as {
+    message?: string
+    response?: {
+      data?: unknown
+      headers?: Record<string, unknown>
+      status?: number
+      statusText?: string
+    }
+  }
+  const responseData = source.response?.data
+  return {
+    message: source.message ?? "Circle request failed",
+    response: {
+      data: sanitizeCirclePayload(responseData),
+      requestId: headerValue(source.response?.headers, "x-request-id")
+        ?? headerValue(source.response?.headers, "cf-ray")
+        ?? headerValue(source.response?.headers, "circle-request-id"),
+      status: source.response?.status ?? null,
+      statusText: source.response?.statusText ?? null,
+    },
+  }
+}
+
+function sanitizeCirclePayload(value: unknown): unknown {
+  if (!value || typeof value !== "object") return value
+  const payload = toJsonRecord(value)
+  for (const key of ["apiKey", "entitySecret", "secret", "token", "authorization"]) {
+    if (key in payload) payload[key] = "[redacted]"
+  }
+  return payload
+}
+
+function headerValue(headers: Record<string, unknown> | undefined, key: string) {
+  if (!headers) return null
+  const direct = headers[key]
+  if (typeof direct === "string") return direct
+  const match = Object.entries(headers).find(([header]) => header.toLowerCase() === key.toLowerCase())
+  return typeof match?.[1] === "string" ? match[1] : null
 }
