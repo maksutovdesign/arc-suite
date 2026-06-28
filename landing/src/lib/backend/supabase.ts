@@ -882,7 +882,7 @@ export async function insertSupabaseArcSettlement(input: {
     return rows[0] ? mapArcSettlement(rows[0]) : null
   } catch (error) {
     logSupabaseError("arc settlement insert", error)
-    return null
+    throw error
   }
 }
 
@@ -2172,7 +2172,7 @@ async function getRows<T>(table: string, query: string): Promise<T[]> {
     headers: supabaseHeaders(),
   })
 
-  if (!response.ok) throw new Error(`Supabase read failed for ${table}`)
+  if (!response.ok) throw await createSupabaseRestError(response, `Supabase read failed for ${table}`)
   return response.json() as Promise<T[]>
 }
 
@@ -2195,7 +2195,7 @@ async function postRows<T>(table: string, rows: unknown[]): Promise<T[]> {
     method: "POST",
   })
 
-  if (!response.ok) throw new Error(`Supabase insert failed for ${table}`)
+  if (!response.ok) throw await createSupabaseRestError(response, `Supabase insert failed for ${table}`)
   return response.json() as Promise<T[]>
 }
 
@@ -2209,7 +2209,7 @@ async function patchRows<T>(table: string, query: string, row: unknown): Promise
     method: "PATCH",
   })
 
-  if (!response.ok) throw new Error(`Supabase update failed for ${table}`)
+  if (!response.ok) throw await createSupabaseRestError(response, `Supabase update failed for ${table}`)
   return response.json() as Promise<T[]>
 }
 
@@ -2236,8 +2236,26 @@ async function deleteRows<T>(table: string, query: string): Promise<T[]> {
     method: "DELETE",
   })
 
-  if (!response.ok) throw new Error(`Supabase delete failed for ${table}`)
+  if (!response.ok) throw await createSupabaseRestError(response, `Supabase delete failed for ${table}`)
   return response.json() as Promise<T[]>
+}
+
+async function createSupabaseRestError(response: Response, fallback: string) {
+  const payload = await response.json().catch(() => null) as {
+    code?: string
+    details?: string
+    hint?: string
+    message?: string
+  } | null
+  const message = [
+    fallback,
+    `status=${response.status}`,
+    payload?.code ? `code=${payload.code}` : null,
+    payload?.message ? `message=${payload.message}` : null,
+    payload?.details ? `details=${payload.details}` : null,
+    payload?.hint ? `hint=${payload.hint}` : null,
+  ].filter(Boolean).join("; ")
+  return new Error(message)
 }
 
 function restBaseUrl() {

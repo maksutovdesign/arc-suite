@@ -65,7 +65,7 @@ export async function executeArcSettlement(input: {
     amountUsdc: decision.amountUsdc,
     settlementId,
   })
-  const settlement = await insertSupabaseArcSettlement({
+  const settlement = await insertSettlementAudit({
     id: settlementId,
     idempotencyKey: input.idempotencyKey,
     agentId: input.agentId,
@@ -143,6 +143,20 @@ export async function executeArcSettlement(input: {
       providerReceipt: error instanceof ArcTransferError ? error.details : {},
     })
     throw new SettlementExecutionError(code, message, 502)
+  }
+}
+
+async function insertSettlementAudit(input: Parameters<typeof insertSupabaseArcSettlement>[0]) {
+  try {
+    return await insertSupabaseArcSettlement(input)
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : "Unknown Supabase error"
+    throw new SettlementExecutionError(
+      "settlement_audit_unavailable",
+      "Settlement audit record could not be created; transfer was not sent",
+      503,
+      { reason },
+    )
   }
 }
 
