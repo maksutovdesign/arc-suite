@@ -11,11 +11,14 @@ Arc Suite is an operating layer for autonomous AI-agent commerce on Arc. It show
 ## Links
 
 - **GitHub:** [github.com/maksutovdesign/arc-suite](https://github.com/maksutovdesign/arc-suite)
+- **Demo video:** [arc-suite-agentic-workflow-demo.mov](https://github.com/maksutovdesign/arc-suite/releases/download/v2026.06.28-real-arc-settlement/arc-suite-agentic-workflow-demo.mov)
+- **Release package:** [v2026.06.28-real-arc-settlement](https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.06.28-real-arc-settlement)
 - **Main landing:** [arcsuite-app.vercel.app](https://arcsuite-app.vercel.app)
 - **Judge mode:** [arcsuite-app.vercel.app/judge](https://arcsuite-app.vercel.app/judge)
 - **Agentic workflow demo:** [arcsuite-app.vercel.app/agentic-workflow](https://arcsuite-app.vercel.app/agentic-workflow)
 - **Proof page:** [arcsuite-app.vercel.app/proof](https://arcsuite-app.vercel.app/proof)
 - **Flow operator console:** [arcsuite-app.vercel.app/flow](https://arcsuite-app.vercel.app/flow)
+- **Live Arc Testnet proof:** [0x50a32e787462e2dd5e2c187c0e4d906f11ae0ed2fdda251d660470794c00d639](https://testnet.arcscan.app/tx/0x50a32e787462e2dd5e2c187c0e4d906f11ae0ed2fdda251d660470794c00d639)
 
 ## Demo Flow
 
@@ -31,6 +34,16 @@ Arc Suite is an operating layer for autonomous AI-agent commerce on Arc. It show
    - agent job id
    - validation evidence
    - artifact signatures
+
+## Real Settlement Proof
+
+On June 28, 2026 the production settlement smoke confirmed a real Arc Testnet USDC transfer through the Circle Wallets path:
+
+- **Amount:** `0.003 USDC`
+- **Settlement ID:** `set_04643b0a-ec0f-4007-be94-aaaf45f6e0a7`
+- **Transaction hash:** `0x50a32e787462e2dd5e2c187c0e4d906f11ae0ed2fdda251d660470794c00d639`
+- **Explorer:** [testnet.arcscan.app/tx/0x50a32e...d639](https://testnet.arcscan.app/tx/0x50a32e787462e2dd5e2c187c0e4d906f11ae0ed2fdda251d660470794c00d639)
+- **Recorded demo:** [arc-suite-agentic-workflow-demo.mov](https://github.com/maksutovdesign/arc-suite/releases/download/v2026.06.28-real-arc-settlement/arc-suite-agentic-workflow-demo.mov)
 
 ## What It Proves
 

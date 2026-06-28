@@ -294,6 +294,10 @@ const story = [
 ]
 
 const liveDemoUrl = "https://treasury-umber.vercel.app/demo"
+const releaseUrl = "https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.06.28-real-arc-settlement"
+const demoVideoUrl = "https://github.com/maksutovdesign/arc-suite/releases/download/v2026.06.28-real-arc-settlement/arc-suite-agentic-workflow-demo.mov"
+const realSettlementExplorerUrl =
+  "https://testnet.arcscan.app/tx/0x50a32e787462e2dd5e2c187c0e4d906f11ae0ed2fdda251d660470794c00d639"
 
 type ProductLandingClientProps = {
   initialApiStatus: "live" | "fallback"
@@ -474,6 +478,35 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
             <span>{label}</span>
           </div>
         ))}
+      </section>
+
+      <section className="section demo-proof-section" aria-label="Recorded demo and live Arc settlement proof">
+        <div className="demo-proof-copy">
+          <p className="kicker">Reviewer package</p>
+          <h2>Recorded demo plus a real Arc Testnet USDC settlement.</h2>
+          <p>
+            The final submission is built around one auditable operation: an agent receives an x402 offer,
+            passes policy checks, settles USDC through Circle Wallets on Arc Testnet, and leaves a proof
+            artifact with receipt and reputation context.
+          </p>
+        </div>
+        <div className="demo-proof-card">
+          <div>
+            <span>Recorded walkthrough</span>
+            <strong>Agentic workflow demo</strong>
+            <a href={demoVideoUrl} target="_blank" rel="noreferrer">Watch video</a>
+          </div>
+          <div>
+            <span>Live settlement</span>
+            <strong>0.003 USDC confirmed</strong>
+            <a href={realSettlementExplorerUrl} target="_blank" rel="noreferrer">Open Arcscan proof</a>
+          </div>
+          <div>
+            <span>Release package</span>
+            <strong>v2026.06.28</strong>
+            <a href={releaseUrl} target="_blank" rel="noreferrer">Open GitHub release</a>
+          </div>
+        </div>
       </section>
 
       <section className="section split story-section">

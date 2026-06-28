@@ -18,6 +18,12 @@ For a short hackathon submission view, see [`HACKATHON.md`](HACKATHON.md).
 
 **Repository:** [github.com/maksutovdesign/arc-suite](https://github.com/maksutovdesign/arc-suite)
 
+**Demo video:** [arc-suite-agentic-workflow-demo.mov](https://github.com/maksutovdesign/arc-suite/releases/download/v2026.06.28-real-arc-settlement/arc-suite-agentic-workflow-demo.mov)
+
+**Release package:** [v2026.06.28-real-arc-settlement](https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.06.28-real-arc-settlement)
+
+**Live Arc Testnet proof:** [`0x50a32e787462e2dd5e2c187c0e4d906f11ae0ed2fdda251d660470794c00d639`](https://testnet.arcscan.app/tx/0x50a32e787462e2dd5e2c187c0e4d906f11ae0ed2fdda251d660470794c00d639)
+
 **Primary demo flow:**
 
 1. Open [Judge Mode](https://arcsuite-app.vercel.app/judge).
@@ -65,6 +71,7 @@ For a short hackathon submission view, see [`HACKATHON.md`](HACKATHON.md).
 
 Start here:
 
+0. **Watch the recorded demo:** [arc-suite-agentic-workflow-demo.mov](https://github.com/maksutovdesign/arc-suite/releases/download/v2026.06.28-real-arc-settlement/arc-suite-agentic-workflow-demo.mov)
 1. **Open Judge Mode:** [arcsuite-app.vercel.app/judge](https://arcsuite-app.vercel.app/judge)
 2. **Run the workflow:** [arcsuite-app.vercel.app/agentic-workflow](https://arcsuite-app.vercel.app/agentic-workflow)
 3. **Inspect the generated proof:** use the proof link returned by the workflow, or open [arcsuite-app.vercel.app/proof](https://arcsuite-app.vercel.app/proof)
@@ -75,6 +82,15 @@ The demonstrated operation is:
 `AI agent identity -> x402 signed offer -> Treasury budget check -> Shield screening -> Billing usage event -> Arc Testnet USDC settlement -> signed receipt -> Reputation update -> proof page`
 
 This gives Arc/Circle reviewers a concrete artifact to evaluate: one payment, one transaction hash, one policy chain, and one receipt bundle.
+
+### Real settlement verification
+
+The production smoke run on June 28, 2026 confirmed a real Arc Testnet USDC settlement through Circle Wallets:
+
+- **Amount:** `0.003 USDC`
+- **Settlement ID:** `set_04643b0a-ec0f-4007-be94-aaaf45f6e0a7`
+- **Transaction hash:** [`0x50a32e787462e2dd5e2c187c0e4d906f11ae0ed2fdda251d660470794c00d639`](https://testnet.arcscan.app/tx/0x50a32e787462e2dd5e2c187c0e4d906f11ae0ed2fdda251d660470794c00d639)
+- **Path:** `policy check -> Circle Wallets tokenId lookup -> Arc Testnet USDC transfer -> Supabase audit -> proof link`
 
 ---
 
