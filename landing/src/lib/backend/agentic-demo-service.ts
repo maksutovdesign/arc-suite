@@ -9,6 +9,7 @@ import {
   insertSupabaseArcAgentJobValidation,
   insertSupabaseFlowRun,
 } from "./supabase"
+import type { FlowRun } from "./schema"
 
 type CreateAgenticDemoRunInput = {
   requestId: string
@@ -74,7 +75,10 @@ export async function createAgenticDemoRun(input: CreateAgenticDemoRunInput): Pr
   }
 }
 
-function omitFlowTimestamps(flowRun: AgenticWorkflowProof["flowRun"]) {
-  const { createdAt: _createdAt, updatedAt: _updatedAt, workspaceId: _workspaceId, ...insertable } = flowRun
+function omitFlowTimestamps(flowRun: AgenticWorkflowProof["flowRun"]): Omit<FlowRun, "createdAt" | "updatedAt" | "workspaceId"> {
+  const { createdAt, updatedAt, workspaceId, ...insertable } = flowRun as FlowRun
+  void createdAt
+  void updatedAt
+  void workspaceId
   return insertable
 }

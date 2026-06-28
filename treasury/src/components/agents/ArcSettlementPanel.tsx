@@ -22,7 +22,7 @@ export function ArcSettlementPanel({ agent, apiListings, isDemo = false }: Props
   const activeApi = useMemo(() => apiListings.find((api) => api.id === apiId) ?? apiListings[0], [apiId, apiListings])
   const [amount, setAmount] = useState(activeApi ? String(activeApi.priceUsdc) : "0.003")
   const [recipient, setRecipient] = useState("")
-  const [memoReference, setMemoReference] = useState(`inv_${agent.id}_${Date.now().toString(36)}`)
+  const [memoReference, setMemoReference] = useState(`inv_${agent.id}_arc`)
   const [outcome, setOutcome] = useState<ArcSettlementOutcome | null>(null)
   const [error, setError] = useState<string | null>(null)
 
