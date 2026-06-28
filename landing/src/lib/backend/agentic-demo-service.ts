@@ -43,6 +43,7 @@ export async function createAgenticDemoRun(input: CreateAgenticDemoRunInput): Pr
     },
     agentJob: {
       ...proof.agentJob,
+      executionJobId: null,
       settlementId: null,
     },
   }
@@ -75,6 +76,9 @@ export async function createAgenticDemoRun(input: CreateAgenticDemoRunInput): Pr
 }
 
 function omitFlowTimestamps(flowRun: AgenticWorkflowProof["flowRun"]) {
-  const { createdAt: _createdAt, updatedAt: _updatedAt, workspaceId: _workspaceId, ...insertable } = flowRun
+  const { createdAt, updatedAt, workspaceId, ...insertable } = flowRun
+  void createdAt
+  void updatedAt
+  void workspaceId
   return insertable
 }

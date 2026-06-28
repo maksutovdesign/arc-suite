@@ -46,7 +46,6 @@ export function AgenticWorkflowClient() {
 
   useEffect(() => {
     if (!isRunning) return
-    setActiveStage(0)
     const timers = workflowStages.map((_, index) =>
       window.setTimeout(() => {
         setActiveStage(index)
@@ -61,6 +60,7 @@ export function AgenticWorkflowClient() {
   async function runWorkflow() {
     if (isRunning || isPersisting) return
     setRunError(null)
+    setActiveStage(0)
     setIsRunning(true)
     setIsPersisting(true)
 

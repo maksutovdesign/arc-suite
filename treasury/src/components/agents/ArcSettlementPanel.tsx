@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useState, useTransition } from "react"
+import { useEffect, useId, useMemo, useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
 import { CheckCircle2, Database, ExternalLink, ReceiptText, Send, Sparkles, XCircle, type LucideIcon } from "lucide-react"
 import { ArcButton } from "@/components/ui/ArcButton"
@@ -16,13 +16,14 @@ type Props = {
 
 export function ArcSettlementPanel({ agent, apiListings, isDemo = false }: Props) {
   const router = useRouter()
+  const memoSeed = useId().replace(/[^a-zA-Z0-9_-]/g, "")
   const [isPending, startTransition] = useTransition()
   const [config, setConfig] = useState<ArcSettlementConfiguration | null>(null)
   const [apiId, setApiId] = useState(apiListings[0]?.id ?? "")
   const activeApi = useMemo(() => apiListings.find((api) => api.id === apiId) ?? apiListings[0], [apiId, apiListings])
   const [amount, setAmount] = useState(activeApi ? String(activeApi.priceUsdc) : "0.003")
   const [recipient, setRecipient] = useState("")
-  const [memoReference, setMemoReference] = useState(`inv_${agent.id}_${Date.now().toString(36)}`)
+  const [memoReference, setMemoReference] = useState(`inv_${agent.id}_${memoSeed}`)
   const [outcome, setOutcome] = useState<ArcSettlementOutcome | null>(null)
   const [error, setError] = useState<string | null>(null)
 
