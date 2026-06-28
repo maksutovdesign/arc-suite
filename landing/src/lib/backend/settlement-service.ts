@@ -136,13 +136,14 @@ export async function executeArcSettlement(input: {
 
     const code = error instanceof ArcTransferError ? error.code : "arc_transfer_failed"
     const message = error instanceof Error ? error.message : "Arc transfer failed"
+    const details = error instanceof ArcTransferError ? error.details : {}
     await updateSupabaseArcSettlement(settlement.id, {
       status: code === "circle_confirmation_timeout" ? "submitted" : "failed",
       errorCode: code,
       errorMessage: message.slice(0, 500),
-      providerReceipt: error instanceof ArcTransferError ? error.details : {},
+      providerReceipt: details,
     })
-    throw new SettlementExecutionError(code, message, 502)
+    throw new SettlementExecutionError(code, message, 502, details)
   }
 }
 
