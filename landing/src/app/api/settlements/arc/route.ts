@@ -20,6 +20,7 @@ export async function GET(request: NextRequest) {
     explorerBaseUrl: config.explorerBaseUrl,
     sourceWalletId: config.sourceWalletId,
     sourceAddress: config.sourceAddress,
+    usdcTokenId: config.usdcTokenId,
     usdcTokenAddress: config.usdcTokenAddress,
     defaultRecipient: config.defaultRecipient,
     allowedRecipients: config.allowedRecipients,

@@ -13,6 +13,7 @@ export type ArcSettlementConfiguration = {
   explorerBaseUrl: string
   sourceWalletId: string | null
   sourceAddress: string | null
+  usdcTokenId: string | null
   usdcTokenAddress: string
   defaultRecipient: string | null
   allowedRecipients: string[]
@@ -30,6 +31,7 @@ export type ArcTransferReceipt = {
 export function getArcSettlementConfiguration(): ArcSettlementConfiguration {
   const sourceWalletId = process.env.ARC_SOURCE_WALLET_ID?.trim() || null
   const sourceAddress = normalizeAddress(process.env.ARC_SOURCE_WALLET_ADDRESS)
+  const usdcTokenId = process.env.ARC_USDC_TOKEN_ID?.trim() || null
   const usdcTokenAddress = normalizeAddress(process.env.ARC_USDC_TOKEN_ADDRESS) ?? ARC_USDC_TOKEN_ADDRESS
   const defaultRecipient = normalizeAddress(process.env.ARC_SETTLEMENT_DEFAULT_RECIPIENT)
   const allowedRecipients = Array.from(new Set([
@@ -51,6 +53,7 @@ export function getArcSettlementConfiguration(): ArcSettlementConfiguration {
     explorerBaseUrl: ARC_EXPLORER_BASE_URL,
     sourceWalletId,
     sourceAddress,
+    usdcTokenId,
     usdcTokenAddress,
     defaultRecipient,
     allowedRecipients,
@@ -81,6 +84,7 @@ export async function sendArcTestnetUsdc(input: {
   }
 
   const client = await createCircleClient()
+  const tokenId = await resolveArcUsdcTokenId(client, config)
   let createResponse: Awaited<ReturnType<CircleDeveloperControlledWalletsClient["createTransaction"]>>
   try {
     createResponse = await client.createTransaction({
@@ -94,7 +98,7 @@ export async function sendArcTestnetUsdc(input: {
       },
       idempotencyKey: input.providerIdempotencyKey,
       refId: `arc-suite:${input.providerIdempotencyKey}`,
-      tokenAddress: config.usdcTokenAddress,
+      tokenId,
       walletId: config.sourceWalletId,
     })
   } catch (error) {
@@ -118,6 +122,44 @@ export async function sendArcTestnetUsdc(input: {
     gasEstimate: toJsonRecord(transaction.estimatedFee ?? {}),
     providerReceipt: toJsonRecord(transaction),
   }
+}
+
+async function resolveArcUsdcTokenId(
+  client: CircleDeveloperControlledWalletsClient,
+  config: ArcSettlementConfiguration,
+) {
+  if (config.usdcTokenId) return config.usdcTokenId
+
+  try {
+    const response = await client.getWalletTokenBalance({
+      id: config.sourceWalletId!,
+      includeAll: true,
+      tokenAddresses: [config.usdcTokenAddress],
+    })
+    const balances = response.data?.tokenBalances ?? []
+    const exact = balances.find((balance) => normalizeAddress(balance.token.tokenAddress) === config.usdcTokenAddress)
+    const usdc = exact ?? balances.find((balance) => {
+      const symbol = balance.token.symbol?.toUpperCase()
+      const name = balance.token.name?.toUpperCase()
+      return symbol === "USDC" || name?.includes("USDC")
+    })
+    if (usdc?.token.id) return usdc.token.id
+  } catch (error) {
+    throw new ArcTransferError(
+      "circle_token_lookup_failed",
+      "Circle Wallets could not resolve Arc Testnet USDC token id",
+      toSafeCircleError(error),
+    )
+  }
+
+  throw new ArcTransferError(
+    "circle_usdc_token_not_found",
+    "Circle Wallets did not return an Arc Testnet USDC token for the source wallet",
+    {
+      tokenAddress: config.usdcTokenAddress,
+      walletIdPresent: Boolean(config.sourceWalletId),
+    },
+  )
 }
 
 export async function resumeArcTestnetUsdc(circleTransactionId: string): Promise<ArcTransferReceipt> {
