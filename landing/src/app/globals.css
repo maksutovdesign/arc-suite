@@ -5630,6 +5630,212 @@ a.ops-history-run:hover {
   font-weight: 850;
 }
 
+.submission-shell {
+  width: min(100% - 48px, 1320px);
+  margin: 0 auto;
+  padding: 58px 0 96px;
+}
+
+.submission-hero,
+.submission-proof {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(300px, 0.75fr);
+  gap: 24px;
+  align-items: end;
+}
+
+.submission-hero h1 {
+  max-width: 1040px;
+  margin: 4px 0 16px;
+  font-size: clamp(44px, 6vw, 84px);
+  line-height: 0.96;
+}
+
+.submission-hero p:not(.kicker),
+.submission-proof p {
+  max-width: 820px;
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+.submission-card,
+.submission-proof,
+.submission-link-grid a,
+.submission-workflow div,
+.submission-fit div {
+  border: 1px solid rgba(255, 255, 255, 0.085);
+  border-radius: 8px;
+  background: rgba(8, 13, 19, 0.92);
+}
+
+.submission-card {
+  display: grid;
+  gap: 10px;
+  padding: 22px;
+  border-color: rgba(95, 191, 255, 0.18);
+  background:
+    linear-gradient(135deg, rgba(95, 191, 255, 0.1), rgba(52, 211, 153, 0.04)),
+    rgba(8, 13, 19, 0.92);
+}
+
+.submission-card > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+  color: var(--blue);
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.submission-card a {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 42px;
+  padding: 0 12px;
+  border: 1px solid rgba(95, 191, 255, 0.13);
+  border-radius: 8px;
+  color: rgba(232, 241, 255, 0.9);
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.submission-section,
+.submission-proof {
+  margin-top: 26px;
+}
+
+.submission-section-head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 14px;
+}
+
+.submission-section-head h2,
+.submission-proof h2 {
+  max-width: 760px;
+  margin: 4px 0 0;
+}
+
+.submission-link-grid,
+.submission-fit {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.submission-link-grid a {
+  position: relative;
+  display: grid;
+  gap: 8px;
+  min-height: 118px;
+  padding: 18px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.submission-link-grid a svg {
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  color: var(--blue);
+}
+
+.submission-link-grid strong,
+.submission-fit strong,
+.submission-workflow strong {
+  color: rgba(232, 241, 255, 0.94);
+}
+
+.submission-link-grid span,
+.submission-workflow span,
+.submission-fit p {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.submission-proof {
+  align-items: start;
+  padding: 24px;
+  border-color: rgba(52, 211, 153, 0.2);
+  background:
+    linear-gradient(135deg, rgba(52, 211, 153, 0.12), rgba(95, 191, 255, 0.045)),
+    rgba(8, 13, 19, 0.92);
+}
+
+.submission-proof-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.submission-proof-grid div {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.085);
+  border-radius: 8px;
+  background: rgba(5, 9, 14, 0.52);
+}
+
+.submission-proof-grid span {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.submission-proof-grid strong {
+  display: block;
+  overflow: hidden;
+  color: var(--green);
+  font-size: 18px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.submission-workflow {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.submission-workflow div,
+.submission-fit div {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  min-height: 172px;
+  padding: 18px;
+}
+
+.submission-workflow i {
+  color: var(--blue);
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+}
+
+.submission-workflow svg,
+.submission-fit svg {
+  color: var(--green);
+}
+
+.submission-fit p {
+  margin: 0;
+}
+
 .proof-shell {
   width: min(100% - 48px, 1320px);
   margin: 0 auto;
@@ -7334,10 +7540,15 @@ a.ops-history-run:hover {
   .blueprints-grid,
   .judge-hero,
   .judge-highlights,
+  .submission-hero,
+  .submission-proof,
+  .submission-link-grid,
+  .submission-fit,
   .agentic-proof-grid,
   .agentic-x402-chain,
   .agentic-model-grid,
   .agentic-artifacts,
+  .submission-workflow,
   .proof-hero,
   .proof-grid,
   .agentic-proof-strip {
@@ -7464,6 +7675,12 @@ a.ops-history-run:hover {
   .proof-hero,
   .proof-grid,
   .proof-artifact-grid,
+  .submission-hero,
+  .submission-proof,
+  .submission-proof-grid,
+  .submission-link-grid,
+  .submission-workflow,
+  .submission-fit,
   .agentic-proof-strip,
   .execution-metrics {
     grid-template-columns: 1fr;
@@ -7494,7 +7711,16 @@ a.ops-history-run:hover {
     padding-top: 28px;
   }
 
+  .submission-shell {
+    width: min(100% - 28px, 1320px);
+    padding-top: 28px;
+  }
+
   .proof-hero h1 {
+    font-size: 44px;
+  }
+
+  .submission-hero h1 {
     font-size: 44px;
   }
 

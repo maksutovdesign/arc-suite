@@ -24,6 +24,8 @@ For a short hackathon submission view, see [`HACKATHON.md`](HACKATHON.md).
 
 **Live Arc Testnet proof:** [`0x50a32e787462e2dd5e2c187c0e4d906f11ae0ed2fdda251d660470794c00d639`](https://testnet.arcscan.app/tx/0x50a32e787462e2dd5e2c187c0e4d906f11ae0ed2fdda251d660470794c00d639)
 
+**Submission page:** [arcsuite-app.vercel.app/submission](https://arcsuite-app.vercel.app/submission)
+
 **Primary demo flow:**
 
 1. Open [Judge Mode](https://arcsuite-app.vercel.app/judge).
