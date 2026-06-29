@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server"
 
 const DEFAULT_API_BASE_URL = process.env.NODE_ENV === "production" ? "https://arcsuite-app.vercel.app" : "http://127.0.0.1:3100"
 const API_BASE_URL = process.env.ARC_SUITE_API_URL ?? process.env.NEXT_PUBLIC_ARC_SUITE_API_URL ?? DEFAULT_API_BASE_URL
+const PUBLIC_APP_URL = process.env.NEXT_PUBLIC_ARC_SUITE_APP_URL ?? "https://arcsuite-app.vercel.app"
 const ARC_API_KEY = process.env.ARC_API_KEY
 
 export async function POST(request: NextRequest) {
@@ -33,7 +34,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const proofUrl = typeof payload.proofUrl === "string" ? new URL(payload.proofUrl, API_BASE_URL).toString() : null
+    const proofUrl = typeof payload.proofUrl === "string" ? toPublicProofUrl(payload.proofUrl) : null
 
     return NextResponse.json({
       ...payload,
@@ -53,4 +54,10 @@ function hashClientBucket(request: NextRequest) {
   const userAgent = request.headers.get("user-agent") || "unknown-agent"
   const salt = process.env.ARC_PROXY_SALT ?? process.env.ARC_API_KEY ?? "arc-marketplace"
   return createHash("sha256").update(`${salt}:${ip}:${userAgent}`).digest("hex")
+}
+
+function toPublicProofUrl(value: string) {
+  const parsed = new URL(value, PUBLIC_APP_URL)
+  const publicBase = new URL(PUBLIC_APP_URL)
+  return new URL(`${parsed.pathname}${parsed.search}`, publicBase).toString()
 }
