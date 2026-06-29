@@ -1574,6 +1574,70 @@ export async function recordSupabaseCircleWebhook(input: {
   return result ? { ...result, event: mapCircleWebhookEvent(result.event) } : null
 }
 
+export async function reconcileSupabaseArcSettlementFromCircleWebhook(input: {
+  providerOperationId?: string | null
+  providerState?: string | null
+  txHash?: string | null
+  providerReceipt: Record<string, unknown>
+  occurredAt?: string | null
+}): Promise<ArcSettlementResult | ArcSettlement | null> {
+  if (!isSupabaseConfigured()) return null
+  const providerOperationId = input.providerOperationId?.trim() || null
+  const txHash = input.txHash?.trim() || null
+  if (!providerOperationId && !txHash) return null
+
+  try {
+    const rows = await getRows<ArcSettlementRow>(
+      "arc_settlements",
+      `select=*&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&order=updated_at.desc&limit=80`,
+    )
+    const settlement = rows.map(mapArcSettlement).find((item) => {
+      if (txHash && item.txHash?.toLowerCase() === txHash.toLowerCase()) return true
+      if (!providerOperationId) return false
+      return providerReceiptContains(item.providerReceipt, providerOperationId)
+    })
+    if (!settlement) return null
+
+    const normalizedState = (input.providerState ?? "").toUpperCase()
+    const providerReceipt = {
+      ...settlement.providerReceipt,
+      circleWebhook: input.providerReceipt,
+      ...(providerOperationId ? { circleTransactionId: providerOperationId } : {}),
+    }
+
+    if (txHash && ["COMPLETE", "CONFIRMED", "COMPLETED", "MINED"].includes(normalizedState)) {
+      return await finalizeSupabaseArcSettlement({
+        settlementId: settlement.id,
+        transactionId: transactionIdForSettlement(settlement.id),
+        txHash,
+        explorerUrl: settlement.explorerUrl ?? `https://testnet.arcscan.app/tx/${txHash}`,
+        gasEstimate: settlement.gasEstimate,
+        providerReceipt,
+        occurredAt: input.occurredAt ?? new Date().toISOString(),
+      })
+    }
+
+    if (["FAILED", "DENIED", "CANCELLED", "STUCK"].includes(normalizedState)) {
+      return await updateSupabaseArcSettlement(settlement.id, {
+        errorCode: "circle_webhook_failed",
+        errorMessage: `Circle webhook reported ${normalizedState}`,
+        providerReceipt,
+        status: "failed",
+        txHash: txHash ?? settlement.txHash,
+      })
+    }
+
+    return await updateSupabaseArcSettlement(settlement.id, {
+      providerReceipt,
+      status: settlement.status === "approved" ? "submitted" : settlement.status,
+      txHash: txHash ?? settlement.txHash,
+    })
+  } catch (error) {
+    logSupabaseError("arc settlement webhook reconciliation", error)
+    return null
+  }
+}
+
 export async function getSupabaseExecutionOverview(limit = 100): Promise<ExecutionOverview | null> {
   if (!isSupabaseConfigured()) return null
   try {
@@ -2439,6 +2503,28 @@ function mapArcSettlement(row: ArcSettlementRow): ArcSettlement {
     updatedAt: row.updated_at,
     confirmedAt: row.confirmed_at,
   }
+}
+
+function providerReceiptContains(receipt: Record<string, unknown>, value: string) {
+  const wanted = value.toLowerCase()
+  const stack: unknown[] = [receipt]
+  while (stack.length > 0) {
+    const current = stack.pop()
+    if (!current || typeof current !== "object") continue
+    if (Array.isArray(current)) {
+      stack.push(...current)
+      continue
+    }
+    for (const item of Object.values(current as Record<string, unknown>)) {
+      if (typeof item === "string" && item.toLowerCase() === wanted) return true
+      if (item && typeof item === "object") stack.push(item)
+    }
+  }
+  return false
+}
+
+function transactionIdForSettlement(settlementId: string) {
+  return `tx_arc_${settlementId.replace(/^set_/, "").replaceAll("-", "")}`
 }
 
 function mapShieldScreening(row: ShieldScreeningRow): ShieldScreening {

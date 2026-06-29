@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 
 import { parseCircleWebhookEnvelope, readCircleProviderFields, verifyCircleWebhookSignature } from "@/lib/backend/circle-webhook"
 import { createRequestId, logOperationalEvent, requestIdHeaders } from "@/lib/backend/observability"
-import { recordSupabaseCircleWebhook } from "@/lib/backend/supabase"
+import { reconcileSupabaseArcSettlementFromCircleWebhook, recordSupabaseCircleWebhook } from "@/lib/backend/supabase"
 
 export const runtime = "nodejs"
 
@@ -44,6 +44,13 @@ export async function POST(request: NextRequest) {
       txHash: provider.txHash,
     })
     if (!result) throw new Error("Execution worker migration is required.")
+    const settlementReconciliation = await reconcileSupabaseArcSettlementFromCircleWebhook({
+      occurredAt: envelope.timestamp,
+      providerOperationId: provider.providerOperationId,
+      providerReceipt: envelope.notification,
+      providerState: provider.providerState,
+      txHash: provider.txHash,
+    })
     logOperationalEvent({
       event: result.duplicate ? "circle.webhook.duplicate" : "circle.webhook.processed",
       requestId,
@@ -52,10 +59,11 @@ export async function POST(request: NextRequest) {
         notificationType: envelope.notificationType,
         matchedJobs: result.matched,
         processingStatus: result.event.processingStatus,
+        settlementReconciled: Boolean(settlementReconciliation),
       },
     })
     return NextResponse.json(
-      { ok: true, duplicate: result.duplicate, matched: result.matched },
+      { ok: true, duplicate: result.duplicate, matched: result.matched, settlementReconciled: Boolean(settlementReconciliation) },
       { headers: requestIdHeaders(requestId) },
     )
   } catch (error) {
