@@ -5949,7 +5949,8 @@ a.ops-history-run:hover {
 }
 
 .proof-chain,
-.proof-artifacts {
+.proof-artifacts,
+.proof-settlements {
   margin-top: 16px;
 }
 
@@ -6051,6 +6052,72 @@ a.ops-history-run:hover {
   color: var(--muted);
   font-size: 11px;
   text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.proof-settlement-list {
+  display: grid;
+  gap: 8px;
+}
+
+.proof-settlement-list p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.proof-settlement-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(120px, 180px) auto;
+  gap: 12px;
+  align-items: center;
+  min-height: 64px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.065);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.018);
+}
+
+.proof-settlement-row div,
+.proof-settlement-row strong,
+.proof-settlement-row span {
+  min-width: 0;
+}
+
+.proof-settlement-row strong,
+.proof-settlement-row span {
+  display: block;
+}
+
+.proof-settlement-row strong {
+  color: var(--ink);
+  font-size: 14px;
+}
+
+.proof-settlement-row span {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.proof-settlement-row code {
+  min-width: 0;
+  overflow: hidden;
+  color: #9ccfff;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.proof-settlement-row a,
+.proof-settlement-row em {
+  justify-self: end;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--blue);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 850;
   white-space: nowrap;
 }
 
@@ -7732,6 +7799,15 @@ a.ops-history-run:hover {
   .proof-chain-step em {
     justify-self: start;
     grid-column: 2;
+  }
+
+  .proof-settlement-row {
+    grid-template-columns: 1fr;
+  }
+
+  .proof-settlement-row a,
+  .proof-settlement-row em {
+    justify-self: start;
   }
 
   .radar-hero,

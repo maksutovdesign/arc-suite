@@ -11,6 +11,7 @@ Arc Suite is an operating layer for autonomous AI-agent commerce on Arc. It show
 ## Links
 
 - **GitHub:** [github.com/maksutovdesign/arc-suite](https://github.com/maksutovdesign/arc-suite)
+- **Grant update:** [`docs/submission/grant-update.md`](docs/submission/grant-update.md)
 - **Demo video:** [arc-suite-agentic-workflow-demo.mov](https://github.com/maksutovdesign/arc-suite/releases/download/v2026.06.28-real-arc-settlement/arc-suite-agentic-workflow-demo.mov)
 - **Release package:** [v2026.06.28-real-arc-settlement](https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.06.28-real-arc-settlement)
 - **Main landing:** [arcsuite-app.vercel.app](https://arcsuite-app.vercel.app)

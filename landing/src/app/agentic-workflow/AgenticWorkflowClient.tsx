@@ -36,12 +36,19 @@ const workflowStages = [
   { key: "reputation", label: "Reputation update", detail: "Successful payment raises the agent trust score.", icon: BadgeCheck },
 ] as const
 
+type LiveSettlementStatus =
+  | { enabled: false; status: "disabled" }
+  | { enabled: true; status: "confirmed"; explorerUrl: string | null; settlementId: string; txHash: string | null }
+  | { enabled: true; status: "policy_denied"; settlementId: string; reason: string }
+  | { enabled: true; status: "failed"; code: string; message: string }
+
 export function AgenticWorkflowClient() {
   const [activeStage, setActiveStage] = useState(workflowStages.length - 1)
   const [isRunning, setIsRunning] = useState(false)
   const [isPersisting, setIsPersisting] = useState(false)
   const [proof, setProof] = useState<AgenticWorkflowProof>(() => buildAgenticDemoProof())
   const [proofUrl, setProofUrl] = useState(`/proof?id=${encodeURIComponent(proof.workflowId)}`)
+  const [liveSettlement, setLiveSettlement] = useState<LiveSettlementStatus>({ enabled: false, status: "disabled" })
   const [runError, setRunError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -71,6 +78,7 @@ export function AgenticWorkflowClient() {
         method: "POST",
       })
       const payload = await response.json() as {
+        liveSettlement?: LiveSettlementStatus
         proof?: AgenticWorkflowProof
         proofUrl?: string
         stored?: boolean
@@ -82,10 +90,12 @@ export function AgenticWorkflowClient() {
 
       setProof(payload.proof)
       setProofUrl(payload.proofUrl ?? `/proof?id=${encodeURIComponent(payload.proof.workflowId)}`)
+      setLiveSettlement(payload.liveSettlement ?? { enabled: false, status: "disabled" })
     } catch (error) {
       const fallback = buildAgenticDemoProof({ nonce: crypto.randomUUID().slice(0, 8) })
       setProof(fallback)
       setProofUrl(`/proof?id=${encodeURIComponent(fallback.workflowId)}`)
+      setLiveSettlement({ enabled: false, status: "disabled" })
       setRunError(error instanceof Error ? error.message : "Workflow endpoint unavailable")
     } finally {
       setIsPersisting(false)
@@ -117,6 +127,7 @@ export function AgenticWorkflowClient() {
           <span><Database size={16} /> Audit trail</span>
           <strong>{proof.stored ? "Supabase run + x402 receipt" : "Demo receipt fallback"}</strong>
           <small>{proof.workflowId} · {proof.receipt.receiptId}</small>
+          <small>{liveSettlementLabel(liveSettlement)}</small>
         </div>
       </div>
 
@@ -295,6 +306,13 @@ export function AgenticWorkflowClient() {
       </section>
     </section>
   )
+}
+
+function liveSettlementLabel(status: LiveSettlementStatus) {
+  if (!status.enabled) return "Live settlement: disabled by env"
+  if (status.status === "confirmed") return `Live settlement: confirmed ${shortHash(status.txHash)}`
+  if (status.status === "policy_denied") return `Live settlement: policy denied ${status.settlementId}`
+  return `Live settlement: fallback (${status.code})`
 }
 
 function getSessionId() {

@@ -11,7 +11,7 @@ import {
 } from "lucide-react"
 
 import { buildAgenticDemoProof, buildAgenticProofFromStored, shortHash } from "@/lib/agentic-demo-proof"
-import { getSupabaseAgenticProof } from "@/lib/backend/supabase"
+import { getSupabaseAgenticProof, getSupabaseRecentArcSettlements } from "@/lib/backend/supabase"
 import { SiteHeader } from "../SiteHeader"
 
 export const metadata = {
@@ -28,7 +28,10 @@ type ProofPageProps = {
 export default async function ProofPage({ searchParams }: ProofPageProps) {
   const params = await searchParams
   const requestedId = typeof params?.id === "string" ? params.id : null
-  const stored = requestedId ? await getSupabaseAgenticProof(requestedId) : null
+  const [stored, recentSettlements] = await Promise.all([
+    requestedId ? getSupabaseAgenticProof(requestedId) : Promise.resolve(null),
+    getSupabaseRecentArcSettlements(6),
+  ])
   const proof = stored ? buildAgenticProofFromStored(stored) : buildAgenticDemoProof()
   const flowRun = proof.flowRun
   const agent = proof.agent
@@ -207,7 +210,46 @@ export default async function ProofPage({ searchParams }: ProofPageProps) {
             </div>
           </div>
         </section>
+
+        <section className="proof-panel proof-settlements">
+          <div className="flow-panel-title">
+            <div>
+              <span>Recent live settlements</span>
+              <h2>Arc Testnet operations recorded in Supabase</h2>
+            </div>
+            <CircleDollarSign size={21} />
+          </div>
+          <div className="proof-settlement-list">
+            {recentSettlements.length === 0 ? (
+              <p>No live Arc settlement records found yet.</p>
+            ) : recentSettlements.map((settlement) => (
+              <div className="proof-settlement-row" key={settlement.id}>
+                <div>
+                  <strong>{settlement.amountUsdc.toFixed(3)} USDC</strong>
+                  <span>{settlement.status} · {formatProofDate(settlement.updatedAt)}</span>
+                </div>
+                <code>{shortHash(settlement.txHash ?? settlement.id)}</code>
+                {settlement.explorerUrl ? (
+                  <a href={settlement.explorerUrl} target="_blank" rel="noreferrer">
+                    Arcscan <ArrowUpRight size={14} />
+                  </a>
+                ) : (
+                  <em>pending</em>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
       </section>
     </main>
   )
+}
+
+function formatProofDate(value: string) {
+  return new Intl.DateTimeFormat("en", {
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    month: "short",
+  }).format(new Date(value))
 }

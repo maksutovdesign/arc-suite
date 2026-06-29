@@ -22,6 +22,8 @@ For a short hackathon submission view, see [`HACKATHON.md`](HACKATHON.md).
 
 **Release package:** [v2026.06.28-real-arc-settlement](https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.06.28-real-arc-settlement)
 
+**Grant update:** [`docs/submission/grant-update.md`](docs/submission/grant-update.md)
+
 **Live Arc Testnet proof:** [`0x50a32e787462e2dd5e2c187c0e4d906f11ae0ed2fdda251d660470794c00d639`](https://testnet.arcscan.app/tx/0x50a32e787462e2dd5e2c187c0e4d906f11ae0ed2fdda251d660470794c00d639)
 
 **Submission page:** [arcsuite-app.vercel.app/submission](https://arcsuite-app.vercel.app/submission)

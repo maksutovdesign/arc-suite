@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
   const rateLimit = await enforceRateLimit({
     bucketKey: ipHash ?? optionalString(body?.sessionId),
     ipHash,
-    max: 24,
+    max: process.env.ARC_AGENTIC_LIVE_SETTLEMENT === "true" ? 6 : 24,
     route: "agentic_workflows",
     windowMs: 10 * 60 * 1000,
   })
@@ -34,6 +34,7 @@ export async function POST(request: NextRequest) {
   logOperationalEvent({
     details: {
       proofUrl: result.proofUrl,
+      liveSettlement: result.liveSettlement,
       stored: result.stored,
       workflowId: result.proof.workflowId,
     },
@@ -46,6 +47,7 @@ export async function POST(request: NextRequest) {
   return NextResponse.json(
     {
       ok: true,
+      liveSettlement: result.liveSettlement,
       proof: result.proof,
       proofUrl: result.proofUrl,
       runId: result.proof.workflowId,

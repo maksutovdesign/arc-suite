@@ -89,6 +89,7 @@ export type StoredAgenticProof = {
 }
 
 type ProofOptions = {
+  flowRunOverrides?: Partial<FlowRun>
   generatedAt?: string
   jobId?: string
   nonce?: string
@@ -114,7 +115,7 @@ export function buildAgenticDemoProof(options: ProofOptions = {}): AgenticWorkfl
   const settlementId = `set_agentic_${stableDigest(`settlement:${workflowId}:${nonce}`).slice(0, 10)}`
   const requestId = `req_agentic_${stableDigest(`request:${workflowId}:${nonce}`).slice(0, 10)}`
 
-  const flowRun: FlowRun = {
+  let flowRun: FlowRun = {
     ...baseRun,
     accessAllowed: true,
     completedAt: generatedAt,
@@ -137,10 +138,18 @@ export function buildAgenticDemoProof(options: ProofOptions = {}): AgenticWorkfl
     txHash: baseRun.txHash,
     updatedAt: generatedAt,
   }
+  if (options.flowRunOverrides) {
+    flowRun = {
+      ...flowRun,
+      ...options.flowRunOverrides,
+      steps: options.flowRunOverrides.steps ?? flowRun.steps,
+    }
+  }
 
   const offer = createSignedOffer(nonce, flowRun)
   const authorization = createPaymentAuthorization(offer)
   const receipt = createSignedReceipt(offer, authorization, generatedAt, flowRun)
+  const effectiveSettlementId = flowRun.settlementId ?? settlementId
 
   const agentJob: ArcAgentJob = {
     ...baseJob,
@@ -157,7 +166,7 @@ export function buildAgenticDemoProof(options: ProofOptions = {}): AgenticWorkfl
     outputHash: `0x${stableDigest(`output:${receipt.receiptId}:${workflowId}`)}${stableDigest("output")}`,
     policyHash: `0x${stableDigest(`policy:${workflowId}:${baseScreening.id}`)}${stableDigest("policy")}`,
     receiptHash: receipt.digest,
-    settlementId,
+    settlementId: effectiveSettlementId,
     status: "validated",
     txHash: flowRun.txHash,
     updatedAt: generatedAt,
@@ -232,10 +241,10 @@ export function buildAgenticDemoProof(options: ProofOptions = {}): AgenticWorkfl
     receipt,
     recipient: shortAddress(flowRun.recipientAddress || demoSettlementConfig.defaultRecipient),
     reputation: `${flowRun.reputationScoreBefore} -> ${flowRun.reputationScoreAfter}`,
-    requestId,
+    requestId: flowRun.requestId ?? requestId,
     screening: baseScreening.providerResult ?? "APPROVED",
     screeningRecord: baseScreening,
-    settlementId,
+    settlementId: effectiveSettlementId,
     stored: options.stored ?? false,
     txHash: flowRun.txHash ?? "",
     usage: baseUsage,
@@ -248,6 +257,7 @@ export function buildAgenticProofFromStored(stored: StoredAgenticProof): Agentic
   const proof = buildAgenticDemoProof({
     generatedAt: stored.flowRun.completedAt ?? stored.flowRun.updatedAt ?? stored.flowRun.createdAt,
     jobId: stored.job?.id,
+    flowRunOverrides: stored.flowRun,
     nonce: suffix,
     proofSource: "supabase",
     stored: true,
@@ -265,6 +275,7 @@ export function buildAgenticProofFromStored(stored: StoredAgenticProof): Agentic
     artifacts,
     flowRun: stored.flowRun,
     generatedAt: stored.flowRun.completedAt ?? stored.flowRun.updatedAt ?? proof.generatedAt,
+    amount: `${stored.flowRun.amountUsdc.toFixed(3)} USDC`,
     receipt: {
       ...proof.receipt,
       digest: agentJob.receiptHash ?? proof.receipt.digest,
@@ -273,6 +284,8 @@ export function buildAgenticProofFromStored(stored: StoredAgenticProof): Agentic
       verified: Boolean(agentJob.receiptHash && (agentJob.txHash ?? stored.flowRun.txHash)),
     },
     requestId: stored.flowRun.requestId ?? proof.requestId,
+    recipient: shortAddress(stored.flowRun.recipientAddress),
+    reputation: `${stored.flowRun.reputationScoreBefore} -> ${stored.flowRun.reputationScoreAfter}`,
     settlementId: agentJob.settlementId ?? stored.flowRun.settlementId ?? proof.settlementId,
     txHash: agentJob.txHash ?? stored.flowRun.txHash ?? proof.txHash,
   }

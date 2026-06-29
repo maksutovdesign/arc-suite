@@ -844,6 +844,22 @@ export async function getSupabaseArcSettlementResult(settlementId: string): Prom
   }
 }
 
+export async function getSupabaseRecentArcSettlements(limit = 6): Promise<ArcSettlement[]> {
+  if (!isSupabaseConfigured()) return []
+
+  try {
+    const safeLimit = Math.min(Math.max(Math.floor(limit), 1), 12)
+    const rows = await getRows<ArcSettlementRow>(
+      "arc_settlements",
+      `select=*&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&order=updated_at.desc&limit=${safeLimit}`,
+    )
+    return rows.map(mapArcSettlement)
+  } catch (error) {
+    logSupabaseError("recent arc settlements", error)
+    return []
+  }
+}
+
 export async function insertSupabaseArcSettlement(input: {
   id: string
   idempotencyKey: string
