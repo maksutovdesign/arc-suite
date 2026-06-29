@@ -4,6 +4,7 @@ import { useState, useTransition } from "react"
 import type { MouseEvent } from "react"
 import { CheckCircle2, ShieldCheck, XCircle } from "lucide-react"
 import { ArcButton } from "@/components/ui/ArcButton"
+import { RunPaidWorkflowButton } from "@/components/browse/RunPaidWorkflowButton"
 import type { AccessDecision } from "@/lib/arc-api"
 
 type Props = {
@@ -78,6 +79,8 @@ export function RequestAccessButton({ apiId, amountUsdc, compact = false }: Prop
           )}
         </div>
       )}
+
+      {decision?.allowed && <RunPaidWorkflowButton apiId={apiId} compact={compact} />}
 
       {error && <p className="text-[11px]" style={{ color: "#f87171" }}>{error}</p>}
     </div>

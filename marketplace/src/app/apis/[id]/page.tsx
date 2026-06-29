@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation"
 import Link from "next/link"
-import { Star, Zap, CheckCircle, Clock, ArrowLeft, Code, Copy, Globe, Activity, Shield, Fingerprint } from "lucide-react"
+import { Star, Zap, CheckCircle, Clock, ArrowLeft, Code, Copy, Globe, Activity, Shield, Fingerprint, PlayCircle } from "lucide-react"
 import { ArcProgress } from "@/components/ui/ArcProgress"
 import { ArcButton } from "@/components/ui/ArcButton"
 import { RequestAccessButton } from "@/components/browse/RequestAccessButton"
@@ -79,7 +79,11 @@ export default async function ApiDetailPage({ params }: { params: Promise<{ id: 
 
             <div className="flex items-center gap-2 shrink-0">
               <ArcButton variant="outline" size="sm" icon={Copy}>Copy endpoint</ArcButton>
-              <ArcButton variant="primary" size="sm" icon={Zap}>Integrate now</ArcButton>
+              <Link href="#run-paid-workflow" className="inline-flex h-7 items-center justify-center gap-1.5 rounded-lg px-3 text-xs font-medium transition-all hover:opacity-80 active:scale-95"
+                style={{ background: "linear-gradient(135deg, #4d8ee9 0%, #5FBFFF 100%)", color: "#fff", boxShadow: "0 0 16px rgba(77,142,233,0.35)" }}>
+                <PlayCircle className="size-3.5" />
+                Run paid workflow
+              </Link>
             </div>
           </div>
         </div>
@@ -183,7 +187,7 @@ const data = await res.json()
         {/* Sidebar */}
         <div className="flex flex-col gap-4">
           {/* Pricing */}
-          <div className="rounded-2xl p-4"
+          <div id="run-paid-workflow" className="rounded-2xl p-4 scroll-mt-20"
             style={{ background: "linear-gradient(160deg,#1e3247,#162436)", border: `1px solid ${catColor}22`, boxShadow: `0 0 30px ${catColor}08` }}>
             <div className="h-0.5 mb-4 rounded-full" style={{ background: `linear-gradient(90deg,${catColor},${catColor}44)` }} />
             <p className="text-[10px] font-medium uppercase tracking-widest mb-1" style={{ color: "#7a8fa8" }}>Price</p>
