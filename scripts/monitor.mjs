@@ -77,6 +77,10 @@ const checks = [
     run: async () => checkHtmlPage(`${bases.landing}/proof`, ["Transaction proof", "Transaction hash", "Policy chain"]),
   },
   {
+    name: "Proof archive page",
+    run: async () => checkHtmlPage(`${bases.landing}/proofs`, ["Proof archive", "Recent proofs", "receipt"]),
+  },
+  {
     name: "Judge mode page",
     run: async () => checkHtmlPage(`${bases.landing}/judge`, ["Judge mode", "Run workflow", "Live demo surface"]),
   },
