@@ -4,6 +4,7 @@ import { useMemo, useState } from "react"
 import {
   BadgeCheck,
   Boxes,
+  Braces,
   Fuel,
   Handshake,
   Landmark,
@@ -69,6 +70,22 @@ const productDetails = [
       ["99.72%", "avg uptime"],
     ],
     bullets: ["x402 API discovery", "Provider and SLA context", "USDC-native access path"],
+  },
+  {
+    key: "provider",
+    name: "Arc Provider",
+    eyebrow: "Receipt trust center",
+    icon: Braces,
+    title: "Provider-side proof that paid agent requests are safe to fulfill.",
+    text: "Give API providers a receipt registry with signing key metadata, paid job history, settlement references and proof links for every agentic x402 purchase.",
+    image: "",
+    imageAlt: "Arc Provider trust center showing provider signing keys, paid receipt registry and Arc proof links",
+    stats: [
+      ["12", "recent receipts"],
+      ["ed25519", "provider signing"],
+      ["100%", "proof-linked jobs"],
+    ],
+    bullets: ["Provider signing metadata", "Paid job reconciliation", "Proof-linked fulfillment"],
   },
   {
     key: "shield",
@@ -224,7 +241,7 @@ const steps = [
 ]
 
 const metrics = [
-  ["12", "connected products"],
+  ["13", "connected products"],
   ["25,482", "agent transactions in demo"],
   ["24.8M", "marketplace request volume"],
   ["99.72%", "average uptime in marketplace stats"],
@@ -352,7 +369,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
   const activeProduct = liveProductDetails.find((product) => product.key === activeProductKey) ?? liveProductDetails[0]
   const liveMetrics = pilotSummary
     ? [
-        ["12", "connected products"],
+        ["13", "connected products"],
         [formatCompact(pilotSummary.marketplace.requests), "marketplace request volume"],
         [`${pilotSummary.marketplace.avgUptimePct}%`, "average uptime from API"],
         [apiStatus === "live" ? "Live" : "Fallback", "pilot API status"],
@@ -415,7 +432,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
           <p className="hero-text">
             Arc Suite is a connected product system built for autonomous USDC commerce:
             Treasury controls spend, Shield screens counterparties, Reputation scores behavior,
-            Marketplace sells x402 API access, Billing meters usage, Escrow governs delivery,
+            Marketplace sells x402 API access, Provider verifies signed receipts, Billing meters usage, Escrow governs delivery,
             Gas sponsors execution, Wallet OS governs custody, Radar maps the builder ecosystem,
             Private protects sensitive payment context, Blueprints turns patterns into templates,
             and Flow runs the complete policy pipeline.
@@ -509,6 +526,11 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
             <a href="/proofs">Open archive</a>
           </div>
           <div>
+            <span>Provider trust</span>
+            <strong>Signed receipt center</strong>
+            <a href="/provider">Open Provider</a>
+          </div>
+          <div>
             <span>Live settlement</span>
             <strong>0.003 USDC confirmed</strong>
             <a href={realSettlementExplorerUrl} target="_blank" rel="noreferrer">Open Arcscan proof</a>
@@ -547,7 +569,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
       <section className="section" id="system">
         <div className="section-heading">
           <p className="kicker">The product system</p>
-          <h2>Twelve connected products. One economic operating layer.</h2>
+          <h2>Thirteen connected products. One economic operating layer.</h2>
           <p>
             Arc Suite is designed around a shared cast of agents moving through the
             complete economic journey, from wallet spend to trust scoring to service access.

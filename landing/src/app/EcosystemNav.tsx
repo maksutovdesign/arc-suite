@@ -3,6 +3,7 @@
 import {
   BadgeCheck,
   Boxes,
+  Braces,
   PanelLeftClose,
   PanelLeftOpen,
   Fuel,
@@ -24,6 +25,7 @@ export type ArcProductId =
   | "treasury"
   | "reputation"
   | "marketplace"
+  | "provider"
   | "flow"
   | "billing"
   | "escrow"
@@ -43,6 +45,7 @@ const products = [
   { id: "treasury", label: "Treasury", href: isProduction ? "https://treasury-umber.vercel.app" : "http://localhost:3001", color: "#5fbfff", icon: Landmark },
   { id: "reputation", label: "Reputation", href: isProduction ? "https://reputation-five.vercel.app" : "http://localhost:3002", color: "#a78bfa", icon: BadgeCheck },
   { id: "marketplace", label: "Marketplace", href: isProduction ? "https://marketplace-eosin-eight.vercel.app" : "http://localhost:3003", color: "#34d399", icon: Store },
+  { id: "provider", label: "Provider", href: `${suiteUrl}/provider`, color: "#f472b6", icon: Braces },
   { id: "flow", label: "Flow", href: `${suiteUrl}/flow`, color: "#22d3ee", icon: Workflow },
   { id: "billing", label: "Billing", href: `${suiteUrl}/billing`, color: "#fbbf24", icon: ReceiptText },
   { id: "escrow", label: "Escrow", href: `${suiteUrl}/escrow`, color: "#fb7185", icon: Handshake },

@@ -81,6 +81,10 @@ const checks = [
     run: async () => checkHtmlPage(`${bases.landing}/proofs`, ["Proof archive", "Recent proofs", "receipt"]),
   },
   {
+    name: "Arc Provider page",
+    run: async () => checkHtmlPage(`${bases.landing}/provider`, ["Provider trust center", "Receipt registry", "Provider keys"]),
+  },
+  {
     name: "Judge mode page",
     run: async () => checkHtmlPage(`${bases.landing}/judge`, ["Judge mode", "Run workflow", "Live demo surface"]),
   },

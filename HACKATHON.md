@@ -20,6 +20,7 @@ Arc Suite is an operating layer for autonomous AI-agent commerce on Arc. It show
 - **Agentic workflow demo:** [arcsuite-app.vercel.app/agentic-workflow](https://arcsuite-app.vercel.app/agentic-workflow)
 - **Proof page:** [arcsuite-app.vercel.app/proof](https://arcsuite-app.vercel.app/proof)
 - **Proof archive:** [arcsuite-app.vercel.app/proofs](https://arcsuite-app.vercel.app/proofs)
+- **Provider trust center:** [arcsuite-app.vercel.app/provider](https://arcsuite-app.vercel.app/provider)
 - **Latest proof API:** [arcsuite-app.vercel.app/api/agentic/latest-proof](https://arcsuite-app.vercel.app/api/agentic/latest-proof)
 - **Flow operator console:** [arcsuite-app.vercel.app/flow](https://arcsuite-app.vercel.app/flow)
 - **Latest production proof:** [arcsuite-app.vercel.app/proof?id=flow_agentic_01a50e12e6c4](https://arcsuite-app.vercel.app/proof?id=flow_agentic_01a50e12e6c4)
@@ -71,6 +72,7 @@ On June 30, 2026 the production settlement smoke confirmed a real API-specific A
 - Arc Testnet USDC settlement proof.
 - Signed x402 offer, payment authorization and provider receipt simulation with provider signing metadata.
 - Proof page and proof archive for judges, providers and auditors.
+- Provider Trust Center for API providers to reconcile signed receipts, provider keys, paid jobs and proof links.
 - Supabase-ready schema for agent identities, jobs, artifacts and validations.
 
 ## Why Arc Suite

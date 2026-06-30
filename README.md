@@ -60,6 +60,7 @@ For a short hackathon submission view, see [`HACKATHON.md`](HACKATHON.md).
 | 💰 **Arc Treasury** | [treasury-umber.vercel.app](https://treasury-umber.vercel.app) | Budget manager for AI agent wallets |
 | 🛡️ **Arc Reputation** | [reputation-five.vercel.app](https://reputation-five.vercel.app) | On-chain trust scoring layer for agents |
 | 🛒 **Arc Marketplace** | [marketplace-eosin-eight.vercel.app](https://marketplace-eosin-eight.vercel.app) | Discovery platform for x402-enabled APIs |
+| **Arc Provider** | [arcsuite-app.vercel.app/provider](https://arcsuite-app.vercel.app/provider) | Provider receipt trust center for signed x402 jobs, keys and proof links |
 | **Arc Shield** | [arcsuite-app.vercel.app/shield](https://arcsuite-app.vercel.app/shield) | Circle-powered compliance screening and risk policy |
 | **Arc Flow** | [arcsuite-app.vercel.app/flow](https://arcsuite-app.vercel.app/flow) | Compliance-to-settlement payment orchestration |
 | **Judge Mode** | [arcsuite-app.vercel.app/judge](https://arcsuite-app.vercel.app/judge) | One-page reviewer path with pitch, click path and embedded workflow demo |
@@ -235,6 +236,7 @@ Arc Flow is the full intent-to-settlement workflow. It chains Shield screening, 
 - Grant-ready `/agentic-workflow` demo that packages the loop as a signed x402 offer, agent payment authorization, provider receipt, Arc transaction proof and trust-score delta
 - ERC-8004-compatible agent identity and ERC-8183-compatible job envelope model for registry, artifacts and validation evidence
 - `/proof` page that exposes the full transaction hash, x402 receipt JSON, policy chain and validation artifacts for external review
+- `/provider` trust center that lets API providers reconcile signed receipts, provider keys, paid jobs and proof URLs
 - Step-by-step execution timeline with allow, review, blocked and completed states
 - Arcscan transaction links when settlement is confirmed
 - Supabase audit trail for every flow run and policy step

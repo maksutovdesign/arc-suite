@@ -40,6 +40,7 @@ The latest release includes a recorded demo, a real Arc Testnet USDC settlement,
 6. Added recent Arc settlement visibility on the Proof page so reviewers can see the latest Supabase-recorded settlement operations.
 7. Added a Proof Archive and `/api/agentic/proofs`, making recent Marketplace purchase receipts queryable and visible.
 8. Added provider signing metadata to x402-style receipts: provider key id, signing algorithm and verification payload hash.
+9. Added Arc Provider Trust Center for API providers to reconcile signed receipts, provider keys, paid jobs and proof links.
 
 ## Suggested Review Script
 
