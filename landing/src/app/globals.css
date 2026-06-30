@@ -5662,6 +5662,7 @@ a.ops-history-run:hover {
 .submission-card,
 .submission-proof,
 .submission-link-grid a,
+.submission-review-script div,
 .submission-workflow div,
 .submission-fit div {
   border: 1px solid rgba(255, 255, 255, 0.085);
@@ -5725,6 +5726,7 @@ a.ops-history-run:hover {
 }
 
 .submission-link-grid,
+.submission-review-script,
 .submission-fit {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -5755,11 +5757,39 @@ a.ops-history-run:hover {
 }
 
 .submission-link-grid span,
+.submission-review-script span,
 .submission-workflow span,
 .submission-fit p {
   color: var(--muted);
   font-size: 13px;
   line-height: 1.5;
+}
+
+.submission-review-script div {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  min-height: 136px;
+  padding: 18px;
+}
+
+.submission-review-script i {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid rgba(95, 191, 255, 0.24);
+  border-radius: 8px;
+  background: rgba(95, 191, 255, 0.1);
+  color: var(--cyan);
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.submission-review-script strong {
+  color: rgba(232, 241, 255, 0.94);
 }
 
 .submission-proof {
@@ -7610,6 +7640,7 @@ a.ops-history-run:hover {
   .submission-hero,
   .submission-proof,
   .submission-link-grid,
+  .submission-review-script,
   .submission-fit,
   .agentic-proof-grid,
   .agentic-x402-chain,
@@ -7746,6 +7777,7 @@ a.ops-history-run:hover {
   .submission-proof,
   .submission-proof-grid,
   .submission-link-grid,
+  .submission-review-script,
   .submission-workflow,
   .submission-fit,
   .agentic-proof-strip,

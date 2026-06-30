@@ -1,4 +1,4 @@
-import { ArrowRight, BadgeCheck, FileCheck2, Link, Play, Workflow } from "lucide-react"
+import { ArrowRight, BadgeCheck, FileCheck2, Play, Workflow } from "lucide-react"
 
 import { AgenticWorkflowClient } from "../agentic-workflow/AgenticWorkflowClient"
 import { SiteHeader } from "../SiteHeader"
@@ -14,6 +14,8 @@ const highlights = [
   "Policy chain before value movement",
   "Proof page with tx hash, job id and validation evidence",
 ]
+
+const latestProofUrl = "/proof?id=flow_agentic_01a50e12e6c4"
 
 export default function JudgePage() {
   return (
@@ -31,10 +33,7 @@ export default function JudgePage() {
             </p>
             <div className="agentic-actions">
               <a className="button primary" href="#run-demo"><Play size={17} /> Run workflow</a>
-              <a className="button secondary" href="/proof"><FileCheck2 size={17} /> Open proof</a>
-              <a className="button secondary" href="https://github.com/maksutovdesign/arc-suite" target="_blank" rel="noreferrer">
-                <Link size={17} /> Repo
-              </a>
+              <a className="button secondary" href={latestProofUrl}><FileCheck2 size={17} /> Latest proof</a>
             </div>
           </div>
           <div className="judge-card" aria-label="Demo flow">
@@ -42,8 +41,8 @@ export default function JudgePage() {
             <ol>
               <li>Click Run agentic workflow.</li>
               <li>Wait until the pipeline reaches Reputation update.</li>
-              <li>Click Open proof page.</li>
-              <li>Capture tx hash, receipt JSON and policy chain.</li>
+              <li>Open latest proof and confirm api_02 / GPT-4o Proxy appears in the signed offer.</li>
+              <li>Open Arcscan from the proof page and verify the live settlement transaction.</li>
             </ol>
           </div>
         </div>
@@ -60,6 +59,7 @@ export default function JudgePage() {
         <div className="judge-next" id="run-demo">
           <span>Live demo surface</span>
           <a href="/agentic-workflow">Open full page <ArrowRight size={15} /></a>
+          <a href={latestProofUrl}>Open latest proof <ArrowRight size={15} /></a>
         </div>
       </section>
       <AgenticWorkflowClient />

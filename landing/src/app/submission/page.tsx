@@ -23,21 +23,30 @@ const releaseUrl = "https://github.com/maksutovdesign/arc-suite/releases/tag/v20
 const repoUrl = "https://github.com/maksutovdesign/arc-suite"
 const demoVideoUrl =
   "https://github.com/maksutovdesign/arc-suite/releases/download/v2026.06.28-real-arc-settlement/arc-suite-agentic-workflow-demo.mov"
+const latestProofUrl = "https://arcsuite-app.vercel.app/proof?id=flow_agentic_01a50e12e6c4"
 const explorerUrl =
-  "https://testnet.arcscan.app/tx/0x50a32e787462e2dd5e2c187c0e4d906f11ae0ed2fdda251d660470794c00d639"
+  "https://testnet.arcscan.app/tx/0x41210539368a78f6bbc08b088a95430dc0f64e9379ad9226173fc3ce565d733b"
 
 const reviewerLinks = [
   ["Judge Mode", "One-page reviewer flow", "https://arcsuite-app.vercel.app/judge"],
   ["Agentic Workflow", "Run the policy-to-proof demo", "https://arcsuite-app.vercel.app/agentic-workflow"],
-  ["Proof Page", "Tx hash, x402 receipt and policy chain", "https://arcsuite-app.vercel.app/proof"],
+  ["Latest Proof", "Tx hash, x402 receipt and policy chain", latestProofUrl],
   ["Flow Console", "Operator view behind the workflow", "https://arcsuite-app.vercel.app/flow"],
 ] as const
 
 const proofFacts = [
   ["Amount", "0.003 USDC"],
-  ["Settlement ID", "set_04643b0a-ec0f-4007-be94-aaaf45f6e0a7"],
-  ["Tx hash", "0x50a32e...00d639"],
+  ["API", "api_02 · GPT-4o Proxy"],
+  ["Settlement ID", "set_a70296d1-87f9-4753-8935-7e330a2fc3d2"],
+  ["Tx hash", "0x412105...5d733b"],
   ["Network", "Arc Testnet"],
+] as const
+
+const reviewScript = [
+  ["01", "Open Judge Mode", "Start from the one-page evaluator path."],
+  ["02", "Run workflow", "Trigger the agentic API purchase and wait for reputation update."],
+  ["03", "Open latest proof", "Check that api_02 appears in offer, flow, job and receipt."],
+  ["04", "Verify Arcscan", "Open the tx hash and confirm the live Arc Testnet settlement."],
 ] as const
 
 const workflowSteps = [
@@ -75,6 +84,9 @@ export default function SubmissionPage() {
               <a className="button secondary" href="/judge">
                 <Play size={17} /> Open judge mode
               </a>
+              <a className="button secondary" href={latestProofUrl} target="_blank" rel="noreferrer">
+                <FileCheck2 size={17} /> Latest proof
+              </a>
               <a className="button secondary" href={explorerUrl} target="_blank" rel="noreferrer">
                 <ArrowUpRight size={17} /> Verify tx
               </a>
@@ -85,9 +97,26 @@ export default function SubmissionPage() {
             <a href={releaseUrl} target="_blank" rel="noreferrer"><Code2 size={16} /> GitHub release</a>
             <a href={repoUrl} target="_blank" rel="noreferrer"><Code2 size={16} /> Source repository</a>
             <a href={demoVideoUrl} target="_blank" rel="noreferrer"><Film size={16} /> Recorded demo</a>
+            <a href={latestProofUrl} target="_blank" rel="noreferrer"><FileCheck2 size={16} /> Latest production proof</a>
             <a href={explorerUrl} target="_blank" rel="noreferrer"><Link2 size={16} /> Arcscan proof</a>
           </aside>
         </div>
+
+        <section className="submission-section">
+          <div className="submission-section-head">
+            <p className="kicker">Reviewer script</p>
+            <h2>Exactly what to click during review.</h2>
+          </div>
+          <div className="submission-review-script">
+            {reviewScript.map(([index, title, detail]) => (
+              <div key={title}>
+                <i>{index}</i>
+                <strong>{title}</strong>
+                <span>{detail}</span>
+              </div>
+            ))}
+          </div>
+        </section>
 
         <section className="submission-section">
           <div className="submission-section-head">
