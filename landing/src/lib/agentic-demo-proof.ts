@@ -19,6 +19,8 @@ import type {
   ShieldScreening,
 } from "@/lib/backend/schema"
 
+type DemoApiListing = ApiListing & { providerName: string }
+
 export type SignedOffer = {
   amountUsdc: string
   apiId: string
@@ -89,6 +91,7 @@ export type StoredAgenticProof = {
 }
 
 type ProofOptions = {
+  apiId?: string | null
   flowRunOverrides?: Partial<FlowRun>
   generatedAt?: string
   jobId?: string
@@ -100,7 +103,6 @@ type ProofOptions = {
 
 const baseRun = demoFlowPayload.runs[0]
 const baseAgent = demoAgents.find((item) => item.id === baseRun.agentId) ?? demoAgents[0]
-const baseApi = demoApis.find((item) => item.id === baseRun.apiId) ?? demoApis[0]
 const baseUsage = demoBillingOverview.usage.find((item) => item.id === "use_demo_001") ?? demoBillingOverview.usage[0]
 const baseScreening = demoShieldPayload.screenings.find((item) => item.id === baseRun.screeningId) ?? demoShieldPayload.screenings[0]
 const baseIdentity = demoArcAgentModel.identities[0]
@@ -109,6 +111,8 @@ const baseValidation = demoArcAgentModel.validations[0]
 
 export function buildAgenticDemoProof(options: ProofOptions = {}): AgenticWorkflowProof {
   const generatedAt = options.generatedAt ?? new Date().toISOString()
+  const selectedApi = resolveDemoApi(options.apiId ?? options.flowRunOverrides?.apiId ?? baseRun.apiId)
+  const usage = usageForApi(selectedApi, generatedAt)
   const nonce = options.nonce ?? "demo_001"
   const workflowId = options.workflowId ?? baseRun.id
   const jobId = options.jobId ?? baseJob.id
@@ -118,6 +122,8 @@ export function buildAgenticDemoProof(options: ProofOptions = {}): AgenticWorkfl
   let flowRun: FlowRun = {
     ...baseRun,
     accessAllowed: true,
+    amountUsdc: selectedApi.priceUsdc,
+    apiId: selectedApi.id,
     completedAt: generatedAt,
     createdAt: generatedAt,
     currentStep: "reputation",
@@ -146,8 +152,8 @@ export function buildAgenticDemoProof(options: ProofOptions = {}): AgenticWorkfl
     }
   }
 
-  const offer = createSignedOffer(nonce, flowRun)
-  const authorization = createPaymentAuthorization(offer)
+  const offer = createSignedOffer(nonce, flowRun, selectedApi, usage)
+  const authorization = createPaymentAuthorization(offer, usage)
   const receipt = createSignedReceipt(offer, authorization, generatedAt, flowRun)
   const effectiveSettlementId = flowRun.settlementId ?? settlementId
 
@@ -155,17 +161,22 @@ export function buildAgenticDemoProof(options: ProofOptions = {}): AgenticWorkfl
     ...baseJob,
     completedAt: generatedAt,
     createdAt: generatedAt,
+    amountUsdc: flowRun.amountUsdc,
+    apiId: selectedApi.id,
     flowRunId: workflowId,
     id: jobId,
     inputHash: `0x${stableDigest(`input:${workflowId}:${offer.offerId}`)}${stableDigest("input")}`,
     metadata: {
       ...baseJob.metadata,
       generatedBy: "arc-suite-agentic-demo",
+      pricingUnit: selectedApi.pricingUnit,
+      provider: selectedApi.providerName,
       x402OfferId: offer.offerId,
     },
     outputHash: `0x${stableDigest(`output:${receipt.receiptId}:${workflowId}`)}${stableDigest("output")}`,
     policyHash: `0x${stableDigest(`policy:${workflowId}:${baseScreening.id}`)}${stableDigest("policy")}`,
     receiptHash: receipt.digest,
+    requestedCapability: capabilityForApi(selectedApi),
     settlementId: effectiveSettlementId,
     status: "validated",
     txHash: flowRun.txHash,
@@ -224,20 +235,20 @@ export function buildAgenticDemoProof(options: ProofOptions = {}): AgenticWorkfl
     agentName: baseAgent.name,
     agentValidation,
     amount: `${flowRun.amountUsdc.toFixed(3)} USDC`,
-    api: baseApi,
-    apiName: baseApi.name,
+    api: selectedApi,
+    apiName: selectedApi.name,
     artifacts,
     authorization,
-    billingEvent: baseUsage.id,
+    billingEvent: usage.id,
     budget: `${baseAgent.dailySpentUsdc.toFixed(2)} / ${baseAgent.dailyLimitUsdc.toFixed(2)} USDC daily`,
     flowRun,
     generatedAt,
     offer,
     payer: shortAddress(baseAgent.address),
     policy: "ALLOW",
-    price: `${baseApi.priceUsdc.toFixed(3)} USDC / ${baseApi.pricingUnit}`,
+    price: `${selectedApi.priceUsdc.toFixed(3)} USDC / ${selectedApi.pricingUnit}`,
     proofSource: options.proofSource ?? "demo",
-    provider: baseApi.providerName,
+    provider: selectedApi.providerName,
     receipt,
     recipient: shortAddress(flowRun.recipientAddress || demoSettlementConfig.defaultRecipient),
     reputation: `${flowRun.reputationScoreBefore} -> ${flowRun.reputationScoreAfter}`,
@@ -247,7 +258,7 @@ export function buildAgenticDemoProof(options: ProofOptions = {}): AgenticWorkfl
     settlementId: effectiveSettlementId,
     stored: options.stored ?? false,
     txHash: flowRun.txHash ?? "",
-    usage: baseUsage,
+    usage,
     workflowId,
   }
 }
@@ -255,6 +266,7 @@ export function buildAgenticDemoProof(options: ProofOptions = {}): AgenticWorkfl
 export function buildAgenticProofFromStored(stored: StoredAgenticProof): AgenticWorkflowProof {
   const suffix = stored.flowRun.id.replace(/[^a-z0-9]/gi, "").slice(-12) || "stored"
   const proof = buildAgenticDemoProof({
+    apiId: stored.flowRun.apiId,
     generatedAt: stored.flowRun.completedAt ?? stored.flowRun.updatedAt ?? stored.flowRun.createdAt,
     jobId: stored.job?.id,
     flowRunOverrides: stored.flowRun,
@@ -312,22 +324,23 @@ export function stableDigest(value: string) {
   return `${first}${second}`
 }
 
-function createSignedOffer(nonce: string, flowRun: FlowRun): SignedOffer {
-  const offerId = `offer_x402_${stableDigest(`offer:${flowRun.id}:${baseApi.id}:${nonce}`).slice(0, 10)}`
+function createSignedOffer(nonce: string, flowRun: FlowRun, api: DemoApiListing, usage: BillingUsageEvent): SignedOffer {
+  const offerId = `offer_x402_${stableDigest(`offer:${flowRun.id}:${api.id}:${nonce}`).slice(0, 10)}`
   const payload = [
     "x402",
     "exact",
     "ARC-TESTNET",
-    baseApi.id,
+    api.id,
     baseAgent.id,
     flowRun.amountUsdc.toFixed(6),
+    usage.id,
     flowRun.recipientAddress,
     nonce,
   ].join(":")
 
   return {
     amountUsdc: flowRun.amountUsdc.toFixed(3),
-    apiId: baseApi.id,
+    apiId: api.id,
     expiresAt: "2026-06-30T23:59:59Z",
     offerId,
     payloadHash: `0x${stableDigest(payload)}${stableDigest(offerId)}`,
@@ -336,12 +349,12 @@ function createSignedOffer(nonce: string, flowRun: FlowRun): SignedOffer {
   }
 }
 
-function createPaymentAuthorization(offer: SignedOffer): PaymentAuthorization {
+function createPaymentAuthorization(offer: SignedOffer, usage: BillingUsageEvent): PaymentAuthorization {
   const nonce = `auth_${stableDigest(`auth:${offer.offerId}:${baseAgent.address}`).slice(0, 12)}`
-  const digest = `0x${stableDigest(`${offer.payloadHash}:${baseAgent.address}:${baseUsage.id}:${nonce}`)}${stableDigest(nonce)}`
+  const digest = `0x${stableDigest(`${offer.payloadHash}:${baseAgent.address}:${usage.id}:${nonce}`)}${stableDigest(nonce)}`
 
   return {
-    budgetLockId: `lock_${stableDigest(`budget:${offer.offerId}:${baseUsage.id}`).slice(0, 10)}`,
+    budgetLockId: `lock_${stableDigest(`budget:${offer.offerId}:${usage.id}`).slice(0, 10)}`,
     digest,
     nonce,
     payer: shortAddress(baseAgent.address),
@@ -366,4 +379,51 @@ function createSignedReceipt(
     txHash: flowRun.txHash ?? "",
     verified: Boolean(flowRun.txHash && authorization.signature && offer.signature),
   }
+}
+
+function resolveDemoApi(apiId: string | null | undefined): DemoApiListing {
+  return demoApis.find((item) => item.id === apiId) ?? demoApis.find((item) => item.id === baseRun.apiId) ?? demoApis[0]
+}
+
+function usageForApi(api: DemoApiListing, generatedAt: string): BillingUsageEvent {
+  const existing = demoBillingOverview.usage.find((item) => item.apiId === api.id)
+  if (existing) return existing
+
+  const units = api.pricingUnit === "minute" ? 1 : 12
+  const grossAmountUsdc = roundUsdc(units * api.priceUsdc)
+  const discountUsdc = roundUsdc(grossAmountUsdc * 0.05)
+
+  return {
+    ...baseUsage,
+    apiId: api.id,
+    createdAt: generatedAt,
+    discountUsdc,
+    grossAmountUsdc,
+    id: `use_agentic_${stableDigest(`usage:${api.id}`).slice(0, 10)}`,
+    idempotencyKey: `use-agentic:${api.id}`,
+    metadata: {
+      ...baseUsage.metadata,
+      apiSpecificProof: true,
+    },
+    netAmountUsdc: roundUsdc(grossAmountUsdc - discountUsdc),
+    occurredAt: generatedAt,
+    pricingUnit: api.pricingUnit,
+    unitPriceUsdc: api.priceUsdc,
+    units,
+  }
+}
+
+function roundUsdc(value: number) {
+  return Number(value.toFixed(6))
+}
+
+function capabilityForApi(api: DemoApiListing) {
+  const capabilities: Record<ApiListing["category"], string> = {
+    "AI / LLM": "ai.inference.completion",
+    Compute: "compute.gpu.burst",
+    "Data feeds": "data.feed.latest",
+    Finance: "finance.market_data.latest",
+    Oracles: "risk.oracle.screening",
+  }
+  return capabilities[api.category] ?? "x402.api.request"
 }

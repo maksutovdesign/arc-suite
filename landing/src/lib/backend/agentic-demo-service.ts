@@ -14,6 +14,7 @@ import type { FlowRun } from "./schema"
 import { executeArcSettlement, SettlementExecutionError } from "./settlement-service"
 
 type CreateAgenticDemoRunInput = {
+  apiId?: string | null
   requestId: string
   sessionId?: string | null
 }
@@ -37,6 +38,7 @@ export async function createAgenticDemoRun(input: CreateAgenticDemoRunInput): Pr
   const jobId = `arc_job_${suffix}`
   const generatedAt = new Date().toISOString()
   const baseProof = buildAgenticDemoProof({
+    apiId: input.apiId,
     generatedAt,
     jobId,
     nonce: input.sessionId ? `${input.sessionId}:${suffix}` : suffix,
@@ -49,6 +51,7 @@ export async function createAgenticDemoRun(input: CreateAgenticDemoRunInput): Pr
     workflowId,
   })
   const proof = buildAgenticDemoProof({
+    apiId: input.apiId,
     flowRunOverrides: liveSettlement.flowRunOverrides,
     generatedAt,
     jobId,

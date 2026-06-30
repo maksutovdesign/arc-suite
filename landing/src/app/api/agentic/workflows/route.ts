@@ -27,6 +27,7 @@ export async function POST(request: NextRequest) {
   }
 
   const result = await createAgenticDemoRun({
+    apiId: optionalString(body?.apiId),
     requestId,
     sessionId: optionalString(body?.sessionId),
   })
