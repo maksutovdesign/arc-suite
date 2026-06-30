@@ -16,7 +16,7 @@ The latest release includes a recorded demo, a real Arc Testnet USDC settlement,
 - Latest production proof: https://arcsuite-app.vercel.app/proof?id=flow_agentic_01a50e12e6c4
 - Flow operator console: https://arcsuite-app.vercel.app/flow
 - Repository: https://github.com/maksutovdesign/arc-suite
-- Release: https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.06.30-marketplace-paid-workflow
+- Release: https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.06.30-agentic-proof-package
 - Demo video: https://github.com/maksutovdesign/arc-suite/releases/download/v2026.06.28-real-arc-settlement/arc-suite-agentic-workflow-demo.mov
 - Arc Testnet proof: https://testnet.arcscan.app/tx/0x41210539368a78f6bbc08b088a95430dc0f64e9379ad9226173fc3ce565d733b
 

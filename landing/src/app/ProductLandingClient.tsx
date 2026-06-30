@@ -294,7 +294,7 @@ const story = [
 ]
 
 const liveDemoUrl = "https://treasury-umber.vercel.app/demo"
-const releaseUrl = "https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.06.30-marketplace-paid-workflow"
+const releaseUrl = "https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.06.30-agentic-proof-package"
 const demoVideoUrl = "https://github.com/maksutovdesign/arc-suite/releases/download/v2026.06.28-real-arc-settlement/arc-suite-agentic-workflow-demo.mov"
 const latestProofUrl = "/proof?id=flow_agentic_01a50e12e6c4"
 const realSettlementExplorerUrl =
