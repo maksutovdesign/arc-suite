@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react"
 import type { MouseEvent } from "react"
-import { ExternalLink, PlayCircle, ReceiptText } from "lucide-react"
+import { CheckCircle2, ExternalLink, PlayCircle, ReceiptText, ShieldCheck, X } from "lucide-react"
 import { ArcButton } from "@/components/ui/ArcButton"
 
 type Props = {
@@ -21,12 +21,28 @@ export function RunPaidWorkflowButton({ apiId, compact = false }: Props) {
   const [isPending, startTransition] = useTransition()
   const [result, setResult] = useState<WorkflowResponse | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [isConfirming, setIsConfirming] = useState(false)
+
+  function requestConfirmation(event: MouseEvent) {
+    event.preventDefault()
+    event.stopPropagation()
+    setError(null)
+    setResult(null)
+    setIsConfirming(true)
+  }
+
+  function cancelWorkflow(event: MouseEvent) {
+    event.preventDefault()
+    event.stopPropagation()
+    setIsConfirming(false)
+  }
 
   function runWorkflow(event: MouseEvent) {
     event.preventDefault()
     event.stopPropagation()
     setError(null)
     setResult(null)
+    setIsConfirming(false)
 
     startTransition(async () => {
       try {
@@ -51,14 +67,51 @@ export function RunPaidWorkflowButton({ apiId, compact = false }: Props) {
     <div className={compact ? "space-y-2" : "space-y-3"}>
       <ArcButton
         className="w-full justify-center"
-        disabled={isPending}
+        disabled={isPending || isConfirming}
         icon={PlayCircle}
-        onClick={runWorkflow}
+        onClick={requestConfirmation}
         size={compact ? "sm" : "md"}
         variant="outline"
       >
         {isPending ? "Running x402..." : "Run paid workflow"}
       </ArcButton>
+
+      {isConfirming && (
+        <div
+          className="rounded-xl px-3 py-2 text-[11px]"
+          style={{
+            background: "rgba(95,191,255,0.08)",
+            border: "1px solid rgba(95,191,255,0.22)",
+            color: "#94a3b8",
+          }}
+        >
+          <div className="flex items-center gap-1.5 font-semibold" style={{ color: "#5FBFFF" }}>
+            <ShieldCheck className="size-3.5" />
+            Confirm paid workflow
+          </div>
+          <p className="mt-1 leading-relaxed">
+            This will run policy checks, create an x402-style offer, settle a small Arc Testnet USDC payment, and write a proof record for {apiId}.
+          </p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            <button
+              className="inline-flex h-7 items-center gap-1 rounded-lg px-2.5 font-semibold"
+              onClick={runWorkflow}
+              style={{ background: "rgba(52,211,153,0.16)", color: "#34d399" }}
+              type="button"
+            >
+              <CheckCircle2 className="size-3" /> Confirm run
+            </button>
+            <button
+              className="inline-flex h-7 items-center gap-1 rounded-lg px-2.5 font-semibold"
+              onClick={cancelWorkflow}
+              style={{ background: "rgba(255,255,255,0.05)", color: "#94a3b8" }}
+              type="button"
+            >
+              <X className="size-3" /> Cancel
+            </button>
+          </div>
+        </div>
+      )}
 
       {result && (
         <div
@@ -71,13 +124,13 @@ export function RunPaidWorkflowButton({ apiId, compact = false }: Props) {
         >
           <div className="flex items-center gap-1.5 font-semibold" style={{ color: "#34d399" }}>
             <ReceiptText className="size-3.5" />
-            {result.liveSettlement?.status === "confirmed" ? "Paid receipt created" : "Workflow receipt created"}
+            {result.liveSettlement?.status === "confirmed" ? "Paid workflow completed" : "Workflow receipt created"}
           </div>
           {result.runId && <p className="mt-1 font-mono" style={{ color: "#7a8fa8" }}>{result.runId}</p>}
           <div className="mt-2 flex flex-wrap gap-2">
             {result.proofUrl && (
               <a className="inline-flex items-center gap-1 font-semibold" href={result.proofUrl} target="_blank" rel="noreferrer" style={{ color: "#5FBFFF" }}>
-                Proof <ExternalLink className="size-3" />
+                View latest proof <ExternalLink className="size-3" />
               </a>
             )}
             {result.liveSettlement?.explorerUrl && (
