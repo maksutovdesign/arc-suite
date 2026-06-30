@@ -6379,8 +6379,8 @@ a.ops-history-run:hover {
   max-width: 850px;
   margin: 10px 0 20px;
   color: var(--text);
-  font-size: clamp(52px, 7vw, 108px);
-  line-height: 0.92;
+  font-size: clamp(48px, 4.6vw, 64px);
+  line-height: 1.02;
   letter-spacing: 0;
 }
 
