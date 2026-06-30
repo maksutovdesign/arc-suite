@@ -1,6 +1,7 @@
-import { ArrowRight, BadgeCheck, FileCheck2, Play, Workflow } from "lucide-react"
+import { ArrowRight, BadgeCheck, Play, Workflow } from "lucide-react"
 
 import { AgenticWorkflowClient } from "../agentic-workflow/AgenticWorkflowClient"
+import { LatestProofLink } from "../LatestProofLink"
 import { SiteHeader } from "../SiteHeader"
 
 export const metadata = {
@@ -33,7 +34,7 @@ export default function JudgePage() {
             </p>
             <div className="agentic-actions">
               <a className="button primary" href="#run-demo"><Play size={17} /> Run workflow</a>
-              <a className="button secondary" href={latestProofUrl}><FileCheck2 size={17} /> Latest proof</a>
+              <LatestProofLink fallbackHref={latestProofUrl} />
             </div>
           </div>
           <div className="judge-card" aria-label="Demo flow">
@@ -59,7 +60,7 @@ export default function JudgePage() {
         <div className="judge-next" id="run-demo">
           <span>Live demo surface</span>
           <a href="/agentic-workflow">Open full page <ArrowRight size={15} /></a>
-          <a href={latestProofUrl}>Open latest proof <ArrowRight size={15} /></a>
+          <LatestProofLink fallbackHref={latestProofUrl} label="Open latest proof" mode="inline" />
         </div>
       </section>
       <AgenticWorkflowClient />

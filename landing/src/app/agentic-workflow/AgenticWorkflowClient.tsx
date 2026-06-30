@@ -207,6 +207,8 @@ export function AgenticWorkflowClient() {
                 ["receipt id", proof.receipt.receiptId],
                 ["settlement", proof.receipt.settlementId],
                 ["tx hash", shortHash(proof.receipt.txHash)],
+                ["provider key", proof.receipt.providerKeyId],
+                ["algorithm", proof.receipt.signatureAlgorithm],
                 ["verified", proof.receipt.verified ? "true" : "false"],
                 ["signature", proof.receipt.signature],
               ]}
@@ -219,6 +221,8 @@ export function AgenticWorkflowClient() {
             <span>{`  "offerSignature": "${proof.offer.signature}",`}</span>
             <span>{`  "paymentAuthorization": "${proof.authorization.signature}",`}</span>
             <span>{`  "receiptId": "${proof.receipt.receiptId}",`}</span>
+            <span>{`  "providerKeyId": "${proof.receipt.providerKeyId}",`}</span>
+            <span>{`  "providerPayload": "${proof.receipt.verificationPayloadHash}",`}</span>
             <span>{`  "receiptSignature": "${proof.receipt.signature}",`}</span>
             <span>{`  "settlementId": "${proof.settlementId}",`}</span>
             <span>{`  "requestId": "${proof.requestId}",`}</span>

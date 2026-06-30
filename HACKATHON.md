@@ -19,6 +19,8 @@ Arc Suite is an operating layer for autonomous AI-agent commerce on Arc. It show
 - **Judge mode:** [arcsuite-app.vercel.app/judge](https://arcsuite-app.vercel.app/judge)
 - **Agentic workflow demo:** [arcsuite-app.vercel.app/agentic-workflow](https://arcsuite-app.vercel.app/agentic-workflow)
 - **Proof page:** [arcsuite-app.vercel.app/proof](https://arcsuite-app.vercel.app/proof)
+- **Proof archive:** [arcsuite-app.vercel.app/proofs](https://arcsuite-app.vercel.app/proofs)
+- **Latest proof API:** [arcsuite-app.vercel.app/api/agentic/latest-proof](https://arcsuite-app.vercel.app/api/agentic/latest-proof)
 - **Flow operator console:** [arcsuite-app.vercel.app/flow](https://arcsuite-app.vercel.app/flow)
 - **Latest production proof:** [arcsuite-app.vercel.app/proof?id=flow_agentic_01a50e12e6c4](https://arcsuite-app.vercel.app/proof?id=flow_agentic_01a50e12e6c4)
 - **Live Arc Testnet proof:** [0x41210539368a78f6bbc08b088a95430dc0f64e9379ad9226173fc3ce565d733b](https://testnet.arcscan.app/tx/0x41210539368a78f6bbc08b088a95430dc0f64e9379ad9226173fc3ce565d733b)
@@ -33,6 +35,7 @@ Arc Suite is an operating layer for autonomous AI-agent commerce on Arc. It show
 5. Click **Latest proof** or the generated proof link to verify the generated run:
    - Arc Testnet transaction hash
    - x402 receipt JSON
+   - provider signing key id, algorithm and payload hash
    - policy chain
    - agent job id
    - validation evidence
@@ -66,8 +69,8 @@ On June 30, 2026 the production settlement smoke confirmed a real API-specific A
 - Reputation-gated access decisions.
 - Circle-powered compliance screening through Arc Shield.
 - Arc Testnet USDC settlement proof.
-- Signed x402 offer, payment authorization and provider receipt simulation.
-- Proof page for judges, providers and auditors.
+- Signed x402 offer, payment authorization and provider receipt simulation with provider signing metadata.
+- Proof page and proof archive for judges, providers and auditors.
 - Supabase-ready schema for agent identities, jobs, artifacts and validations.
 
 ## Why Arc Suite

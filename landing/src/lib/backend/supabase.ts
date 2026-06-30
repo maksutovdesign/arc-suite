@@ -1199,6 +1199,28 @@ export async function getSupabaseAgenticProof(id: string): Promise<StoredAgentic
   }
 }
 
+export async function getSupabaseLatestAgenticProof(): Promise<StoredAgenticProof | null> {
+  const proofs = await getSupabaseRecentAgenticProofs(1)
+  return proofs[0] ?? null
+}
+
+export async function getSupabaseRecentAgenticProofs(limit = 8): Promise<StoredAgenticProof[]> {
+  if (!isSupabaseConfigured()) return []
+
+  try {
+    const safeLimit = Math.min(Math.max(Math.floor(limit), 1), 24)
+    const rows = await getRows<FlowRunRow>(
+      "flow_runs",
+      `select=*&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&id=like.flow_agentic_%25&status=eq.completed&order=updated_at.desc&limit=${safeLimit}`,
+    )
+    const proofs = await Promise.all(rows.map((row) => getSupabaseAgenticProof(row.id)))
+    return proofs.filter((proof): proof is StoredAgenticProof => Boolean(proof))
+  } catch (error) {
+    logSupabaseError("recent agentic proofs", error)
+    return []
+  }
+}
+
 export async function checkSupabaseArcAgentReadiness() {
   if (!isSupabaseConfigured()) return false
   try {

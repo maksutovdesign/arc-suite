@@ -41,10 +41,13 @@ export type PaymentAuthorization = {
 
 export type SignedReceipt = {
   digest: string
+  providerKeyId: string
   receiptId: string
   settlementId: string
   signature: string
+  signatureAlgorithm: string
   txHash: string
+  verificationPayloadHash: string
   verified: boolean
 }
 
@@ -171,6 +174,8 @@ export function buildAgenticDemoProof(options: ProofOptions = {}): AgenticWorkfl
       generatedBy: "arc-suite-agentic-demo",
       pricingUnit: selectedApi.pricingUnit,
       provider: selectedApi.providerName,
+      providerSigningKeyId: receipt.providerKeyId,
+      providerSignatureAlgorithm: receipt.signatureAlgorithm,
       x402OfferId: offer.offerId,
     },
     outputHash: `0x${stableDigest(`output:${receipt.receiptId}:${workflowId}`)}${stableDigest("output")}`,
@@ -369,14 +374,19 @@ function createSignedReceipt(
   flowRun: FlowRun,
 ): SignedReceipt {
   const receiptId = `rcpt_arc_${stableDigest(`receipt:${offer.offerId}:${authorization.digest}:${flowRun.txHash}`).slice(0, 10)}`
-  const digest = `0x${stableDigest(`${receiptId}:${flowRun.settlementId}:${flowRun.txHash}:${generatedAt}`)}${stableDigest(receiptId)}`
+  const providerKeyId = `provider_key_${stableDigest(`provider:${offer.apiId}`).slice(0, 8)}`
+  const verificationPayloadHash = `0x${stableDigest(`${receiptId}:${offer.payloadHash}:${authorization.digest}:${flowRun.txHash}:${generatedAt}`)}${stableDigest(providerKeyId)}`
+  const digest = `0x${stableDigest(`${receiptId}:${flowRun.settlementId}:${flowRun.txHash}:${verificationPayloadHash}`)}${stableDigest(receiptId)}`
 
   return {
     digest,
+    providerKeyId,
     receiptId,
     settlementId: flowRun.settlementId ?? "set_demo_001",
-    signature: `sig_provider_${stableDigest(digest).slice(0, 24)}`,
+    signature: `sig_provider_${stableDigest(`${providerKeyId}:${digest}:${verificationPayloadHash}`).slice(0, 24)}`,
+    signatureAlgorithm: "ed25519-provider-sim",
     txHash: flowRun.txHash ?? "",
+    verificationPayloadHash,
     verified: Boolean(flowRun.txHash && authorization.signature && offer.signature),
   }
 }

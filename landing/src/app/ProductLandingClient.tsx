@@ -16,6 +16,7 @@ import {
   Workflow,
 } from "lucide-react"
 import { BrandMark } from "./BrandMark"
+import { LatestProofLink } from "./LatestProofLink"
 import { RequestPilotForm } from "./RequestPilotForm"
 import { trackLandingConversion } from "@/lib/analytics"
 import type { PilotSummary } from "@/lib/backend/schema"
@@ -392,7 +393,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
           <div className="nav-links" aria-label="Primary navigation">
             <a href="#system">Product</a>
             <a href="#loop">Loop</a>
-            <a href="/proof">Proof</a>
+            <a href="/proofs">Proof</a>
             <a href="/investors" onClick={() => trackLandingConversion({ eventName: "investors_click", placement: "nav" })}>Investors</a>
           </div>
           <a
@@ -500,7 +501,12 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
           <div>
             <span>API-specific proof</span>
             <strong>api_02 · GPT-4o Proxy</strong>
-            <a href={latestProofUrl}>Open proof page</a>
+            <LatestProofLink fallbackHref={latestProofUrl} label="Open latest proof" mode="inline" />
+          </div>
+          <div>
+            <span>Proof archive</span>
+            <strong>Receipt history</strong>
+            <a href="/proofs">Open archive</a>
           </div>
           <div>
             <span>Live settlement</span>
@@ -1037,6 +1043,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
                 </div>
               ))}
             </div>
+            <a className="marketplace-proof-link" href="/proofs">Open Marketplace receipt history</a>
           </article>
         </div>
       </section>

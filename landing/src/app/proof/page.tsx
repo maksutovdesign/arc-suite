@@ -51,6 +51,9 @@ export default async function ProofPage({ searchParams }: ProofPageProps) {
     settlementId: proof.settlementId,
     txHash: proof.txHash || "pending",
     validationResult: validation.result,
+    providerKeyId: proof.receipt.providerKeyId,
+    providerSignatureAlgorithm: proof.receipt.signatureAlgorithm,
+    providerVerificationPayload: proof.receipt.verificationPayloadHash,
     workflowId: flowRun.id,
     x402OfferDigest: artifacts.find((item) => item.type === "x402_offer")?.digest ?? proof.offer.payloadHash,
   }
@@ -152,6 +155,9 @@ export default async function ProofPage({ searchParams }: ProofPageProps) {
               <span>{`  "source": "${proof.proofSource}",`}</span>
               <span>{`  "x402OfferDigest": "${receipt.x402OfferDigest}",`}</span>
               <span>{`  "paymentAuthorizationDigest": "${receipt.paymentAuthorizationDigest}",`}</span>
+              <span>{`  "providerKeyId": "${receipt.providerKeyId}",`}</span>
+              <span>{`  "providerSignatureAlgorithm": "${receipt.providerSignatureAlgorithm}",`}</span>
+              <span>{`  "providerVerificationPayload": "${receipt.providerVerificationPayload}",`}</span>
               <span>{`  "receiptDigest": "${receipt.receiptDigest}",`}</span>
               <span>{`  "settlementId": "${receipt.settlementId}",`}</span>
               <span>{`  "txHash": "${receipt.txHash}",`}</span>

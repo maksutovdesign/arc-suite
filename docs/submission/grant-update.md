@@ -13,7 +13,8 @@ The latest release includes a recorded demo, a real Arc Testnet USDC settlement,
 - Judge Mode: https://arcsuite-app.vercel.app/judge
 - Agentic Workflow: https://arcsuite-app.vercel.app/agentic-workflow
 - Proof page: https://arcsuite-app.vercel.app/proof
-- Latest production proof: https://arcsuite-app.vercel.app/proof?id=flow_agentic_01a50e12e6c4
+- Proof archive: https://arcsuite-app.vercel.app/proofs
+- Latest production proof API: https://arcsuite-app.vercel.app/api/agentic/latest-proof
 - Flow operator console: https://arcsuite-app.vercel.app/flow
 - Repository: https://github.com/maksutovdesign/arc-suite
 - Release: https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.06.30-agentic-proof-package
@@ -37,6 +38,8 @@ The latest release includes a recorded demo, a real Arc Testnet USDC settlement,
 4. Added a Proof page that ties transaction hash, x402 receipt, policy gates and validation artifacts to one workflow ID.
 5. Added a live-settlement backend path for Agentic Workflow behind `ARC_AGENTIC_LIVE_SETTLEMENT=true`, with safe fallback when Circle or Supabase is unavailable.
 6. Added recent Arc settlement visibility on the Proof page so reviewers can see the latest Supabase-recorded settlement operations.
+7. Added a Proof Archive and `/api/agentic/proofs`, making recent Marketplace purchase receipts queryable and visible.
+8. Added provider signing metadata to x402-style receipts: provider key id, signing algorithm and verification payload hash.
 
 ## Suggested Review Script
 
@@ -44,7 +47,7 @@ The latest release includes a recorded demo, a real Arc Testnet USDC settlement,
 2. Watch the demo video.
 3. Open Judge Mode.
 4. Click `Run agentic workflow`.
-5. Open the generated Proof page or the latest production proof.
+5. Open the generated Proof page, latest proof API or Proof Archive.
 6. Check the policy chain, receipt JSON, settlement ID and transaction hash.
 7. Open the Arcscan transaction link.
 8. Open Flow to see how the workflow maps to the operator console.
@@ -66,6 +69,6 @@ That loop is the product: identity, policy, settlement, receipt and reputation i
 
 1. Enable live Agentic Workflow settlement in production once the reviewer wallet budget is topped up.
 2. Add Circle webhook reconciliation for settlement status updates.
-3. Replace simulated x402 signatures with provider-owned keys.
+3. Replace simulated provider signing metadata with provider-owned keys.
 4. Add provider API cards that can be purchased directly from Marketplace.
 5. Add a compact operator dashboard for the last live settlements, policy denials and reputation changes.

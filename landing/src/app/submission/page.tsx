@@ -12,6 +12,7 @@ import {
   Workflow,
 } from "lucide-react"
 
+import { LatestProofLink } from "../LatestProofLink"
 import { SiteHeader } from "../SiteHeader"
 
 export const metadata = {
@@ -31,6 +32,7 @@ const reviewerLinks = [
   ["Judge Mode", "One-page reviewer flow", "https://arcsuite-app.vercel.app/judge"],
   ["Agentic Workflow", "Run the policy-to-proof demo", "https://arcsuite-app.vercel.app/agentic-workflow"],
   ["Latest Proof", "Tx hash, x402 receipt and policy chain", latestProofUrl],
+  ["Proof Archive", "Recent workflow receipts and tx hashes", "https://arcsuite-app.vercel.app/proofs"],
   ["Flow Console", "Operator view behind the workflow", "https://arcsuite-app.vercel.app/flow"],
 ] as const
 
@@ -84,9 +86,7 @@ export default function SubmissionPage() {
               <a className="button secondary" href="/judge">
                 <Play size={17} /> Open judge mode
               </a>
-              <a className="button secondary" href={latestProofUrl} target="_blank" rel="noreferrer">
-                <FileCheck2 size={17} /> Latest proof
-              </a>
+              <LatestProofLink fallbackHref={latestProofUrl} />
               <a className="button secondary" href={explorerUrl} target="_blank" rel="noreferrer">
                 <ArrowUpRight size={17} /> Verify tx
               </a>
@@ -97,7 +97,7 @@ export default function SubmissionPage() {
             <a href={releaseUrl} target="_blank" rel="noreferrer"><Code2 size={16} /> GitHub release</a>
             <a href={repoUrl} target="_blank" rel="noreferrer"><Code2 size={16} /> Source repository</a>
             <a href={demoVideoUrl} target="_blank" rel="noreferrer"><Film size={16} /> Recorded demo</a>
-            <a href={latestProofUrl} target="_blank" rel="noreferrer"><FileCheck2 size={16} /> Latest production proof</a>
+            <LatestProofLink fallbackHref={latestProofUrl} label="Latest production proof" mode="card" />
             <a href={explorerUrl} target="_blank" rel="noreferrer"><Link2 size={16} /> Arcscan proof</a>
           </aside>
         </div>

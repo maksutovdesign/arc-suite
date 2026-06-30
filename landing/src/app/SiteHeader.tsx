@@ -15,7 +15,7 @@ export function SiteHeader({ idPrefix = "site-header" }: { idPrefix?: string }) 
         <div className="nav-links" aria-label="Primary navigation">
           <Link href="/">Product</Link>
           <Link href="/#loop">Loop</Link>
-          <Link href="/proof">Proof</Link>
+          <Link href="/proofs">Proof</Link>
           <Link href="/submission">Submit</Link>
           <Link href="/investors">Investors</Link>
         </div>

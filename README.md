@@ -26,7 +26,9 @@ For a short hackathon submission view, see [`HACKATHON.md`](HACKATHON.md).
 
 **Live Arc Testnet proof:** [`0x41210539368a78f6bbc08b088a95430dc0f64e9379ad9226173fc3ce565d733b`](https://testnet.arcscan.app/tx/0x41210539368a78f6bbc08b088a95430dc0f64e9379ad9226173fc3ce565d733b)
 
-**Latest production proof page:** [arcsuite-app.vercel.app/proof?id=flow_agentic_01a50e12e6c4](https://arcsuite-app.vercel.app/proof?id=flow_agentic_01a50e12e6c4)
+**Proof archive:** [arcsuite-app.vercel.app/proofs](https://arcsuite-app.vercel.app/proofs)
+
+**Latest production proof API:** [arcsuite-app.vercel.app/api/agentic/latest-proof](https://arcsuite-app.vercel.app/api/agentic/latest-proof)
 
 **Submission page:** [arcsuite-app.vercel.app/submission](https://arcsuite-app.vercel.app/submission)
 
@@ -35,7 +37,8 @@ For a short hackathon submission view, see [`HACKATHON.md`](HACKATHON.md).
 1. Open [Judge Mode](https://arcsuite-app.vercel.app/judge).
 2. Click **Run agentic workflow**.
 3. Inspect the signed x402 offer, agent authorization and provider receipt.
-4. Click **Latest proof** or the generated proof link to verify the API-specific transaction hash, receipt JSON, policy chain and validation artifacts for that run.
+4. Click **Latest proof** or the generated proof link to verify the API-specific transaction hash, provider-signed receipt metadata, policy chain and validation artifacts for that run.
+5. Open **Proof archive** to review recent workflow receipts and Marketplace purchase history.
 5. Open [Arc Flow](https://arcsuite-app.vercel.app/flow) to see the operator console behind the same workflow model.
 
 **Agentic Economy Track features:**
@@ -62,6 +65,7 @@ For a short hackathon submission view, see [`HACKATHON.md`](HACKATHON.md).
 | **Judge Mode** | [arcsuite-app.vercel.app/judge](https://arcsuite-app.vercel.app/judge) | One-page reviewer path with pitch, click path and embedded workflow demo |
 | **Agentic Workflow Demo** | [arcsuite-app.vercel.app/agentic-workflow](https://arcsuite-app.vercel.app/agentic-workflow) | One-click AI agent purchase with policy, x402 receipt, Arc settlement and reputation update |
 | **Proof Page** | [arcsuite-app.vercel.app/proof](https://arcsuite-app.vercel.app/proof) | Reviewer-ready tx hash, x402 receipt, policy chain and validation evidence |
+| **Proof Archive** | [arcsuite-app.vercel.app/proofs](https://arcsuite-app.vercel.app/proofs) | Recent agentic workflow receipts, tx hashes and Marketplace proof history |
 | **Arc Billing** | [arcsuite-app.vercel.app/billing](https://arcsuite-app.vercel.app/billing) | x402 usage metering, prepaid balances, invoices and settlement batches |
 | **Arc Escrow** | [arcsuite-app.vercel.app/escrow](https://arcsuite-app.vercel.app/escrow) | Programmable agent deals, milestones, disputes and contract events |
 | **Arc Gas** | [arcsuite-app.vercel.app/gas](https://arcsuite-app.vercel.app/gas) | Gas sponsorship policy, Paymaster/Gas Station limits and reporting |
@@ -80,7 +84,7 @@ Start here:
 0. **Watch the recorded demo:** [arc-suite-agentic-workflow-demo.mov](https://github.com/maksutovdesign/arc-suite/releases/download/v2026.06.28-real-arc-settlement/arc-suite-agentic-workflow-demo.mov)
 1. **Open Judge Mode:** [arcsuite-app.vercel.app/judge](https://arcsuite-app.vercel.app/judge)
 2. **Run the workflow:** [arcsuite-app.vercel.app/agentic-workflow](https://arcsuite-app.vercel.app/agentic-workflow)
-3. **Inspect the generated proof:** use the proof link returned by the workflow, or open the latest production proof: [arcsuite-app.vercel.app/proof?id=flow_agentic_01a50e12e6c4](https://arcsuite-app.vercel.app/proof?id=flow_agentic_01a50e12e6c4)
+3. **Inspect the generated proof:** use the proof link returned by the workflow, open the latest proof API, or browse the archive: [arcsuite-app.vercel.app/proofs](https://arcsuite-app.vercel.app/proofs)
 4. **Open the live operator console:** [arcsuite-app.vercel.app/flow](https://arcsuite-app.vercel.app/flow)
 
 The demonstrated operation is:
@@ -110,7 +114,7 @@ The production smoke run on June 30, 2026 confirmed a real API-specific Arc Test
 3. **Offer:** Marketplace produces a signed x402 offer with exact USDC pricing.
 4. **Policy:** Treasury, Reputation and Shield decide whether the payment may proceed.
 5. **Settlement:** Flow executes the Arc Testnet USDC transfer through the Circle wallet path.
-6. **Receipt:** the provider signs the x402 receipt and the transaction hash is linked to the job.
+6. **Receipt:** the provider issues a signed x402 receipt with provider key id, signing algorithm, payload hash and transaction hash linked to the job.
 7. **Reputation:** the successful payment becomes a score update and future access signal.
 8. **Proof:** the `/proof` page exposes the tx hash, receipt JSON, policy chain and validation artifacts.
 

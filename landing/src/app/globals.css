@@ -3477,6 +3477,21 @@ h3 {
   background: linear-gradient(90deg, var(--cyan), var(--yellow));
 }
 
+.marketplace-proof-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  margin-top: 20px;
+  padding: 0 14px;
+  border: 1px solid rgba(95, 191, 255, 0.18);
+  border-radius: 8px;
+  color: var(--cyan);
+  font-size: 13px;
+  font-weight: 900;
+  text-decoration: none;
+}
+
 .api-section {
   border-top: 1px solid var(--line);
 }
@@ -5706,6 +5721,57 @@ a.ops-history-run:hover {
   text-decoration: none;
 }
 
+.submission-card .latest-proof-card {
+  display: grid;
+  gap: 5px;
+  min-height: 0;
+  padding: 13px 12px;
+}
+
+.latest-proof-card span,
+.latest-proof-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.latest-proof-card strong,
+.latest-proof-card small,
+.latest-proof-card em {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.latest-proof-card strong {
+  color: rgba(232, 241, 255, 0.94);
+  font-size: 12px;
+}
+
+.latest-proof-card small {
+  color: rgba(148, 163, 184, 0.86);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.latest-proof-card em {
+  color: var(--blue);
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 850;
+}
+
+.latest-proof-inline {
+  min-height: 38px;
+  padding: 0 12px;
+  border: 1px solid rgba(95, 191, 255, 0.13);
+  border-radius: 8px;
+  color: rgba(232, 241, 255, 0.88);
+  font-size: 12px;
+  font-weight: 850;
+  text-decoration: none;
+}
+
 .submission-section,
 .submission-proof {
   margin-top: 26px;
@@ -6149,6 +6215,124 @@ a.ops-history-run:hover {
   font-style: normal;
   font-weight: 850;
   white-space: nowrap;
+}
+
+.proof-archive-list {
+  margin-top: 26px;
+}
+
+.proof-archive-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.proof-archive-card {
+  display: grid;
+  gap: 13px;
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid rgba(95, 191, 255, 0.12);
+  border-radius: 8px;
+  background: rgba(8, 13, 19, 0.55);
+}
+
+.proof-archive-topline,
+.proof-archive-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.proof-archive-topline span,
+.proof-archive-topline em {
+  color: rgba(148, 163, 184, 0.8);
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.proof-archive-topline span {
+  color: var(--green);
+}
+
+.proof-archive-card h3 {
+  margin: 0;
+  color: var(--ink);
+  font-size: clamp(22px, 2.4vw, 34px);
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.proof-archive-card p {
+  margin: 0;
+  color: rgba(148, 163, 184, 0.9);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.proof-archive-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.proof-archive-facts div {
+  min-width: 0;
+  padding: 11px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.proof-archive-facts span,
+.proof-archive-facts strong {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.proof-archive-facts span {
+  color: rgba(148, 163, 184, 0.78);
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.proof-archive-facts strong {
+  margin-top: 6px;
+  color: rgba(232, 241, 255, 0.9);
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.proof-archive-actions {
+  justify-content: flex-start;
+}
+
+.proof-archive-actions a,
+.proof-archive-actions span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 36px;
+  padding: 0 11px;
+  border: 1px solid rgba(95, 191, 255, 0.16);
+  border-radius: 8px;
+  color: rgba(232, 241, 255, 0.9);
+  font-size: 12px;
+  font-weight: 850;
+  text-decoration: none;
+}
+
+.proof-archive-actions span {
+  color: rgba(148, 163, 184, 0.8);
 }
 
 .billing-shell {
@@ -7649,6 +7833,7 @@ a.ops-history-run:hover {
   .submission-workflow,
   .proof-hero,
   .proof-grid,
+  .proof-archive-grid,
   .agentic-proof-strip {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -7773,6 +7958,8 @@ a.ops-history-run:hover {
   .proof-hero,
   .proof-grid,
   .proof-artifact-grid,
+  .proof-archive-grid,
+  .proof-archive-facts,
   .submission-hero,
   .submission-proof,
   .submission-proof-grid,
