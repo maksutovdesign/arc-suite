@@ -294,10 +294,11 @@ const story = [
 ]
 
 const liveDemoUrl = "https://treasury-umber.vercel.app/demo"
-const releaseUrl = "https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.06.28-real-arc-settlement"
+const releaseUrl = "https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.06.30-marketplace-paid-workflow"
 const demoVideoUrl = "https://github.com/maksutovdesign/arc-suite/releases/download/v2026.06.28-real-arc-settlement/arc-suite-agentic-workflow-demo.mov"
+const latestProofUrl = "/proof?id=flow_agentic_01a50e12e6c4"
 const realSettlementExplorerUrl =
-  "https://testnet.arcscan.app/tx/0x50a32e787462e2dd5e2c187c0e4d906f11ae0ed2fdda251d660470794c00d639"
+  "https://testnet.arcscan.app/tx/0x41210539368a78f6bbc08b088a95430dc0f64e9379ad9226173fc3ce565d733b"
 
 type ProductLandingClientProps = {
   initialApiStatus: "live" | "fallback"
@@ -497,13 +498,18 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
             <a href={demoVideoUrl} target="_blank" rel="noreferrer">Watch video</a>
           </div>
           <div>
+            <span>API-specific proof</span>
+            <strong>api_02 · GPT-4o Proxy</strong>
+            <a href={latestProofUrl}>Open proof page</a>
+          </div>
+          <div>
             <span>Live settlement</span>
             <strong>0.003 USDC confirmed</strong>
             <a href={realSettlementExplorerUrl} target="_blank" rel="noreferrer">Open Arcscan proof</a>
           </div>
           <div>
             <span>Release package</span>
-            <strong>v2026.06.28</strong>
+            <strong>v2026.06.30</strong>
             <a href={releaseUrl} target="_blank" rel="noreferrer">Open GitHub release</a>
           </div>
         </div>

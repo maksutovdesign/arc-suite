@@ -19,7 +19,7 @@ export const metadata = {
   description: "Arc Suite submission page with demo video, live proof, architecture and reviewer links.",
 }
 
-const releaseUrl = "https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.06.28-real-arc-settlement"
+const releaseUrl = "https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.06.30-marketplace-paid-workflow"
 const repoUrl = "https://github.com/maksutovdesign/arc-suite"
 const demoVideoUrl =
   "https://github.com/maksutovdesign/arc-suite/releases/download/v2026.06.28-real-arc-settlement/arc-suite-agentic-workflow-demo.mov"

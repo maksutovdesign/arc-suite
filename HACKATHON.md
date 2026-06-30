@@ -13,14 +13,15 @@ Arc Suite is an operating layer for autonomous AI-agent commerce on Arc. It show
 - **GitHub:** [github.com/maksutovdesign/arc-suite](https://github.com/maksutovdesign/arc-suite)
 - **Grant update:** [`docs/submission/grant-update.md`](docs/submission/grant-update.md)
 - **Demo video:** [arc-suite-agentic-workflow-demo.mov](https://github.com/maksutovdesign/arc-suite/releases/download/v2026.06.28-real-arc-settlement/arc-suite-agentic-workflow-demo.mov)
-- **Release package:** [v2026.06.28-real-arc-settlement](https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.06.28-real-arc-settlement)
+- **Release package:** [v2026.06.30-marketplace-paid-workflow](https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.06.30-marketplace-paid-workflow)
 - **Main landing:** [arcsuite-app.vercel.app](https://arcsuite-app.vercel.app)
 - **Submission page:** [arcsuite-app.vercel.app/submission](https://arcsuite-app.vercel.app/submission)
 - **Judge mode:** [arcsuite-app.vercel.app/judge](https://arcsuite-app.vercel.app/judge)
 - **Agentic workflow demo:** [arcsuite-app.vercel.app/agentic-workflow](https://arcsuite-app.vercel.app/agentic-workflow)
 - **Proof page:** [arcsuite-app.vercel.app/proof](https://arcsuite-app.vercel.app/proof)
 - **Flow operator console:** [arcsuite-app.vercel.app/flow](https://arcsuite-app.vercel.app/flow)
-- **Live Arc Testnet proof:** [0x50a32e787462e2dd5e2c187c0e4d906f11ae0ed2fdda251d660470794c00d639](https://testnet.arcscan.app/tx/0x50a32e787462e2dd5e2c187c0e4d906f11ae0ed2fdda251d660470794c00d639)
+- **Latest production proof:** [arcsuite-app.vercel.app/proof?id=flow_agentic_01a50e12e6c4](https://arcsuite-app.vercel.app/proof?id=flow_agentic_01a50e12e6c4)
+- **Live Arc Testnet proof:** [0x41210539368a78f6bbc08b088a95430dc0f64e9379ad9226173fc3ce565d733b](https://testnet.arcscan.app/tx/0x41210539368a78f6bbc08b088a95430dc0f64e9379ad9226173fc3ce565d733b)
 
 ## Demo Flow
 
@@ -29,7 +30,7 @@ Arc Suite is an operating layer for autonomous AI-agent commerce on Arc. It show
 3. Watch the pipeline move through:
    `Agent intent -> x402 offer -> Treasury budget -> Shield screening -> Billing usage -> Arc settlement -> Reputation update`.
 4. Inspect the signed offer, agent payment authorization and signed provider receipt.
-5. Click **Open proof page** to verify the generated run:
+5. Click **Latest proof** or the generated proof link to verify the generated run:
    - Arc Testnet transaction hash
    - x402 receipt JSON
    - policy chain
@@ -39,12 +40,13 @@ Arc Suite is an operating layer for autonomous AI-agent commerce on Arc. It show
 
 ## Real Settlement Proof
 
-On June 28, 2026 the production settlement smoke confirmed a real Arc Testnet USDC transfer through the Circle Wallets path:
+On June 30, 2026 the production settlement smoke confirmed a real API-specific Arc Testnet USDC transfer through the Circle Wallets path:
 
 - **Amount:** `0.003 USDC`
-- **Settlement ID:** `set_04643b0a-ec0f-4007-be94-aaaf45f6e0a7`
-- **Transaction hash:** `0x50a32e787462e2dd5e2c187c0e4d906f11ae0ed2fdda251d660470794c00d639`
-- **Explorer:** [testnet.arcscan.app/tx/0x50a32e...d639](https://testnet.arcscan.app/tx/0x50a32e787462e2dd5e2c187c0e4d906f11ae0ed2fdda251d660470794c00d639)
+- **API:** `api_02` / `GPT-4o Proxy`
+- **Settlement ID:** `set_a70296d1-87f9-4753-8935-7e330a2fc3d2`
+- **Transaction hash:** `0x41210539368a78f6bbc08b088a95430dc0f64e9379ad9226173fc3ce565d733b`
+- **Explorer:** [testnet.arcscan.app/tx/0x412105...5d733b](https://testnet.arcscan.app/tx/0x41210539368a78f6bbc08b088a95430dc0f64e9379ad9226173fc3ce565d733b)
 - **Recorded demo:** [arc-suite-agentic-workflow-demo.mov](https://github.com/maksutovdesign/arc-suite/releases/download/v2026.06.28-real-arc-settlement/arc-suite-agentic-workflow-demo.mov)
 
 ## What It Proves

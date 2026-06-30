@@ -13,18 +13,20 @@ The latest release includes a recorded demo, a real Arc Testnet USDC settlement,
 - Judge Mode: https://arcsuite-app.vercel.app/judge
 - Agentic Workflow: https://arcsuite-app.vercel.app/agentic-workflow
 - Proof page: https://arcsuite-app.vercel.app/proof
+- Latest production proof: https://arcsuite-app.vercel.app/proof?id=flow_agentic_01a50e12e6c4
 - Flow operator console: https://arcsuite-app.vercel.app/flow
 - Repository: https://github.com/maksutovdesign/arc-suite
-- Release: https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.06.28-real-arc-settlement
+- Release: https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.06.30-marketplace-paid-workflow
 - Demo video: https://github.com/maksutovdesign/arc-suite/releases/download/v2026.06.28-real-arc-settlement/arc-suite-agentic-workflow-demo.mov
-- Arc Testnet proof: https://testnet.arcscan.app/tx/0x50a32e787462e2dd5e2c187c0e4d906f11ae0ed2fdda251d660470794c00d639
+- Arc Testnet proof: https://testnet.arcscan.app/tx/0x41210539368a78f6bbc08b088a95430dc0f64e9379ad9226173fc3ce565d733b
 
 ## Real Settlement Proof
 
 - Amount: `0.003 USDC`
 - Network: `Arc Testnet`
-- Settlement ID: `set_04643b0a-ec0f-4007-be94-aaaf45f6e0a7`
-- Transaction hash: `0x50a32e787462e2dd5e2c187c0e4d906f11ae0ed2fdda251d660470794c00d639`
+- API: `api_02` / `GPT-4o Proxy`
+- Settlement ID: `set_a70296d1-87f9-4753-8935-7e330a2fc3d2`
+- Transaction hash: `0x41210539368a78f6bbc08b088a95430dc0f64e9379ad9226173fc3ce565d733b`
 - Path: `policy check -> Circle Wallets token lookup -> Arc Testnet USDC transfer -> Supabase audit -> proof link`
 
 ## What Changed In This Update
@@ -42,7 +44,7 @@ The latest release includes a recorded demo, a real Arc Testnet USDC settlement,
 2. Watch the demo video.
 3. Open Judge Mode.
 4. Click `Run agentic workflow`.
-5. Open the generated Proof page.
+5. Open the generated Proof page or the latest production proof.
 6. Check the policy chain, receipt JSON, settlement ID and transaction hash.
 7. Open the Arcscan transaction link.
 8. Open Flow to see how the workflow maps to the operator console.
