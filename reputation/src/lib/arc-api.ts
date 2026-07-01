@@ -43,21 +43,21 @@ export type ReputationData = {
 const DEFAULT_API_BASE_URL = process.env.NODE_ENV === "production" ? "https://arcsuite-app.vercel.app" : "http://127.0.0.1:3100"
 const API_BASE_URL = process.env.ARC_SUITE_API_URL ?? process.env.NEXT_PUBLIC_ARC_SUITE_API_URL ?? DEFAULT_API_BASE_URL
 const ARC_API_KEY = process.env.ARC_API_KEY
-const REQUEST_TIMEOUT_MS = Number.parseInt(process.env.ARC_REPUTATION_API_TIMEOUT_MS ?? "2800", 10)
+const REQUEST_TIMEOUT_MS = Number.parseInt(process.env.ARC_REPUTATION_API_TIMEOUT_MS ?? "1600", 10)
 
 export async function getReputationData(): Promise<ReputationData> {
   try {
-    const agentsPayload = await fetchJson<{ agents: ApiAgent[] }>(`${API_BASE_URL}/api/agents`)
-
-    const [reputationProfiles, eventsPayload] = await Promise.all([
-      Promise.all(
-        agentsPayload.agents.map(async (agent) => {
-          const payload = await fetchJson<{ reputation: ApiReputation }>(`${API_BASE_URL}/api/reputation/${agent.id}`)
-          return payload.reputation
-        }),
-      ),
+    const [agentsPayload, eventsPayload] = await Promise.all([
+      fetchJson<{ agents: ApiAgent[] }>(`${API_BASE_URL}/api/agents`),
       fetchJson<{ events: ReputationEvent[] }>(`${API_BASE_URL}/api/reputation/events?limit=40`),
     ])
+
+    const reputationProfiles = await Promise.all(
+      agentsPayload.agents.map(async (agent) => {
+        const payload = await fetchJson<{ reputation: ApiReputation }>(`${API_BASE_URL}/api/reputation/${agent.id}`)
+        return payload.reputation
+      }),
+    )
 
     return {
       agents: agentsPayload.agents.map((agent) => {
