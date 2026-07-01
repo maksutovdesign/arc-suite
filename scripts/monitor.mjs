@@ -85,6 +85,34 @@ const checks = [
     run: async () => checkHtmlPage(`${bases.landing}/provider`, ["Provider trust center", "Receipt registry", "Provider keys"]),
   },
   {
+    name: "Provider receipts API",
+    run: async () => checkJsonApi(`${bases.landing}/api/provider/receipts?limit=3`, (payload) => {
+      assert(payload?.ok === true, "provider receipts ok=true")
+      assert(Array.isArray(payload?.receipts), "provider receipts array")
+      assert(payload.receipts.length > 0, "provider receipts not empty")
+      assert(Boolean(payload.receipts[0]?.proofUrl), "provider receipt includes proofUrl")
+      return `${payload.receipts.length} receipts`
+    }),
+  },
+  {
+    name: "Provider keys API",
+    run: async () => checkJsonApi(`${bases.landing}/api/provider/keys`, (payload) => {
+      assert(payload?.ok === true, "provider keys ok=true")
+      assert(Array.isArray(payload?.keys), "provider keys array")
+      assert(payload.keys.length > 0, "provider keys not empty")
+      return `${payload.keys.length} keys`
+    }),
+  },
+  {
+    name: "Provider fulfillment policy API",
+    run: async () => checkJsonApi(`${bases.landing}/api/provider/fulfillment-policy`, (payload) => {
+      assert(payload?.ok === true, "provider policy ok=true")
+      assert(Array.isArray(payload?.policies), "provider policies array")
+      assert(payload.policies.length >= 4, "provider policies include required gates")
+      return `${payload.policies.length} policies`
+    }),
+  },
+  {
     name: "Judge mode page",
     run: async () => checkHtmlPage(`${bases.landing}/judge`, ["Judge mode", "Run workflow", "Live demo surface"]),
   },
@@ -228,6 +256,16 @@ async function checkHtmlPage(url, expectedText) {
     assert(html.includes(text), `${url} includes ${text}`)
   }
   return "200 headers ok"
+}
+
+async function checkJsonApi(url, validate) {
+  const response = await fetchWithRetry(url)
+  assertStatus(response, 200)
+  assertSecurityHeaders(response)
+  assertNoPoweredBy(response)
+  assertHeaderIncludes(response, "cache-control", "no-store")
+  const payload = await response.json()
+  return validate(payload)
 }
 
 async function fetchWithRetry(url, options = {}, attempts = 3) {

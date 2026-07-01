@@ -10,9 +10,9 @@ import {
   Workflow,
 } from "lucide-react"
 
-import { buildAgenticDemoProof, buildAgenticProofFromStored, shortHash } from "@/lib/agentic-demo-proof"
-import { getSupabaseRecentAgenticProofs } from "@/lib/backend/supabase"
+import { getProviderTrustOverview } from "@/lib/backend/provider-service"
 import { EcosystemNav } from "../EcosystemNav"
+import { ProviderDemoRunButton } from "./ProviderDemoRunButton"
 
 export const metadata = {
   title: "Arc Provider — Receipt Trust Center",
@@ -40,16 +40,8 @@ const integrations = [
 ]
 
 export default async function ProviderPage() {
-  const storedProofs = await getSupabaseRecentAgenticProofs(12)
-  const proofs = storedProofs.length > 0
-    ? storedProofs.map(buildAgenticProofFromStored)
-    : [buildAgenticDemoProof()]
-  const latest = proofs[0]
-  const providerNames = new Set(proofs.map((proof) => proof.provider))
-  const signedReceipts = proofs.filter((proof) => proof.receipt.signature).length
-  const liveSettlements = proofs.filter((proof) => proof.txHash).length
-  const totalUsdc = proofs.reduce((sum, proof) => sum + proof.flowRun.amountUsdc, 0)
-  const providerKeys = Array.from(new Set(proofs.map((proof) => proof.receipt.providerKeyId)))
+  const overview = await getProviderTrustOverview(12)
+  const latest = overview.receipts[0]
 
   return (
     <main>
@@ -65,6 +57,7 @@ export default async function ProviderPage() {
               links to every policy chain and Arc Testnet settlement.
             </p>
             <div className="radar-actions">
+              <ProviderDemoRunButton />
               <Link className="button primary" href="/proofs"><ReceiptText size={16} /> Open proof archive</Link>
               <Link className="button secondary" href="/agentic-workflow"><Workflow size={16} /> Run workflow</Link>
             </div>
@@ -73,7 +66,7 @@ export default async function ProviderPage() {
           <aside className="provider-verification-card" aria-label="Provider receipt verification">
             <div className="provider-card-top">
               <span>x402 provider receipt</span>
-              <strong>{latest.receipt.verified ? "VERIFIED" : "PENDING"}</strong>
+              <strong>{latest.verified ? "VERIFIED" : "PENDING"}</strong>
             </div>
             <div className="provider-receipt-main">
               <span>Latest paid API</span>
@@ -81,12 +74,12 @@ export default async function ProviderPage() {
               <small>{latest.provider} · {latest.amount}</small>
             </div>
             <div className="provider-receipt-grid">
-              <div><span>Provider key</span><strong>{latest.receipt.providerKeyId}</strong></div>
-              <div><span>Algorithm</span><strong>{latest.receipt.signatureAlgorithm}</strong></div>
-              <div><span>Receipt</span><strong>{shortHash(latest.agentJob.receiptHash ?? latest.receipt.digest)}</strong></div>
-              <div><span>Tx hash</span><strong>{shortHash(latest.txHash)}</strong></div>
+              <div><span>Provider key</span><strong>{latest.providerKeyId}</strong></div>
+              <div><span>Algorithm</span><strong>{latest.signatureAlgorithm}</strong></div>
+              <div><span>Receipt</span><strong>{latest.shortReceiptDigest}</strong></div>
+              <div><span>Tx hash</span><strong>{latest.shortTxHash}</strong></div>
             </div>
-            <Link href={`/proof?id=${encodeURIComponent(latest.workflowId)}`}>
+            <Link href={latest.proofUrl}>
               Open latest proof <ArrowUpRight size={15} />
             </Link>
           </aside>
@@ -95,22 +88,22 @@ export default async function ProviderPage() {
         <div className="provider-metrics" aria-label="Provider trust metrics">
           <article>
             <span>Providers paid</span>
-            <strong>{providerNames.size}</strong>
+            <strong>{overview.metrics.providersPaid}</strong>
             <small>Across recent agentic workflows</small>
           </article>
           <article>
             <span>Signed receipts</span>
-            <strong>{signedReceipts}</strong>
+            <strong>{overview.metrics.signedReceipts}</strong>
             <small>x402-style provider receipts</small>
           </article>
           <article>
             <span>Live settlements</span>
-            <strong>{liveSettlements}</strong>
+            <strong>{overview.metrics.verifiedSettlements}</strong>
             <small>With Arc Testnet tx hash</small>
           </article>
           <article>
             <span>Recorded value</span>
-            <strong>{totalUsdc.toFixed(3)} USDC</strong>
+            <strong>{overview.metrics.recordedValueUsdc.toFixed(3)} USDC</strong>
             <small>In recent proof history</small>
           </article>
         </div>
@@ -125,14 +118,14 @@ export default async function ProviderPage() {
               <KeyRound size={22} />
             </div>
             <div className="provider-key-list">
-              {providerKeys.map((keyId, index) => (
-                <div key={keyId}>
+              {overview.keys.map((key) => (
+                <div key={key.keyId}>
                   <KeyRound size={17} />
                   <span>
-                    <strong>{keyId}</strong>
-                    <small>ed25519-provider-sim · rotation slot {String(index + 1).padStart(2, "0")}</small>
+                    <strong>{key.keyId}</strong>
+                    <small>{key.algorithm} · rotation slot {key.rotationSlot} · {key.receipts} receipts</small>
                   </span>
-                  <em>active</em>
+                  <em>{key.status}</em>
                 </div>
               ))}
             </div>
@@ -147,15 +140,10 @@ export default async function ProviderPage() {
               <ShieldCheck size={22} />
             </div>
             <div className="provider-policy-list">
-              {[
-                ["Offer signed", "Marketplace price and terms are hashed before authorization."],
-                ["Budget locked", "Treasury confirms that the agent can spend before fulfillment."],
-                ["Receipt signed", "Provider signs the receipt payload and settlement reference."],
-                ["Proof linked", "Provider can attach proof URL to logs, invoices and disputes."],
-              ].map(([title, text]) => (
-                <div key={title}>
+              {overview.policies.map((policy) => (
+                <div key={policy.key}>
                   <BadgeCheck size={17} />
-                  <span><strong>{title}</strong><small>{text}</small></span>
+                  <span><strong>{policy.title}</strong><small>{policy.description}</small></span>
                 </div>
               ))}
             </div>
@@ -178,22 +166,22 @@ export default async function ProviderPage() {
               <span>Settlement</span>
               <span>Proof</span>
             </div>
-            {proofs.map((proof) => (
-              <div className="provider-receipt-row" key={proof.workflowId}>
+            {overview.receipts.map((receipt) => (
+              <div className="provider-receipt-row" key={receipt.workflowId}>
                 <div>
-                  <strong>{proof.apiName}</strong>
-                  <small>{proof.workflowId}</small>
+                  <strong>{receipt.apiName}</strong>
+                  <small>{receipt.workflowId}</small>
                 </div>
                 <div>
-                  <strong>{proof.provider}</strong>
-                  <small>{proof.receipt.providerKeyId}</small>
+                  <strong>{receipt.provider}</strong>
+                  <small>{receipt.providerKeyId}</small>
                 </div>
-                <code>{shortHash(proof.agentJob.receiptHash ?? proof.receipt.digest)}</code>
+                <code>{receipt.shortReceiptDigest}</code>
                 <div>
-                  <strong>{proof.amount}</strong>
-                  <small>{shortHash(proof.txHash)}</small>
+                  <strong>{receipt.amount}</strong>
+                  <small>{receipt.shortTxHash}</small>
                 </div>
-                <Link href={`/proof?id=${encodeURIComponent(proof.workflowId)}`}>
+                <Link href={receipt.proofUrl}>
                   View <ArrowUpRight size={14} />
                 </Link>
               </div>

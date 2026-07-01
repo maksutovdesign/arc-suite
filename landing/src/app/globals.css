@@ -6391,6 +6391,32 @@ a.ops-history-run:hover {
   line-height: 1.58;
 }
 
+.provider-demo-run {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 12px;
+  align-items: center;
+}
+
+.provider-demo-run > span {
+  display: inline-flex;
+  gap: 7px;
+  align-items: center;
+  color: rgba(148, 163, 184, 0.82);
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.spin-icon {
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .provider-verification-card {
   display: grid;
   align-content: start;

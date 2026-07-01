@@ -11,6 +11,8 @@ Arc Suite adds a new Provider Trust Center layer for agentic API providers, givi
 - Fulfillment policy panel for policy-safe delivery, metering, settlement, and proof archiving.
 - Receipt registry table connecting API usage to provider, receipt, settlement, and proof links.
 - Provider integration cards for Marketplace, Billing, and Proof.
+- Provider API endpoints for receipts, signing keys and fulfillment policy.
+- Provider demo-run endpoint and UI action that creates a signed receipt and opens its proof.
 
 ## Updated
 
@@ -18,7 +20,8 @@ Arc Suite adds a new Provider Trust Center layer for agentic API providers, givi
 - Updated the landing page from 12 to 13 suite products.
 - Extended the reviewer package with a Provider Trust card.
 - Updated README and hackathon documentation with the new `/provider` demo link.
-- Added Provider page coverage to the production monitor.
+- Added Provider page and Provider API coverage to the production monitor.
+- Added a timeout/fallback layer to Arc Reputation data loading so production latency warnings do not block the monitor.
 
 ## Verification
 
@@ -26,8 +29,11 @@ Arc Suite adds a new Provider Trust Center layer for agentic API providers, givi
 - `git diff --check`
 - `npm run monitor:prod`
 
-Production monitor result: 23 checks passed, with one non-blocking warning for Reputation page latency.
+Production monitor now checks Provider page, receipts, keys and fulfillment policy endpoints.
 
 ## Production URL
 
 - https://arcsuite-app.vercel.app/provider
+- https://arcsuite-app.vercel.app/api/provider/receipts
+- https://arcsuite-app.vercel.app/api/provider/keys
+- https://arcsuite-app.vercel.app/api/provider/fulfillment-policy

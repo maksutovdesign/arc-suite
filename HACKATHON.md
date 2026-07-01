@@ -73,6 +73,7 @@ On June 30, 2026 the production settlement smoke confirmed a real API-specific A
 - Signed x402 offer, payment authorization and provider receipt simulation with provider signing metadata.
 - Proof page and proof archive for judges, providers and auditors.
 - Provider Trust Center for API providers to reconcile signed receipts, provider keys, paid jobs and proof links.
+- Provider demo-run action that creates a signed receipt, records a proof and opens the provider-side proof URL.
 - Supabase-ready schema for agent identities, jobs, artifacts and validations.
 
 ## Why Arc Suite

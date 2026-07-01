@@ -39,7 +39,8 @@ For a short hackathon submission view, see [`HACKATHON.md`](HACKATHON.md).
 3. Inspect the signed x402 offer, agent authorization and provider receipt.
 4. Click **Latest proof** or the generated proof link to verify the API-specific transaction hash, provider-signed receipt metadata, policy chain and validation artifacts for that run.
 5. Open **Proof archive** to review recent workflow receipts and Marketplace purchase history.
-5. Open [Arc Flow](https://arcsuite-app.vercel.app/flow) to see the operator console behind the same workflow model.
+6. Open [Arc Provider](https://arcsuite-app.vercel.app/provider) and click **Create provider receipt** to generate a provider-side demo receipt and proof.
+7. Open [Arc Flow](https://arcsuite-app.vercel.app/flow) to see the operator console behind the same workflow model.
 
 **Agentic Economy Track features:**
 - Autonomous agent purchase of an x402 API using USDC.
@@ -48,6 +49,7 @@ For a short hackathon submission view, see [`HACKATHON.md`](HACKATHON.md).
 - Policy-gated payment path: Treasury budget, Reputation access, Shield compliance screening.
 - Arc Testnet settlement proof with tx hash and explorer link.
 - Signed offer, payment authorization and provider receipt simulation.
+- Provider API surface for receipts, signing keys, fulfillment policy and one-click provider receipt creation.
 - Post-payment reputation update that becomes a future access signal.
 - Operator-ready proof page for judges, auditors and providers.
 
@@ -237,6 +239,7 @@ Arc Flow is the full intent-to-settlement workflow. It chains Shield screening, 
 - ERC-8004-compatible agent identity and ERC-8183-compatible job envelope model for registry, artifacts and validation evidence
 - `/proof` page that exposes the full transaction hash, x402 receipt JSON, policy chain and validation artifacts for external review
 - `/provider` trust center that lets API providers reconcile signed receipts, provider keys, paid jobs and proof URLs
+- Provider APIs: `GET /api/provider/receipts`, `GET /api/provider/keys`, `GET /api/provider/fulfillment-policy`, `POST /api/provider/demo-run`
 - Step-by-step execution timeline with allow, review, blocked and completed states
 - Arcscan transaction links when settlement is confirmed
 - Supabase audit trail for every flow run and policy step

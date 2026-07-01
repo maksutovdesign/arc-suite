@@ -43,24 +43,21 @@ export type ReputationData = {
 const DEFAULT_API_BASE_URL = process.env.NODE_ENV === "production" ? "https://arcsuite-app.vercel.app" : "http://127.0.0.1:3100"
 const API_BASE_URL = process.env.ARC_SUITE_API_URL ?? process.env.NEXT_PUBLIC_ARC_SUITE_API_URL ?? DEFAULT_API_BASE_URL
 const ARC_API_KEY = process.env.ARC_API_KEY
+const REQUEST_TIMEOUT_MS = Number.parseInt(process.env.ARC_REPUTATION_API_TIMEOUT_MS ?? "2800", 10)
 
 export async function getReputationData(): Promise<ReputationData> {
   try {
-    const agentsResponse = await fetch(`${API_BASE_URL}/api/agents`, { cache: "no-store", headers: arcApiHeaders() })
-    if (!agentsResponse.ok) throw new Error("Agents request failed")
-    const agentsPayload = (await agentsResponse.json()) as { agents: ApiAgent[] }
+    const agentsPayload = await fetchJson<{ agents: ApiAgent[] }>(`${API_BASE_URL}/api/agents`)
 
-    const reputationProfiles = await Promise.all(
-      agentsPayload.agents.map(async (agent) => {
-        const response = await fetch(`${API_BASE_URL}/api/reputation/${agent.id}`, { cache: "no-store", headers: arcApiHeaders() })
-        if (!response.ok) throw new Error("Reputation request failed")
-        const payload = (await response.json()) as { reputation: ApiReputation }
-        return payload.reputation
-      }),
-    )
-    const eventsResponse = await fetch(`${API_BASE_URL}/api/reputation/events?limit=40`, { cache: "no-store", headers: arcApiHeaders() })
-    if (!eventsResponse.ok) throw new Error("Reputation events request failed")
-    const eventsPayload = (await eventsResponse.json()) as { events: ReputationEvent[] }
+    const [reputationProfiles, eventsPayload] = await Promise.all([
+      Promise.all(
+        agentsPayload.agents.map(async (agent) => {
+          const payload = await fetchJson<{ reputation: ApiReputation }>(`${API_BASE_URL}/api/reputation/${agent.id}`)
+          return payload.reputation
+        }),
+      ),
+      fetchJson<{ events: ReputationEvent[] }>(`${API_BASE_URL}/api/reputation/events?limit=40`),
+    ])
 
     return {
       agents: agentsPayload.agents.map((agent) => {
@@ -76,6 +73,23 @@ export async function getReputationData(): Promise<ReputationData> {
       events: EVENTS,
       source: "mock",
     }
+  }
+}
+
+async function fetchJson<T>(url: string): Promise<T> {
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
+
+  try {
+    const response = await fetch(url, {
+      cache: "no-store",
+      headers: arcApiHeaders(),
+      signal: controller.signal,
+    })
+    if (!response.ok) throw new Error(`Request failed: ${response.status}`)
+    return (await response.json()) as T
+  } finally {
+    clearTimeout(timeout)
   }
 }
 
