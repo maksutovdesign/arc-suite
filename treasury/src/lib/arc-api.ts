@@ -174,25 +174,15 @@ type TreasuryDashboardData = {
 const DEFAULT_API_BASE_URL = process.env.NODE_ENV === "production" ? "https://arcsuite-app.vercel.app" : "http://127.0.0.1:3100"
 const API_BASE_URL = process.env.ARC_SUITE_API_URL ?? process.env.NEXT_PUBLIC_ARC_SUITE_API_URL ?? DEFAULT_API_BASE_URL
 const ARC_API_KEY = process.env.ARC_API_KEY
+const REQUEST_TIMEOUT_MS = Number.parseInt(process.env.ARC_TREASURY_API_TIMEOUT_MS ?? "2800", 10)
 
 export async function getTreasuryDashboardData(): Promise<TreasuryDashboardData> {
   try {
-    const [summaryRes, agentsRes, transactionsRes, apisRes] = await Promise.all([
-      fetch(`${API_BASE_URL}/api/pilot/summary`, { cache: "no-store", headers: arcApiHeaders() }),
-      fetch(`${API_BASE_URL}/api/agents`, { cache: "no-store", headers: arcApiHeaders() }),
-      fetch(`${API_BASE_URL}/api/transactions`, { cache: "no-store", headers: arcApiHeaders() }),
-      fetch(`${API_BASE_URL}/api/apis`, { cache: "no-store", headers: arcApiHeaders() }),
-    ])
-
-    if (!summaryRes.ok || !agentsRes.ok || !transactionsRes.ok || !apisRes.ok) {
-      throw new Error("Arc API request failed")
-    }
-
-    const summary = (await summaryRes.json()) as ApiSummary
-    const agentsPayload = (await agentsRes.json()) as { agents: ApiAgent[] }
-    const [transactionsPayload, apisPayload, decisionsPayload] = await Promise.all([
-      transactionsRes.json() as Promise<{ transactions: ApiTransaction[] }>,
-      apisRes.json() as Promise<{ apis: ApiListing[] }>,
+    const [summary, agentsPayload, transactionsPayload, apisPayload, decisionsPayload] = await Promise.all([
+      fetchJson<ApiSummary>("/api/pilot/summary"),
+      fetchJson<{ agents: ApiAgent[] }>("/api/agents"),
+      fetchJson<{ transactions: ApiTransaction[] }>("/api/transactions"),
+      fetchJson<{ apis: ApiListing[] }>("/api/apis"),
       fetchAccessDecisions(),
     ])
 
@@ -253,9 +243,7 @@ export async function runAccessCheck(input: { agentId: string; apiId: string; am
 }
 
 export async function getArcSettlementConfiguration(): Promise<ArcSettlementConfiguration> {
-  const response = await fetch(`${API_BASE_URL}/api/settlements/arc`, { cache: "no-store", headers: arcApiHeaders() })
-  if (!response.ok) throw new Error(`Arc settlement configuration failed: ${response.status}`)
-  return response.json() as Promise<ArcSettlementConfiguration>
+  return fetchJson<ArcSettlementConfiguration>("/api/settlements/arc")
 }
 
 export async function runArcSettlement(input: {
@@ -267,7 +255,7 @@ export async function runArcSettlement(input: {
   memoLabel?: string
   memo?: Record<string, unknown>
 }) {
-  const response = await fetch(`${API_BASE_URL}/api/settlements/arc`, {
+  const response = await fetchWithTimeout(`${API_BASE_URL}/api/settlements/arc`, {
     body: JSON.stringify(input),
     headers: arcApiHeaders({ "Content-Type": "application/json" }),
     method: "POST",
@@ -277,9 +265,11 @@ export async function runArcSettlement(input: {
 }
 
 export async function getWorkspaceSecurity(): Promise<WorkspaceSecurity | null> {
-  const response = await fetch(`${API_BASE_URL}/api/workspace/security`, { cache: "no-store", headers: arcApiHeaders() })
-  if (!response.ok) return null
-  return response.json() as Promise<WorkspaceSecurity>
+  try {
+    return await fetchJson<WorkspaceSecurity>("/api/workspace/security")
+  } catch {
+    return null
+  }
 }
 
 export async function createWorkspaceApiKey(input: { name: string; scopes: string[] }) {
@@ -298,14 +288,16 @@ export async function revokeWorkspaceApiKey(keyId: string) {
 }
 
 async function fetchAccessDecisions(): Promise<AccessDecision[]> {
-  const response = await fetch(`${API_BASE_URL}/api/access/decisions?limit=12`, { cache: "no-store", headers: arcApiHeaders() })
-  if (!response.ok) return []
-  const payload = (await response.json()) as { decisions: AccessDecision[] }
-  return payload.decisions
+  try {
+    const payload = await fetchJson<{ decisions: AccessDecision[] }>("/api/access/decisions?limit=12")
+    return payload.decisions
+  } catch {
+    return []
+  }
 }
 
 async function arcApiRequest(path: string, init: RequestInit) {
-  const response = await fetch(`${API_BASE_URL}${path}`, {
+  const response = await fetchWithTimeout(`${API_BASE_URL}${path}`, {
     ...init,
     headers: {
       ...arcApiHeaders({ "Content-Type": "application/json" }),
@@ -318,6 +310,33 @@ async function arcApiRequest(path: string, init: RequestInit) {
   }
 
   return response.json()
+}
+
+async function fetchJson<T>(path: string): Promise<T> {
+  const response = await fetchWithTimeout(`${API_BASE_URL}${path}`, {
+    cache: "no-store",
+    headers: arcApiHeaders(),
+  })
+
+  if (!response.ok) {
+    throw new Error(`Arc API request failed: ${response.status}`)
+  }
+
+  return (await response.json()) as T
+}
+
+async function fetchWithTimeout(url: string, init: RequestInit = {}) {
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
+
+  try {
+    return await fetch(url, {
+      ...init,
+      signal: controller.signal,
+    })
+  } finally {
+    clearTimeout(timeout)
+  }
 }
 
 function arcApiHeaders(extra: Record<string, string> = {}) {
