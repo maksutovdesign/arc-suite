@@ -1,8 +1,12 @@
 import {
   BadgeCheck,
+  Boxes,
+  Braces,
   Fuel,
   Handshake,
   Landmark,
+  LockKeyhole,
+  Radar,
   ReceiptText,
   ShieldCheck,
   Store,
@@ -14,12 +18,16 @@ type ProductId =
   | "treasury"
   | "reputation"
   | "marketplace"
+  | "provider"
   | "flow"
   | "billing"
   | "escrow"
   | "shield"
   | "gas"
   | "wallets"
+  | "radar"
+  | "private"
+  | "blueprints"
 
 function ArcSuiteMark() {
   return (
@@ -54,24 +62,32 @@ export function EcosystemNav({ current }: { current: ProductId }) {
     marketplace: process.env.NEXT_PUBLIC_ARC_MARKETPLACE_URL ?? (
       process.env.NODE_ENV === "production" ? "https://marketplace-eosin-eight.vercel.app" : "http://localhost:3003"
     ),
+    provider: `${suiteUrl}/provider`,
     flow: `${suiteUrl}/flow`,
     billing: `${suiteUrl}/billing`,
     escrow: `${suiteUrl}/escrow`,
     shield: `${suiteUrl}/shield`,
     gas: `${suiteUrl}/gas`,
     wallets: `${suiteUrl}/wallets`,
+    radar: `${suiteUrl}/radar`,
+    private: `${suiteUrl}/private`,
+    blueprints: `${suiteUrl}/blueprints`,
   }
 
   const products = [
     { id: "treasury", label: "Treasury", url: urls.treasury, color: "#5fbfff", icon: Landmark },
     { id: "reputation", label: "Reputation", url: urls.reputation, color: "#a78bfa", icon: BadgeCheck },
     { id: "marketplace", label: "Marketplace", url: urls.marketplace, color: "#34d399", icon: Store },
+    { id: "provider", label: "Provider", url: urls.provider, color: "#f472b6", icon: Braces },
     { id: "flow", label: "Flow", url: urls.flow, color: "#22d3ee", icon: Workflow },
     { id: "billing", label: "Billing", url: urls.billing, color: "#fbbf24", icon: ReceiptText },
     { id: "escrow", label: "Escrow", url: urls.escrow, color: "#fb7185", icon: Handshake },
     { id: "shield", label: "Shield", url: urls.shield, color: "#f59e0b", icon: ShieldCheck },
     { id: "gas", label: "Gas", url: urls.gas, color: "#38bdf8", icon: Fuel },
     { id: "wallets", label: "Wallet OS", url: urls.wallets, color: "#c084fc", icon: WalletCards },
+    { id: "radar", label: "Radar", url: urls.radar, color: "#f472b6", icon: Radar },
+    { id: "private", label: "Private", url: urls.private, color: "#2dd4bf", icon: LockKeyhole },
+    { id: "blueprints", label: "Blueprints", url: urls.blueprints, color: "#60a5fa", icon: Boxes },
   ] satisfies Array<{ id: ProductId; label: string; url: string; color: string; icon: typeof Landmark }>
 
   return (
