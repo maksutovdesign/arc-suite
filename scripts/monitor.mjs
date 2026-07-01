@@ -344,7 +344,12 @@ function wait(ms) {
 async function persistMonitorSummary(summary) {
   const apiKey = firstPresent(process.env.ARC_MONITOR_API_KEY, process.env.ARC_API_KEY)
   if (!apiKey) {
-    console.warn("WARN monitor history not stored: set ARC_MONITOR_API_KEY or ARC_API_KEY.")
+    const message = "monitor history not stored: set ARC_MONITOR_API_KEY or ARC_API_KEY."
+    if (summary.source === "github_actions") {
+      console.warn(`WARN ${message}`)
+    } else {
+      console.log(`SKIP ${message}`)
+    }
     return
   }
 
