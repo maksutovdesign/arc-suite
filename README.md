@@ -51,6 +51,7 @@ For a short hackathon submission view, see [`HACKATHON.md`](HACKATHON.md).
 - ERC-8004-compatible agent identity and reputation/validation registry surface.
 - ERC-8183-compatible job envelope with input, policy, output, receipt and validation hashes.
 - Policy-gated payment path: Treasury budget, Reputation access, Shield compliance screening.
+- Chainlink-on-Arc oracle/CCIP readiness signal in the policy chain for market, reserve or route evidence.
 - Arc Testnet settlement proof when configured, with tx hash and explorer link.
 - Signed offer, payment authorization and demo provider signature for review.
 - Provider API surface for receipts, signing keys, fulfillment policy and one-click provider receipt creation.
@@ -67,8 +68,8 @@ For a short hackathon submission view, see [`HACKATHON.md`](HACKATHON.md).
 | 🛡️ **Arc Reputation** | [reputation-five.vercel.app](https://reputation-five.vercel.app) | On-chain trust scoring layer for agents |
 | 🛒 **Arc Marketplace** | [marketplace-eosin-eight.vercel.app](https://marketplace-eosin-eight.vercel.app) | Discovery platform for x402-enabled APIs |
 | **Arc Provider** | [arcsuite-app.vercel.app/provider](https://arcsuite-app.vercel.app/provider) | Provider receipt trust center for signed x402 jobs, keys and proof links |
-| **Arc Shield** | [arcsuite-app.vercel.app/shield](https://arcsuite-app.vercel.app/shield) | Circle-powered compliance screening and risk policy |
-| **Arc Flow** | [arcsuite-app.vercel.app/flow](https://arcsuite-app.vercel.app/flow) | Compliance-to-settlement payment orchestration |
+| **Arc Shield** | [arcsuite-app.vercel.app/shield](https://arcsuite-app.vercel.app/shield) | Circle compliance plus Chainlink-on-Arc risk evidence |
+| **Arc Flow** | [arcsuite-app.vercel.app/flow](https://arcsuite-app.vercel.app/flow) | Compliance, oracle evidence and settlement-ready payment orchestration |
 | **Judge Mode** | [arcsuite-app.vercel.app/judge](https://arcsuite-app.vercel.app/judge) | One-page reviewer path with pitch, click path and embedded workflow demo |
 | **Agentic Workflow Demo** | [arcsuite-app.vercel.app/agentic-workflow](https://arcsuite-app.vercel.app/agentic-workflow) | One-click AI agent purchase with policy, x402 receipt, Arc settlement path and reputation update |
 | **Proof Page** | [arcsuite-app.vercel.app/proof](https://arcsuite-app.vercel.app/proof) | Reviewer-ready settlement reference, x402 receipt, policy chain and validation evidence |
@@ -97,7 +98,7 @@ Start here:
 
 The demonstrated operation is:
 
-`AI agent identity -> x402 signed offer -> Treasury budget check -> Shield screening -> Billing usage event -> Arc Testnet settlement-ready path -> signed receipt -> Reputation update -> proof page`
+`AI agent identity -> x402 signed offer -> Treasury budget check -> Shield screening -> Chainlink oracle/CCIP signal -> Billing usage event -> Arc Testnet settlement-ready path -> signed receipt -> Reputation update -> proof page`
 
 This gives Arc/Circle reviewers a concrete artifact to evaluate: one payment path, one settlement reference when configured, one policy chain, and one receipt bundle.
 
@@ -120,9 +121,9 @@ The production smoke flow is wired for API-specific Arc Testnet USDC settlement 
 1. **Identity:** the agent is represented by an ERC-8004-compatible identity record with service, reputation and validation endpoints.
 2. **Job:** the API request is wrapped as an ERC-8183-compatible job envelope with input, policy and receipt hashes.
 3. **Offer:** Marketplace produces a signed x402 offer with exact USDC pricing.
-4. **Policy:** Treasury, Reputation and Shield decide whether the payment may proceed.
+4. **Policy:** Treasury, Reputation, Shield and a Chainlink-on-Arc risk signal decide whether the payment may proceed.
 5. **Settlement:** Flow prepares the Arc Testnet transfer path through Circle Wallets and records transaction evidence when configured.
-6. **Receipt:** the provider issues a signed x402 receipt with provider key id, signing algorithm, payload hash and settlement reference linked to the job.
+6. **Receipt:** the provider issues a signed x402 receipt with provider key id, signing algorithm, oracle signal digest, payload hash and settlement reference linked to the job.
 7. **Reputation:** the successful payment becomes a score update and future access signal.
 8. **Proof:** the `/proof` page exposes the settlement reference, receipt JSON, policy chain and validation artifacts.
 
@@ -195,7 +196,7 @@ POST /v1/webhooks            # Subscribe to score events
 A discovery platform for APIs that accept payments via the [x402 protocol](https://x402.org) — pay per request with USDC, no subscriptions, no accounts. Built for the agentic economy where software pays software autonomously.
 
 **Key features:**
-- Browse 16+ live APIs across 8 categories (Finance, AI/LLM, Data, Identity, Storage, Compute, Oracles, Messaging)
+- Browse 16+ live APIs across 8 categories (Finance, AI/LLM, Data, Identity, Storage, Compute, Oracles, Messaging), including oracle-powered categories ready for Chainlink data inputs
 - Full-text search with sort by rating, volume, uptime, and price
 - 7-day request volume sparklines on every API card
 - Featured APIs section with editor's picks
@@ -213,12 +214,13 @@ A discovery platform for APIs that accept payments via the [x402 protocol](https
 
 **`/landing/src/app/shield`** · [Live](https://arcsuite-app.vercel.app/shield)
 
-Arc Shield uses Circle Compliance Engine address screening as a provider signal and records a separate Arc policy decision for every request.
+Arc Shield uses Circle Compliance Engine address screening as a provider signal and records a separate Arc policy decision for every request. With Arc joining Chainlink Scale, Shield also models Chainlink Data Feeds, Data Streams, Proof of Reserve and CCIP route evidence as policy inputs for market, collateral and cross-chain risk.
 
 **Key features:**
 - Real Circle standalone address screening for supported networks
 - Explicit `allow`, `review`, and `block` policy outcomes
 - Provider result, reasons, risk categories, actions, and raw response retained in Supabase
+- Chainlink-on-Arc evidence model using Arc Testnet CCIP Router `0xdE4E7FED43FAC37EB21aA0643d9852f75332eab8` and chain selector `3034092155422581607`
 - Protected workspace API with read/write scopes and rate limiting
 - Provider outages fail to manual review instead of silently allowing activity
 - Operator dashboard with screening form, latest decision, KPIs, and audit table
@@ -229,17 +231,18 @@ Circle currently does not list Arc Testnet in the standalone Address Screening c
 
 **`/landing/src/app/flow`** · [Live](https://arcsuite-app.vercel.app/flow)
 
-Arc Flow is the full intent-to-settlement workflow. It chains Shield screening, reputation policy, Marketplace access decisions, Circle wallet settlement readiness and reputation updates into one auditable run.
+Arc Flow is the full intent-to-settlement workflow. It chains Shield screening, Chainlink oracle/CCIP evidence, reputation policy, Marketplace access decisions, Circle wallet settlement readiness and reputation updates into one auditable run.
 
 **What the end-to-end workflow proves:**
 - AI agents can buy services with USDC while remaining bounded by operator policy.
 - x402 pricing can be represented as a signed offer and signed receipt rather than a loose UI claim.
 - Arc Testnet settlement can be connected to the same workflow id, agent job id and proof artifact when the settlement path is configured.
 - Circle-powered wallet, compliance and execution primitives can sit behind a product-grade operator surface.
+- Chainlink Data Feeds, Proof of Reserve and CCIP route evidence can become reviewable policy inputs before fulfillment.
 - Reputation is not a decorative score; it becomes a live access and post-settlement feedback signal.
 
 **Key features:**
-- End-to-end policy check → access check → Arc Testnet settlement-ready path → reputation update
+- End-to-end policy check → oracle/CCIP evidence → access check → Arc Testnet settlement-ready path → reputation update
 - Grant-ready `/agentic-workflow` demo that packages the loop as a signed x402 offer, agent payment authorization, provider receipt, Arc settlement reference and trust-score delta
 - ERC-8004-compatible agent identity and ERC-8183-compatible job envelope model for registry, artifacts and validation evidence
 - `/proof` page that exposes the settlement reference, x402 receipt JSON, policy chain and validation artifacts for external review

@@ -10,9 +10,9 @@ Arc Suite is AI agent infrastructure for programmable USDC commerce: agent ident
 
 AI agents are starting to act as economic participants, but there is no unified infrastructure for them to safely manage budgets, prove trustworthiness, buy services, and leave auditable payment evidence. Existing agent frameworks focus on intelligence and orchestration, while the financial layer remains fragmented: wallets, spending controls, compliance checks, API payments, receipts, and reputation signals are usually separate.
 
-Arc Suite solves this with a connected product layer for autonomous agent commerce. Treasury manages USDC budgets and policies. Reputation tracks trust and validation signals. Marketplace lets agents discover and request paid API access. Flow, Billing, Shield, Provider, Wallet OS, and Proof turn that into a full workflow: agent identity, x402-style offer, policy check, settlement-ready payment path, signed receipt, and proof archive.
+Arc Suite solves this with a connected product layer for autonomous agent commerce. Treasury manages USDC budgets and policies. Reputation tracks trust and validation signals. Marketplace lets agents discover and request paid API access. Flow, Billing, Shield, Provider, Wallet OS, and Proof turn that into a full workflow: agent identity, x402-style offer, policy check, Chainlink-on-Arc risk signal, settlement-ready payment path, signed receipt, and proof archive.
 
-The project is already deployed as a production web MVP on Vercel with Supabase-backed APIs, Sentry monitoring, GitHub Actions, production health checks, and a reviewer package. Grant funding will move the system from production demo infrastructure into deeper Arc deployment: real Circle Wallets expansion, Arc contracts, CCTP support, on-chain reputation, and external API provider onboarding.
+The project is already deployed as a production web MVP on Vercel with Supabase-backed APIs, Sentry monitoring, GitHub Actions, production health checks, and a reviewer package. Grant funding will move the system from production demo infrastructure into deeper Arc deployment: real Circle Wallets expansion, Arc contracts, CCTP/CCIP support, on-chain reputation, Chainlink data/risk signals, and external API provider onboarding.
 
 ## Solution
 
@@ -54,10 +54,11 @@ Currently integrated or represented in the working architecture:
 - Circle Wallets path for developer-controlled agent wallet creation and settlement evidence.
 - Circle Compliance-style screening through Arc Shield policy flows.
 - x402/Gateway architecture for machine-to-machine paid API access.
+- Chainlink-on-Arc evidence model for market data, Proof of Reserve and CCIP route checks.
 
 Planned with grant support:
 
-- CCTP for cross-chain USDC movement.
+- CCTP and Chainlink CCIP for cross-chain USDC, treasury and collateral workflows.
 - Paymaster/Gas sponsorship controls.
 - Contracts for escrow, reputation, and settlement logic.
 - Broader Wallets integration for real agent wallet lifecycle and recovery.
@@ -70,21 +71,22 @@ Planned with grant support:
 - Expand Circle Developer Controlled Wallet integration for real agent wallet creation, balance reads, and transaction history.
 - Replace remaining demo fallback data with live wallet and settlement records where credentials and network access are available.
 
-### Milestone 2: On-Chain Reputation + x402 Payments (Weeks 5-9)
+### Milestone 2: On-Chain Reputation + x402 Payments + Oracle Risk (Weeks 5-9)
 
 - Deploy reputation smart contract components on Arc.
 - Store and update agent trust scores with auditable on-chain references.
 - Complete x402-style payment flow for paid API calls with provider receipts and access gating.
+- Attach Chainlink market data, Proof of Reserve and CCIP route evidence to Shield and Flow policy decisions.
 - Connect low-score agent rejection to Marketplace access control.
 
-### Milestone 3: CCTP + Public Beta (Weeks 10-14)
+### Milestone 3: CCTP / CCIP + Public Beta (Weeks 10-14)
 
 - Add CCTP support for Arc to Ethereum/Base USDC movement.
+- Add Chainlink CCIP-aware workflow proofs for cross-chain treasury and collateral routes.
 - Add developer documentation, API reference, and onboarding guides.
 - Onboard initial external API providers.
 - Launch public beta with a clear provider and agent workflow.
 
 ## Grant Use
 
-The grant will fund the transition from a production web MVP to deeper Arc deployment. Funds will support smart contract development, Circle Wallets integration, CCTP work, infrastructure, security review, monitoring, testing, and developer/provider onboarding.
-
+The grant will fund the transition from a production web MVP to deeper Arc deployment. Funds will support smart contract development, Circle Wallets integration, CCTP/CCIP work, Chainlink data/risk evidence, infrastructure, security review, monitoring, testing, and developer/provider onboarding.

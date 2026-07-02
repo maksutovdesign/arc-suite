@@ -4442,6 +4442,10 @@ h3 {
   margin-bottom: 12px;
 }
 
+.shield-oracle-panel {
+  grid-column: 1 / -1;
+}
+
 .shield-panel {
   padding: 18px;
 }
@@ -5461,7 +5465,7 @@ a.ops-history-run:hover {
 
 .agentic-proof-strip {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 14px;
   margin-top: 16px;
 }
@@ -6305,6 +6309,12 @@ a.ops-history-run:hover {
   border-color: rgba(95, 191, 255, 0.3);
   background: rgba(95, 191, 255, 0.12);
   color: var(--blue);
+}
+
+.grant-status-testnet-ready {
+  border-color: rgba(168, 85, 247, 0.32);
+  background: rgba(168, 85, 247, 0.12);
+  color: #c4b5fd;
 }
 
 .grant-status-planned {

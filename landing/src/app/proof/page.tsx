@@ -4,6 +4,7 @@ import {
   Check,
   CircleDollarSign,
   FileCheck2,
+  RadioTower,
   ReceiptText,
   ShieldCheck,
   WalletCards,
@@ -55,6 +56,7 @@ export default async function ProofPage({ searchParams }: ProofPageProps) {
     providerKeyId: proof.receipt.providerKeyId,
     providerSignatureAlgorithm: proof.receipt.signatureAlgorithm,
     providerVerificationPayload: proof.receipt.verificationPayloadHash,
+    oracleDigest: proof.oracleSignal.digest,
     workflowId: flowRun.id,
     x402OfferDigest: artifacts.find((item) => item.type === "x402_offer")?.digest ?? proof.offer.payloadHash,
   }
@@ -76,6 +78,12 @@ export default async function ProofPage({ searchParams }: ProofPageProps) {
       detail: `${screening.providerResult ?? "APPROVED"} by Circle Compliance Engine demo signal`,
       result: screening.decision,
       icon: ShieldCheck,
+    },
+    {
+      label: "Chainlink oracle signal",
+      detail: `${proof.oracleSignal.dataSource}: ${proof.oracleSignal.value}`,
+      result: proof.oracleSignal.result,
+      icon: RadioTower,
     },
     {
       label: "x402 signed offer",
@@ -161,6 +169,7 @@ export default async function ProofPage({ searchParams }: ProofPageProps) {
               <span>{`  "providerKeyId": "${receipt.providerKeyId}",`}</span>
               <span>{`  "providerSignatureAlgorithm": "${receipt.providerSignatureAlgorithm}",`}</span>
               <span>{`  "providerVerificationPayload": "${receipt.providerVerificationPayload}",`}</span>
+              <span>{`  "oracleSignalDigest": "${receipt.oracleDigest}",`}</span>
               <span>{`  "receiptDigest": "${receipt.receiptDigest}",`}</span>
               <span>{`  "settlementId": "${receipt.settlementId}",`}</span>
               <span>{`  "txHash": "${receipt.txHash}",`}</span>
@@ -212,6 +221,11 @@ export default async function ProofPage({ searchParams }: ProofPageProps) {
                 <code>{artifact.signature ?? "unsigned"}</code>
               </div>
             ))}
+            <div>
+              <span>oracle signal</span>
+              <strong>{shortHash(proof.oracleSignal.digest)}</strong>
+              <code>{proof.oracleSignal.chainSelector}</code>
+            </div>
             <div>
               <span>validation</span>
               <strong>{shortHash(validation.evidenceHash)}</strong>

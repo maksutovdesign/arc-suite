@@ -6,6 +6,7 @@ import {
   CheckCircle2,
   CircleOff,
   Database,
+  RadioTower,
   RefreshCw,
   Search,
   ShieldCheck,
@@ -151,6 +152,12 @@ export function ShieldDashboardClient() {
             value={payload?.configuration.auditStorage ? "Supabase live" : "Migration required"}
             tone={payload?.configuration.auditStorage ? "allow" : "review"}
           />
+          <StatusLine
+            icon={<RadioTower size={16} />}
+            label="Chainlink on Arc"
+            value="CCIP route evidence ready"
+            tone="allow"
+          />
         </div>
       </div>
 
@@ -249,6 +256,26 @@ export function ShieldDashboardClient() {
               Connect with a workspace key, then run an address through the policy engine.
             </p>
           )}
+        </section>
+
+        <section className="shield-panel shield-oracle-panel">
+          <div className="shield-panel-head">
+            <div>
+              <span>Oracle risk signal</span>
+              <h2>Chainlink evidence for Arc policy</h2>
+            </div>
+            <RadioTower size={20} />
+          </div>
+          <dl className="shield-detail-list">
+            <div><dt>Data layer</dt><dd>Data Feeds / Data Streams</dd></div>
+            <div><dt>Interoperability</dt><dd>CCIP Router 0xdE4E...eab8</dd></div>
+            <div><dt>Arc selector</dt><dd>3034092155422581607</dd></div>
+            <div><dt>Policy use</dt><dd>market, reserve and route freshness</dd></div>
+          </dl>
+          <p className="shield-footnote">
+            Arc Shield can attach Chainlink market data, proof-of-reserve or CCIP route evidence
+            to the same audit trail as Circle screening before an agent request is fulfilled.
+          </p>
         </section>
       </div>
 

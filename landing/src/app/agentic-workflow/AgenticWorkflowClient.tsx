@@ -11,6 +11,7 @@ import {
   Play,
   Shield,
   ReceiptText,
+  RadioTower,
   ShieldCheck,
   Store,
   WalletCards,
@@ -31,6 +32,7 @@ const workflowStages = [
   { key: "offer", label: "x402 offer", detail: "Marketplace returns exact USDC price and receipt terms.", icon: Store },
   { key: "budget", label: "Treasury budget", detail: "Prepaid balance and daily spend policy are checked.", icon: WalletCards },
   { key: "shield", label: "Shield screening", detail: "Circle compliance signal clears the recipient wallet.", icon: ShieldCheck },
+  { key: "oracle", label: "Chainlink signal", detail: "Arc oracle/CCIP readiness is attached as market or route evidence.", icon: RadioTower },
   { key: "meter", label: "Usage metering", detail: "Billing writes the request as a metered usage event.", icon: ReceiptText },
   { key: "settlement", label: "Arc settlement", detail: "Settlement evidence is attached to the proof trail.", icon: CircleDollarSign },
   { key: "reputation", label: "Reputation update", detail: "Successful payment raises the agent trust score.", icon: BadgeCheck },
@@ -169,6 +171,7 @@ export function AgenticWorkflowClient() {
             <ProofItem label="Recipient" value={proof.recipient} />
             <ProofItem label="Policy" value={proof.policy} tone="success" />
             <ProofItem label="Screening" value={proof.screening} tone="success" />
+            <ProofItem label="Oracle signal" value={proof.oracleSignal.result.toUpperCase()} tone="success" />
             <ProofItem label="Budget" value={proof.budget} />
             <ProofItem label="Billing event" value={proof.billingEvent} />
             <ProofItem label="Amount settled" value={proof.amount} tone="success" />
@@ -223,6 +226,7 @@ export function AgenticWorkflowClient() {
             <span>{`  "receiptId": "${proof.receipt.receiptId}",`}</span>
             <span>{`  "providerKeyId": "${proof.receipt.providerKeyId}",`}</span>
             <span>{`  "providerPayload": "${proof.receipt.verificationPayloadHash}",`}</span>
+            <span>{`  "oracleSignal": "${proof.oracleSignal.digest}",`}</span>
             <span>{`  "receiptSignature": "${proof.receipt.signature}",`}</span>
             <span>{`  "settlementId": "${proof.settlementId}",`}</span>
             <span>{`  "requestId": "${proof.requestId}",`}</span>
@@ -238,6 +242,11 @@ export function AgenticWorkflowClient() {
       </div>
 
       <section className="agentic-proof-strip" aria-label="Why this matters">
+        <div>
+          <RadioTower size={18} />
+          <strong>Oracle-aware policy</strong>
+          <span>Arc can attach Chainlink market, reserve or CCIP route evidence before fulfillment.</span>
+        </div>
         <div>
           <LockKeyhole size={18} />
           <strong>Policy-safe commerce</strong>

@@ -51,6 +51,17 @@ export type SignedReceipt = {
   verified: boolean
 }
 
+export type OracleRiskSignal = {
+  ccipRouter: string
+  chainSelector: string
+  dataSource: string
+  digest: string
+  observedAt: string
+  result: "pass" | "review" | "block"
+  signalId: string
+  value: string
+}
+
 export type AgenticWorkflowProof = {
   agent: Agent
   agentIdentity: ArcAgentIdentity
@@ -67,6 +78,7 @@ export type AgenticWorkflowProof = {
   flowRun: FlowRun
   generatedAt: string
   offer: SignedOffer
+  oracleSignal: OracleRiskSignal
   payer: string
   policy: string
   price: string
@@ -159,6 +171,7 @@ export function buildAgenticDemoProof(options: ProofOptions = {}): AgenticWorkfl
   const offer = createSignedOffer(nonce, flowRun, selectedApi, usage)
   const authorization = createPaymentAuthorization(offer, usage)
   const receipt = createSignedReceipt(offer, authorization, generatedAt, flowRun)
+  const oracleSignal = createOracleRiskSignal(workflowId, selectedApi, generatedAt)
   const effectiveSettlementId = flowRun.settlementId ?? settlementId
 
   const agentJob: ArcAgentJob = {
@@ -250,6 +263,7 @@ export function buildAgenticDemoProof(options: ProofOptions = {}): AgenticWorkfl
     flowRun,
     generatedAt,
     offer,
+    oracleSignal,
     payer: shortAddress(baseAgent.address),
     policy: "ALLOW",
     price: `${selectedApi.priceUsdc.toFixed(3)} USDC / ${selectedApi.pricingUnit}`,
@@ -389,6 +403,38 @@ function createSignedReceipt(
     txHash: flowRun.txHash ?? "",
     verificationPayloadHash,
     verified: Boolean(flowRun.txHash && authorization.signature && offer.signature),
+  }
+}
+
+function createOracleRiskSignal(workflowId: string, api: DemoApiListing, generatedAt: string): OracleRiskSignal {
+  const source = api.category === "Finance" || api.category === "Oracles"
+    ? "Chainlink Data Feeds / Data Streams"
+    : "Chainlink CCIP readiness signal"
+  const value = api.category === "Finance"
+    ? "BTC/USD freshness < 1s, deviation within policy"
+    : api.category === "Oracles"
+      ? "Proof-of-reserve freshness within policy"
+      : "Arc testnet CCIP route configured"
+  const signalId = `oracle_arc_${stableDigest(`oracle:${workflowId}:${api.id}`).slice(0, 10)}`
+  const payload = [
+    signalId,
+    "arc-testnet",
+    "3034092155422581607",
+    "0xdE4E7FED43FAC37EB21aA0643d9852f75332eab8",
+    api.id,
+    value,
+    generatedAt,
+  ].join(":")
+
+  return {
+    ccipRouter: "0xdE4E7FED43FAC37EB21aA0643d9852f75332eab8",
+    chainSelector: "3034092155422581607",
+    dataSource: source,
+    digest: `0x${stableDigest(payload)}${stableDigest(signalId)}`,
+    observedAt: generatedAt,
+    result: "pass",
+    signalId,
+    value,
   }
 }
 

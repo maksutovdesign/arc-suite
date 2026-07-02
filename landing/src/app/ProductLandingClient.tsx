@@ -61,7 +61,7 @@ const productDetails = [
     eyebrow: "x402 access",
     icon: Store,
     title: "A pay-per-use API market that can gate requests by trust.",
-    text: "Help agents discover x402 APIs with pricing, uptime, provider profiles, request volume and integration-ready detail pages.",
+    text: "Help agents discover x402 APIs with pricing, uptime, provider profiles, request volume, Chainlink-powered oracle categories and integration-ready detail pages.",
     image: "/screenshots/marketplace-browse.png",
     imageAlt: "Arc Marketplace browse page with x402 API cards, filters, pricing, uptime and provider data",
     stats: [
@@ -69,7 +69,7 @@ const productDetails = [
       ["58", "providers"],
       ["99.72%", "avg uptime"],
     ],
-    bullets: ["x402 API discovery", "Provider and SLA context", "USDC-native access path"],
+    bullets: ["x402 API discovery", "Oracle-powered API categories", "USDC-native access path"],
   },
   {
     key: "provider",
@@ -93,7 +93,7 @@ const productDetails = [
     eyebrow: "Compliance & risk",
     icon: ShieldCheck,
     title: "Address screening and auditable policy decisions before value moves.",
-    text: "Use Circle Compliance Engine signals to classify wallet risk, route manual review, block prohibited activity and preserve the provider response alongside the Arc Shield decision.",
+    text: "Use Circle Compliance Engine and Chainlink on Arc signals to classify wallet, market, reserve and route risk before value moves.",
     image: "/screenshots/shield-console.png",
     imageAlt: "Arc Shield compliance dashboard with wallet screening, policy decision and audit log",
     stats: [
@@ -101,7 +101,7 @@ const productDetails = [
       ["30", "checks / 10 min"],
       ["100%", "auditable decisions"],
     ],
-    bullets: ["Circle address screening", "Allow, review and block policy", "Supabase audit history"],
+    bullets: ["Circle address screening", "Chainlink market and CCIP evidence", "Allow, review and block policy"],
   },
   {
     key: "flow",
@@ -109,7 +109,7 @@ const productDetails = [
     eyebrow: "Payment orchestration",
     icon: Workflow,
     title: "One policy-gated path from intent to settlement proof.",
-    text: "Orchestrate Shield screening, reputation and budget access checks, Circle wallet execution readiness, Arc settlement references and the resulting reputation update under one run ID.",
+    text: "Orchestrate Shield screening, Chainlink oracle/CCIP evidence, reputation and budget access checks, Circle wallet execution readiness, Arc settlement references and the resulting reputation update under one run ID.",
     image: "",
     imageAlt: "Arc Flow pipeline showing screening, access policy, settlement reference and reputation update",
     stats: [
@@ -117,7 +117,7 @@ const productDetails = [
       ["1", "auditable run ID"],
       ["P0", "launch priority"],
     ],
-    bullets: ["Fail-closed compliance gate", "Idempotent settlement-ready path", "End-to-end execution history"],
+    bullets: ["Fail-closed compliance gate", "Oracle-aware policy evidence", "End-to-end execution history"],
   },
   {
     key: "billing",
@@ -424,7 +424,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
             Treasury controls spend, Shield screens counterparties, Reputation scores behavior,
             Marketplace sells x402 API access, Provider verifies signed receipts, Billing meters usage, Escrow governs delivery,
             Gas sponsors execution, Wallet OS governs custody, Radar maps the builder ecosystem,
-            Private protects sensitive payment context, Blueprints turns patterns into templates,
+            Chainlink on Arc adds market, reserve and CCIP route evidence, Private protects sensitive payment context, Blueprints turns patterns into templates,
             and Flow runs the complete policy pipeline.
           </p>
           <div className="hero-actions">
@@ -495,8 +495,8 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
           <h2>Recorded demo plus Arc settlement evidence when configured.</h2>
           <p>
             The final submission is built around one auditable operation: an agent receives an x402 offer,
-            passes policy checks, follows a settlement-ready Circle Wallets path, and leaves a proof
-            artifact with receipt, settlement reference and reputation context.
+            passes policy and oracle-risk checks, follows a settlement-ready Circle Wallets path, and leaves a proof
+            artifact with receipt, Chainlink signal, settlement reference and reputation context.
           </p>
         </div>
         <div className="demo-proof-card">
@@ -519,6 +519,11 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
             <span>Provider trust</span>
             <strong>Signed receipt center</strong>
             <a href="/provider">Open Provider</a>
+          </div>
+          <div>
+            <span>Chainlink on Arc</span>
+            <strong>CCIP + oracle signal</strong>
+            <a href="/proof">Open proof chain</a>
           </div>
           <div>
             <span>Settlement evidence</span>

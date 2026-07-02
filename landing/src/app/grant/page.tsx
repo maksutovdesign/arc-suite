@@ -9,6 +9,7 @@ import {
   LockKeyhole,
   Network,
   Play,
+  RadioTower,
   Rocket,
   ShieldCheck,
   Video,
@@ -55,6 +56,12 @@ const integrationMatrix = [
     icon: KeyRound,
   },
   {
+    name: "Chainlink on Arc",
+    status: "Testnet-ready",
+    detail: "Oracle risk signal model uses Arc Testnet CCIP Router 0xdE4E...eab8 and chain selector 3034092155422581607 for reviewable route/data evidence.",
+    icon: RadioTower,
+  },
+  {
     name: "CCTP",
     status: "Planned",
     detail: "Roadmap item for Arc to Ethereum/Base cross-chain USDC movement after mainnet readiness.",
@@ -98,7 +105,7 @@ const reviewerConsole = [
   },
   {
     title: "Circle products",
-    detail: "USDC is implemented; Wallets, x402/Gateway, CCTP, Paymaster and Contracts are staged by scope.",
+    detail: "USDC is implemented; Wallets, x402/Gateway, Chainlink on Arc, CCTP, Paymaster and Contracts are staged by scope.",
     href: "#circle-fit",
     icon: CircleDollarSign,
     external: false,
@@ -135,8 +142,8 @@ const reviewerConsole = [
 
 const roadmap = [
   ["Weeks 1-4", "Arc deployment + Circle Wallets", "Deploy the core Treasury, Reputation and Marketplace infrastructure to Arc-ready production paths and expand real wallet creation/balance reads."],
-  ["Weeks 5-9", "On-chain reputation + x402", "Move reputation score storage and API access gating toward on-chain records and complete the x402 payment loop for paid API calls."],
-  ["Weeks 10-14", "CCTP + public beta", "Add cross-chain USDC support, provider onboarding, public docs and the first external API provider integrations."],
+  ["Weeks 5-9", "On-chain reputation + x402 + oracle risk", "Move reputation score storage and API access gating toward on-chain records, complete the x402 payment loop and attach Chainlink data/CCIP route evidence to policy decisions."],
+  ["Weeks 10-14", "CCTP / CCIP + public beta", "Add cross-chain USDC and interoperability support, provider onboarding, public docs and the first external API/provider integrations."],
 ] as const
 
 const knownLimits = [
@@ -254,7 +261,8 @@ export default function GrantPage() {
             <h2>Policy check to proof, with settlement evidence when configured.</h2>
             <p>
               The demo joins Treasury budget enforcement, Shield risk screening, Marketplace access,
-              Provider receipt validation and Reputation updates into one auditable operation.
+              Chainlink oracle/CCIP readiness, Provider receipt validation and Reputation updates
+              into one auditable operation.
             </p>
           </div>
           <div className="grant-proof-links">
