@@ -6024,7 +6024,7 @@ a.ops-history-run:hover {
 .grant-shell {
   width: min(100% - 48px, 1320px);
   margin: 0 auto;
-  padding: 58px 0 96px;
+  padding: 112px 0 96px;
 }
 
 .grant-hero {
@@ -6035,10 +6035,10 @@ a.ops-history-run:hover {
 }
 
 .grant-hero h1 {
-  max-width: 1040px;
+  max-width: 980px;
   margin: 4px 0 16px;
-  font-size: clamp(44px, 6vw, 84px);
-  line-height: 0.96;
+  font-size: clamp(44px, 5.4vw, 76px);
+  line-height: 1;
 }
 
 .grant-hero p:not(.kicker),
@@ -6114,6 +6114,20 @@ a.ops-history-run:hover {
 .grant-proof-band,
 .grant-limits {
   margin-top: 26px;
+}
+
+.grant-section .submission-section-head {
+  display: grid;
+  justify-content: start;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.grant-section .submission-section-head h2 {
+  max-width: 760px;
+  margin: 0;
+  font-size: clamp(34px, 4.4vw, 58px);
+  line-height: 1.02;
 }
 
 .grant-reviewer-grid,
