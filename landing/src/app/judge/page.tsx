@@ -43,7 +43,7 @@ export default function JudgePage() {
               <li>Click Run agentic workflow.</li>
               <li>Wait until the pipeline reaches Reputation update.</li>
               <li>Open latest proof and confirm api_02 / GPT-4o Proxy appears in the signed offer.</li>
-              <li>Open Arcscan from the proof page and verify the live settlement transaction.</li>
+              <li>Open Arcscan from the proof page and verify the configured settlement evidence.</li>
             </ol>
           </div>
         </div>

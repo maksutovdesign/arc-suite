@@ -75,7 +75,7 @@ const checks = [
   },
   {
     name: "Proof page",
-    run: async () => checkHtmlPage(`${bases.landing}/proof`, ["Transaction proof", "Transaction hash", "Policy chain"]),
+    run: async () => checkHtmlPage(`${bases.landing}/proof`, ["Settlement reference", "Receipt", "policy chain"]),
   },
   {
     name: "Proof archive page",
@@ -118,8 +118,12 @@ const checks = [
     run: async () => checkHtmlPage(`${bases.landing}/judge`, ["Judge mode", "Run workflow", "Live demo surface"]),
   },
   {
+    name: "Grant review package page",
+    run: async () => checkHtmlPage(`${bases.landing}/grant`, ["Grant review package", "Integration status matrix", "Known limits"]),
+  },
+  {
     name: "Submission page",
-    run: async () => checkHtmlPage(`${bases.landing}/submission`, ["Arc Suite submission", "Live settlement proof", "Track fit"]),
+    run: async () => checkHtmlPage(`${bases.landing}/submission`, ["Arc Suite submission", "Settlement proof", "Track fit"]),
   },
   {
     name: "Arc Billing page",

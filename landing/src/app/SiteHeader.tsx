@@ -19,10 +19,12 @@ const variantLinks: Record<SiteHeaderVariant, SiteHeaderLink[]> = {
     { href: "#system", label: "Product" },
     { href: "#loop", label: "Loop" },
     { href: "/proofs", label: "Proof" },
+    { href: "/grant", label: "Grant" },
     { href: "/investors", label: "Investors" },
   ],
   review: [
     { href: "/", label: "Product" },
+    { href: "/grant", label: "Grant" },
     { href: "/investors#roadmap", label: "Roadmap" },
     { href: "/investors#ask", label: "Funding ask" },
     { href: "/analytics", label: "Analytics" },

@@ -400,6 +400,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
     { href: "#system", label: "Product" },
     { href: "#loop", label: "Loop" },
     { href: "/proofs", label: "Proof" },
+    { href: "/grant", label: "Grant" },
     { href: "/investors", label: "Investors", onClick: () => trackLandingConversion({ eventName: "investors_click", placement: "nav" }) },
   ]
 
@@ -502,7 +503,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
           <div>
             <span>Recorded walkthrough</span>
             <strong>Agentic workflow demo</strong>
-            <a href="/submission">Open reviewer package</a>
+            <a href="/grant">Open grant package</a>
           </div>
           <div>
             <span>API-specific proof</span>
@@ -527,7 +528,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
           <div>
             <span>Release package</span>
             <strong>v2026.06.30</strong>
-            <a href="/submission">Open package notes</a>
+            <a href="/grant">Open package notes</a>
           </div>
         </div>
       </section>

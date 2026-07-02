@@ -6021,6 +6021,269 @@ a.ops-history-run:hover {
   margin: 0;
 }
 
+.grant-shell {
+  width: min(100% - 48px, 1320px);
+  margin: 0 auto;
+  padding: 58px 0 96px;
+}
+
+.grant-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.28fr) minmax(300px, 0.72fr);
+  gap: 24px;
+  align-items: end;
+}
+
+.grant-hero h1 {
+  max-width: 1040px;
+  margin: 4px 0 16px;
+  font-size: clamp(44px, 6vw, 84px);
+  line-height: 0.96;
+}
+
+.grant-hero p:not(.kicker),
+.grant-proof-band p,
+.grant-status-grid p,
+.grant-matrix p {
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.grant-hero p:not(.kicker) {
+  max-width: 850px;
+  font-size: 17px;
+}
+
+.grant-summary-card,
+.grant-reviewer-grid div,
+.grant-matrix article,
+.grant-status-grid div,
+.grant-proof-band,
+.grant-limits {
+  border: 1px solid rgba(255, 255, 255, 0.085);
+  border-radius: 8px;
+  background: rgba(8, 13, 19, 0.92);
+}
+
+.grant-summary-card {
+  display: grid;
+  gap: 12px;
+  padding: 22px;
+  border-color: rgba(95, 191, 255, 0.18);
+  background:
+    linear-gradient(135deg, rgba(95, 191, 255, 0.11), rgba(52, 211, 153, 0.045)),
+    rgba(8, 13, 19, 0.92);
+}
+
+.grant-summary-card > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--blue);
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.grant-summary-card strong {
+  color: rgba(232, 241, 255, 0.96);
+  font-size: 26px;
+  line-height: 1.05;
+}
+
+.grant-summary-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.grant-summary-card a,
+.grant-proof-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--blue);
+  font-size: 13px;
+  font-weight: 850;
+  text-decoration: none;
+}
+
+.grant-section,
+.grant-proof-band,
+.grant-limits {
+  margin-top: 26px;
+}
+
+.grant-reviewer-grid,
+.grant-status-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.grant-reviewer-grid div,
+.grant-status-grid div,
+.grant-matrix article {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  min-height: 146px;
+  padding: 18px;
+}
+
+.grant-reviewer-grid i {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid rgba(95, 191, 255, 0.24);
+  border-radius: 8px;
+  background: rgba(95, 191, 255, 0.1);
+  color: var(--cyan);
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.grant-reviewer-grid strong,
+.grant-status-grid strong,
+.grant-matrix strong {
+  color: rgba(232, 241, 255, 0.94);
+}
+
+.grant-reviewer-grid span,
+.grant-status-grid p,
+.grant-matrix p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.grant-matrix {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.grant-matrix article > div:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.grant-matrix svg,
+.grant-status-grid svg {
+  color: var(--green);
+}
+
+.grant-status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 9px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.grant-status-implemented {
+  border-color: rgba(52, 211, 153, 0.28);
+  background: rgba(52, 211, 153, 0.12);
+  color: var(--green);
+}
+
+.grant-status-demo-ready {
+  border-color: rgba(95, 191, 255, 0.3);
+  background: rgba(95, 191, 255, 0.12);
+  color: var(--blue);
+}
+
+.grant-status-planned {
+  border-color: rgba(250, 204, 21, 0.28);
+  background: rgba(250, 204, 21, 0.1);
+  color: var(--yellow);
+}
+
+.grant-proof-band {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(260px, 0.75fr);
+  gap: 24px;
+  align-items: center;
+  padding: 24px;
+  border-color: rgba(52, 211, 153, 0.2);
+  background:
+    linear-gradient(135deg, rgba(52, 211, 153, 0.12), rgba(95, 191, 255, 0.045)),
+    rgba(8, 13, 19, 0.92);
+}
+
+.grant-proof-band h2,
+.grant-limits h2 {
+  max-width: 760px;
+  margin: 4px 0 0;
+}
+
+.grant-proof-band p {
+  max-width: 820px;
+  margin: 12px 0 0;
+  font-size: 15px;
+}
+
+.grant-proof-links {
+  display: grid;
+  gap: 10px;
+}
+
+.grant-proof-links a {
+  min-height: 46px;
+  justify-content: space-between;
+  padding: 0 14px;
+  border: 1px solid rgba(95, 191, 255, 0.13);
+  border-radius: 8px;
+  background: rgba(5, 9, 14, 0.52);
+  color: rgba(232, 241, 255, 0.9);
+}
+
+.grant-limits {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.55fr) minmax(0, 1.45fr);
+  gap: 24px;
+  padding: 24px;
+}
+
+.grant-limits ul {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.grant-limits li {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  color: rgba(232, 241, 255, 0.86);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.grant-limits svg {
+  margin-top: 2px;
+  color: var(--yellow);
+}
+
 .proof-shell {
   width: min(100% - 48px, 1320px);
   margin: 0 auto;
@@ -8250,6 +8513,12 @@ a.ops-history-run:hover {
   .provider-integration-grid,
   .judge-hero,
   .judge-highlights,
+  .grant-hero,
+  .grant-reviewer-grid,
+  .grant-matrix,
+  .grant-status-grid,
+  .grant-proof-band,
+  .grant-limits,
   .submission-hero,
   .submission-proof,
   .submission-link-grid,
@@ -8430,6 +8699,12 @@ a.ops-history-run:hover {
   .submission-review-script,
   .submission-workflow,
   .submission-fit,
+  .grant-hero,
+  .grant-reviewer-grid,
+  .grant-matrix,
+  .grant-proof-band,
+  .grant-status-grid,
+  .grant-limits,
   .agentic-proof-strip,
   .execution-metrics {
     grid-template-columns: 1fr;
@@ -8479,11 +8754,17 @@ a.ops-history-run:hover {
     padding-top: 28px;
   }
 
+  .grant-shell {
+    width: min(100% - 28px, 1320px);
+    padding-top: 28px;
+  }
+
   .proof-hero h1 {
     font-size: 44px;
   }
 
-  .submission-hero h1 {
+  .submission-hero h1,
+  .grant-hero h1 {
     font-size: 44px;
   }
 
