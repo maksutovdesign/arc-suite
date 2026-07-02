@@ -111,9 +111,10 @@ const baseScreening = demoShieldPayload.screenings.find((item) => item.id === ba
 const baseIdentity = demoArcAgentModel.identities[0]
 const baseJob = demoArcAgentModel.jobs[0]
 const baseValidation = demoArcAgentModel.validations[0]
+const DEFAULT_AGENTIC_DEMO_GENERATED_AT = "2026-06-28T18:00:00.000Z"
 
 export function buildAgenticDemoProof(options: ProofOptions = {}): AgenticWorkflowProof {
-  const generatedAt = options.generatedAt ?? new Date().toISOString()
+  const generatedAt = options.generatedAt ?? DEFAULT_AGENTIC_DEMO_GENERATED_AT
   const selectedApi = resolveDemoApi(options.apiId ?? options.flowRunOverrides?.apiId ?? baseRun.apiId)
   const usage = usageForApi(selectedApi, generatedAt)
   const nonce = options.nonce ?? "demo_001"
@@ -141,7 +142,7 @@ export function buildAgenticDemoProof(options: ProofOptions = {}): AgenticWorkfl
     steps: [
       { completedAt: generatedAt, detail: "Circle compliance screening returned allow.", key: "screening", label: "Screening", status: "passed" },
       { completedAt: generatedAt, detail: "Treasury budget and reputation threshold cleared.", key: "access", label: "Access", status: "passed" },
-      { completedAt: generatedAt, detail: "Arc Testnet payment receipt was generated.", key: "settlement", label: "Settlement", status: "passed" },
+      { completedAt: generatedAt, detail: "Settlement-ready Arc payment receipt was generated.", key: "settlement", label: "Settlement", status: "passed" },
       { completedAt: generatedAt, detail: "Successful payment became a reputation signal.", key: "reputation", label: "Reputation", status: "passed" },
     ],
     txHash: baseRun.txHash,

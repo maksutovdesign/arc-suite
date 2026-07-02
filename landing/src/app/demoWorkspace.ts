@@ -160,7 +160,7 @@ export const demoFlowPayload: { auditStorage: boolean; runs: FlowRun[]; summary:
       steps: [
         { key: "screening", label: "Shield screening", status: "passed", detail: "Recipient risk check passed", completedAt: "2026-06-23T09:39:21Z" },
         { key: "access", label: "Access policy", status: "passed", detail: "Score 961 >= required 700", completedAt: "2026-06-23T09:39:24Z" },
-        { key: "settlement", label: "Arc settlement", status: "passed", detail: "USDC transfer confirmed", completedAt: "2026-06-23T09:39:33Z" },
+        { key: "settlement", label: "Arc settlement", status: "passed", detail: "Settlement proof attached", completedAt: "2026-06-23T09:39:33Z" },
         { key: "reputation", label: "Reputation update", status: "passed", detail: "Payment success signal +3", completedAt: "2026-06-23T09:39:36Z" },
       ],
       screeningId: "scr_demo_001",
@@ -256,7 +256,7 @@ export const demoShieldPayload: {
       providerResult: "DENIED",
       providerStatus: "completed",
       decision: "block",
-      decisionReason: "Sanctions blocklist simulation for operator testing.",
+      decisionReason: "Sanctions blocklist demo signal for operator testing.",
       ruleName: "Sanctions blocklist",
       actions: ["DENY_SETTLEMENT", "OPEN_REVIEW"],
       riskScore: "BLOCKLIST",

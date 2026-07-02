@@ -22,7 +22,7 @@ const API_KEY_STORAGE = "arc_shield_key"
 type Payload = { configured: boolean; overview: EscrowOverview | null }
 
 export function EscrowDashboardClient() {
-  const [apiKey, setApiKey] = useState(readStoredApiKey)
+  const [apiKey, setApiKey] = useState("")
   const [overview, setOverview] = useState<EscrowOverview | null>(demoEscrowOverview)
   const [agents, setAgents] = useState<Agent[]>(demoAgents)
   const [selectedDealId, setSelectedDealId] = useState(demoEscrowOverview.deals[0]?.id ?? "")
@@ -67,10 +67,14 @@ export function EscrowDashboardClient() {
   useEffect(() => {
     if (loaded.current) return
     loaded.current = true
-    if (!apiKey.trim()) return
-    const timer = window.setTimeout(() => void connect(apiKey), 0)
+    const stored = readStoredApiKey().trim()
+    if (!stored) return
+    const timer = window.setTimeout(() => {
+      setApiKey(stored)
+      void connect(stored)
+    }, 0)
     return () => window.clearTimeout(timer)
-  }, [apiKey, connect])
+  }, [connect])
 
   async function createDeal() {
     const amount = Number(milestoneAmount)

@@ -22,7 +22,7 @@ const defaultDestination = "0x55e0dd25cd5f917e24de571d98d97c3b243709b2"
 type OverviewPayload = { configured: boolean; overview: GasOverview | null }
 
 export function GasDashboardClient() {
-  const [apiKey, setApiKey] = useState(readStoredApiKey)
+  const [apiKey, setApiKey] = useState("")
   const [overview, setOverview] = useState<GasOverview | null>(demoGasOverview)
   const [agents, setAgents] = useState<Agent[]>(demoAgents)
   const [agentId, setAgentId] = useState(demoGasOverview.policies[0]?.agentId ?? demoAgents[0]?.id ?? "")
@@ -66,10 +66,14 @@ export function GasDashboardClient() {
   useEffect(() => {
     if (loaded.current) return
     loaded.current = true
-    if (!apiKey.trim()) return
-    const timer = window.setTimeout(() => void connect(apiKey), 0)
+    const stored = readStoredApiKey().trim()
+    if (!stored) return
+    const timer = window.setTimeout(() => {
+      setApiKey(stored)
+      void connect(stored)
+    }, 0)
     return () => window.clearTimeout(timer)
-  }, [apiKey, connect])
+  }, [connect])
 
   function selectAgent(nextAgentId: string) {
     setAgentId(nextAgentId)

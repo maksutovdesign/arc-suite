@@ -9,7 +9,7 @@ import { demoWalletOverview } from "../demoWorkspace"
 const API_KEY_STORAGE = "arc_wallet_os_key"
 
 export function WalletDashboardClient() {
-  const [apiKey, setApiKey] = useState(readStoredApiKey)
+  const [apiKey, setApiKey] = useState("")
   const [overview, setOverview] = useState<WalletOverview | null>(demoWalletOverview)
   const [walletId, setWalletId] = useState(demoWalletOverview.wallets[0]?.id ?? "")
   const [policy, setPolicy] = useState<WalletSigningPolicy | null>(demoWalletOverview.policies[0] ?? null)
@@ -46,10 +46,14 @@ export function WalletDashboardClient() {
   useEffect(() => {
     if (loaded.current) return
     loaded.current = true
-    if (!apiKey.trim()) return
-    const timer = window.setTimeout(() => void connect(apiKey), 0)
+    const stored = readStoredApiKey().trim()
+    if (!stored) return
+    const timer = window.setTimeout(() => {
+      setApiKey(stored)
+      void connect(stored)
+    }, 0)
     return () => window.clearTimeout(timer)
-  }, [apiKey, connect])
+  }, [connect])
 
   function selectWallet(nextWalletId: string) {
     setWalletId(nextWalletId)

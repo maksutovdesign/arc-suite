@@ -36,8 +36,8 @@ const pipeline = [
   {
     icon: CircleDollarSign,
     label: "USDC execution",
-    title: "Settle on Arc",
-    text: "Arc Flow can route the approved payment to Circle wallets, Arc Testnet settlement and provider reconciliation.",
+    title: "Prepare Arc path",
+    text: "Arc Flow can route the approved payment to Circle wallets, a settlement-ready Arc Testnet path and provider reconciliation.",
     state: "Arc ready",
   },
   {

@@ -1,5 +1,4 @@
-import Link from "next/link"
-import { BrandMark } from "../BrandMark"
+import { SiteHeader } from "../SiteHeader"
 
 const liveDemoUrl = "https://treasury-umber.vercel.app/demo"
 
@@ -22,24 +21,12 @@ const kpis = [
 export default function InvestorPage() {
   return (
     <main>
-      <nav className="nav">
-        <Link className="brand" href="/" aria-label="Arc Suite home">
-          <BrandMark idPrefix="investor-brand" />
-          <span className="brand-name">Arc Suite</span>
-        </Link>
-        <div className="nav-cluster">
-          <div className="nav-links" aria-label="Investor navigation">
-            <Link href="/">Product</Link>
-            <a href="#roadmap">Roadmap</a>
-            <a href="#ask">Funding ask</a>
-            <Link href="/analytics">Analytics</Link>
-            <Link href="/ops">Ops Health</Link>
-          </div>
-          <a className="nav-demo" href={liveDemoUrl} target="_blank" rel="noreferrer">
-            Demo
-          </a>
-        </div>
-      </nav>
+      <SiteHeader
+        ariaLabel="Investor navigation"
+        demoHref={liveDemoUrl}
+        idPrefix="investor-brand"
+        variant="review"
+      />
 
       <section className="investor-hero">
         <p className="kicker">Investor page</p>

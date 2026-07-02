@@ -199,7 +199,7 @@ async function tryLiveSettlement(input: {
       status: {
         code: error instanceof SettlementExecutionError ? error.code : "live_settlement_failed",
         enabled: true,
-        message: error instanceof Error ? error.message : "Live settlement failed",
+        message: error instanceof Error ? error.message : "Arc settlement path failed",
         status: "failed",
       },
     }

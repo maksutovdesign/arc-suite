@@ -16,9 +16,9 @@ import {
   WalletCards,
   Workflow,
 } from "lucide-react"
-import { BrandMark } from "./BrandMark"
 import { LatestProofLink } from "./LatestProofLink"
 import { RequestPilotForm } from "./RequestPilotForm"
+import { SiteHeader } from "./SiteHeader"
 import { trackLandingConversion } from "@/lib/analytics"
 import type { PilotSummary } from "@/lib/backend/schema"
 
@@ -108,16 +108,16 @@ const productDetails = [
     name: "Arc Flow",
     eyebrow: "Payment orchestration",
     icon: Workflow,
-    title: "One policy-gated path from intent to onchain settlement.",
-    text: "Orchestrate Shield screening, reputation and budget access checks, Circle wallet execution, Arc Testnet receipts and the resulting reputation update under one run ID.",
+    title: "One policy-gated path from intent to settlement proof.",
+    text: "Orchestrate Shield screening, reputation and budget access checks, Circle wallet execution readiness, Arc settlement references and the resulting reputation update under one run ID.",
     image: "",
-    imageAlt: "Arc Flow pipeline showing screening, access policy, Arc settlement and reputation update",
+    imageAlt: "Arc Flow pipeline showing screening, access policy, settlement reference and reputation update",
     stats: [
       ["4", "atomic stages"],
       ["1", "auditable run ID"],
       ["P0", "launch priority"],
     ],
-    bullets: ["Fail-closed compliance gate", "Idempotent Arc USDC settlement", "End-to-end execution history"],
+    bullets: ["Fail-closed compliance gate", "Idempotent settlement-ready path", "End-to-end execution history"],
   },
   {
     key: "billing",
@@ -312,8 +312,6 @@ const story = [
 ]
 
 const liveDemoUrl = "https://treasury-umber.vercel.app/demo"
-const releaseUrl = "https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.06.30-agentic-proof-package"
-const demoVideoUrl = "https://github.com/maksutovdesign/arc-suite/releases/download/v2026.06.28-real-arc-settlement/arc-suite-agentic-workflow-demo.mov"
 const latestProofUrl = "/proof?id=flow_agentic_01a50e12e6c4"
 const realSettlementExplorerUrl =
   "https://testnet.arcscan.app/tx/0x41210539368a78f6bbc08b088a95430dc0f64e9379ad9226173fc3ce565d733b"
@@ -398,32 +396,23 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
     ? pilotSummary.marketplace.categoryMix.map((item) => [item.label, item.value] as const)
     : categoryMix
   const tradeBotBudget = pilotSummary?.treasury.tradeBotBudget
+  const navLinks = [
+    { href: "#system", label: "Product" },
+    { href: "#loop", label: "Loop" },
+    { href: "/proofs", label: "Proof" },
+    { href: "/investors", label: "Investors", onClick: () => trackLandingConversion({ eventName: "investors_click", placement: "nav" }) },
+  ]
 
   return (
     <main>
-      <nav className="nav">
-        <a className="brand" href="#top" aria-label="Arc Suite home">
-          <BrandMark idPrefix="home-brand" />
-          <span className="brand-name">Arc Suite</span>
-        </a>
-        <div className="nav-cluster">
-          <div className="nav-links" aria-label="Primary navigation">
-            <a href="#system">Product</a>
-            <a href="#loop">Loop</a>
-            <a href="/proofs">Proof</a>
-            <a href="/investors" onClick={() => trackLandingConversion({ eventName: "investors_click", placement: "nav" })}>Investors</a>
-          </div>
-          <a
-            className="nav-demo"
-            href={liveDemoUrl}
-            onClick={() => trackLandingConversion({ eventName: "demo_click", placement: "nav" })}
-            target="_blank"
-            rel="noreferrer"
-          >
-            Demo
-          </a>
-        </div>
-      </nav>
+      <SiteHeader
+        ariaLabel="Primary navigation"
+        demoHref={liveDemoUrl}
+        idPrefix="home-brand"
+        links={navLinks}
+        onDemoClick={() => trackLandingConversion({ eventName: "demo_click", placement: "nav" })}
+        variant="marketing"
+      />
 
       <section className="hero" id="top">
         <div className="hero-copy">
@@ -499,21 +488,21 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
         ))}
       </section>
 
-      <section className="section demo-proof-section" aria-label="Recorded demo and live Arc settlement proof">
+      <section className="section demo-proof-section" aria-label="Recorded demo and Arc settlement proof package">
         <div className="demo-proof-copy">
           <p className="kicker">Reviewer package</p>
-          <h2>Recorded demo plus a real Arc Testnet USDC settlement.</h2>
+          <h2>Recorded demo plus Arc settlement evidence when configured.</h2>
           <p>
             The final submission is built around one auditable operation: an agent receives an x402 offer,
-            passes policy checks, settles USDC through Circle Wallets on Arc Testnet, and leaves a proof
-            artifact with receipt and reputation context.
+            passes policy checks, follows a settlement-ready Circle Wallets path, and leaves a proof
+            artifact with receipt, settlement reference and reputation context.
           </p>
         </div>
         <div className="demo-proof-card">
           <div>
             <span>Recorded walkthrough</span>
             <strong>Agentic workflow demo</strong>
-            <a href={demoVideoUrl} target="_blank" rel="noreferrer">Watch video</a>
+            <a href="/submission">Open reviewer package</a>
           </div>
           <div>
             <span>API-specific proof</span>
@@ -531,14 +520,14 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
             <a href="/provider">Open Provider</a>
           </div>
           <div>
-            <span>Live settlement</span>
-            <strong>0.003 USDC confirmed</strong>
-            <a href={realSettlementExplorerUrl} target="_blank" rel="noreferrer">Open Arcscan proof</a>
+            <span>Settlement evidence</span>
+            <strong>0.003 USDC path</strong>
+            <a href={realSettlementExplorerUrl} target="_blank" rel="noreferrer">Open Arcscan reference</a>
           </div>
           <div>
             <span>Release package</span>
             <strong>v2026.06.30</strong>
-            <a href={releaseUrl} target="_blank" rel="noreferrer">Open GitHub release</a>
+            <a href="/submission">Open package notes</a>
           </div>
         </div>
       </section>
@@ -841,7 +830,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
           <p>
             These are real screenshots captured from the running Arc Suite apps:
             Treasury, Reputation and Marketplace. The landing uses them as product
-            proof, not decorative mockups.
+            proof, not decorative screens.
           </p>
         </div>
 

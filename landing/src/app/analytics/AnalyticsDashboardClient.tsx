@@ -6,7 +6,7 @@ import type { AnalyticsEvent, AnalyticsSummary, InvestorLead } from "@/lib/backe
 const API_KEY_STORAGE = "arc_analytics_dashboard_key"
 
 export function AnalyticsDashboardClient() {
-  const [apiKey, setApiKey] = useState(readStoredApiKey)
+  const [apiKey, setApiKey] = useState("")
   const [summary, setSummary] = useState<AnalyticsSummary | null>(null)
   const [leads, setLeads] = useState<InvestorLead[]>([])
   const [error, setError] = useState<string | null>(null)
@@ -51,15 +51,16 @@ export function AnalyticsDashboardClient() {
     if (hasLoadedStoredKey.current) return
     hasLoadedStoredKey.current = true
 
-    const stored = apiKey.trim()
+    const stored = readStoredApiKey().trim()
     if (!stored) return
 
     const handle = window.setTimeout(() => {
+      setApiKey(stored)
       void loadSummary(stored)
     }, 0)
 
     return () => window.clearTimeout(handle)
-  }, [apiKey, loadSummary])
+  }, [loadSummary])
 
   const totalEvents = useMemo(() => summary?.totals.reduce((sum, item) => sum + item.count, 0) ?? 0, [summary])
 

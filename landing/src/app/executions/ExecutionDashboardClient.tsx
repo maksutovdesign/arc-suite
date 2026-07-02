@@ -9,7 +9,7 @@ import type { ExecutionOverview } from "@/lib/backend/schema"
 const API_KEY_STORAGE = "arc_execution_key"
 
 export function ExecutionDashboardClient() {
-  const [apiKey, setApiKey] = useState(readStoredApiKey)
+  const [apiKey, setApiKey] = useState("")
   const [overview, setOverview] = useState<ExecutionOverview | null>(null)
   const [busy, setBusy] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -40,10 +40,14 @@ export function ExecutionDashboardClient() {
   useEffect(() => {
     if (loaded.current) return
     loaded.current = true
-    if (!apiKey.trim()) return
-    const timer = window.setTimeout(() => void connect(apiKey), 0)
+    const stored = readStoredApiKey().trim()
+    if (!stored) return
+    const timer = window.setTimeout(() => {
+      setApiKey(stored)
+      void connect(stored)
+    }, 0)
     return () => window.clearTimeout(timer)
-  }, [apiKey, connect])
+  }, [connect])
 
   async function runWorker() {
     setBusy("worker")

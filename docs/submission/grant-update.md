@@ -2,9 +2,9 @@
 
 ## Short Submission Text
 
-Arc Suite is an operating layer for autonomous AI-agent commerce on Arc. The demo now focuses on one complete, reviewable workflow: an AI agent requests a paid x402 API, receives a signed offer, passes Treasury budget policy, Reputation access and Shield compliance checks, settles USDC on Arc Testnet through Circle Wallets, receives a signed provider receipt, updates reputation and leaves a proof page with the transaction hash, policy chain and validation artifacts.
+Arc Suite is an operating layer for autonomous AI-agent commerce on Arc. The demo now focuses on one complete, reviewable workflow: an AI agent requests a paid x402 API, receives a signed offer, passes Treasury budget policy, Reputation access and Shield compliance checks, follows a settlement-ready Arc Testnet path through Circle Wallets, receives a signed provider receipt, updates reputation and leaves a proof page with the settlement reference, policy chain and validation artifacts.
 
-The latest release includes a recorded demo, a real Arc Testnet USDC settlement, a reviewer submission page, Judge Mode, Agentic Workflow, Proof and Flow operator screens.
+The latest release includes a recorded demo, Arc Testnet settlement evidence when configured, a reviewer submission page, Judge Mode, Agentic Workflow, Proof and Flow operator screens.
 
 ## Reviewer Links
 
@@ -35,7 +35,7 @@ The latest release includes a recorded demo, a real Arc Testnet USDC settlement,
 1. Added a reviewer-ready submission page with demo video, release, proof and demo flow links.
 2. Added a one-click Agentic Workflow demo: agent intent, signed x402 offer, payment authorization, policy chain, Arc settlement and reputation update.
 3. Added ERC-8004-compatible agent identity and ERC-8183-compatible job envelope records.
-4. Added a Proof page that ties transaction hash, x402 receipt, policy gates and validation artifacts to one workflow ID.
+4. Added a Proof page that ties settlement reference, x402 receipt, policy gates and validation artifacts to one workflow ID.
 5. Added a live-settlement backend path for Agentic Workflow behind `ARC_AGENTIC_LIVE_SETTLEMENT=true`, with safe fallback when Circle or Supabase is unavailable.
 6. Added recent Arc settlement visibility on the Proof page so reviewers can see the latest Supabase-recorded settlement operations.
 7. Added a Proof Archive and `/api/agentic/proofs`, making recent Marketplace purchase receipts queryable and visible.
@@ -49,7 +49,7 @@ The latest release includes a recorded demo, a real Arc Testnet USDC settlement,
 3. Open Judge Mode.
 4. Click `Run agentic workflow`.
 5. Open the generated Proof page, latest proof API or Proof Archive.
-6. Check the policy chain, receipt JSON, settlement ID and transaction hash.
+6. Check the policy chain, receipt JSON, settlement ID and settlement reference.
 7. Open the Arcscan transaction link.
 8. Open Flow to see how the workflow maps to the operator console.
 
@@ -70,6 +70,6 @@ That loop is the product: identity, policy, settlement, receipt and reputation i
 
 1. Enable live Agentic Workflow settlement in production once the reviewer wallet budget is topped up.
 2. Add Circle webhook reconciliation for settlement status updates.
-3. Replace simulated provider signing metadata with provider-owned keys.
+3. Replace demo provider signing metadata with provider-owned keys.
 4. Add provider API cards that can be purchased directly from Marketplace.
 5. Add a compact operator dashboard for the last live settlements, policy denials and reputation changes.

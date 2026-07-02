@@ -2,9 +2,7 @@ import {
   ArrowUpRight,
   BadgeCheck,
   CircleDollarSign,
-  Code2,
   FileCheck2,
-  Film,
   Link2,
   Play,
   ReceiptText,
@@ -20,10 +18,6 @@ export const metadata = {
   description: "Arc Suite submission page with demo video, live proof, architecture and reviewer links.",
 }
 
-const releaseUrl = "https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.06.30-agentic-proof-package"
-const repoUrl = "https://github.com/maksutovdesign/arc-suite"
-const demoVideoUrl =
-  "https://github.com/maksutovdesign/arc-suite/releases/download/v2026.06.28-real-arc-settlement/arc-suite-agentic-workflow-demo.mov"
 const latestProofUrl = "https://arcsuite-app.vercel.app/proof?id=flow_agentic_01a50e12e6c4"
 const explorerUrl =
   "https://testnet.arcscan.app/tx/0x41210539368a78f6bbc08b088a95430dc0f64e9379ad9226173fc3ce565d733b"
@@ -31,8 +25,8 @@ const explorerUrl =
 const reviewerLinks = [
   ["Judge Mode", "One-page reviewer flow", "https://arcsuite-app.vercel.app/judge"],
   ["Agentic Workflow", "Run the policy-to-proof demo", "https://arcsuite-app.vercel.app/agentic-workflow"],
-  ["Latest Proof", "Tx hash, x402 receipt and policy chain", latestProofUrl],
-  ["Proof Archive", "Recent workflow receipts and tx hashes", "https://arcsuite-app.vercel.app/proofs"],
+  ["Latest Proof", "Settlement reference, x402 receipt and policy chain", latestProofUrl],
+  ["Proof Archive", "Recent workflow receipts and settlement references", "https://arcsuite-app.vercel.app/proofs"],
   ["Flow Console", "Operator view behind the workflow", "https://arcsuite-app.vercel.app/flow"],
 ] as const
 
@@ -40,7 +34,7 @@ const proofFacts = [
   ["Amount", "0.003 USDC"],
   ["API", "api_02 · GPT-4o Proxy"],
   ["Settlement ID", "set_a70296d1-87f9-4753-8935-7e330a2fc3d2"],
-  ["Tx hash", "0x412105...5d733b"],
+  ["Settlement ref", "0x412105...5d733b"],
   ["Network", "Arc Testnet"],
 ] as const
 
@@ -48,21 +42,21 @@ const reviewScript = [
   ["01", "Open Judge Mode", "Start from the one-page evaluator path."],
   ["02", "Run workflow", "Trigger the agentic API purchase and wait for reputation update."],
   ["03", "Open latest proof", "Check that api_02 appears in offer, flow, job and receipt."],
-  ["04", "Verify Arcscan", "Open the tx hash and confirm the live Arc Testnet settlement."],
+  ["04", "Verify Arcscan", "Open Arcscan when a tx hash is available and confirm the configured settlement evidence."],
 ] as const
 
 const workflowSteps = [
   { label: "Agent identity", detail: "ERC-8004-ready agent profile and reputation surface", icon: BadgeCheck },
   { label: "x402 offer", detail: "Signed offer, price, provider and payment authorization", icon: ReceiptText },
   { label: "Policy checks", detail: "Treasury budget, Shield screening and access decision", icon: ShieldCheck },
-  { label: "Arc settlement", detail: "Circle Wallets transfer with Arcscan transaction proof", icon: CircleDollarSign },
+  { label: "Settlement path", detail: "Circle Wallets transfer path with Arcscan proof when configured", icon: CircleDollarSign },
   { label: "Receipt and reputation", detail: "Provider receipt, validation artifact and score update", icon: FileCheck2 },
 ] as const
 
 const trackFit = [
   ["Agentic Economy", "Agents can discover, pay for and prove API usage with USDC."],
-  ["Circle primitives", "Wallets, compliance screening, x402-style receipts and USDC settlement."],
-  ["Arc proof", "The workflow ends in a live Arc Testnet transaction, not a simulated toast."],
+  ["Circle primitives", "Wallets, compliance screening, x402-style receipts and USDC settlement readiness."],
+  ["Arc proof", "The workflow ends in settlement evidence: Arcscan transaction when configured, otherwise an explicit readiness state."],
   ["Operator readiness", "Flow, Proof, Billing, Shield, Wallet OS and monitoring show how it becomes an MVP."],
 ] as const
 
@@ -76,27 +70,27 @@ export default function SubmissionPage() {
             <p className="kicker">Arc Suite submission</p>
             <h1>One verified agentic USDC workflow for Arc and Circle reviewers.</h1>
             <p>
-              Arc Suite packages identity, x402 offer, policy checks, Circle Wallets settlement,
+              Arc Suite packages identity, x402 offer, policy checks, Circle Wallets settlement readiness,
               signed receipt, reputation update and proof into one reviewer-ready flow.
             </p>
             <div className="agentic-actions">
-              <a className="button primary" href={demoVideoUrl} target="_blank" rel="noreferrer">
-                <Film size={17} /> Watch demo video
-              </a>
-              <a className="button secondary" href="/judge">
+              <a className="button primary" href="/judge">
                 <Play size={17} /> Open judge mode
+              </a>
+              <a className="button secondary" href="/agentic-workflow">
+                <Play size={17} /> Run workflow
               </a>
               <LatestProofLink fallbackHref={latestProofUrl} />
               <a className="button secondary" href={explorerUrl} target="_blank" rel="noreferrer">
-                <ArrowUpRight size={17} /> Verify tx
+                <ArrowUpRight size={17} /> Verify reference
               </a>
             </div>
           </div>
           <aside className="submission-card" aria-label="Submission package">
             <span><FileCheck2 size={16} /> Submission package</span>
-            <a href={releaseUrl} target="_blank" rel="noreferrer"><Code2 size={16} /> GitHub release</a>
-            <a href={repoUrl} target="_blank" rel="noreferrer"><Code2 size={16} /> Source repository</a>
-            <a href={demoVideoUrl} target="_blank" rel="noreferrer"><Film size={16} /> Recorded demo</a>
+            <span className="submission-note"><FileCheck2 size={16} /> Source repository available on request</span>
+            <span className="submission-note"><FileCheck2 size={16} /> Release notes available on request</span>
+            <span className="submission-note"><FileCheck2 size={16} /> Recorded demo available on request</span>
             <LatestProofLink fallbackHref={latestProofUrl} label="Latest production proof" mode="card" />
             <a href={explorerUrl} target="_blank" rel="noreferrer"><Link2 size={16} /> Arcscan proof</a>
           </aside>
@@ -136,11 +130,11 @@ export default function SubmissionPage() {
 
         <section className="submission-proof">
           <div>
-            <p className="kicker">Live settlement proof</p>
-            <h2>Real Arc Testnet USDC transfer through Circle Wallets.</h2>
+            <p className="kicker">Settlement proof</p>
+            <h2>Arc settlement evidence when Circle Wallets are configured.</h2>
             <p>
-              The production smoke confirmed the same settlement path used by the backend:
-              policy gate, Circle token lookup, Arc Testnet transfer, Supabase audit and proof link.
+              The production smoke can attach the same settlement path used by the backend:
+              policy gate, Circle token lookup, Arc Testnet transfer when enabled, Supabase audit and proof link.
             </p>
           </div>
           <div className="submission-proof-grid">

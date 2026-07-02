@@ -22,7 +22,7 @@ type OverviewPayload = { configured: boolean; overview: BillingOverview | null }
 type ApiPayload = { apis: Array<ApiListing & { providerName: string }> }
 
 export function BillingDashboardClient() {
-  const [apiKey, setApiKey] = useState(readStoredApiKey)
+  const [apiKey, setApiKey] = useState("")
   const [overview, setOverview] = useState<BillingOverview | null>(demoBillingOverview)
   const [configured, setConfigured] = useState(false)
   const [agents, setAgents] = useState<Agent[]>(demoAgents)
@@ -70,10 +70,14 @@ export function BillingDashboardClient() {
   useEffect(() => {
     if (loaded.current) return
     loaded.current = true
-    if (!apiKey.trim()) return
-    const timer = window.setTimeout(() => void connect(apiKey), 0)
+    const stored = readStoredApiKey().trim()
+    if (!stored) return
+    const timer = window.setTimeout(() => {
+      setApiKey(stored)
+      void connect(stored)
+    }, 0)
     return () => window.clearTimeout(timer)
-  }, [apiKey, connect])
+  }, [connect])
 
   async function meterUsage() {
     const amount = Number(units)

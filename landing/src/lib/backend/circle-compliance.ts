@@ -181,7 +181,7 @@ export function evaluateShieldPolicy(
     return {
       actions: ["REVIEW"],
       decision: "review",
-      decisionReason: `Circle approved an official simulated-risk address without the expected "${missedTestScenario.ruleName}" rule. Verify Compliance Engine account access and testnet rules.`,
+      decisionReason: `Circle approved an official test-risk address without the expected "${missedTestScenario.ruleName}" rule. Verify Compliance Engine account access and testnet rules.`,
       reasons,
       riskCategories,
       riskScore,

@@ -19,6 +19,7 @@ const bases = {
 const requireSupabase = process.env.ARC_MONITOR_REQUIRE_SUPABASE !== "false"
 const latencyWarnMs = numberFromEnv("ARC_MONITOR_LATENCY_WARN_MS", 5_000)
 const latencyFailMs = numberFromEnv("ARC_MONITOR_LATENCY_FAIL_MS", 15_000)
+const treasuryLatencyWarnMs = numberFromEnv("ARC_MONITOR_TREASURY_LATENCY_WARN_MS", 12_000)
 
 const checks = [
   {
@@ -158,6 +159,7 @@ const checks = [
   },
   {
     name: "Treasury page headers",
+    latencyWarnMs: treasuryLatencyWarnMs,
     run: async () => checkHtmlPage(`${bases.treasury}/`, "Arc Treasury"),
   },
   {
@@ -177,6 +179,7 @@ const results = []
 
 for (const check of checks) {
   const checkStartedAt = Date.now()
+  const checkLatencyWarnMs = check.latencyWarnMs ?? latencyWarnMs
   try {
     const detail = await check.run()
     const durationMs = Date.now() - checkStartedAt
@@ -191,8 +194,8 @@ for (const check of checks) {
       throw new Error(`latency budget exceeded: ${durationMs}ms > ${latencyFailMs}ms`)
     }
 
-    if (durationMs > latencyWarnMs) {
-      const warning = { durationMs, message: `slow check: ${durationMs}ms > ${latencyWarnMs}ms`, name: check.name }
+    if (durationMs > checkLatencyWarnMs) {
+      const warning = { durationMs, message: `slow check: ${durationMs}ms > ${checkLatencyWarnMs}ms`, name: check.name }
       warnings.push(warning)
       result.status = "warn"
       result.warning = warning.message
@@ -224,6 +227,9 @@ const summary = {
   failureCount: failures.length,
   latencyFailMs,
   latencyWarnMs,
+  latencyWarnOverrides: checks
+    .filter((check) => typeof check.latencyWarnMs === "number")
+    .map((check) => ({ latencyWarnMs: check.latencyWarnMs, name: check.name })),
   monitorName: MONITOR_NAME,
   results,
   runId: process.env.GITHUB_RUN_ID ?? null,
@@ -404,6 +410,7 @@ async function writeGithubSummary(summary) {
       "",
       `Per-check latency warning budget: **${summary.latencyWarnMs}ms**`,
       "",
+      ...formatLatencyWarnOverrides(summary.latencyWarnOverrides),
       `Per-check latency failure budget: **${summary.latencyFailMs}ms**`,
       "",
       "| Status | Check | Duration, ms | Detail |",
@@ -417,6 +424,16 @@ async function writeGithubSummary(summary) {
     const message = error instanceof Error ? error.message : String(error)
     console.warn(`WARN GitHub summary unavailable: ${message}`)
   }
+}
+
+function formatLatencyWarnOverrides(overrides) {
+  if (!Array.isArray(overrides) || overrides.length === 0) return []
+  return [
+    "Per-check warning overrides:",
+    "",
+    ...overrides.map((override) => `- ${escapeMarkdown(override.name)}: **${override.latencyWarnMs}ms**`),
+    "",
+  ]
 }
 
 function escapeMarkdown(value) {

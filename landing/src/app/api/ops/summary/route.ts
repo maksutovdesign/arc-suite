@@ -160,7 +160,7 @@ async function checkGithubWorkflow(workflow: (typeof GITHUB_WORKFLOWS)[number]) 
     return {
       ...workflow,
       conclusion: null,
-      detail: response.error ?? `GitHub API HTTP ${response.status ?? "unknown"}`,
+      detail: response.error ?? `Monitor provider HTTP ${response.status ?? "unknown"}`,
       runUrl: "",
       status: "warning" as ServiceStatus,
       updatedAt: null,

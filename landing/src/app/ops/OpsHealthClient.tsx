@@ -141,7 +141,7 @@ type SentryTestResult = {
 }
 
 export function OpsHealthClient() {
-  const [apiKey, setApiKey] = useState(readStoredApiKey)
+  const [apiKey, setApiKey] = useState("")
   const [summary, setSummary] = useState<OpsSummary | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
@@ -183,15 +183,16 @@ export function OpsHealthClient() {
     if (hasLoadedStoredKey.current) return
     hasLoadedStoredKey.current = true
 
-    const stored = apiKey.trim()
+    const stored = readStoredApiKey().trim()
     if (!stored) return
 
     const handle = window.setTimeout(() => {
+      setApiKey(stored)
       void loadSummary(stored)
     }, 0)
 
     return () => window.clearTimeout(handle)
-  }, [apiKey, loadSummary])
+  }, [loadSummary])
 
   const appStatusText = useMemo(() => {
     if (!summary) return "0/4"
@@ -302,7 +303,7 @@ export function OpsHealthClient() {
               value={summary.services.monitor.summary.totalRuns > 0 ? `${summary.services.monitor.summary.uptimePct}%` : "no data"}
               status={monitorStatusToService(summary.services.monitor.summary.latestStatus)}
             />
-            <Metric label="GitHub monitor" value={summary.services.github.workflows[0]?.conclusion ?? "pending"} status={summary.services.github.workflows[0]?.status ?? "warning"} />
+            <Metric label="Production monitor" value={summary.services.github.workflows[0]?.conclusion ?? "pending"} status={summary.services.github.workflows[0]?.status ?? "warning"} />
             <Metric label="Sentry runtime" value={summary.services.sentry.hasDsn ? "ready" : "missing"} status={summary.services.sentry.status} />
             <Metric label="Investor leads" value={String(summary.signals.leads.totalLoaded)} status="ok" />
           </div>
@@ -334,7 +335,7 @@ export function OpsHealthClient() {
               </div>
               <div className="ops-status-list">
                 <ServiceRow
-                  detail={summary.services.supabase.configuration.configured ? "Service role and URL configured" : "Using seed fallback"}
+                  detail={summary.services.supabase.configuration.configured ? "Service role and URL configured" : "Using demo data fallback"}
                   label="Configuration"
                   meta={summary.services.supabase.dataSource}
                   status={summary.services.supabase.status}
@@ -353,7 +354,7 @@ export function OpsHealthClient() {
 
             <div className="analytics-card">
               <div className="analytics-card-head">
-                <h2>CI Monitor</h2>
+                <h2>Production Monitor</h2>
               </div>
               <div className="ops-status-list">
                 {summary.services.github.workflows.map((workflow) => (
@@ -608,7 +609,7 @@ function MonitorPersistence({ checks }: { checks: OpsSummary["services"]["monito
         <StatusPill status="warning" label="Not stored yet" />
         <div>
           <strong>Waiting for the first persisted monitor run</strong>
-          <span>Add ARC_MONITOR_API_KEY to GitHub Secrets, then the scheduled monitor will write results into Supabase.</span>
+          <span>Add ARC_MONITOR_API_KEY to the deployment secrets, then the scheduled monitor will write results into Supabase.</span>
         </div>
       </div>
     )

@@ -153,7 +153,7 @@ export async function executeArcFlow(input: {
     }
 
     steps = setStep(steps, "access", "passed", settlement.decision.reason)
-    steps = setStep(steps, "settlement", "passed", "USDC confirmed on Arc Testnet.")
+    steps = setStep(steps, "settlement", "passed", "Arc settlement evidence attached.")
     steps = setStep(steps, "reputation", "passed", `Reputation updated by ${formatDelta(settlement.result.scoreDelta)} points.`)
     run = await persist(runId, {
       status: "completed",

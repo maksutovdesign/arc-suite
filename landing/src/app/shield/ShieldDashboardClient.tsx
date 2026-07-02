@@ -31,7 +31,7 @@ type ShieldPayload = {
 }
 
 export function ShieldDashboardClient() {
-  const [apiKey, setApiKey] = useState(readStoredApiKey)
+  const [apiKey, setApiKey] = useState("")
   const [address, setAddress] = useState(DEFAULT_TEST_ADDRESS)
   const [chain, setChain] = useState("ETH-SEPOLIA")
   const [payload, setPayload] = useState<ShieldPayload | null>(demoShieldPayload)
@@ -72,11 +72,14 @@ export function ShieldDashboardClient() {
   useEffect(() => {
     if (hasLoadedStoredKey.current) return
     hasLoadedStoredKey.current = true
-    const stored = apiKey.trim()
+    const stored = readStoredApiKey().trim()
     if (!stored) return
-    const handle = window.setTimeout(() => void loadScreenings(stored), 0)
+    const handle = window.setTimeout(() => {
+      setApiKey(stored)
+      void loadScreenings(stored)
+    }, 0)
     return () => window.clearTimeout(handle)
-  }, [apiKey, loadScreenings])
+  }, [loadScreenings])
 
   async function runScreening() {
     const key = apiKey.trim()

@@ -1,6 +1,6 @@
 # Arc Suite — End-to-End Agentic Payments on Arc
 
-> **Arc Suite demonstrates one complete autonomous USDC operation on [Arc](https://arc.io) and [Circle](https://circle.com): an AI agent requests a paid x402 API, receives a signed offer, passes policy and compliance checks, settles USDC on Arc Testnet, receives a signed receipt, updates reputation, and leaves a reviewer-ready proof trail.**
+> **Arc Suite demonstrates one complete autonomous USDC operation path on [Arc](https://arc.io) and [Circle](https://circle.com): an AI agent requests a paid x402 API, receives a signed offer, passes policy and compliance checks, follows a settlement-ready Arc Testnet path, receives a signed receipt, updates reputation, and leaves a reviewer-ready proof trail.**
 
 The suite still contains multiple product surfaces, but the grant narrative is intentionally centered on a single proof-producing workflow rather than disconnected dashboards.
 
@@ -14,7 +14,7 @@ For a short hackathon submission view, see [`HACKATHON.md`](HACKATHON.md).
 
 **Track:** Agentic Economy
 
-**One-line pitch:** Arc Suite is an operating layer for AI agents that need to buy services with USDC safely: identity, x402 offer, policy checks, Arc settlement, signed receipt, reputation update and proof in one workflow.
+**One-line pitch:** Arc Suite is an operating layer for AI agents that need to buy services with USDC safely: identity, x402 offer, policy checks, Arc settlement readiness, signed receipt, reputation update and proof in one workflow.
 
 **Repository:** [github.com/maksutovdesign/arc-suite](https://github.com/maksutovdesign/arc-suite)
 
@@ -37,7 +37,7 @@ For a short hackathon submission view, see [`HACKATHON.md`](HACKATHON.md).
 1. Open [Judge Mode](https://arcsuite-app.vercel.app/judge).
 2. Click **Run agentic workflow**.
 3. Inspect the signed x402 offer, agent authorization and provider receipt.
-4. Click **Latest proof** or the generated proof link to verify the API-specific transaction hash, provider-signed receipt metadata, policy chain and validation artifacts for that run.
+4. Click **Latest proof** or the generated proof link to verify the API-specific settlement reference, provider-signed receipt metadata, policy chain and validation artifacts for that run.
 5. Open **Proof archive** to review recent workflow receipts and Marketplace purchase history.
 6. Open [Arc Provider](https://arcsuite-app.vercel.app/provider) and click **Create provider receipt** to generate a provider-side demo receipt and proof.
 7. Open [Arc Flow](https://arcsuite-app.vercel.app/flow) to see the operator console behind the same workflow model.
@@ -47,8 +47,8 @@ For a short hackathon submission view, see [`HACKATHON.md`](HACKATHON.md).
 - ERC-8004-compatible agent identity and reputation/validation registry surface.
 - ERC-8183-compatible job envelope with input, policy, output, receipt and validation hashes.
 - Policy-gated payment path: Treasury budget, Reputation access, Shield compliance screening.
-- Arc Testnet settlement proof with tx hash and explorer link.
-- Signed offer, payment authorization and provider receipt simulation.
+- Arc Testnet settlement proof when configured, with tx hash and explorer link.
+- Signed offer, payment authorization and simulated provider signature for demo review.
 - Provider API surface for receipts, signing keys, fulfillment policy and one-click provider receipt creation.
 - Post-payment reputation update that becomes a future access signal.
 - Operator-ready proof page for judges, auditors and providers.
@@ -66,9 +66,9 @@ For a short hackathon submission view, see [`HACKATHON.md`](HACKATHON.md).
 | **Arc Shield** | [arcsuite-app.vercel.app/shield](https://arcsuite-app.vercel.app/shield) | Circle-powered compliance screening and risk policy |
 | **Arc Flow** | [arcsuite-app.vercel.app/flow](https://arcsuite-app.vercel.app/flow) | Compliance-to-settlement payment orchestration |
 | **Judge Mode** | [arcsuite-app.vercel.app/judge](https://arcsuite-app.vercel.app/judge) | One-page reviewer path with pitch, click path and embedded workflow demo |
-| **Agentic Workflow Demo** | [arcsuite-app.vercel.app/agentic-workflow](https://arcsuite-app.vercel.app/agentic-workflow) | One-click AI agent purchase with policy, x402 receipt, Arc settlement and reputation update |
-| **Proof Page** | [arcsuite-app.vercel.app/proof](https://arcsuite-app.vercel.app/proof) | Reviewer-ready tx hash, x402 receipt, policy chain and validation evidence |
-| **Proof Archive** | [arcsuite-app.vercel.app/proofs](https://arcsuite-app.vercel.app/proofs) | Recent agentic workflow receipts, tx hashes and Marketplace proof history |
+| **Agentic Workflow Demo** | [arcsuite-app.vercel.app/agentic-workflow](https://arcsuite-app.vercel.app/agentic-workflow) | One-click AI agent purchase with policy, x402 receipt, Arc settlement path and reputation update |
+| **Proof Page** | [arcsuite-app.vercel.app/proof](https://arcsuite-app.vercel.app/proof) | Reviewer-ready settlement reference, x402 receipt, policy chain and validation evidence |
+| **Proof Archive** | [arcsuite-app.vercel.app/proofs](https://arcsuite-app.vercel.app/proofs) | Recent agentic workflow receipts, settlement references and Marketplace proof history |
 | **Arc Billing** | [arcsuite-app.vercel.app/billing](https://arcsuite-app.vercel.app/billing) | x402 usage metering, prepaid balances, invoices and settlement batches |
 | **Arc Escrow** | [arcsuite-app.vercel.app/escrow](https://arcsuite-app.vercel.app/escrow) | Programmable agent deals, milestones, disputes and contract events |
 | **Arc Gas** | [arcsuite-app.vercel.app/gas](https://arcsuite-app.vercel.app/gas) | Gas sponsorship policy, Paymaster/Gas Station limits and reporting |
@@ -92,19 +92,19 @@ Start here:
 
 The demonstrated operation is:
 
-`AI agent identity -> x402 signed offer -> Treasury budget check -> Shield screening -> Billing usage event -> Arc Testnet USDC settlement -> signed receipt -> Reputation update -> proof page`
+`AI agent identity -> x402 signed offer -> Treasury budget check -> Shield screening -> Billing usage event -> Arc Testnet settlement-ready path -> signed receipt -> Reputation update -> proof page`
 
-This gives Arc/Circle reviewers a concrete artifact to evaluate: one payment, one transaction hash, one policy chain, and one receipt bundle.
+This gives Arc/Circle reviewers a concrete artifact to evaluate: one payment path, one settlement reference when configured, one policy chain, and one receipt bundle.
 
-### Real settlement verification
+### Settlement verification
 
-The production smoke run on June 30, 2026 confirmed a real API-specific Arc Testnet USDC settlement through Circle Wallets:
+The production smoke flow is wired for API-specific Arc Testnet USDC settlement through Circle Wallets and records the following settlement evidence when the Circle/Arc path is configured:
 
 - **Amount:** `0.003 USDC`
 - **API:** `api_02` / `GPT-4o Proxy`
 - **Settlement ID:** `set_a70296d1-87f9-4753-8935-7e330a2fc3d2`
-- **Transaction hash:** [`0x41210539368a78f6bbc08b088a95430dc0f64e9379ad9226173fc3ce565d733b`](https://testnet.arcscan.app/tx/0x41210539368a78f6bbc08b088a95430dc0f64e9379ad9226173fc3ce565d733b)
-- **Path:** `policy check -> Circle Wallets tokenId lookup -> Arc Testnet USDC transfer -> Supabase audit -> proof link`
+- **Settlement reference:** [`0x41210539368a78f6bbc08b088a95430dc0f64e9379ad9226173fc3ce565d733b`](https://testnet.arcscan.app/tx/0x41210539368a78f6bbc08b088a95430dc0f64e9379ad9226173fc3ce565d733b)
+- **Path:** `policy check -> Circle Wallets tokenId lookup -> Arc Testnet USDC transfer when enabled -> Supabase audit -> proof link`
 
 ---
 
@@ -116,10 +116,10 @@ The production smoke run on June 30, 2026 confirmed a real API-specific Arc Test
 2. **Job:** the API request is wrapped as an ERC-8183-compatible job envelope with input, policy and receipt hashes.
 3. **Offer:** Marketplace produces a signed x402 offer with exact USDC pricing.
 4. **Policy:** Treasury, Reputation and Shield decide whether the payment may proceed.
-5. **Settlement:** Flow executes the Arc Testnet USDC transfer through the Circle wallet path.
-6. **Receipt:** the provider issues a signed x402 receipt with provider key id, signing algorithm, payload hash and transaction hash linked to the job.
+5. **Settlement:** Flow prepares the Arc Testnet transfer path through Circle Wallets and records transaction evidence when configured.
+6. **Receipt:** the provider issues a signed x402 receipt with provider key id, signing algorithm, payload hash and settlement reference linked to the job.
 7. **Reputation:** the successful payment becomes a score update and future access signal.
-8. **Proof:** the `/proof` page exposes the tx hash, receipt JSON, policy chain and validation artifacts.
+8. **Proof:** the `/proof` page exposes the settlement reference, receipt JSON, policy chain and validation artifacts.
 
 This is the core thesis: *agentic commerce needs more than a payment button; it needs identity, policy, settlement, receipt and reputation in one auditable loop.*
 
@@ -224,20 +224,20 @@ Circle currently does not list Arc Testnet in the standalone Address Screening c
 
 **`/landing/src/app/flow`** · [Live](https://arcsuite-app.vercel.app/flow)
 
-Arc Flow is the full intent-to-settlement workflow. It chains Shield screening, reputation policy, Marketplace access decisions, Circle wallet settlement and reputation updates into one auditable run.
+Arc Flow is the full intent-to-settlement workflow. It chains Shield screening, reputation policy, Marketplace access decisions, Circle wallet settlement readiness and reputation updates into one auditable run.
 
 **What the end-to-end workflow proves:**
 - AI agents can buy services with USDC while remaining bounded by operator policy.
 - x402 pricing can be represented as a signed offer and signed receipt rather than a loose UI claim.
-- Arc Testnet settlement can be connected to the same workflow id, agent job id and proof artifact.
+- Arc Testnet settlement can be connected to the same workflow id, agent job id and proof artifact when the settlement path is configured.
 - Circle-powered wallet, compliance and execution primitives can sit behind a product-grade operator surface.
 - Reputation is not a decorative score; it becomes a live access and post-settlement feedback signal.
 
 **Key features:**
-- End-to-end policy check → access check → Arc Testnet USDC settlement → reputation update
-- Grant-ready `/agentic-workflow` demo that packages the loop as a signed x402 offer, agent payment authorization, provider receipt, Arc transaction proof and trust-score delta
+- End-to-end policy check → access check → Arc Testnet settlement-ready path → reputation update
+- Grant-ready `/agentic-workflow` demo that packages the loop as a signed x402 offer, agent payment authorization, provider receipt, Arc settlement reference and trust-score delta
 - ERC-8004-compatible agent identity and ERC-8183-compatible job envelope model for registry, artifacts and validation evidence
-- `/proof` page that exposes the full transaction hash, x402 receipt JSON, policy chain and validation artifacts for external review
+- `/proof` page that exposes the settlement reference, x402 receipt JSON, policy chain and validation artifacts for external review
 - `/provider` trust center that lets API providers reconcile signed receipts, provider keys, paid jobs and proof URLs
 - Provider APIs: `GET /api/provider/receipts`, `GET /api/provider/keys`, `GET /api/provider/fulfillment-policy`, `POST /api/provider/demo-run`
 - Step-by-step execution timeline with allow, review, blocked and completed states
@@ -475,9 +475,9 @@ cd ../marketplace && vercel --prod
 
 ## Arc Testnet settlement
 
-The landing backend can execute one policy-gated USDC payment on Arc Testnet:
+The landing backend includes a policy-gated Arc Testnet USDC payment path that records proof when the Circle wallet environment is configured:
 
-`policy check → Circle Wallets send → Arcscan hash → Supabase transaction → Treasury budget → Reputation score`
+`policy check → Circle Wallets send when enabled → Arcscan hash when available → Supabase transaction → Treasury budget → Reputation score`
 
 Apply `landing/supabase/migrations/2026062101_arc_settlements.sql`, then add these variables to the landing Vercel project:
 
@@ -581,7 +581,7 @@ five minutes when the repository secret `ARC_CRON_SECRET` contains the same valu
 
 Arc Suite is designed for the **Arc community** and **Circle team** as a proof that agentic payments need a complete execution path:
 
-- **Arc Testnet settlement:** the workflow ends in a transaction hash and explorer link, not a simulated success toast.
+- **Arc Testnet settlement readiness:** the workflow records a transaction hash and explorer link when configured, otherwise it exposes the readiness/fallback state.
 - **Circle Wallets:** the product model assumes developer-controlled wallet execution and idempotent backend transfer policy.
 - **Circle Compliance Engine:** Shield records screening provider output and keeps Arc policy decisions separate and auditable.
 - **x402 / Gateway pattern:** Marketplace and Billing model signed offers, per-request metering, receipts and settlement batches.

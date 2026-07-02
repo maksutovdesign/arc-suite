@@ -34,7 +34,7 @@ type SettlementConfig = {
 }
 
 export function FlowDashboardClient() {
-  const [apiKey, setApiKey] = useState(readStoredApiKey)
+  const [apiKey, setApiKey] = useState("")
   const [payload, setPayload] = useState<FlowPayload | null>(demoFlowPayload)
   const [agents, setAgents] = useState<Agent[]>(demoAgents)
   const [apis, setApis] = useState<ApiPayload["apis"]>(demoApis)
@@ -93,10 +93,14 @@ export function FlowDashboardClient() {
   useEffect(() => {
     if (loadedStoredKey.current) return
     loadedStoredKey.current = true
-    if (!apiKey.trim()) return
-    const timer = window.setTimeout(() => void connect(apiKey), 0)
+    const stored = readStoredApiKey().trim()
+    if (!stored) return
+    const timer = window.setTimeout(() => {
+      setApiKey(stored)
+      void connect(stored)
+    }, 0)
     return () => window.clearTimeout(timer)
-  }, [apiKey, connect])
+  }, [connect])
 
   async function runFlow() {
     const key = apiKey.trim()
@@ -139,7 +143,7 @@ export function FlowDashboardClient() {
         <div>
           <p className="kicker">Autonomous payment orchestration</p>
           <h1>Arc Flow</h1>
-          <p>One auditable run from counterparty screening to Arc Testnet settlement and reputation update.</p>
+          <p>One auditable run from counterparty screening to a settlement-ready Arc path and reputation update.</p>
         </div>
         <div className="flow-health">
           <span><Database size={16} /> Audit trail <strong>{payload?.auditStorage ? "Supabase live" : "Migration required"}</strong></span>

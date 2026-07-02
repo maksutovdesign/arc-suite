@@ -32,7 +32,6 @@ type Builder = {
   stack: string[]
   traction: string
   signal: Signal
-  link: string
   amplifiedBy: string
   suiteFit: string[]
 }
@@ -58,7 +57,6 @@ const builders: Builder[] = [
     stack: ["TEE", "EIP-712 views", "Nanopay/Fastpay", "Arc primitives"],
     traction: "Low public engagement, high strategic relevance",
     signal: "medium",
-    link: "https://x.com/Torin_559/status/2068986635740676216",
     amplifiedBy: "Tagged Arc/Circle team for feedback",
     suiteFit: ["Arc Private", "Arc Flow", "Arc Shield"],
   },
@@ -70,7 +68,6 @@ const builders: Builder[] = [
     stack: ["Arc App Kit", "USDC bridge", "CCTP"],
     traction: "Community video demo",
     signal: "medium",
-    link: "https://x.com/eeeman33/status/2069306429769404499",
     amplifiedBy: "Community",
     suiteFit: ["Arc Billing", "Arc Flow", "Arc Private"],
   },
@@ -82,19 +79,17 @@ const builders: Builder[] = [
     stack: ["Circle Wallets", "CCTP"],
     traction: "Live demo, low public engagement",
     signal: "medium",
-    link: "https://x.com/Audu70/status/2068993695265804439",
     amplifiedBy: "Self/community",
     suiteFit: ["Arc Flow", "Wallet OS", "Arc Shield"],
   },
   {
     handle: "@Xylonet_",
     project: "XyloNet / PayX",
-    description: "Stablecoin DeFi and social tipping/escrow payments to X handles.",
+    description: "Stablecoin DeFi and social tipping/escrow payments to public creator handles.",
     category: "payments",
     stack: ["CCTP V2", "ERC-4626", "Liquidity pools"],
     traction: "Arc feature, 500+ likes",
     signal: "high",
-    link: "https://x.com/arc/status/2065464145391005865",
     amplifiedBy: "@arc",
     suiteFit: ["Arc Escrow", "Arc Billing", "Arc Shield"],
   },
@@ -106,7 +101,6 @@ const builders: Builder[] = [
     stack: ["Circle Nanopayments", "Gateway", "Arc Testnet"],
     traction: "Builder Spotlight, 400+ likes",
     signal: "high",
-    link: "https://x.com/arc/status/2059637090023829974",
     amplifiedBy: "@arc, @samconnerone",
     suiteFit: ["Arc Billing", "Wallet OS", "Arc Gas"],
   },
@@ -118,7 +112,6 @@ const builders: Builder[] = [
     stack: ["x402", "USDC receipts", "Arc"],
     traction: "30+ services, 500+ paid testnet calls",
     signal: "high",
-    link: "https://x.com/mrcoc0x/status/2069244822171603433",
     amplifiedBy: "Hackathon/community context",
     suiteFit: ["Marketplace", "Arc Billing", "Arc Reputation"],
   },
@@ -130,7 +123,6 @@ const builders: Builder[] = [
     stack: ["Arc", "Proof receipts", "Conditional settlement"],
     traction: "Hackathon thread",
     signal: "medium",
-    link: "https://x.com/Armanibanks100",
     amplifiedBy: "Hackathon/community",
     suiteFit: ["Arc Escrow", "Arc Flow", "Arc Reputation"],
   },
@@ -140,9 +132,8 @@ const builders: Builder[] = [
     description: "Stablecoin FX DEX for USDC/EURC swaps and liquidity pools.",
     category: "fx",
     stack: ["Arc stablecoin primitives", "Solidity"],
-    traction: "Launch post and GitHub",
+    traction: "Launch post and public source reference",
     signal: "medium",
-    link: "https://x.com/0xMASTER82/status/2069022352873009269",
     amplifiedBy: "Community",
     suiteFit: ["Arc Shield", "Arc Flow", "Treasury"],
   },
@@ -154,7 +145,6 @@ const builders: Builder[] = [
     stack: ["StableFX", "Arc primitives"],
     traction: "Arc spotlight, 900+ likes",
     signal: "high",
-    link: "https://x.com/arc/status/2057446320164454420",
     amplifiedBy: "@arc",
     suiteFit: ["Treasury", "Arc Flow", "Arc Shield"],
   },
@@ -166,7 +156,6 @@ const builders: Builder[] = [
     stack: ["Arc primitives", "Bridge"],
     traction: "Testnet prototype",
     signal: "low",
-    link: "https://x.com/Hydra12351/status/2069169521613734100",
     amplifiedBy: "Self/community",
     suiteFit: ["Treasury", "Arc Shield", "Wallet OS"],
   },
@@ -178,7 +167,6 @@ const builders: Builder[] = [
     stack: ["Arc", "CL", "Perps"],
     traction: "Builder Spotlight",
     signal: "high",
-    link: "https://x.com/arc",
     amplifiedBy: "@arc",
     suiteFit: ["Arc Shield", "Arc Gas", "Execution Control"],
   },
@@ -190,7 +178,6 @@ const builders: Builder[] = [
     stack: ["Arc", "Aggregator routing", "Synthra integration"],
     traction: "Arc spotlight",
     signal: "high",
-    link: "https://x.com/TowerExchange",
     amplifiedBy: "@arc",
     suiteFit: ["Arc Flow", "Arc Shield", "Execution Control"],
   },
@@ -202,7 +189,6 @@ const builders: Builder[] = [
     stack: ["Arc indexing", "Data streaming"],
     traction: "Builders Fund spotlight, 900+ likes",
     signal: "high",
-    link: "https://x.com/arc/status/2059348849995722969",
     amplifiedBy: "@arc",
     suiteFit: ["Execution Control", "Ops Health", "Arc Radar"],
   },
@@ -214,7 +200,6 @@ const builders: Builder[] = [
     stack: ["CCTP V2", "Recovery engine", "9 chains"],
     traction: "Thread/video, 100+ likes on stronger posts",
     signal: "high",
-    link: "https://x.com/0x_zax/status/2068920578954629153",
     amplifiedBy: "Tagged Arc/Circle team",
     suiteFit: ["Execution Control", "Arc Flow", "Wallet OS"],
   },
@@ -226,7 +211,6 @@ const builders: Builder[] = [
     stack: ["Arc primitives", "USDC bets"],
     traction: "Low-signal beta screenshots",
     signal: "low",
-    link: "https://x.com/Iblamehsan/status/2069422877514850605",
     amplifiedBy: "Self/community",
     suiteFit: ["Arc Escrow", "Arc Shield", "Arc Private"],
   },
@@ -238,7 +222,6 @@ const builders: Builder[] = [
     stack: ["Arc Architects", "Community enablement"],
     traction: "Repeated Bobbilee amplification",
     signal: "high",
-    link: "https://x.com/bobbilee",
     amplifiedBy: "@bobbilee",
     suiteFit: ["Arc Radar", "Builder CRM", "Pilot pipeline"],
   },
@@ -250,7 +233,6 @@ const builders: Builder[] = [
     stack: ["Arc Architects", "Regional chapter"],
     traction: "Meetup/chapter visibility",
     signal: "medium",
-    link: "https://x.com/bobbilee",
     amplifiedBy: "@bobbilee",
     suiteFit: ["Arc Radar", "Builder CRM", "Pilot pipeline"],
   },
@@ -331,7 +313,7 @@ export function RadarClient() {
       </div>
 
       <div className="radar-method">
-        <div><Search size={18} /><span>Source scope</span><strong>X, Arc spotlights, Builder Fund, Office Hours, regional chapters</strong></div>
+        <div><Search size={18} /><span>Source scope</span><strong>Public Arc spotlights, Builder Fund, Office Hours, regional chapters</strong></div>
         <div><BadgeCheck size={18} /><span>Signal model</span><strong>Visibility, amplification, primitives, demo quality, strategic fit</strong></div>
         <div><Eye size={18} /><span>Research stance</span><strong>Public visibility only; low-signal builders are marked, not hidden</strong></div>
       </div>
@@ -379,7 +361,7 @@ export function RadarClient() {
             return (
               <article className="radar-builder-row" key={`${builder.handle}-${builder.project}`}>
                 <div>
-                  <a href={builder.link} target="_blank" rel="noreferrer">{builder.handle}</a>
+                  <span>{builder.handle}</span>
                   <small>{meta.label} · {builder.amplifiedBy}</small>
                 </div>
                 <div>

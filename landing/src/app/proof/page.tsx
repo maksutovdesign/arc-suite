@@ -16,7 +16,7 @@ import { SiteHeader } from "../SiteHeader"
 
 export const metadata = {
   title: "Proof - Arc Suite",
-  description: "Arc Suite proof page with transaction hash, x402 receipt and policy chain.",
+  description: "Arc Suite proof page with settlement reference, x402 receipt and policy chain.",
 }
 
 export const dynamic = "force-dynamic"
@@ -40,6 +40,7 @@ export default async function ProofPage({ searchParams }: ProofPageProps) {
   const usage = proof.usage
   const validation = proof.agentValidation
   const artifacts = proof.artifacts
+  const hasLiveSettlementEvidence = proof.proofSource === "supabase" && Boolean(flowRun.txHash)
   const receipt = {
     agentIdentity: proof.agentIdentity.id,
     agentJobId: proof.agentJob.id,
@@ -72,7 +73,7 @@ export default async function ProofPage({ searchParams }: ProofPageProps) {
     },
     {
       label: "Shield screening",
-      detail: `${screening.providerResult ?? "APPROVED"} by Circle Compliance Engine simulation`,
+      detail: `${screening.providerResult ?? "APPROVED"} by Circle Compliance Engine demo signal`,
       result: screening.decision,
       icon: ShieldCheck,
     },
@@ -90,8 +91,10 @@ export default async function ProofPage({ searchParams }: ProofPageProps) {
     },
     {
       label: "Arc settlement",
-      detail: `${flowRun.amountUsdc.toFixed(3)} USDC confirmed on Arc Testnet`,
-      result: "confirmed",
+      detail: hasLiveSettlementEvidence
+        ? `${flowRun.amountUsdc.toFixed(3)} USDC settlement reference recorded`
+        : `${flowRun.amountUsdc.toFixed(3)} USDC settlement-ready proof trail`,
+      result: hasLiveSettlementEvidence ? "confirmed" : "ready",
       icon: CircleDollarSign,
     },
     {
@@ -108,11 +111,11 @@ export default async function ProofPage({ searchParams }: ProofPageProps) {
       <section className="proof-shell">
         <div className="proof-hero">
           <div>
-            <p className="kicker">Transaction proof</p>
-            <h1>Tx hash, receipt and policy chain in one audit view.</h1>
+            <p className="kicker">Settlement proof</p>
+            <h1>Settlement reference, receipt and policy chain in one audit view.</h1>
             <p>
               This page turns the Agentic Workflow Demo into a reviewer-ready proof artifact:
-              the x402 receipt, policy decisions, Arc Testnet transaction hash and validation evidence
+              the x402 receipt, policy decisions, Arc settlement reference and validation evidence
               are tied to the same workflow and agent job IDs.
             </p>
           </div>
@@ -128,7 +131,7 @@ export default async function ProofPage({ searchParams }: ProofPageProps) {
             <div className="flow-panel-title">
               <div>
                 <span>Arc Testnet</span>
-                <h2>Transaction hash</h2>
+                <h2>Settlement reference</h2>
               </div>
               <CircleDollarSign size={21} />
             </div>
@@ -220,14 +223,14 @@ export default async function ProofPage({ searchParams }: ProofPageProps) {
         <section className="proof-panel proof-settlements">
           <div className="flow-panel-title">
             <div>
-              <span>Recent live settlements</span>
-              <h2>Arc Testnet operations recorded in Supabase</h2>
+              <span>Recent settlement evidence</span>
+              <h2>Arc settlement records stored in Supabase</h2>
             </div>
             <CircleDollarSign size={21} />
           </div>
           <div className="proof-settlement-list">
             {recentSettlements.length === 0 ? (
-              <p>No live Arc settlement records found yet.</p>
+              <p>No Arc settlement records found yet.</p>
             ) : recentSettlements.map((settlement) => (
               <div className="proof-settlement-row" key={settlement.id}>
                 <div>

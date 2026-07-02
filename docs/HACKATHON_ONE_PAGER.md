@@ -2,7 +2,7 @@
 
 ## What It Is
 
-Arc Suite is an operating layer for AI agents transacting on Arc. It connects policy checks, paid API access, x402-style receipts, USDC settlement proofs, reputation updates and operator monitoring into one auditable workflow.
+Arc Suite is an operating layer for AI agents transacting on Arc. It connects policy checks, paid API access, x402-style receipts, settlement-ready USDC proof paths, reputation updates and operator monitoring into one auditable workflow.
 
 ## Primary Demo
 
@@ -14,7 +14,7 @@ Reviewer flow:
 2. Run the Agentic Workflow Demo.
 3. Confirm the agent request passes policy, budget and reputation checks.
 4. Open the generated Proof page.
-5. Review the transaction hash, receipt, policy chain and validation artifacts.
+5. Review the settlement reference, receipt, policy chain and validation artifacts.
 
 Direct pages:
 
@@ -32,7 +32,7 @@ Agentic payments need more than a checkout button. Builders need a way to prove 
 - An agent can initiate a paid API request.
 - The request can be checked against policy, treasury budget, reputation and compliance context.
 - The provider can issue a signed x402-style offer and receipt.
-- The settlement can be linked to an Arc Testnet transaction hash.
+- The settlement can be linked to an Arc Testnet transaction hash when the Circle/Arc path is configured.
 - The resulting workflow can be stored, shared and audited through a Proof page.
 - The same event can become a reputation signal and operator-visible flow record.
 
@@ -53,8 +53,8 @@ Agentic payments need more than a checkout button. Builders need a way to prove 
 
 ## Fit For Circle / Arc
 
-Arc Suite is aligned with the Arc builder map: agentic payments, stablecoin workflows, x402 receipts, policy-safe API access, USDC settlement and proof-oriented operator UX. The project is not just a landing page; it now includes a production demo path, Supabase-backed workflow storage, Proof pages and monitoring.
+Arc Suite is aligned with the Arc builder map: agentic payments, stablecoin workflows, x402 receipts, policy-safe API access, USDC settlement readiness and proof-oriented operator UX. The project is not just a landing page; it now includes a production demo path, Supabase-backed workflow storage, Proof pages and monitoring.
 
 ## Next Product Step
 
-Turn the simulated x402 receipt into a real signed protocol object and connect the settlement step to a live Arc Testnet transfer when the production wallet/faucet path is stable.
+Turn the demo provider signature into a production signed protocol object and connect the settlement step to a live Arc Testnet transfer when the production wallet/faucet path is stable.

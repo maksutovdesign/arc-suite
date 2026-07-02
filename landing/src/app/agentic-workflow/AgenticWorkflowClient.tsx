@@ -32,7 +32,7 @@ const workflowStages = [
   { key: "budget", label: "Treasury budget", detail: "Prepaid balance and daily spend policy are checked.", icon: WalletCards },
   { key: "shield", label: "Shield screening", detail: "Circle compliance signal clears the recipient wallet.", icon: ShieldCheck },
   { key: "meter", label: "Usage metering", detail: "Billing writes the request as a metered usage event.", icon: ReceiptText },
-  { key: "settlement", label: "Arc settlement", detail: "USDC transfer is confirmed on Arc Testnet.", icon: CircleDollarSign },
+  { key: "settlement", label: "Arc settlement", detail: "Settlement evidence is attached to the proof trail.", icon: CircleDollarSign },
   { key: "reputation", label: "Reputation update", detail: "Successful payment raises the agent trust score.", icon: BadgeCheck },
 ] as const
 
@@ -110,8 +110,8 @@ export function AgenticWorkflowClient() {
           <h1>One autonomous API purchase, from policy to settlement proof.</h1>
           <p>
             This demo connects the suite into a single operator story: an AI agent requests a paid API,
-            receives an x402 offer, passes Treasury and Shield policy, settles USDC on Arc Testnet and
-            writes a reputation event back into the workspace.
+            receives an x402 offer, passes Treasury and Shield policy, creates a settlement-ready Arc
+            proof trail and writes a reputation event back into the workspace.
           </p>
           <div className="agentic-actions">
             <button className="button primary" disabled={isRunning || isPersisting} onClick={runWorkflow} type="button">
@@ -174,7 +174,7 @@ export function AgenticWorkflowClient() {
             <ProofItem label="Amount settled" value={proof.amount} tone="success" />
             <ProofItem label="Reputation" value={proof.reputation} tone="success" />
           </div>
-          <div className="agentic-x402-chain" aria-label="x402 signed offer and receipt simulation">
+          <div className="agentic-x402-chain" aria-label="x402 signed offer and demo provider receipt">
             <ProtocolCard
               eyebrow="01 / Marketplace"
               title="Signed offer"
@@ -313,10 +313,10 @@ export function AgenticWorkflowClient() {
 }
 
 function liveSettlementLabel(status: LiveSettlementStatus) {
-  if (!status.enabled) return "Live settlement: disabled by env"
-  if (status.status === "confirmed") return `Live settlement: confirmed ${shortHash(status.txHash)}`
-  if (status.status === "policy_denied") return `Live settlement: policy denied ${status.settlementId}`
-  return `Live settlement: fallback (${status.code})`
+  if (!status.enabled) return "Arc settlement path: disabled by env"
+  if (status.status === "confirmed") return `Arc settlement proof: ${shortHash(status.txHash)}`
+  if (status.status === "policy_denied") return `Arc settlement path: policy denied ${status.settlementId}`
+  return `Arc settlement path: fallback (${status.code})`
 }
 
 function getSessionId() {

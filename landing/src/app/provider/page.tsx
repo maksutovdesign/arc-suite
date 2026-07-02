@@ -34,7 +34,7 @@ const integrations = [
   },
   {
     icon: FileCheck2,
-    text: "External reviewers can verify the receipt, policy chain and transaction hash from one URL.",
+    text: "External reviewers can verify the receipt, policy chain and settlement reference from one URL.",
     title: "Proof",
   },
 ]
@@ -54,7 +54,7 @@ export default async function ProviderPage() {
             <p>
               Arc Provider closes the loop between Marketplace and Proof: API providers get
               a live receipt registry, signing-key surface, fulfillment evidence and direct
-              links to every policy chain and Arc Testnet settlement.
+              links to every policy chain and Arc settlement reference.
             </p>
             <div className="radar-actions">
               <ProviderDemoRunButton />
@@ -77,7 +77,7 @@ export default async function ProviderPage() {
               <div><span>Provider key</span><strong>{latest.providerKeyId}</strong></div>
               <div><span>Algorithm</span><strong>{latest.signatureAlgorithm}</strong></div>
               <div><span>Receipt</span><strong>{latest.shortReceiptDigest}</strong></div>
-              <div><span>Tx hash</span><strong>{latest.shortTxHash}</strong></div>
+              <div><span>Settlement ref</span><strong>{latest.shortTxHash}</strong></div>
             </div>
             <Link href={latest.proofUrl}>
               Open latest proof <ArrowUpRight size={15} />
@@ -97,9 +97,9 @@ export default async function ProviderPage() {
             <small>x402-style provider receipts</small>
           </article>
           <article>
-            <span>Live settlements</span>
+            <span>Settlement proofs</span>
             <strong>{overview.metrics.verifiedSettlements}</strong>
-            <small>With Arc Testnet tx hash</small>
+            <small>With Arcscan tx when configured</small>
           </article>
           <article>
             <span>Recorded value</span>

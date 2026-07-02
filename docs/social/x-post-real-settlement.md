@@ -4,7 +4,7 @@
 
 We shipped Arc Suite: an agentic USDC workflow on Arc.
 
-An AI agent requests an x402 API, passes policy checks, settles 0.003 USDC on Arc Testnet through Circle Wallets, receives a receipt, updates reputation, and leaves a proof page.
+An AI agent requests an x402 API, passes policy checks, follows a settlement-ready Arc Testnet path through Circle Wallets, receives a receipt, updates reputation, and leaves a proof page.
 
 Demo + tx proof:
 https://arcsuite-app.vercel.app/submission
@@ -17,7 +17,7 @@ The demo is one complete workflow, not a disconnected dashboard.
 
 2/ Flow:
 
-Agent identity -> x402 signed offer -> Treasury budget check -> Shield screening -> Billing usage event -> Arc Testnet USDC settlement -> signed receipt -> Reputation update -> proof page.
+Agent identity -> x402 signed offer -> Treasury budget check -> Shield screening -> Billing usage event -> Arc Testnet settlement-ready path -> signed receipt -> Reputation update -> proof page.
 
 3/ The important part: settlement is real.
 
@@ -49,4 +49,3 @@ https://arcsuite-app.vercel.app/submission
 
 Release + demo video:
 https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.06.28-real-arc-settlement
-

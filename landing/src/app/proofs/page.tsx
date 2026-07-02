@@ -6,7 +6,7 @@ import { SiteHeader } from "../SiteHeader"
 
 export const metadata = {
   title: "Proof Archive - Arc Suite",
-  description: "Recent Arc Suite agentic workflow proofs with transaction hashes and x402 receipts.",
+  description: "Recent Arc Suite agentic workflow proofs with settlement references and x402 receipts.",
 }
 
 export const dynamic = "force-dynamic"
@@ -70,7 +70,7 @@ export default async function ProofArchivePage() {
                       <strong>{shortHash(proof.agentJob.receiptHash ?? proof.receipt.digest)}</strong>
                     </div>
                     <div>
-                      <span>Tx</span>
+                      <span>Settlement</span>
                       <strong>{shortHash(proof.txHash)}</strong>
                     </div>
                   </div>
