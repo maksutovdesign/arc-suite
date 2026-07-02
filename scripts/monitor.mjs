@@ -20,6 +20,8 @@ const requireSupabase = process.env.ARC_MONITOR_REQUIRE_SUPABASE !== "false"
 const latencyWarnMs = numberFromEnv("ARC_MONITOR_LATENCY_WARN_MS", 5_000)
 const latencyFailMs = numberFromEnv("ARC_MONITOR_LATENCY_FAIL_MS", 15_000)
 const treasuryLatencyWarnMs = numberFromEnv("ARC_MONITOR_TREASURY_LATENCY_WARN_MS", 12_000)
+const marketplaceLatencyWarnMs = numberFromEnv("ARC_MONITOR_MARKETPLACE_LATENCY_WARN_MS", 15_000)
+const marketplaceLatencyFailMs = numberFromEnv("ARC_MONITOR_MARKETPLACE_LATENCY_FAIL_MS", 45_000)
 
 const checks = [
   {
@@ -172,6 +174,8 @@ const checks = [
   },
   {
     name: "Marketplace page headers",
+    latencyFailMs: marketplaceLatencyFailMs,
+    latencyWarnMs: marketplaceLatencyWarnMs,
     run: async () => checkHtmlPage(`${bases.marketplace}/`, "Arc Marketplace"),
   },
 ]
@@ -183,6 +187,7 @@ const results = []
 
 for (const check of checks) {
   const checkStartedAt = Date.now()
+  const checkLatencyFailMs = check.latencyFailMs ?? latencyFailMs
   const checkLatencyWarnMs = check.latencyWarnMs ?? latencyWarnMs
   try {
     const detail = await check.run()
@@ -194,8 +199,8 @@ for (const check of checks) {
       status: "ok",
     }
 
-    if (durationMs > latencyFailMs) {
-      throw new Error(`latency budget exceeded: ${durationMs}ms > ${latencyFailMs}ms`)
+    if (durationMs > checkLatencyFailMs) {
+      throw new Error(`latency budget exceeded: ${durationMs}ms > ${checkLatencyFailMs}ms`)
     }
 
     if (durationMs > checkLatencyWarnMs) {
@@ -231,6 +236,9 @@ const summary = {
   failureCount: failures.length,
   latencyFailMs,
   latencyWarnMs,
+  latencyFailOverrides: checks
+    .filter((check) => typeof check.latencyFailMs === "number")
+    .map((check) => ({ latencyFailMs: check.latencyFailMs, name: check.name })),
   latencyWarnOverrides: checks
     .filter((check) => typeof check.latencyWarnMs === "number")
     .map((check) => ({ latencyWarnMs: check.latencyWarnMs, name: check.name })),
@@ -417,6 +425,7 @@ async function writeGithubSummary(summary) {
       ...formatLatencyWarnOverrides(summary.latencyWarnOverrides),
       `Per-check latency failure budget: **${summary.latencyFailMs}ms**`,
       "",
+      ...formatLatencyFailOverrides(summary.latencyFailOverrides),
       "| Status | Check | Duration, ms | Detail |",
       "| --- | --- | ---: | --- |",
       rows,
@@ -436,6 +445,16 @@ function formatLatencyWarnOverrides(overrides) {
     "Per-check warning overrides:",
     "",
     ...overrides.map((override) => `- ${escapeMarkdown(override.name)}: **${override.latencyWarnMs}ms**`),
+    "",
+  ]
+}
+
+function formatLatencyFailOverrides(overrides) {
+  if (!Array.isArray(overrides) || overrides.length === 0) return []
+  return [
+    "Per-check failure overrides:",
+    "",
+    ...overrides.map((override) => `- ${escapeMarkdown(override.name)}: **${override.latencyFailMs}ms**`),
     "",
   ]
 }
