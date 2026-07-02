@@ -6,6 +6,7 @@ import {
   CheckCircle2,
   CircleOff,
   Database,
+  FileCheck2,
   RadioTower,
   RefreshCw,
   Search,
@@ -14,7 +15,7 @@ import {
 } from "lucide-react"
 import { type ReactNode, useCallback, useEffect, useRef, useState } from "react"
 
-import type { ShieldScreening, ShieldSummary } from "@/lib/backend/schema"
+import type { OracleRiskSignal, OracleRiskSignalSummary, OracleRiskSignalType, ShieldScreening, ShieldSummary } from "@/lib/backend/schema"
 import { demoShieldPayload } from "../demoWorkspace"
 
 const API_KEY_STORAGE = "arc_shield_key"
@@ -31,16 +32,39 @@ type ShieldPayload = {
   summary: ShieldSummary
 }
 
+type OraclePayload = {
+  auditStorage: boolean
+  signals: OracleRiskSignal[]
+  sourceStatus: "supabase" | "demo"
+  summary: OracleRiskSignalSummary
+}
+
 export function ShieldDashboardClient() {
   const [apiKey, setApiKey] = useState("")
   const [address, setAddress] = useState(DEFAULT_TEST_ADDRESS)
   const [chain, setChain] = useState("ETH-SEPOLIA")
   const [payload, setPayload] = useState<ShieldPayload | null>(demoShieldPayload)
   const [latest, setLatest] = useState<ShieldScreening | null>(demoShieldPayload.screenings[0] ?? null)
+  const [oraclePayload, setOraclePayload] = useState<OraclePayload | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [isRecordingOracle, setIsRecordingOracle] = useState(false)
   const [isScreening, setIsScreening] = useState(false)
   const hasLoadedStoredKey = useRef(false)
+
+  const loadOracleSignals = useCallback(async (nextKey = apiKey) => {
+    const key = nextKey.trim()
+    if (!key) return
+
+    const response = await fetch("/api/oracle/signals?limit=20", {
+      cache: "no-store",
+      headers: { "x-arc-api-key": key },
+    })
+    if (response.status === 401) throw new Error("Invalid API key or missing read scope.")
+    if (!response.ok) throw new Error("Chainlink risk signal data is unavailable.")
+
+    setOraclePayload(await response.json() as OraclePayload)
+  }, [apiKey])
 
   const loadScreenings = useCallback(async (nextKey = apiKey) => {
     const key = nextKey.trim()
@@ -62,13 +86,14 @@ export function ShieldDashboardClient() {
       const nextPayload = await response.json() as ShieldPayload
       setPayload(nextPayload)
       setLatest(nextPayload.screenings[0] ?? null)
+      await loadOracleSignals(key)
       window.sessionStorage.setItem(API_KEY_STORAGE, key)
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : "Could not load Arc Shield.")
     } finally {
       setIsLoading(false)
     }
-  }, [apiKey])
+  }, [apiKey, loadOracleSignals])
 
   useEffect(() => {
     if (hasLoadedStoredKey.current) return
@@ -117,16 +142,52 @@ export function ShieldDashboardClient() {
     }
   }
 
+  async function recordOracleSignal(signalType: OracleRiskSignalType) {
+    const key = apiKey.trim()
+    if (!key) {
+      setError("Enter an Arc API key with write scope before recording Chainlink evidence.")
+      return
+    }
+
+    setIsRecordingOracle(true)
+    setError(null)
+    try {
+      const response = await fetch("/api/oracle/signals", {
+        body: JSON.stringify({ signalType }),
+        headers: {
+          "Content-Type": "application/json",
+          "x-arc-api-key": key,
+        },
+        method: "POST",
+      })
+      const result = await response.json() as {
+        message?: string
+        signal?: OracleRiskSignal
+      }
+      if (!response.ok || !result.signal) {
+        throw new Error(result.message ?? "Chainlink evidence recording failed.")
+      }
+      await loadOracleSignals(key)
+    } catch (signalError) {
+      setError(signalError instanceof Error ? signalError.message : "Chainlink evidence recording failed.")
+    } finally {
+      setIsRecordingOracle(false)
+    }
+  }
+
   function clearSession() {
     window.sessionStorage.removeItem(API_KEY_STORAGE)
     setApiKey("")
     setPayload(null)
     setLatest(null)
+    setOraclePayload(null)
     setError(null)
   }
 
   const summary = payload?.summary ?? emptySummary
   const screenings = payload?.screenings ?? []
+  const oracleSignals = oraclePayload?.signals ?? []
+  const latestOracleSignal = oracleSignals[0] ?? null
 
   return (
     <section className="analytics-shell shield-shell">
@@ -155,7 +216,7 @@ export function ShieldDashboardClient() {
           <StatusLine
             icon={<RadioTower size={16} />}
             label="Chainlink on Arc"
-            value="CCIP route evidence ready"
+            value={oraclePayload?.auditStorage ? "Evidence stored" : "Evidence-ready"}
             tone="allow"
           />
         </div>
@@ -266,12 +327,41 @@ export function ShieldDashboardClient() {
             </div>
             <RadioTower size={20} />
           </div>
+          <div className="shield-oracle-actions">
+            <button className="button secondary" disabled={!apiKey.trim() || isRecordingOracle} onClick={() => void recordOracleSignal("ccip_route")} type="button">
+              <FileCheck2 size={16} />
+              {isRecordingOracle ? "Recording" : "Record CCIP signal"}
+            </button>
+            <button className="button ghost" disabled={!apiKey.trim() || isRecordingOracle} onClick={() => void recordOracleSignal("market_data")} type="button">
+              Market feed
+            </button>
+            <button className="button ghost" disabled={!apiKey.trim() || isRecordingOracle} onClick={() => void recordOracleSignal("proof_of_reserve")} type="button">
+              PoR
+            </button>
+          </div>
           <dl className="shield-detail-list">
             <div><dt>Data layer</dt><dd>Data Feeds / Data Streams</dd></div>
             <div><dt>Interoperability</dt><dd>CCIP Router 0xdE4E...eab8</dd></div>
             <div><dt>Arc selector</dt><dd>3034092155422581607</dd></div>
-            <div><dt>Policy use</dt><dd>market, reserve and route freshness</dd></div>
+            <div><dt>Audit storage</dt><dd>{oraclePayload?.auditStorage ? "Supabase live" : "Demo fallback until migration"}</dd></div>
           </dl>
+          {latestOracleSignal && (
+            <div className="shield-oracle-latest">
+              <span>Latest signal</span>
+              <strong>{signalLabel(latestOracleSignal.signalType)} · {latestOracleSignal.result}</strong>
+              <p>{latestOracleSignal.subject}</p>
+              <code>{latestOracleSignal.digest.slice(0, 22)}...{latestOracleSignal.digest.slice(-8)}</code>
+            </div>
+          )}
+          <div className="shield-oracle-list">
+            {oracleSignals.slice(0, 3).map((signal) => (
+              <div key={signal.id}>
+                <span>{signalLabel(signal.signalType)}</span>
+                <strong>{signal.value}</strong>
+                <small>{formatDate(signal.observedAt)}</small>
+              </div>
+            ))}
+          </div>
           <p className="shield-footnote">
             Arc Shield can attach Chainlink market data, proof-of-reserve or CCIP route evidence
             to the same audit trail as Circle screening before an agent request is fulfilled.
@@ -362,6 +452,12 @@ function readStoredApiKey() {
 
 function shortAddress(address: string) {
   return `${address.slice(0, 8)}...${address.slice(-6)}`
+}
+
+function signalLabel(type: OracleRiskSignalType) {
+  if (type === "market_data") return "Data Feed"
+  if (type === "proof_of_reserve") return "Proof of Reserve"
+  return "CCIP route"
 }
 
 function formatDate(value: string) {

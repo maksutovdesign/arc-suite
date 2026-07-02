@@ -4446,6 +4446,78 @@ h3 {
   grid-column: 1 / -1;
 }
 
+.shield-oracle-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.shield-oracle-latest {
+  margin: 12px 0;
+  padding: 14px;
+  border: 1px solid rgba(95, 191, 255, 0.18);
+  border-radius: 8px;
+  background: rgba(95, 191, 255, 0.06);
+}
+
+.shield-oracle-latest span,
+.shield-oracle-list span {
+  display: block;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.shield-oracle-latest strong {
+  display: block;
+  margin-top: 6px;
+  color: var(--text);
+}
+
+.shield-oracle-latest p {
+  margin: 6px 0 10px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.shield-oracle-latest code {
+  color: var(--cyan);
+  font-family: "Space Mono", "SFMono-Regular", monospace;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.shield-oracle-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.shield-oracle-list div {
+  min-height: 118px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 8px;
+  background: rgba(4, 10, 16, 0.42);
+}
+
+.shield-oracle-list strong {
+  display: block;
+  margin: 9px 0;
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.shield-oracle-list small {
+  color: var(--muted);
+  font-size: 11px;
+}
+
 .shield-panel {
   padding: 18px;
 }
@@ -8761,6 +8833,7 @@ a.ops-history-run:hover {
 
   .shield-authbar,
   .shield-kpi-grid,
+  .shield-oracle-list,
   .shield-form-grid,
   .flow-metrics,
   .flow-form,

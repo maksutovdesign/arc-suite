@@ -41,6 +41,7 @@ import type {
   OpsHealthCheckResult,
   OpsHealthCheckSource,
   OpsHealthWarning,
+  OracleRiskSignal,
   ReputationProfile,
   ShieldScreening,
   Transaction,
@@ -310,6 +311,27 @@ type ShieldScreeningRow = {
   alert_id: string | null
   raw_response: Record<string, unknown> | null
   request_id: string | null
+  created_at: string
+}
+
+type OracleRiskSignalRow = {
+  id: string
+  workspace_id: string
+  idempotency_key: string
+  signal_type: OracleRiskSignal["signalType"]
+  subject: string
+  source: OracleRiskSignal["source"]
+  source_status: OracleRiskSignal["sourceStatus"]
+  result: OracleRiskSignal["result"]
+  value: string
+  threshold: string
+  data_source: string
+  ccip_router: string
+  chain_selector: string
+  digest: string
+  evidence: Record<string, unknown> | null
+  request_id: string | null
+  observed_at: string
   created_at: string
 }
 
@@ -972,6 +994,80 @@ export async function checkSupabaseShieldReadiness() {
   if (!isSupabaseConfigured()) return false
   try {
     await getRows<Pick<ShieldScreeningRow, "id">>("compliance_screenings", "select=id&limit=1")
+    return true
+  } catch {
+    return false
+  }
+}
+
+export async function insertSupabaseOracleRiskSignal(
+  signal: Omit<OracleRiskSignal, "workspaceId" | "createdAt">,
+): Promise<OracleRiskSignal | null> {
+  if (!isSupabaseConfigured()) return null
+
+  try {
+    const rows = await postRows<OracleRiskSignalRow>("oracle_risk_signals", [
+      {
+        id: signal.id,
+        workspace_id: WORKSPACE_ID,
+        idempotency_key: signal.idempotencyKey,
+        signal_type: signal.signalType,
+        subject: signal.subject,
+        source: signal.source,
+        source_status: signal.sourceStatus,
+        result: signal.result,
+        value: signal.value,
+        threshold: signal.threshold,
+        data_source: signal.dataSource,
+        ccip_router: signal.ccipRouter,
+        chain_selector: signal.chainSelector,
+        digest: signal.digest,
+        evidence: signal.evidence,
+        request_id: signal.requestId,
+        observed_at: signal.observedAt,
+      },
+    ])
+    return rows[0] ? mapOracleRiskSignal(rows[0]) : null
+  } catch (error) {
+    logSupabaseError("oracle risk signal insert", error)
+    return null
+  }
+}
+
+export async function findSupabaseOracleRiskSignal(idempotencyKey: string): Promise<OracleRiskSignal | null> {
+  if (!isSupabaseConfigured()) return null
+
+  try {
+    const rows = await getRows<OracleRiskSignalRow>(
+      "oracle_risk_signals",
+      `select=*&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&idempotency_key=eq.${encodeURIComponent(idempotencyKey)}&limit=1`,
+    )
+    return rows[0] ? mapOracleRiskSignal(rows[0]) : null
+  } catch (error) {
+    logSupabaseError("oracle risk signal lookup", error)
+    return null
+  }
+}
+
+export async function listSupabaseOracleRiskSignals(limit = 50): Promise<OracleRiskSignal[] | null> {
+  if (!isSupabaseConfigured()) return null
+
+  try {
+    const rows = await getRows<OracleRiskSignalRow>(
+      "oracle_risk_signals",
+      `select=*&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&order=created_at.desc&limit=${limit}`,
+    )
+    return rows.map(mapOracleRiskSignal)
+  } catch (error) {
+    logSupabaseError("oracle risk signal list", error)
+    return null
+  }
+}
+
+export async function checkSupabaseOracleRiskReadiness() {
+  if (!isSupabaseConfigured()) return false
+  try {
+    await getRows<Pick<OracleRiskSignalRow, "id">>("oracle_risk_signals", "select=id&limit=1")
     return true
   } catch {
     return false
@@ -2570,6 +2666,29 @@ function mapShieldScreening(row: ShieldScreeningRow): ShieldScreening {
     alertId: row.alert_id,
     rawResponse: row.raw_response ?? {},
     requestId: row.request_id,
+    createdAt: row.created_at,
+  }
+}
+
+function mapOracleRiskSignal(row: OracleRiskSignalRow): OracleRiskSignal {
+  return {
+    id: row.id,
+    workspaceId: row.workspace_id,
+    idempotencyKey: row.idempotency_key,
+    signalType: row.signal_type,
+    subject: row.subject,
+    source: row.source,
+    sourceStatus: row.source_status,
+    result: row.result,
+    value: row.value,
+    threshold: row.threshold,
+    dataSource: row.data_source,
+    ccipRouter: row.ccip_router,
+    chainSelector: row.chain_selector,
+    digest: row.digest,
+    evidence: row.evidence ?? {},
+    requestId: row.request_id,
+    observedAt: row.observed_at,
     createdAt: row.created_at,
   }
 }

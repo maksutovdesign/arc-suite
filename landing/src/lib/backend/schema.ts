@@ -12,6 +12,9 @@ export type OpsHealthCheckResultStatus = "ok" | "warn" | "failed"
 export type ArcSettlementStatus = "policy_denied" | "approved" | "submitted" | "confirmed" | "failed"
 export type ShieldDecision = "allow" | "review" | "block"
 export type ShieldProviderStatus = "completed" | "provider_error"
+export type OracleRiskSignalType = "market_data" | "proof_of_reserve" | "ccip_route"
+export type OracleRiskSignalResult = "pass" | "review" | "block"
+export type OracleRiskSignalSourceStatus = "simulated_observation" | "live_observation" | "provider_error"
 export type FlowRunStatus = "running" | "completed" | "review" | "blocked" | "failed"
 export type FlowStepStatus = "pending" | "running" | "passed" | "review" | "blocked" | "failed" | "skipped"
 export type BillingInvoiceStatus = "draft" | "ready" | "settled" | "void"
@@ -311,6 +314,36 @@ export type ShieldSummary = {
   blocked: number
   providerErrors: number
   lastScreenedAt: string | null
+}
+
+export type OracleRiskSignal = {
+  id: string
+  workspaceId: string
+  idempotencyKey: string
+  signalType: OracleRiskSignalType
+  subject: string
+  source: "chainlink_on_arc"
+  sourceStatus: OracleRiskSignalSourceStatus
+  result: OracleRiskSignalResult
+  value: string
+  threshold: string
+  dataSource: string
+  ccipRouter: string
+  chainSelector: string
+  digest: string
+  evidence: Record<string, unknown>
+  requestId: string | null
+  observedAt: string
+  createdAt: string
+}
+
+export type OracleRiskSignalSummary = {
+  total: number
+  passed: number
+  review: number
+  blocked: number
+  providerErrors: number
+  lastObservedAt: string | null
 }
 
 export type FlowStep = {

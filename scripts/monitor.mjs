@@ -51,6 +51,16 @@ const checks = [
     },
   },
   {
+    name: "oracle risk signal auth guard",
+    run: async () => {
+      const response = await fetchWithRetry(`${bases.landing}/api/oracle/signals`)
+      assertStatus(response, 401)
+      assertSecurityHeaders(response)
+      assert(response.headers.has("x-request-id"), "oracle signal response includes x-request-id")
+      return "401 protected"
+    },
+  },
+  {
     name: "analytics CORS preflight",
     run: async () => {
       const response = await fetchWithRetry(`${bases.landing}/api/analytics/events`, {
