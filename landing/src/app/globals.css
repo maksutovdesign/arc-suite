@@ -6055,8 +6055,10 @@ a.ops-history-run:hover {
 }
 
 .grant-summary-card,
+.grant-console-grid a,
 .grant-reviewer-grid div,
 .grant-matrix article,
+.grant-roadmap article,
 .grant-status-grid div,
 .grant-proof-band,
 .grant-limits {
@@ -6137,6 +6139,54 @@ a.ops-history-run:hover {
   gap: 10px;
 }
 
+.grant-console-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.grant-console-grid a {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  min-height: 176px;
+  padding: 18px;
+  color: rgba(232, 241, 255, 0.94);
+  overflow: hidden;
+  text-decoration: none;
+}
+
+.grant-console-grid a::before {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(95, 191, 255, 0.08), transparent 58%);
+  content: "";
+  opacity: 0;
+  transition: opacity 160ms ease;
+}
+
+.grant-console-grid a:hover::before {
+  opacity: 1;
+}
+
+.grant-console-grid svg {
+  color: var(--blue);
+}
+
+.grant-console-grid a > svg:last-child {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  color: rgba(148, 163, 184, 0.72);
+}
+
+.grant-console-grid span {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
 .grant-reviewer-grid div,
 .grant-status-grid div,
 .grant-matrix article {
@@ -6181,6 +6231,40 @@ a.ops-history-run:hover {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
+}
+
+.grant-roadmap {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.grant-roadmap article {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  min-height: 182px;
+  padding: 20px;
+}
+
+.grant-roadmap article span {
+  color: var(--blue);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.grant-roadmap article strong {
+  color: rgba(232, 241, 255, 0.95);
+  font-size: 18px;
+}
+
+.grant-roadmap article p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.55;
 }
 
 .grant-matrix article > div:first-child {
@@ -8528,8 +8612,10 @@ a.ops-history-run:hover {
   .judge-hero,
   .judge-highlights,
   .grant-hero,
+  .grant-console-grid,
   .grant-reviewer-grid,
   .grant-matrix,
+  .grant-roadmap,
   .grant-status-grid,
   .grant-proof-band,
   .grant-limits,
@@ -8714,8 +8800,10 @@ a.ops-history-run:hover {
   .submission-workflow,
   .submission-fit,
   .grant-hero,
+  .grant-console-grid,
   .grant-reviewer-grid,
   .grant-matrix,
+  .grant-roadmap,
   .grant-proof-band,
   .grant-status-grid,
   .grant-limits,

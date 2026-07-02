@@ -20,9 +20,13 @@ For a short hackathon submission view, see [`HACKATHON.md`](HACKATHON.md).
 
 **Demo video:** [arc-suite-agentic-workflow-demo.mov](https://github.com/maksutovdesign/arc-suite/releases/download/v2026.06.28-real-arc-settlement/arc-suite-agentic-workflow-demo.mov)
 
-**Release package:** [v2026.06.30-agentic-proof-package](https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.06.30-agentic-proof-package)
+**Release package:** [v2026.07.02-grant-review-hotfix](https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.07.02-grant-review-hotfix)
 
 **Grant update:** [`docs/submission/grant-update.md`](docs/submission/grant-update.md)
+
+**Application resubmission copy:** [`docs/submission/application-resubmission-copy.md`](docs/submission/application-resubmission-copy.md)
+
+**Grant reviewer console:** [arcsuite-app.vercel.app/grant](https://arcsuite-app.vercel.app/grant)
 
 **Live Arc Testnet proof:** [`0x41210539368a78f6bbc08b088a95430dc0f64e9379ad9226173fc3ce565d733b`](https://testnet.arcscan.app/tx/0x41210539368a78f6bbc08b088a95430dc0f64e9379ad9226173fc3ce565d733b)
 
@@ -48,7 +52,7 @@ For a short hackathon submission view, see [`HACKATHON.md`](HACKATHON.md).
 - ERC-8183-compatible job envelope with input, policy, output, receipt and validation hashes.
 - Policy-gated payment path: Treasury budget, Reputation access, Shield compliance screening.
 - Arc Testnet settlement proof when configured, with tx hash and explorer link.
-- Signed offer, payment authorization and simulated provider signature for demo review.
+- Signed offer, payment authorization and demo provider signature for review.
 - Provider API surface for receipts, signing keys, fulfillment policy and one-click provider receipt creation.
 - Post-payment reputation update that becomes a future access signal.
 - Operator-ready proof page for judges, auditors and providers.
@@ -84,11 +88,12 @@ For a short hackathon submission view, see [`HACKATHON.md`](HACKATHON.md).
 
 Start here:
 
-0. **Watch the recorded demo:** [arc-suite-agentic-workflow-demo.mov](https://github.com/maksutovdesign/arc-suite/releases/download/v2026.06.28-real-arc-settlement/arc-suite-agentic-workflow-demo.mov)
-1. **Open Judge Mode:** [arcsuite-app.vercel.app/judge](https://arcsuite-app.vercel.app/judge)
-2. **Run the workflow:** [arcsuite-app.vercel.app/agentic-workflow](https://arcsuite-app.vercel.app/agentic-workflow)
-3. **Inspect the generated proof:** use the proof link returned by the workflow, open the latest proof API, or browse the archive: [arcsuite-app.vercel.app/proofs](https://arcsuite-app.vercel.app/proofs)
-4. **Open the live operator console:** [arcsuite-app.vercel.app/flow](https://arcsuite-app.vercel.app/flow)
+0. **Open the grant reviewer console:** [arcsuite-app.vercel.app/grant](https://arcsuite-app.vercel.app/grant)
+1. **Watch the recorded demo:** [arc-suite-agentic-workflow-demo.mov](https://github.com/maksutovdesign/arc-suite/releases/download/v2026.06.28-real-arc-settlement/arc-suite-agentic-workflow-demo.mov)
+2. **Open Judge Mode:** [arcsuite-app.vercel.app/judge](https://arcsuite-app.vercel.app/judge)
+3. **Run the workflow:** [arcsuite-app.vercel.app/agentic-workflow](https://arcsuite-app.vercel.app/agentic-workflow)
+4. **Inspect the generated proof:** use the proof link returned by the workflow, open the latest proof API, or browse the archive: [arcsuite-app.vercel.app/proofs](https://arcsuite-app.vercel.app/proofs)
+5. **Open the live operator console:** [arcsuite-app.vercel.app/flow](https://arcsuite-app.vercel.app/flow)
 
 The demonstrated operation is:
 

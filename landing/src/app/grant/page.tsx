@@ -5,10 +5,13 @@ import {
   FileCheck2,
   Gauge,
   KeyRound,
+  ListChecks,
   LockKeyhole,
   Network,
   Play,
+  Rocket,
   ShieldCheck,
+  Video,
   WalletCards,
 } from "lucide-react"
 
@@ -22,7 +25,8 @@ export const metadata = {
 
 const latestProofUrl = "/proof?id=flow_agentic_01a50e12e6c4"
 const demoUrl = "https://treasury-umber.vercel.app/demo"
-const releaseUrl = "https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.07.02-grant-readiness"
+const releaseUrl = "https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.07.02-grant-review-hotfix"
+const videoUrl = "https://drive.google.com/file/d/1TpkfepfGCEXDfh-YWIfGLRGuohHAJmjP/view?usp=sharing"
 
 const reviewerSteps = [
   ["01", "Open Judge Mode", "Start from the guided one-page reviewer flow."],
@@ -74,13 +78,71 @@ const currentStatus = [
   ["Live product", "Production web MVP deployed on Vercel with Supabase-backed APIs."],
   ["Review proof", "Proof pages connect workflow id, policy checks, x402 receipt and settlement reference."],
   ["Monitoring", "Production monitor, Sentry runtime and Ops Health surface are active."],
-  ["Roadmap", "Grant unlocks real Arc settlement, Circle Wallets expansion, CCTP and contract deployment."],
+  ["Roadmap", "Grant unlocks live Arc deployment, Circle Wallets expansion, CCTP and contract work."],
+] as const
+
+const reviewerConsole = [
+  {
+    title: "Live demo",
+    detail: "Open the working operator demo and inspect the product surface.",
+    href: demoUrl,
+    icon: Play,
+    external: true,
+  },
+  {
+    title: "Latest proof",
+    detail: "Review x402 offer, policy chain, receipt and settlement evidence.",
+    href: latestProofUrl,
+    icon: FileCheck2,
+    external: false,
+  },
+  {
+    title: "Circle products",
+    detail: "USDC is implemented; Wallets, x402/Gateway, CCTP, Paymaster and Contracts are staged by scope.",
+    href: "#circle-fit",
+    icon: CircleDollarSign,
+    external: false,
+  },
+  {
+    title: "Known limits",
+    detail: "Clear review language for demo-ready rails and pending Arc mainnet deployment.",
+    href: "#known-limits",
+    icon: LockKeyhole,
+    external: false,
+  },
+  {
+    title: "Roadmap",
+    detail: "Three milestone path from Arc deployment to on-chain reputation and public beta.",
+    href: "#roadmap",
+    icon: Rocket,
+    external: false,
+  },
+  {
+    title: "Release",
+    detail: "Hotfix tag with grant layout and production monitor stability updates.",
+    href: releaseUrl,
+    icon: ListChecks,
+    external: true,
+  },
+  {
+    title: "Video",
+    detail: "Recorded product walkthrough for the formal grant submission.",
+    href: videoUrl,
+    icon: Video,
+    external: true,
+  },
+] as const
+
+const roadmap = [
+  ["Weeks 1-4", "Arc deployment + Circle Wallets", "Deploy the core Treasury, Reputation and Marketplace infrastructure to Arc-ready production paths and expand real wallet creation/balance reads."],
+  ["Weeks 5-9", "On-chain reputation + x402", "Move reputation score storage and API access gating toward on-chain records and complete the x402 payment loop for paid API calls."],
+  ["Weeks 10-14", "CCTP + public beta", "Add cross-chain USDC support, provider onboarding, public docs and the first external API provider integrations."],
 ] as const
 
 const knownLimits = [
   "Arc mainnet deployment is pending external availability and grant scope.",
   "Some payment rails are settlement-ready demo paths until production Circle credentials are fully configured.",
-  "Provider receipts include a simulated provider signature for review until external providers onboard.",
+  "Provider receipts include a demo provider signature for review until external providers onboard.",
 ] as const
 
 export default function GrantPage() {
@@ -121,6 +183,31 @@ export default function GrantPage() {
           </aside>
         </section>
 
+        <section className="grant-section" id="reviewer-console">
+          <div className="submission-section-head">
+            <p className="kicker">Reviewer console</p>
+            <h2>One place for the grant review.</h2>
+          </div>
+          <div className="grant-console-grid">
+            {reviewerConsole.map((item) => {
+              const Icon = item.icon
+              return (
+                <a
+                  href={item.href}
+                  key={item.title}
+                  target={item.external ? "_blank" : undefined}
+                  rel={item.external ? "noreferrer" : undefined}
+                >
+                  <Icon size={19} />
+                  <strong>{item.title}</strong>
+                  <span>{item.detail}</span>
+                  <ArrowRight size={15} />
+                </a>
+              )
+            })}
+          </div>
+        </section>
+
         <section className="grant-section">
           <div className="submission-section-head">
             <p className="kicker">Reviewer mode</p>
@@ -137,7 +224,7 @@ export default function GrantPage() {
           </div>
         </section>
 
-        <section className="grant-section">
+        <section className="grant-section" id="circle-fit">
           <div className="submission-section-head">
             <p className="kicker">Circle and Arc fit</p>
             <h2>Integration status matrix.</h2>
@@ -177,6 +264,22 @@ export default function GrantPage() {
           </div>
         </section>
 
+        <section className="grant-section" id="roadmap">
+          <div className="submission-section-head">
+            <p className="kicker">Roadmap</p>
+            <h2>What the grant unlocks.</h2>
+          </div>
+          <div className="grant-roadmap">
+            {roadmap.map(([time, title, detail]) => (
+              <article key={title}>
+                <span>{time}</span>
+                <strong>{title}</strong>
+                <p>{detail}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
         <section className="grant-section">
           <div className="submission-section-head">
             <p className="kicker">Current status</p>
@@ -193,7 +296,7 @@ export default function GrantPage() {
           </div>
         </section>
 
-        <section className="grant-limits">
+        <section className="grant-limits" id="known-limits">
           <div>
             <p className="kicker">Known limits</p>
             <h2>Clear scope, no inflated claims.</h2>
