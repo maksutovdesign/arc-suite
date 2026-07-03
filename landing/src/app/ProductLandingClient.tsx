@@ -9,6 +9,7 @@ import {
   Handshake,
   Landmark,
   LockKeyhole,
+  Network,
   Radar,
   ReceiptText,
   ShieldCheck,
@@ -168,6 +169,22 @@ const productDetails = [
     bullets: ["Per-agent gas limits", "Gas Station and Paymaster modes", "Sponsored transaction ledger"],
   },
   {
+    key: "interop",
+    name: "Arc Interop",
+    eyebrow: "CCIP route",
+    icon: Network,
+    title: "Cross-chain route evidence for Arc treasury and collateral flows.",
+    text: "Show how Arc Suite prepares CCIP route runs with Chainlink router metadata, Arc Testnet selector, message status and proof hashes before settlement finalization.",
+    image: "",
+    imageAlt: "Arc Interop console showing Arc Testnet to Ethereum Sepolia CCIP route status, selector, router and proof hash",
+    stats: [
+      ["CCIP", "route-ready"],
+      ["303409...", "Arc selector"],
+      ["1", "proof envelope"],
+    ],
+    bullets: ["Arc to Sepolia route view", "Router and selector evidence", "Proof hash before finalization"],
+  },
+  {
     key: "wallets",
     name: "Arc Wallet OS",
     eyebrow: "Wallet lifecycle",
@@ -241,7 +258,7 @@ const steps = [
 ]
 
 const metrics = [
-  ["13", "connected products"],
+  ["14", "connected products"],
   ["25,482", "agent transactions in demo"],
   ["24.8M", "marketplace request volume"],
   ["99.72%", "average uptime in marketplace stats"],
@@ -367,7 +384,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
   const activeProduct = liveProductDetails.find((product) => product.key === activeProductKey) ?? liveProductDetails[0]
   const liveMetrics = pilotSummary
     ? [
-        ["13", "connected products"],
+        ["14", "connected products"],
         [formatCompact(pilotSummary.marketplace.requests), "marketplace request volume"],
         [`${pilotSummary.marketplace.avgUptimePct}%`, "average uptime from API"],
         [apiStatus === "live" ? "Live" : "Fallback", "pilot API status"],
@@ -424,7 +441,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
             Treasury controls spend, Shield screens counterparties, Reputation scores behavior,
             Marketplace sells x402 API access, Provider verifies signed receipts, Billing meters usage, Escrow governs delivery,
             Gas sponsors execution, Wallet OS governs custody, Radar maps the builder ecosystem,
-            Chainlink on Arc adds market, reserve and CCIP route evidence, Private protects sensitive payment context, Blueprints turns patterns into templates,
+            Interop adds CCIP route evidence, Chainlink on Arc adds market and reserve signals, Private protects sensitive payment context, Blueprints turns patterns into templates,
             and Flow runs the complete policy pipeline.
           </p>
           <div className="hero-actions">
@@ -564,7 +581,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
       <section className="section" id="system">
         <div className="section-heading">
           <p className="kicker">The product system</p>
-          <h2>Thirteen connected products. One economic operating layer.</h2>
+          <h2>Fourteen connected products. One economic operating layer.</h2>
           <p>
             Arc Suite is designed around a shared cast of agents moving through the
             complete economic journey, from wallet spend to trust scoring to service access.

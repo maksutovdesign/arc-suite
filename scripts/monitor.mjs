@@ -154,6 +154,10 @@ const checks = [
     run: async () => checkHtmlPage(`${bases.landing}/gas`, ["Arc Gas", "Demo workspace"]),
   },
   {
+    name: "Arc Interop page",
+    run: async () => checkHtmlPage(`${bases.landing}/interop`, ["Arc Interop", "CCIP route demo", "3034092155422581607"]),
+  },
+  {
     name: "Arc Wallet OS page",
     run: async () => checkHtmlPage(`${bases.landing}/wallets`, ["Arc Wallet OS", "Demo workspace"]),
   },

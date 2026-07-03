@@ -4706,6 +4706,282 @@ h3 {
   font-family: "Space Mono", "SFMono-Regular", monospace;
 }
 
+.interop-shell {
+  display: block;
+}
+
+.interop-hero,
+.interop-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(340px, 0.8fr);
+  gap: 18px;
+}
+
+.interop-hero {
+  align-items: stretch;
+  margin-bottom: 18px;
+}
+
+.interop-hero h1 {
+  margin: 8px 0 12px;
+  color: var(--text);
+  font-size: clamp(58px, 9vw, 124px);
+  line-height: 0.92;
+}
+
+.interop-hero p {
+  max-width: 900px;
+  color: var(--muted);
+  font-size: 19px;
+  line-height: 1.55;
+}
+
+.interop-status-card,
+.interop-route-card,
+.interop-panel,
+.interop-bottom-band {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(13, 21, 30, 0.86);
+}
+
+.interop-status-card {
+  display: flex;
+  min-height: 220px;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 24px;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(20, 184, 166, 0.16), transparent 34%),
+    rgba(13, 21, 30, 0.9);
+}
+
+.interop-status-card svg,
+.interop-panel-head svg,
+.interop-bottom-band svg {
+  color: #2dd4bf;
+}
+
+.interop-status-card span,
+.interop-route-head span,
+.interop-panel-head span,
+.interop-bottom-band span,
+.interop-evidence-grid span {
+  color: var(--cyan);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.interop-status-card strong {
+  display: block;
+  margin: 18px 0 8px;
+  color: var(--text);
+  font-size: 30px;
+  line-height: 1.1;
+}
+
+.interop-status-card small {
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.interop-route-card {
+  margin-bottom: 18px;
+  padding: 20px;
+}
+
+.interop-route-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.interop-route-head h2,
+.interop-panel-head h2 {
+  margin: 5px 0 0;
+  color: var(--text);
+  font-size: 24px;
+}
+
+.interop-route-head > strong {
+  padding: 8px 11px;
+  border: 1px solid rgba(45, 212, 191, 0.24);
+  border-radius: 999px;
+  background: rgba(45, 212, 191, 0.09);
+  color: #2dd4bf;
+  font-size: 12px;
+}
+
+.interop-route-visual {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 18px;
+  padding: 24px;
+  border: 1px solid rgba(95, 191, 255, 0.16);
+  border-radius: 8px;
+  background: rgba(4, 10, 16, 0.48);
+}
+
+.interop-route-visual > svg {
+  color: #2dd4bf;
+}
+
+.interop-route-visual div {
+  min-height: 126px;
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.interop-route-visual span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.interop-route-visual strong {
+  display: block;
+  margin: 16px 0 8px;
+  color: var(--text);
+  font-size: 30px;
+  line-height: 1.05;
+}
+
+.interop-route-visual small {
+  color: var(--muted);
+}
+
+.interop-evidence-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.interop-evidence-grid div {
+  min-height: 96px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  background: rgba(4, 10, 16, 0.34);
+}
+
+.interop-evidence-grid strong {
+  display: block;
+  margin-top: 12px;
+  color: var(--text);
+  font-family: "Space Mono", "SFMono-Regular", monospace;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.interop-panel,
+.interop-bottom-band {
+  padding: 20px;
+}
+
+.interop-panel-head,
+.interop-bottom-band {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.interop-steps {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.interop-steps article {
+  display: grid;
+  grid-template-columns: 40px 26px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  background: rgba(4, 10, 16, 0.4);
+}
+
+.interop-steps i {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border: 1px solid rgba(95, 191, 255, 0.24);
+  border-radius: 8px;
+  color: var(--cyan);
+  font-style: normal;
+  font-weight: 800;
+}
+
+.interop-steps svg {
+  margin-top: 8px;
+  color: #2dd4bf;
+}
+
+.interop-steps strong {
+  display: block;
+  color: var(--text);
+}
+
+.interop-steps p,
+.interop-note,
+.interop-bottom-band p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.interop-proof-list {
+  display: grid;
+  gap: 10px;
+  margin: 18px 0;
+}
+
+.interop-proof-list div {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr);
+  gap: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.interop-proof-list dt {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.interop-proof-list dd {
+  margin: 0;
+  color: var(--text);
+  font-family: "Space Mono", "SFMono-Regular", monospace;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+  text-align: right;
+}
+
+.interop-bottom-band {
+  margin-top: 18px;
+  background: linear-gradient(135deg, rgba(45, 212, 191, 0.11), rgba(95, 191, 255, 0.04));
+}
+
+.interop-bottom-band strong {
+  display: block;
+  margin-top: 6px;
+  color: var(--text);
+  font-size: 22px;
+}
+
 .shield-table-empty {
   height: 88px;
   text-align: center !important;
@@ -8671,6 +8947,8 @@ a.ops-history-run:hover {
   .billing-grid,
   .gas-heading,
   .gas-grid,
+  .interop-hero,
+  .interop-grid,
   .wallet-heading,
   .wallet-grid,
   .execution-heading,
@@ -8848,6 +9126,8 @@ a.ops-history-run:hover {
 
   .gas-metrics,
   .gas-form,
+  .interop-evidence-grid,
+  .interop-route-visual,
   .wallet-metrics,
   .wallet-form,
   .radar-method,

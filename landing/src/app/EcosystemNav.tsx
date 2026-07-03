@@ -10,6 +10,7 @@ import {
   Handshake,
   Landmark,
   LockKeyhole,
+  Network,
   Radar,
   ReceiptText,
   ShieldCheck,
@@ -31,6 +32,7 @@ export type ArcProductId =
   | "escrow"
   | "shield"
   | "gas"
+  | "interop"
   | "wallets"
   | "radar"
   | "private"
@@ -51,6 +53,7 @@ const products = [
   { id: "escrow", label: "Escrow", href: `${suiteUrl}/escrow`, color: "#fb7185", icon: Handshake },
   { id: "shield", label: "Shield", href: `${suiteUrl}/shield`, color: "#f59e0b", icon: ShieldCheck },
   { id: "gas", label: "Gas", href: `${suiteUrl}/gas`, color: "#38bdf8", icon: Fuel },
+  { id: "interop", label: "Interop", href: `${suiteUrl}/interop`, color: "#14b8a6", icon: Network },
   { id: "wallets", label: "Wallet OS", href: `${suiteUrl}/wallets`, color: "#c084fc", icon: WalletCards },
   { id: "radar", label: "Radar", href: `${suiteUrl}/radar`, color: "#f472b6", icon: Radar },
   { id: "private", label: "Private", href: `${suiteUrl}/private`, color: "#2dd4bf", icon: LockKeyhole },
