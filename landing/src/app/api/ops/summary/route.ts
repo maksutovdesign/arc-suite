@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 
 import { requireArcApiKey } from "@/lib/backend/auth"
+import { getInfraReadiness } from "@/lib/backend/infra-readiness"
 import { createRequestId, logOperationalEvent, requestIdHeaders } from "@/lib/backend/observability"
 import { getAnalyticsSummary, getOpsHealthHistory, listInvestorLeads } from "@/lib/backend/service"
 import { checkSupabaseReadiness, getSupabaseConfigurationStatus, isSupabaseConfigured } from "@/lib/backend/supabase"
@@ -49,13 +50,14 @@ export async function GET(request: NextRequest) {
   if (unauthorized) return unauthorized
 
   const generatedAt = new Date().toISOString()
-  const [readiness, analytics, leads, opsHistory, apps, workflows] = await Promise.all([
+  const [readiness, analytics, leads, opsHistory, apps, workflows, infra] = await Promise.all([
     checkSupabaseReadiness(),
     getAnalyticsSummary(500),
     listInvestorLeads(100),
     getOpsHealthHistory(72),
     Promise.all(PUBLIC_TARGETS.map(checkPublicTarget)),
     Promise.all(GITHUB_WORKFLOWS.map(checkGithubWorkflow)),
+    getInfraReadiness(),
   ])
   const sentry = getSentryStatus()
   const slack = getSlackStatus()
@@ -95,6 +97,7 @@ export async function GET(request: NextRequest) {
         monitor: opsHistory,
         sentry,
         slack,
+        infra,
         supabase: {
           ...readiness,
           configuration: getSupabaseConfigurationStatus(),

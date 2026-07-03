@@ -52,6 +52,7 @@ For a short hackathon submission view, see [`HACKATHON.md`](HACKATHON.md).
 - ERC-8183-compatible job envelope with input, policy, output, receipt and validation hashes.
 - Policy-gated payment path: Treasury budget, Reputation access, Shield compliance screening.
 - Chainlink-on-Arc oracle/CCIP readiness signal in the policy chain for market, reserve or route evidence.
+- QuickNode/RPC readiness surface with Arc chain ID, RPC latency, explorer, indexing and fallback RPC state.
 - Arc Testnet settlement proof when configured, with tx hash and explorer link.
 - Signed offer, payment authorization and demo provider signature for review.
 - Provider API surface for receipts, signing keys, fulfillment policy and one-click provider receipt creation.
@@ -82,6 +83,7 @@ For a short hackathon submission view, see [`HACKATHON.md`](HACKATHON.md).
 | **Arc Radar** | [arcsuite-app.vercel.app/radar](https://arcsuite-app.vercel.app/radar) | Arc builder intelligence, primitive usage, traction signals and opportunity gaps |
 | **Arc Private** | [arcsuite-app.vercel.app/private](https://arcsuite-app.vercel.app/private) | Private stablecoin payment intents, selective disclosure and policy-safe proof |
 | **Arc Blueprints** | [arcsuite-app.vercel.app/blueprints](https://arcsuite-app.vercel.app/blueprints) | Builder reference templates for checkout, x402, escrow, FX, M2M and private invoice flows |
+| **Ops Health** | [arcsuite-app.vercel.app/ops](https://arcsuite-app.vercel.app/ops) | Protected production, Supabase, monitor, Sentry and Infra Health readiness view |
 
 ---
 
@@ -590,6 +592,7 @@ five minutes when the repository secret `ARC_CRON_SECRET` contains the same valu
 Arc Suite is designed for the **Arc community** and **Circle team** as a proof that agentic payments need a complete execution path:
 
 - **Arc Testnet settlement readiness:** the workflow records a transaction hash and explorer link when configured, otherwise it exposes the readiness/fallback state.
+- **QuickNode/RPC readiness:** Ops Health exposes Arc RPC latency, chain ID, explorer, indexing status and fallback RPC state.
 - **Circle Wallets:** the product model assumes developer-controlled wallet execution and idempotent backend transfer policy.
 - **Circle Compliance Engine:** Shield records screening provider output and keeps Arc policy decisions separate and auditable.
 - **x402 / Gateway pattern:** Marketplace and Billing model signed offers, per-request metering, receipts and settlement batches.

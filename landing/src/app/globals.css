@@ -1263,6 +1263,8 @@ h3 {
 }
 
 .gas-product-preview,
+.provider-product-preview,
+.interop-product-preview,
 .wallet-product-preview,
 .radar-product-preview,
 .private-product-preview,
@@ -1273,6 +1275,132 @@ h3 {
   min-height: 430px;
   padding: 22px;
   background: #081018;
+}
+
+.provider-preview-hero {
+  margin: 18px 0 10px;
+  padding: 18px;
+  border: 1px solid rgba(52, 211, 153, 0.2);
+  border-left: 3px solid var(--green);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(52, 211, 153, 0.08), transparent 58%),
+    rgba(255, 255, 255, 0.018);
+}
+
+.provider-preview-hero span,
+.provider-preview-hero small,
+.provider-preview-grid span,
+.provider-preview-row small,
+.interop-preview-route span,
+.interop-preview-route small,
+.interop-preview-grid span,
+.interop-preview-row small {
+  display: block;
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.provider-preview-hero strong {
+  display: block;
+  margin: 7px 0 4px;
+  color: var(--text);
+  font-size: 24px;
+}
+
+.provider-preview-grid,
+.interop-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.provider-preview-grid div,
+.interop-preview-grid div {
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid rgba(95, 191, 255, 0.16);
+  border-radius: 7px;
+  background: rgba(95, 191, 255, 0.04);
+}
+
+.provider-preview-grid strong,
+.interop-preview-grid strong {
+  display: block;
+  margin-top: 6px;
+  overflow-wrap: anywhere;
+  color: var(--cyan);
+  font-size: 12px;
+}
+
+.provider-preview-row,
+.interop-preview-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  min-height: 48px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.provider-preview-row b,
+.interop-preview-row b {
+  display: block;
+  font-size: 11px;
+}
+
+.provider-preview-row strong {
+  color: var(--green);
+  font-size: 9px;
+}
+
+.interop-preview-route {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 44px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  margin: 18px 0 10px;
+}
+
+.interop-preview-route > div {
+  min-height: 118px;
+  padding: 15px;
+  border: 1px solid rgba(95, 191, 255, 0.18);
+  border-radius: 8px;
+  background: rgba(95, 191, 255, 0.045);
+}
+
+.interop-preview-route strong {
+  display: block;
+  margin: 8px 0 6px;
+  color: var(--text);
+  font-size: 15px;
+}
+
+.interop-preview-route i {
+  position: relative;
+  height: 2px;
+  background: var(--cyan);
+  box-shadow: 0 0 18px rgba(95, 191, 255, 0.55);
+}
+
+.interop-preview-route i::after {
+  content: "";
+  position: absolute;
+  top: -5px;
+  right: 0;
+  width: 10px;
+  height: 10px;
+  border-top: 2px solid var(--cyan);
+  border-right: 2px solid var(--cyan);
+  transform: rotate(45deg);
+}
+
+.interop-preview-row strong {
+  color: var(--yellow);
+  font-size: 9px;
 }
 
 .gas-preview-metrics,
@@ -1467,6 +1595,8 @@ h3 {
 }
 
 .gas-product-preview > a,
+.provider-product-preview > a,
+.interop-product-preview > a,
 .wallet-product-preview > a,
 .radar-product-preview > a,
 .private-product-preview > a,
@@ -5131,6 +5261,13 @@ a.ops-status-row:hover {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 14px;
+}
+
+.ops-infra-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 12px;
 }
 
 .ops-history-stats {
@@ -8926,6 +9063,7 @@ a.ops-history-run:hover {
   .roadmap,
   .kpi-grid,
   .analytics-kpi-grid,
+  .ops-infra-grid,
   .ops-signal-grid,
   .ops-history-stats {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -9386,6 +9524,10 @@ a.ops-history-run:hover {
   }
 
   .ops-signal-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ops-infra-grid {
     grid-template-columns: 1fr;
   }
 

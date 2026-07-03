@@ -37,6 +37,33 @@ type OpsSummary = {
         workflowFile: string
       }>
     }
+    infra: {
+      chainId: number
+      chainIdHex: string
+      checkedAt: string
+      explorer: {
+        status: ServiceStatus
+        url: string
+      }
+      fallbackRpc: {
+        configured: boolean
+        label: string
+        status: ServiceStatus
+      }
+      indexing: {
+        detail: string
+        status: ServiceStatus
+      }
+      provider: string
+      rpc: {
+        configured: boolean
+        detail: string
+        latencyMs: number | null
+        status: ServiceStatus
+        urlLabel: string
+      }
+      status: ServiceStatus
+    }
     monitor: {
       checks: Array<{
         branch: string | null
@@ -305,6 +332,7 @@ export function OpsHealthClient() {
             />
             <Metric label="Production monitor" value={summary.services.github.workflows[0]?.conclusion ?? "pending"} status={summary.services.github.workflows[0]?.status ?? "warning"} />
             <Metric label="Sentry runtime" value={summary.services.sentry.hasDsn ? "ready" : "missing"} status={summary.services.sentry.status} />
+            <Metric label="RPC readiness" value={summary.services.infra.rpc.latencyMs === null ? summary.services.infra.provider : formatDuration(summary.services.infra.rpc.latencyMs)} status={summary.services.infra.status} />
             <Metric label="Investor leads" value={String(summary.signals.leads.totalLoaded)} status="ok" />
           </div>
 
@@ -325,6 +353,47 @@ export function OpsHealthClient() {
                     status={app.status}
                   />
                 ))}
+              </div>
+            </div>
+
+            <div className="analytics-card analytics-card-wide">
+              <div className="analytics-card-head">
+                <h2>Infra Health</h2>
+                <span>{summary.services.infra.provider}</span>
+              </div>
+              <div className="ops-infra-grid">
+                <Metric label="RPC latency" value={summary.services.infra.rpc.latencyMs === null ? "not configured" : formatDuration(summary.services.infra.rpc.latencyMs)} status={summary.services.infra.rpc.status} />
+                <Metric label="Chain ID" value={String(summary.services.infra.chainId)} status={summary.services.infra.rpc.status === "error" ? "error" : "ok"} />
+                <Metric label="Explorer" value="Arcscan" status={summary.services.infra.explorer.status} />
+                <Metric label="Indexing" value={summary.services.infra.indexing.status === "ok" ? "live" : "fallback"} status={summary.services.infra.indexing.status} />
+                <Metric label="Fallback RPC" value={summary.services.infra.fallbackRpc.configured ? "configured" : "prepared"} status={summary.services.infra.fallbackRpc.status} />
+              </div>
+              <div className="ops-status-list">
+                <ServiceRow
+                  detail={summary.services.infra.rpc.detail}
+                  label="RPC endpoint"
+                  meta={summary.services.infra.rpc.urlLabel}
+                  status={summary.services.infra.rpc.status}
+                />
+                <ServiceRow
+                  detail={summary.services.infra.indexing.detail}
+                  label="Indexer"
+                  meta={formatDate(summary.services.infra.checkedAt)}
+                  status={summary.services.infra.indexing.status}
+                />
+                <ServiceRow
+                  detail={`Explorer base ${summary.services.infra.explorer.url}`}
+                  href={summary.services.infra.explorer.url}
+                  label="Explorer"
+                  meta={summary.services.infra.chainIdHex}
+                  status={summary.services.infra.explorer.status}
+                />
+                <ServiceRow
+                  detail={summary.services.infra.fallbackRpc.configured ? "Fallback RPC endpoint is configured." : "Fallback RPC slot is ready; add ARC_FALLBACK_RPC_URL when provider is selected."}
+                  label="Fallback RPC"
+                  meta={summary.services.infra.fallbackRpc.label}
+                  status={summary.services.infra.fallbackRpc.status}
+                />
               </div>
             </div>
 

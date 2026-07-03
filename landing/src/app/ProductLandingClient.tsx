@@ -672,6 +672,32 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
                   </div>
                   <a href="/shield">Open live console</a>
                 </div>
+              ) : activeProduct.key === "provider" ? (
+                <div className="provider-product-preview" aria-label={activeProduct.imageAlt}>
+                  <div className="shield-preview-top"><span>ARC PROVIDER / RECEIPTS</span><strong>VERIFIED</strong></div>
+                  <div className="provider-preview-hero">
+                    <span>Latest paid API</span>
+                    <strong>GPT-4o Proxy</strong>
+                    <small>OpenAI Gateway · 0.018 USDC</small>
+                  </div>
+                  <div className="provider-preview-grid">
+                    <div><span>Provider key</span><strong>pk_live_ed25519</strong></div>
+                    <div><span>Algorithm</span><strong>ed25519</strong></div>
+                    <div><span>Receipt</span><strong>rcpt_84de</strong></div>
+                    <div><span>Settlement</span><strong>0x4121...</strong></div>
+                  </div>
+                  {[
+                    ["Receipt signed", "provider key slot 03", "PASS"],
+                    ["Payment observed", "Arc Testnet settlement ref", "PASS"],
+                    ["Fulfillment gate", "serve after proof link", "READY"],
+                  ].map(([label, detail, status]) => (
+                    <div className="provider-preview-row" key={label}>
+                      <span><b>{label}</b><small>{detail}</small></span>
+                      <strong>{status}</strong>
+                    </div>
+                  ))}
+                  <a href="/provider">Open trust center</a>
+                </div>
               ) : activeProduct.key === "flow" ? (
                 <div className="flow-product-preview" aria-label={activeProduct.imageAlt}>
                   <div className="shield-preview-top"><span>ARC FLOW / RUN</span><strong>POLICY PIPELINE</strong></div>
@@ -748,6 +774,31 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
                   ))}
                   <a href="/gas">Open live console</a>
                 </div>
+              ) : activeProduct.key === "interop" ? (
+                <div className="interop-product-preview" aria-label={activeProduct.imageAlt}>
+                  <div className="shield-preview-top"><span>ARC INTEROP / CCIP</span><strong>ROUTE-READY</strong></div>
+                  <div className="interop-preview-route">
+                    <div><span>Source</span><strong>Arc Testnet</strong><small>USDC treasury instruction</small></div>
+                    <i aria-hidden="true" />
+                    <div><span>Target</span><strong>Ethereum Sepolia</strong><small>Collateral / provider route</small></div>
+                  </div>
+                  <div className="interop-preview-grid">
+                    <div><span>Selector</span><strong>303409...</strong></div>
+                    <div><span>Router</span><strong>0xdE4E...</strong></div>
+                    <div><span>Envelope</span><strong>1 proof</strong></div>
+                  </div>
+                  {[
+                    ["Policy checked", "Shield confirms route risk", "PASS"],
+                    ["CCIP route selected", "router metadata attached", "READY"],
+                    ["Message observed", "proof hash prepared", "PENDING"],
+                  ].map(([label, detail, status]) => (
+                    <div className="interop-preview-row" key={label}>
+                      <span><b>{label}</b><small>{detail}</small></span>
+                      <strong>{status}</strong>
+                    </div>
+                  ))}
+                  <a href="/interop">Open route demo</a>
+                </div>
               ) : activeProduct.key === "wallets" ? (
                 <div className="wallet-product-preview" aria-label={activeProduct.imageAlt}>
                   <div className="shield-preview-top"><span>ARC WALLET OS / REGISTRY</span><strong>3 CUSTODY MODELS</strong></div>
@@ -806,18 +857,30 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
                   <a href="/radar">Open builder radar</a>
                 </div>
               ) : activeProduct.key === "private" ? (
-                <div className="product-panel-minimal" aria-label={activeProduct.imageAlt}>
-                  <span>ARC PRIVATE</span>
-                  <strong>No decorative illustration.</strong>
-                  <p>
-                    The product story is the policy model: private payment intents,
-                    scoped disclosure, Shield checks, Flow settlement and auditable proofs.
-                  </p>
-                  <ul>
-                    <li>Private invoice context stays scoped.</li>
-                    <li>Operators keep policy and audit visibility.</li>
-                    <li>Providers only receive the proof needed to serve the request.</li>
-                  </ul>
+                <div className="private-product-preview" aria-label={activeProduct.imageAlt}>
+                  <div className="shield-preview-top"><span>ARC PRIVATE / INTENT</span><strong>SCOPED PROOF</strong></div>
+                  <div className="private-preview-receipt">
+                    <div><span>Encrypted intent</span><strong>pi_4f91...a7</strong></div>
+                    <div><span>Visible proof</span><strong>paid · screened</strong></div>
+                    <div><span>Provider scope</span><strong>fulfill only</strong></div>
+                    <div><span>Auditor scope</span><strong>policy chain</strong></div>
+                  </div>
+                  <div className="private-preview-grid">
+                    <div><span>Scopes</span><strong>4</strong></div>
+                    <div><span>Shield</span><strong>PASS</strong></div>
+                    <div><span>Settlement</span><strong>READY</strong></div>
+                  </div>
+                  {[
+                    ["Commercial context", "masked from provider", "PRIVATE"],
+                    ["Compliance evidence", "screened address + limit", "VISIBLE"],
+                    ["Payment proof", "selectively revealable", "SCOPED"],
+                  ].map(([label, detail, status]) => (
+                    <div className="private-preview-row" key={label}>
+                      <span><b>{label}</b><small>{detail}</small></span>
+                      <strong>{status}</strong>
+                    </div>
+                  ))}
+                  <div className="private-preview-hash"><span>Disclosure hash</span><strong>sha256:77ac...91f0</strong></div>
                   <a href="/private">Open private payments</a>
                 </div>
               ) : activeProduct.key === "blueprints" ? (

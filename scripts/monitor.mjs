@@ -138,6 +138,10 @@ const checks = [
     run: async () => checkHtmlPage(`${bases.landing}/submission`, ["Arc Suite submission", "Settlement proof", "Track fit"]),
   },
   {
+    name: "Ops Health page",
+    run: async () => checkHtmlPage(`${bases.landing}/ops`, ["Ops Health", "MVP control center", "Infra Health"]),
+  },
+  {
     name: "Arc Billing page",
     run: async () => checkHtmlPage(`${bases.landing}/billing`, ["Arc Billing", "Demo workspace"]),
   },
