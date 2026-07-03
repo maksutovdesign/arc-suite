@@ -83,11 +83,11 @@ const checks = [
   },
   {
     name: "Agentic Workflow page",
-    run: async () => checkHtmlPage(`${bases.landing}/agentic-workflow`, ["Agentic workflow demo", "Signed offer", "ERC-8004 identity"]),
+    run: async () => checkHtmlPage(`${bases.landing}/agentic-workflow`, ["Agentic workflow demo", "Signed offer", "Failure-aware job envelope"]),
   },
   {
     name: "Proof page",
-    run: async () => checkHtmlPage(`${bases.landing}/proof`, ["Settlement reference", "Receipt", "policy chain"]),
+    run: async () => checkHtmlPage(`${bases.landing}/proof`, ["Settlement reference", "Artifact failure handling", "policy chain"]),
   },
   {
     name: "Proof archive page",

@@ -45,6 +45,7 @@ For a short hackathon submission view, see [`HACKATHON.md`](HACKATHON.md).
 5. Open **Proof archive** to review recent workflow receipts and Marketplace purchase history.
 6. Open [Arc Provider](https://arcsuite-app.vercel.app/provider) and click **Create provider receipt** to generate a provider-side demo receipt and proof.
 7. Open [Arc Flow](https://arcsuite-app.vercel.app/flow) to see the operator console behind the same workflow model.
+8. Review the artifact failure handling states on `/agentic-workflow` and `/proof`: `policy_passed`, `execution_failed`, `receipt_missing`, `validation_missing` and `dispute_opened`.
 
 **Agentic Economy Track features:**
 - Autonomous agent purchase of an x402 API using USDC.
@@ -127,7 +128,8 @@ The production smoke flow is wired for API-specific Arc Testnet USDC settlement 
 5. **Settlement:** Flow prepares the Arc Testnet transfer path through Circle Wallets and records transaction evidence when configured.
 6. **Receipt:** the provider issues a signed x402 receipt with provider key id, signing algorithm, oracle signal digest, payload hash and settlement reference linked to the job.
 7. **Reputation:** the successful payment becomes a score update and future access signal.
-8. **Proof:** the `/proof` page exposes the settlement reference, receipt JSON, policy chain and validation artifacts.
+8. **Failure handling:** policy approval is separated from fulfillment evidence, so missing execution, receipt or validation artifacts move the job into a bounded review state.
+9. **Proof:** the `/proof` page exposes the settlement reference, receipt JSON, policy chain and validation artifacts.
 
 This is the core thesis: *agentic commerce needs more than a payment button; it needs identity, policy, settlement, receipt and reputation in one auditable loop.*
 
@@ -599,6 +601,7 @@ Arc Suite is designed for the **Arc community** and **Circle team** as a proof t
 - **x402 / Gateway pattern:** Marketplace and Billing model signed offers, per-request metering, receipts and settlement batches.
 - **USDC-native gas and operations:** Gas, Wallet OS and Execution Control define the policies needed to run agent wallets in production.
 - **ERC-8004 / ERC-8183 readiness:** the demo includes agent identity, job envelope, artifacts and validation evidence so the workflow can align with emerging agent standards.
+- **Artifact failure handling:** the proof UI accounts for `policy_passed`, `execution_failed`, `receipt_missing`, `validation_missing` and `dispute_opened` states without treating policy pass as final fulfillment.
 
 Each product answers one question inside that same loop:
 

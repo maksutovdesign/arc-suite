@@ -1,4 +1,5 @@
 import {
+  AlertTriangle,
   ArrowUpRight,
   BadgeCheck,
   Check,
@@ -202,6 +203,31 @@ export default async function ProofPage({ searchParams }: ProofPageProps) {
                 </div>
               )
             })}
+          </div>
+        </section>
+
+        <section className="proof-panel proof-failure-handling">
+          <div className="flow-panel-title">
+            <div>
+              <span>Artifact failure handling</span>
+              <h2>Policy pass is not final fulfillment</h2>
+            </div>
+            <AlertTriangle size={21} />
+          </div>
+          <p>
+            Arc Suite separates policy approval from execution evidence. If a job clears policy but
+            the provider receipt or validator artifact does not arrive, the envelope moves into a
+            bounded review state instead of silently becoming a successful settlement.
+          </p>
+          <div className="proof-failure-grid">
+            {proof.artifactFailureHandling.map((item) => (
+              <div className={`proof-failure-card is-${item.severity}`} key={item.state}>
+                <code>{item.state}</code>
+                <strong>{item.label}</strong>
+                <span>{item.detail}</span>
+                <em>{item.action}</em>
+              </div>
+            ))}
           </div>
         </section>
 

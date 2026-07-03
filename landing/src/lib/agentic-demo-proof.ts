@@ -62,6 +62,21 @@ export type OracleRiskSignal = {
   value: string
 }
 
+export type ArtifactFailureState =
+  | "policy_passed"
+  | "execution_failed"
+  | "receipt_missing"
+  | "validation_missing"
+  | "dispute_opened"
+
+export type ArtifactFailureHandling = {
+  action: string
+  detail: string
+  label: string
+  severity: "ok" | "review" | "blocked"
+  state: ArtifactFailureState
+}
+
 export type AgenticWorkflowProof = {
   agent: Agent
   agentIdentity: ArcAgentIdentity
@@ -71,6 +86,7 @@ export type AgenticWorkflowProof = {
   amount: string
   api: ApiListing
   apiName: string
+  artifactFailureHandling: ArtifactFailureHandling[]
   artifacts: ArcAgentJobArtifact[]
   authorization: PaymentAuthorization
   billingEvent: string
@@ -256,6 +272,7 @@ export function buildAgenticDemoProof(options: ProofOptions = {}): AgenticWorkfl
     amount: `${flowRun.amountUsdc.toFixed(3)} USDC`,
     api: selectedApi,
     apiName: selectedApi.name,
+    artifactFailureHandling: createArtifactFailureHandling(),
     artifacts,
     authorization,
     billingEvent: usage.id,
@@ -321,6 +338,46 @@ export function buildAgenticProofFromStored(stored: StoredAgenticProof): Agentic
     settlementId: agentJob.settlementId ?? stored.flowRun.settlementId ?? proof.settlementId,
     txHash: agentJob.txHash ?? stored.flowRun.txHash ?? proof.txHash,
   }
+}
+
+function createArtifactFailureHandling(): ArtifactFailureHandling[] {
+  return [
+    {
+      action: "Allow execution to start",
+      detail: "Policy gates cleared. The job may run, but it is not final until fulfillment evidence arrives.",
+      label: "Policy passed",
+      severity: "ok",
+      state: "policy_passed",
+    },
+    {
+      action: "Keep funds and reputation unchanged",
+      detail: "If the provider or tool execution fails after policy approval, the job is isolated for review.",
+      label: "Execution failed",
+      severity: "blocked",
+      state: "execution_failed",
+    },
+    {
+      action: "Hold settlement proof",
+      detail: "A missing provider receipt prevents the job from being treated as fulfilled.",
+      label: "Receipt missing",
+      severity: "review",
+      state: "receipt_missing",
+    },
+    {
+      action: "Block trust update",
+      detail: "A missing validation artifact prevents reputation from being updated from that run.",
+      label: "Validation missing",
+      severity: "review",
+      state: "validation_missing",
+    },
+    {
+      action: "Open operator review",
+      detail: "Dispute state gives the operator a clear path to retry, refund or manually resolve.",
+      label: "Dispute opened",
+      severity: "blocked",
+      state: "dispute_opened",
+    },
+  ]
 }
 
 export function shortAddress(value: string | null) {

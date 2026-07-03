@@ -6234,6 +6234,87 @@ a.ops-history-run:hover {
   white-space: nowrap;
 }
 
+.agentic-failure-handling {
+  margin-top: 16px;
+  padding: 18px;
+  border: 1px solid rgba(245, 158, 11, 0.18);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(5, 8, 12, 0.72) 42%),
+    rgba(255, 255, 255, 0.018);
+}
+
+.agentic-failure-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.agentic-failure-card,
+.proof-failure-card {
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.agentic-failure-card.is-ok,
+.proof-failure-card.is-ok {
+  border-color: rgba(52, 211, 153, 0.22);
+  background: rgba(52, 211, 153, 0.045);
+}
+
+.agentic-failure-card.is-review,
+.proof-failure-card.is-review {
+  border-color: rgba(95, 191, 255, 0.2);
+  background: rgba(95, 191, 255, 0.04);
+}
+
+.agentic-failure-card.is-blocked,
+.proof-failure-card.is-blocked {
+  border-color: rgba(245, 158, 11, 0.23);
+  background: rgba(245, 158, 11, 0.045);
+}
+
+.agentic-failure-card code,
+.agentic-failure-card strong,
+.agentic-failure-card span,
+.proof-failure-card code,
+.proof-failure-card strong,
+.proof-failure-card span,
+.proof-failure-card em {
+  display: block;
+}
+
+.agentic-failure-card code,
+.proof-failure-card code {
+  overflow: hidden;
+  color: var(--blue);
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.06em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.agentic-failure-card strong,
+.proof-failure-card strong {
+  margin-top: 9px;
+  color: rgba(244, 247, 255, 0.94);
+  font-size: 14px;
+}
+
+.agentic-failure-card span,
+.proof-failure-card span {
+  margin-top: 7px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
 .agentic-status-note {
   max-width: 760px;
   margin: 12px 0 0;
@@ -7133,6 +7214,7 @@ a.ops-history-run:hover {
 }
 
 .proof-chain,
+.proof-failure-handling,
 .proof-artifacts,
 .proof-settlements {
   margin-top: 16px;
@@ -7196,6 +7278,28 @@ a.ops-history-run:hover {
   font-style: normal;
   font-weight: 850;
   text-transform: uppercase;
+}
+
+.proof-failure-handling > p {
+  max-width: 860px;
+  margin: 0 0 14px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.proof-failure-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.proof-failure-card em {
+  margin-top: 10px;
+  color: rgba(244, 247, 255, 0.78);
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 800;
 }
 
 .proof-artifact-grid {
@@ -9269,9 +9373,11 @@ a.ops-history-run:hover {
   .agentic-x402-chain,
   .agentic-model-grid,
   .agentic-artifacts,
+  .agentic-failure-grid,
   .submission-workflow,
   .proof-hero,
   .proof-grid,
+  .proof-failure-grid,
   .proof-archive-grid,
   .agentic-proof-strip,
   .shield-watchlist {
@@ -9435,8 +9541,10 @@ a.ops-history-run:hover {
   .agentic-x402-chain,
   .agentic-model-grid,
   .agentic-artifacts,
+  .agentic-failure-grid,
   .proof-hero,
   .proof-grid,
+  .proof-failure-grid,
   .proof-artifact-grid,
   .proof-archive-grid,
   .proof-archive-facts,

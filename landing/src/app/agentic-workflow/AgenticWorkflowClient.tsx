@@ -1,6 +1,7 @@
 "use client"
 
 import {
+  AlertTriangle,
   ArrowUpRight,
   BadgeCheck,
   Check,
@@ -261,6 +262,25 @@ export function AgenticWorkflowClient() {
           <BadgeCheck size={18} />
           <strong>Trust feedback loop</strong>
           <span>The successful payment becomes a new reputation signal for future access checks.</span>
+        </div>
+      </section>
+
+      <section className="agentic-failure-handling" aria-label="Artifact failure handling">
+        <div className="flow-panel-title">
+          <div>
+            <span>Failure-aware job envelope</span>
+            <h2>Policy can pass while artifacts still need proof.</h2>
+          </div>
+          <AlertTriangle size={21} />
+        </div>
+        <div className="agentic-failure-grid">
+          {proof.artifactFailureHandling.map((item) => (
+            <div className={`agentic-failure-card is-${item.severity}`} key={item.state}>
+              <code>{item.state}</code>
+              <strong>{item.label}</strong>
+              <span>{item.action}</span>
+            </div>
+          ))}
         </div>
       </section>
 
