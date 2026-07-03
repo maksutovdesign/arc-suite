@@ -6,6 +6,7 @@ import {
   createOracleRiskSignal,
   demoOracleRiskSignals,
   summarizeOracleRiskSignals,
+  withOracleObservationAdapters,
 } from "@/lib/backend/oracle-risk"
 import { createRequestId, logOperationalEvent, requestIdHeaders } from "@/lib/backend/observability"
 import { enforceRateLimit, rateLimitHeaders, rateLimitResponse } from "@/lib/backend/rate-limit"
@@ -33,7 +34,7 @@ export async function GET(request: NextRequest) {
     listSupabaseOracleRiskSignals(limit),
     checkSupabaseOracleRiskReadiness(),
   ])
-  const signals = storedSignals ?? demoOracleRiskSignals.slice(0, limit)
+  const signals = withOracleObservationAdapters(storedSignals ?? demoOracleRiskSignals.slice(0, limit))
 
   return NextResponse.json(
     {
@@ -64,8 +65,9 @@ export async function POST(request: NextRequest) {
   const idempotencyKey = input.idempotencyKey ?? randomUUID()
   const existing = await findSupabaseOracleRiskSignal(idempotencyKey)
   if (existing) {
+    const [signal] = withOracleObservationAdapters([existing])
     return NextResponse.json(
-      { idempotent: true, signal: existing, stored: true },
+      { idempotent: true, signal, stored: true },
       { headers: requestIdHeaders(requestId) },
     )
   }

@@ -39,6 +39,19 @@ type OraclePayload = {
   summary: OracleRiskSignalSummary
 }
 
+type OracleAdapterEvidence = {
+  currentObservation: "simulated_observation"
+  targetObservation: "live_observation"
+  status: "adapter_ready"
+  source: string
+  feedFreshnessMs: number
+  feedFreshnessStatus: "fresh" | "stale"
+  deviationBps: number
+  deviationStatus: "within_policy" | "outside_policy"
+  lastUpdate: string
+  nextStep: string
+}
+
 export function ShieldDashboardClient() {
   const [apiKey, setApiKey] = useState("")
   const [address, setAddress] = useState(DEFAULT_TEST_ADDRESS)
@@ -188,6 +201,7 @@ export function ShieldDashboardClient() {
   const screenings = payload?.screenings ?? []
   const oracleSignals = oraclePayload?.signals ?? []
   const latestOracleSignal = oracleSignals[0] ?? null
+  const latestOracleAdapter = latestOracleSignal ? readOracleAdapter(latestOracleSignal) : null
 
   return (
     <section className="analytics-shell shield-shell">
@@ -353,6 +367,30 @@ export function ShieldDashboardClient() {
               <code>{latestOracleSignal.digest.slice(0, 22)}...{latestOracleSignal.digest.slice(-8)}</code>
             </div>
           )}
+          {latestOracleAdapter && (
+            <div className="shield-oracle-adapter">
+              <div>
+                <span>Adapter</span>
+                <strong>{formatObservationStatus(latestOracleAdapter.currentObservation)} → {formatObservationStatus(latestOracleAdapter.targetObservation)}</strong>
+              </div>
+              <div>
+                <span>Source</span>
+                <strong>{latestOracleAdapter.source}</strong>
+              </div>
+              <div>
+                <span>Freshness</span>
+                <strong>{formatFreshness(latestOracleAdapter.feedFreshnessMs)} · {latestOracleAdapter.feedFreshnessStatus}</strong>
+              </div>
+              <div>
+                <span>Deviation</span>
+                <strong>{latestOracleAdapter.deviationBps} bps · {latestOracleAdapter.deviationStatus.replace("_", " ")}</strong>
+              </div>
+              <div>
+                <span>Last update</span>
+                <strong>{formatDate(latestOracleAdapter.lastUpdate)}</strong>
+              </div>
+            </div>
+          )}
           <div className="shield-oracle-list">
             {oracleSignals.slice(0, 3).map((signal) => (
               <div key={signal.id}>
@@ -458,6 +496,47 @@ function signalLabel(type: OracleRiskSignalType) {
   if (type === "market_data") return "Data Feed"
   if (type === "proof_of_reserve") return "Proof of Reserve"
   return "CCIP route"
+}
+
+function readOracleAdapter(signal: OracleRiskSignal): OracleAdapterEvidence | null {
+  const adapter = signal.evidence.oracleAdapter
+  if (!adapter || typeof adapter !== "object" || Array.isArray(adapter)) return null
+  const candidate = adapter as Partial<OracleAdapterEvidence>
+  if (
+    candidate.currentObservation !== "simulated_observation"
+    || candidate.targetObservation !== "live_observation"
+    || candidate.status !== "adapter_ready"
+    || typeof candidate.source !== "string"
+    || typeof candidate.feedFreshnessMs !== "number"
+    || typeof candidate.deviationBps !== "number"
+    || typeof candidate.lastUpdate !== "string"
+  ) {
+    return null
+  }
+
+  return {
+    currentObservation: candidate.currentObservation,
+    deviationBps: candidate.deviationBps,
+    deviationStatus: candidate.deviationStatus === "outside_policy" ? "outside_policy" : "within_policy",
+    feedFreshnessMs: candidate.feedFreshnessMs,
+    feedFreshnessStatus: candidate.feedFreshnessStatus === "stale" ? "stale" : "fresh",
+    lastUpdate: candidate.lastUpdate,
+    nextStep: typeof candidate.nextStep === "string" ? candidate.nextStep : "",
+    source: candidate.source,
+    status: candidate.status,
+    targetObservation: candidate.targetObservation,
+  }
+}
+
+function formatObservationStatus(value: OracleAdapterEvidence["currentObservation"] | OracleAdapterEvidence["targetObservation"]) {
+  return value.replace("_", " ")
+}
+
+function formatFreshness(value: number) {
+  if (value < 1000) return `${value}ms`
+  const seconds = Math.round(value / 1000)
+  if (seconds < 60) return `${seconds}s`
+  return `${Math.round(seconds / 60)}m`
 }
 
 function formatDate(value: string) {

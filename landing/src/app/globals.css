@@ -4490,6 +4490,39 @@ h3 {
   overflow-wrap: anywhere;
 }
 
+.shield-oracle-adapter {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.shield-oracle-adapter div {
+  min-height: 92px;
+  padding: 12px;
+  border: 1px solid rgba(45, 212, 191, 0.12);
+  border-radius: 8px;
+  background: rgba(45, 212, 191, 0.045);
+}
+
+.shield-oracle-adapter span {
+  display: block;
+  color: #2dd4bf;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.shield-oracle-adapter strong {
+  display: block;
+  margin-top: 10px;
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
 .shield-oracle-list {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -9111,6 +9144,7 @@ a.ops-history-run:hover {
 
   .shield-authbar,
   .shield-kpi-grid,
+  .shield-oracle-adapter,
   .shield-oracle-list,
   .shield-form-grid,
   .flow-metrics,

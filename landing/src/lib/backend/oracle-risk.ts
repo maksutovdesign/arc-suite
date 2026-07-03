@@ -18,15 +18,30 @@ export type OracleRiskSignalInput = {
   requestId?: string | null
 }
 
+export type OracleObservationAdapter = {
+  currentObservation: "simulated_observation"
+  targetObservation: "live_observation"
+  status: "adapter_ready"
+  source: string
+  feedFreshnessMs: number
+  feedFreshnessStatus: "fresh" | "stale"
+  deviationBps: number
+  deviationStatus: "within_policy" | "outside_policy"
+  lastUpdate: string
+  nextStep: string
+}
+
 export function createOracleRiskSignal(input: OracleRiskSignalInput): Omit<OracleRiskSignal, "workspaceId" | "createdAt"> {
   const observedAt = new Date().toISOString()
   const subject = input.subject?.trim() || defaultSubject(input.signalType)
   const policy = policyForSignal(input.signalType)
+  const oracleAdapter = observationAdapterForSignal(input.signalType, observedAt)
   const evidence = {
     chainSelector: ARC_CHAINLINK_CHAIN_SELECTOR,
     ccipRouter: ARC_CHAINLINK_CCIP_ROUTER,
     docs: ORACLE_DOCS,
     network: "arc-testnet",
+    oracleAdapter,
     sourceStatus: "simulated_observation",
   }
   const digest = digestFor({
@@ -88,6 +103,21 @@ export function summarizeOracleRiskSignals(signals: OracleRiskSignal[]): OracleR
   }
 }
 
+export function withOracleObservationAdapters(signals: OracleRiskSignal[]): OracleRiskSignal[] {
+  return signals.map((signal) => {
+    const evidence = signal.evidence ?? {}
+    if ("oracleAdapter" in evidence) return signal
+
+    return {
+      ...signal,
+      evidence: {
+        ...evidence,
+        oracleAdapter: observationAdapterForSignal(signal.signalType, signal.observedAt),
+      },
+    }
+  })
+}
+
 function createDemoOracleRiskSignal(input: {
   createdAt: string
   id: string
@@ -95,11 +125,13 @@ function createDemoOracleRiskSignal(input: {
 }): OracleRiskSignal {
   const subject = defaultSubject(input.signalType)
   const policy = policyForSignal(input.signalType)
+  const oracleAdapter = observationAdapterForSignal(input.signalType, input.createdAt)
   const evidence = {
     chainSelector: ARC_CHAINLINK_CHAIN_SELECTOR,
     ccipRouter: ARC_CHAINLINK_CCIP_ROUTER,
     docs: ORACLE_DOCS,
     network: "arc-testnet",
+    oracleAdapter,
     sourceStatus: "simulated_observation",
   }
   return {
@@ -149,6 +181,51 @@ function policyForSignal(signalType: OracleRiskSignalType) {
     dataSource: "Chainlink CCIP",
     threshold: "router configured; chain selector matches Arc testnet",
     value: "Arc Testnet CCIP route configured",
+  }
+}
+
+function observationAdapterForSignal(signalType: OracleRiskSignalType, observedAt: string): OracleObservationAdapter {
+  if (signalType === "market_data") {
+    return {
+      currentObservation: "simulated_observation",
+      deviationBps: 18,
+      deviationStatus: "within_policy",
+      feedFreshnessMs: 420,
+      feedFreshnessStatus: "fresh",
+      lastUpdate: observedAt,
+      nextStep: "Swap deterministic BTC/USD observation for Chainlink Data Feeds or Data Streams read.",
+      source: "Chainlink Data Feeds / Data Streams",
+      status: "adapter_ready",
+      targetObservation: "live_observation",
+    }
+  }
+
+  if (signalType === "proof_of_reserve") {
+    return {
+      currentObservation: "simulated_observation",
+      deviationBps: 3,
+      deviationStatus: "within_policy",
+      feedFreshnessMs: 10 * 60 * 1000,
+      feedFreshnessStatus: "fresh",
+      lastUpdate: observedAt,
+      nextStep: "Replace reserve ratio fixture with Chainlink Proof of Reserve freshness and collateral read.",
+      source: "Chainlink Proof of Reserve",
+      status: "adapter_ready",
+      targetObservation: "live_observation",
+    }
+  }
+
+  return {
+    currentObservation: "simulated_observation",
+    deviationBps: 0,
+    deviationStatus: "within_policy",
+    feedFreshnessMs: 730,
+    feedFreshnessStatus: "fresh",
+    lastUpdate: observedAt,
+    nextStep: "Connect Chainlink CCIP message status reads for Arc route runs.",
+    source: "Chainlink CCIP",
+    status: "adapter_ready",
+    targetObservation: "live_observation",
   }
 }
 
