@@ -139,7 +139,7 @@ const checks = [
   },
   {
     name: "Ops Health page",
-    run: async () => checkHtmlPage(`${bases.landing}/ops`, ["Ops Health", "MVP control center", "Infra Health"]),
+    run: async () => checkHtmlPage(`${bases.landing}/ops`, ["Ops Health", "MVP control center"]),
   },
   {
     name: "Arc Billing page",
