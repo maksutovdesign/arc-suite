@@ -3,10 +3,11 @@
 import {
   Activity,
   AlertTriangle,
+  BellRing,
   CheckCircle2,
-  CircleOff,
   Database,
   FileCheck2,
+  PauseCircle,
   RadioTower,
   RefreshCw,
   Search,
@@ -30,6 +31,7 @@ type ShieldPayload = {
   }
   screenings: ShieldScreening[]
   summary: ShieldSummary
+  watchlist?: RiskWatchlistItem[]
 }
 
 type OraclePayload = {
@@ -50,6 +52,21 @@ type OracleAdapterEvidence = {
   deviationStatus: "within_policy" | "outside_policy"
   lastUpdate: string
   nextStep: string
+}
+
+type RiskWatchlistItem = {
+  id: string
+  address: string
+  agent: string
+  chain: string
+  currentRisk: string
+  initialDecision: ShieldScreening["decision"]
+  lastDecision: ShieldScreening["decision"]
+  lastCheckedAt: string
+  nextAction: string
+  previousRisk: string
+  reason: string
+  status: "active" | "frozen" | "review"
 }
 
 export function ShieldDashboardClient() {
@@ -202,6 +219,9 @@ export function ShieldDashboardClient() {
   const oracleSignals = oraclePayload?.signals ?? []
   const latestOracleSignal = oracleSignals[0] ?? null
   const latestOracleAdapter = latestOracleSignal ? readOracleAdapter(latestOracleSignal) : null
+  const watchlist = payload?.watchlist ?? demoShieldPayload.watchlist ?? []
+  const frozenWatchCount = watchlist.filter((item) => item.status === "frozen").length
+  const reviewWatchCount = watchlist.filter((item) => item.status === "review").length
 
   return (
     <section className="analytics-shell shield-shell">
@@ -262,7 +282,7 @@ export function ShieldDashboardClient() {
         <ShieldMetric icon={<CheckCircle2 size={18} />} label="Allowed" value={summary.allowed} tone="allow" />
         <ShieldMetric icon={<AlertTriangle size={18} />} label="Review" value={summary.review} tone="review" />
         <ShieldMetric icon={<XCircle size={18} />} label="Blocked" value={summary.blocked} tone="block" />
-        <ShieldMetric icon={<CircleOff size={18} />} label="Provider errors" value={summary.providerErrors} tone="neutral" />
+        <ShieldMetric icon={<BellRing size={18} />} label="Risk alerts" value={frozenWatchCount + reviewWatchCount} tone={frozenWatchCount ? "block" : reviewWatchCount ? "review" : "neutral"} />
       </div>
 
       <div className="shield-workspace">
@@ -405,6 +425,52 @@ export function ShieldDashboardClient() {
             to the same audit trail as Circle screening before an agent request is fulfilled.
           </p>
         </section>
+
+        <section className="shield-panel shield-monitor-panel">
+          <div className="shield-panel-head">
+            <div>
+              <span>Continuous monitoring</span>
+              <h2>Risk Watchlist</h2>
+            </div>
+            <PauseCircle size={20} />
+          </div>
+          <div className="shield-monitor-summary">
+            <div>
+              <span>Watched addresses</span>
+              <strong>{watchlist.length}</strong>
+            </div>
+            <div>
+              <span>Frozen policies</span>
+              <strong>{frozenWatchCount}</strong>
+            </div>
+            <div>
+              <span>Manual reviews</span>
+              <strong>{reviewWatchCount}</strong>
+            </div>
+          </div>
+          <div className="shield-watchlist">
+            {watchlist.map((item) => (
+              <article className={`shield-watch-item is-${item.status}`} key={item.id}>
+                <div>
+                  <span>{item.agent}</span>
+                  <strong>{item.previousRisk} -&gt; {item.currentRisk}</strong>
+                  <code>{shortAddress(item.address)} · {item.chain}</code>
+                </div>
+                <div>
+                  <RiskBadge status={item.status} />
+                  <small>{formatDate(item.lastCheckedAt)}</small>
+                </div>
+                <p>{item.reason}</p>
+                <footer>{item.nextAction}</footer>
+              </article>
+            ))}
+          </div>
+          <p className="shield-footnote">
+            Arc Shield keeps previously allowed counterparties under watch. If a later
+            provider update changes the risk profile, the policy layer can freeze spending,
+            require manual review, or keep settlement enabled.
+          </p>
+        </section>
       </div>
 
       <section className="shield-panel shield-audit">
@@ -479,6 +545,11 @@ function DecisionIcon({ decision }: { decision: ShieldScreening["decision"] }) {
 
 function DecisionBadge({ decision }: { decision: ShieldScreening["decision"] }) {
   return <span className={`shield-badge is-${decision}`}>{decision}</span>
+}
+
+function RiskBadge({ status }: { status: RiskWatchlistItem["status"] }) {
+  const label = status === "frozen" ? "freeze" : status
+  return <span className={`shield-badge is-${status === "active" ? "allow" : status === "frozen" ? "block" : "review"}`}>{label}</span>
 }
 
 function readStoredApiKey() {

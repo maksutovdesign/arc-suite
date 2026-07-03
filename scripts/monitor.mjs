@@ -151,7 +151,7 @@ const checks = [
   },
   {
     name: "Arc Shield page",
-    run: async () => checkHtmlPage(`${bases.landing}/shield`, ["Arc Shield", "Demo workspace"]),
+    run: async () => checkHtmlPage(`${bases.landing}/shield`, ["Arc Shield", "Demo workspace", "Continuous monitoring", "Risk Watchlist"]),
   },
   {
     name: "Arc Gas page",

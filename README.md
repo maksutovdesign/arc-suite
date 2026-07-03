@@ -223,9 +223,10 @@ Arc Shield uses Circle Compliance Engine address screening as a provider signal 
 - Explicit `allow`, `review`, and `block` policy outcomes
 - Provider result, reasons, risk categories, actions, and raw response retained in Supabase
 - Chainlink-on-Arc evidence model using Arc Testnet CCIP Router `0xdE4E7FED43FAC37EB21aA0643d9852f75332eab8` and chain selector `3034092155422581607`
+- Continuous monitoring watchlist: a previously allowed address can later drift into review or freeze state when provider risk changes
 - Protected workspace API with read/write scopes and rate limiting
 - Provider outages fail to manual review instead of silently allowing activity
-- Operator dashboard with screening form, latest decision, KPIs, and audit table
+- Operator dashboard with screening form, latest decision, risk alerts, watchlist actions, KPIs, and audit table
 
 Circle currently does not list Arc Testnet in the standalone Address Screening chain enum. Shield therefore treats supported-chain screening as a cross-chain identity signal and keeps Arc settlement enforcement in monitor mode.
 

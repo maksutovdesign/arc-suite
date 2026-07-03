@@ -4576,6 +4576,116 @@ h3 {
   grid-column: 1 / -1;
 }
 
+.shield-monitor-panel {
+  grid-column: 1 / -1;
+}
+
+.shield-monitor-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.shield-monitor-summary div {
+  min-height: 94px;
+  padding: 14px;
+  border: 1px solid rgba(95, 191, 255, 0.14);
+  border-radius: 8px;
+  background: rgba(95, 191, 255, 0.045);
+}
+
+.shield-monitor-summary span {
+  display: block;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.shield-monitor-summary strong {
+  display: block;
+  margin-top: 12px;
+  color: var(--text);
+  font-size: 30px;
+}
+
+.shield-watchlist {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.shield-watch-item {
+  min-width: 0;
+  min-height: 238px;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.075);
+  border-top: 3px solid var(--green);
+  border-radius: 8px;
+  background: rgba(4, 10, 16, 0.45);
+}
+
+.shield-watch-item.is-review {
+  border-top-color: var(--yellow);
+}
+
+.shield-watch-item.is-frozen {
+  border-top-color: var(--red);
+}
+
+.shield-watch-item > div:first-child {
+  display: grid;
+  gap: 7px;
+  margin-bottom: 12px;
+}
+
+.shield-watch-item > div:nth-child(2) {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.shield-watch-item span,
+.shield-watch-item small {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.shield-watch-item strong {
+  color: var(--text);
+  font-size: 22px;
+}
+
+.shield-watch-item code {
+  color: var(--cyan);
+  font-family: "Space Mono", "SFMono-Regular", monospace;
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+
+.shield-watch-item p {
+  min-height: 44px;
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.shield-watch-item footer {
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.065);
+  color: var(--text);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
 .shield-oracle-actions {
   display: flex;
   gap: 10px;
@@ -9163,7 +9273,8 @@ a.ops-history-run:hover {
   .proof-hero,
   .proof-grid,
   .proof-archive-grid,
-  .agentic-proof-strip {
+  .agentic-proof-strip,
+  .shield-watchlist {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -9282,6 +9393,8 @@ a.ops-history-run:hover {
 
   .shield-authbar,
   .shield-kpi-grid,
+  .shield-monitor-summary,
+  .shield-watchlist,
   .shield-oracle-adapter,
   .shield-oracle-list,
   .shield-form-grid,

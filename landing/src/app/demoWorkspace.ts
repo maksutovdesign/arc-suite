@@ -219,9 +219,67 @@ export const demoShieldPayload: {
   configuration: { configured: boolean; auditStorage: boolean; arcNativeScreening: boolean; supportedChains: string[] }
   screenings: ShieldScreening[]
   summary: ShieldSummary
+  watchlist: Array<{
+    id: string
+    address: string
+    agent: string
+    chain: string
+    currentRisk: string
+    initialDecision: ShieldScreening["decision"]
+    lastDecision: ShieldScreening["decision"]
+    lastCheckedAt: string
+    nextAction: string
+    previousRisk: string
+    reason: string
+    status: "active" | "frozen" | "review"
+  }>
 } = {
   configuration: { configured: true, auditStorage: true, arcNativeScreening: false, supportedChains: ["ETH-SEPOLIA", "MATIC-AMOY", "ARB-SEPOLIA"] },
   summary: { total: 5, allowed: 3, review: 1, blocked: 1, providerErrors: 0, lastScreenedAt: "2026-06-23T09:39:21Z" },
+  watchlist: [
+    {
+      id: "risk_watch_001",
+      address: "0x55e0dd25cd5f917e24de571d98d97c3b243709b2",
+      agent: "DataHarvester-Pro",
+      chain: "ETH-SEPOLIA",
+      currentRisk: "LOW",
+      initialDecision: "allow",
+      lastDecision: "allow",
+      lastCheckedAt: "2026-06-23T09:42:00Z",
+      nextAction: "Keep settlement enabled",
+      previousRisk: "LOW",
+      reason: "No new categories after rescreen.",
+      status: "active",
+    },
+    {
+      id: "risk_watch_002",
+      address: "0x7fb49965753A9eC3646fd5d004ee5AeD6Cc89999",
+      agent: "TradeBot-Alpha",
+      chain: "ETH-SEPOLIA",
+      currentRisk: "BLOCKLIST",
+      initialDecision: "allow",
+      lastDecision: "block",
+      lastCheckedAt: "2026-06-23T09:44:00Z",
+      nextAction: "Freeze wallet policy and open operator review",
+      previousRisk: "LOW",
+      reason: "Risk profile changed after the original allow decision.",
+      status: "frozen",
+    },
+    {
+      id: "risk_watch_003",
+      address: "0x9C4e3AfC6cA12fC74Ff124B201Ac2389aEAa71b2",
+      agent: "ResearchAssist",
+      chain: "MATIC-AMOY",
+      currentRisk: "MEDIUM",
+      initialDecision: "allow",
+      lastDecision: "review",
+      lastCheckedAt: "2026-06-23T09:41:00Z",
+      nextAction: "Hold high-value settlement until manual approval",
+      previousRisk: "LOW",
+      reason: "New mixer-adjacent exposure requires scoped review.",
+      status: "review",
+    },
+  ],
   screenings: [
     {
       id: "scr_demo_001",
