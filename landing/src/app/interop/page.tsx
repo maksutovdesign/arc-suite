@@ -1,10 +1,12 @@
 import {
   ArrowRightLeft,
+  AlertTriangle,
   CheckCircle2,
-  Clock3,
+  FileCheck2,
   Fingerprint,
   Network,
   RadioTower,
+  ReceiptText,
   Route,
   ShieldCheck,
 } from "lucide-react"
@@ -23,15 +25,34 @@ const routeRun = {
   source: "Arc Testnet",
   target: "Ethereum Sepolia",
   status: "Route-ready",
+  oracleRiskHash: "0xriskc6c0fb7f3421d4b1986f0fbcf8e7b31e2048",
+  oracleSignal: "Chainlink CCIP route configured · Arc selector matched",
+  receiptState: "receipt_missing -> review",
+  validationState: "validation_missing -> review",
   proofHash: "sha256:9db7c7c9e467c79e9f12f4ddf8b912fedc7ce6bf8f6f4dd9a9a648cc8e3f2048",
   messageId: "0xarc2048ccip00000000000000000000000000000000000000000000000091fa",
 }
 
 const routeSteps = [
   ["Policy checked", "Shield confirms address, route and risk inputs before the cross-chain instruction is prepared.", CheckCircle2],
-  ["CCIP route selected", "Arc Testnet selector and router are attached to the run envelope.", Route],
-  ["Message observed", "The run records message status, target chain and route evidence for operator review.", RadioTower],
-  ["Settlement gated", "Flow waits for receipt and validation artifacts before finalizing the job.", ShieldCheck],
+  ["Oracle risk attached", "Chainlink-on-Arc evidence becomes the oracleRiskHash inside the job envelope.", RadioTower],
+  ["CCIP route selected", "Arc Testnet selector and router are attached to the route run.", Route],
+  ["Receipt required", "Provider receipt must arrive before the job can be treated as fulfilled.", ReceiptText],
+  ["Validation required", "Validator evidence closes the loop; missing evidence moves the job to review.", ShieldCheck],
+]
+
+const riskRouterSteps = [
+  ["Policy", "Treasury, Reputation and Shield clear the request before routing.", "pass"],
+  ["Oracle", "Chainlink route/data signal is hashed into the job envelope.", "attached"],
+  ["CCIP", "Arc Testnet → Ethereum Sepolia route metadata is prepared.", "ready"],
+  ["Receipt", "Missing provider receipt keeps settlement finalization on hold.", "review"],
+  ["Validation", "Missing validation evidence blocks trust-score update.", "review"],
+]
+
+const failureGates = [
+  ["receipt_missing", "Do not finalize settlement proof", "The policy path passed, but provider evidence has not arrived."],
+  ["validation_missing", "Do not update reputation", "The job cannot become a positive trust signal without validator evidence."],
+  ["dispute_opened", "Route to operator review", "The operator can retry, refund or resolve without exposing private provider logic."],
 ]
 
 const evidence = [
@@ -39,6 +60,7 @@ const evidence = [
   ["Target chain", routeRun.target],
   ["CCIP router", shortAddress(routeRun.router)],
   ["Arc selector", routeRun.selector],
+  ["Oracle risk", shortHash(routeRun.oracleRiskHash)],
   ["Message id", shortHash(routeRun.messageId)],
   ["Proof hash", shortHash(routeRun.proofHash)],
 ]
@@ -53,16 +75,16 @@ export default function InteropPage() {
             <p className="kicker">Chainlink CCIP route demo</p>
             <h1>Arc Interop</h1>
             <p>
-              A route-ready demo for cross-chain treasury, collateral and settlement coordination:
-              Arc Testnet prepares the instruction, Chainlink CCIP identifies the route, and Arc Suite
-              keeps policy, message and proof evidence in one operator view.
+              A route-ready demo for cross-chain treasury, collateral and settlement coordination.
+              Arc Suite checks policy, attaches Chainlink risk evidence, prepares the CCIP route,
+              and only finalizes the job when receipt and validation artifacts are present.
             </p>
           </div>
           <div className="interop-status-card">
             <Network size={24} />
             <span>{routeRun.status}</span>
             <strong>{routeRun.source} → {routeRun.target}</strong>
-            <small>Router and selector attached to the job envelope.</small>
+            <small>Router, selector and oracleRiskHash attached to the job envelope.</small>
           </div>
         </div>
 
@@ -96,6 +118,36 @@ export default function InteropPage() {
                 <strong>{value}</strong>
               </div>
             ))}
+          </div>
+        </section>
+
+        <section className="interop-risk-router" aria-label="Arc Interop Risk Router">
+          <div className="interop-panel-head">
+            <ShieldCheck size={20} />
+            <div>
+              <span>Arc Interop & Risk Router</span>
+              <h2>Policy → Oracle → CCIP → Receipt → Validation</h2>
+            </div>
+          </div>
+          <div className="interop-router-flow">
+            {riskRouterSteps.map(([label, detail, state], index) => (
+              <article className={`is-${state}`} key={label}>
+                <i>{String(index + 1).padStart(2, "0")}</i>
+                <strong>{label}</strong>
+                <span>{detail}</span>
+                <code>{state}</code>
+              </article>
+            ))}
+          </div>
+          <div className="interop-router-hash">
+            <div>
+              <span>oracleRiskHash</span>
+              <strong>{routeRun.oracleRiskHash}</strong>
+            </div>
+            <div>
+              <span>Risk input</span>
+              <strong>{routeRun.oracleSignal}</strong>
+            </div>
           </div>
         </section>
 
@@ -133,7 +185,10 @@ export default function InteropPage() {
             <dl className="interop-proof-list">
               <div><dt>Router</dt><dd>{routeRun.router}</dd></div>
               <div><dt>Selector</dt><dd>{routeRun.selector}</dd></div>
+              <div><dt>Oracle risk</dt><dd>{routeRun.oracleRiskHash}</dd></div>
               <div><dt>Message status</dt><dd>Prepared · awaiting live CCIP adapter</dd></div>
+              <div><dt>Receipt state</dt><dd>{routeRun.receiptState}</dd></div>
+              <div><dt>Validation state</dt><dd>{routeRun.validationState}</dd></div>
               <div><dt>Proof hash</dt><dd>{routeRun.proofHash}</dd></div>
             </dl>
             <p className="interop-note">
@@ -143,14 +198,34 @@ export default function InteropPage() {
           </section>
         </div>
 
+        <section className="interop-failure-panel">
+          <div className="interop-panel-head">
+            <AlertTriangle size={20} />
+            <div>
+              <span>Artifact gates</span>
+              <h2>Policy pass does not settle a route by itself.</h2>
+            </div>
+          </div>
+          <div className="interop-failure-grid">
+            {failureGates.map(([state, action, detail]) => (
+              <article key={state}>
+                <code>{state}</code>
+                <strong>{action}</strong>
+                <span>{detail}</span>
+              </article>
+            ))}
+          </div>
+        </section>
+
         <section className="interop-bottom-band">
-          <Clock3 size={20} />
+          <FileCheck2 size={20} />
           <div>
-            <span>Next upgrade</span>
-            <strong>Connect live Chainlink CCIP status reads.</strong>
+            <span>Reviewer takeaway</span>
+            <strong>Interop is part of the same proof system.</strong>
             <p>
               The product surface is ready for live route observation: message id, source chain,
-              target chain, status, proof hash and settlement-gating state already have a place in the UI.
+              target chain, Chainlink router, Arc selector, oracle risk hash and artifact-gating state
+              already have a place in the UI.
             </p>
           </div>
         </section>

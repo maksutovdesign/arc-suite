@@ -159,7 +159,7 @@ const checks = [
   },
   {
     name: "Arc Interop page",
-    run: async () => checkHtmlPage(`${bases.landing}/interop`, ["Arc Interop", "CCIP route demo", "3034092155422581607"]),
+    run: async () => checkHtmlPage(`${bases.landing}/interop`, ["Arc Interop", "Risk Router", "oracleRiskHash", "3034092155422581607"]),
   },
   {
     name: "Arc Wallet OS page",

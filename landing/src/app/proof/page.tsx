@@ -58,6 +58,7 @@ export default async function ProofPage({ searchParams }: ProofPageProps) {
     providerSignatureAlgorithm: proof.receipt.signatureAlgorithm,
     providerVerificationPayload: proof.receipt.verificationPayloadHash,
     oracleDigest: proof.oracleSignal.digest,
+    oracleRiskHash: proof.oracleRiskHash,
     workflowId: flowRun.id,
     x402OfferDigest: artifacts.find((item) => item.type === "x402_offer")?.digest ?? proof.offer.payloadHash,
   }
@@ -171,6 +172,7 @@ export default async function ProofPage({ searchParams }: ProofPageProps) {
               <span>{`  "providerSignatureAlgorithm": "${receipt.providerSignatureAlgorithm}",`}</span>
               <span>{`  "providerVerificationPayload": "${receipt.providerVerificationPayload}",`}</span>
               <span>{`  "oracleSignalDigest": "${receipt.oracleDigest}",`}</span>
+              <span>{`  "oracleRiskHash": "${receipt.oracleRiskHash}",`}</span>
               <span>{`  "receiptDigest": "${receipt.receiptDigest}",`}</span>
               <span>{`  "settlementId": "${receipt.settlementId}",`}</span>
               <span>{`  "txHash": "${receipt.txHash}",`}</span>
@@ -251,6 +253,11 @@ export default async function ProofPage({ searchParams }: ProofPageProps) {
               <span>oracle signal</span>
               <strong>{shortHash(proof.oracleSignal.digest)}</strong>
               <code>{proof.oracleSignal.chainSelector}</code>
+            </div>
+            <div>
+              <span>oracle risk hash</span>
+              <strong>{shortHash(proof.oracleRiskHash)}</strong>
+              <code>Risk Router</code>
             </div>
             <div>
               <span>validation</span>

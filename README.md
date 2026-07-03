@@ -258,6 +258,19 @@ Arc Flow is the full intent-to-settlement workflow. It chains Shield screening, 
 - Supabase audit trail for every flow run and policy step
 - Read-only demo workspace by default; live execution unlocks with a scoped Arc API key
 
+### Arc Interop & Risk Router
+
+**`/landing/src/app/interop`** · [Live](https://arcsuite-app.vercel.app/interop)
+
+Arc Interop turns the Arc x Chainlink update into a concrete product surface. The page models a route-ready Arc Testnet → Ethereum Sepolia flow where policy, Chainlink oracle/CCIP evidence, receipt state and validation state sit inside one reviewer-readable route envelope.
+
+**Key features:**
+- CCIP route card with Arc Testnet source, Ethereum Sepolia target, router and chain selector.
+- Chainlink-on-Arc risk input represented as `oracleRiskHash` on the job envelope.
+- Risk Router flow: Policy → Oracle → CCIP → Receipt → Validation.
+- Artifact gating: if receipt or validation evidence is missing, the route moves to review instead of being treated as settled.
+- Upgrade path from deterministic route evidence to live Chainlink CCIP status reads.
+
 ### Arc Billing — x402 Metering & Subscriptions
 
 **`/landing/src/app/billing`** · [Live](https://arcsuite-app.vercel.app/billing)

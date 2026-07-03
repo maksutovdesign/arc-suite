@@ -228,6 +228,7 @@ export function AgenticWorkflowClient() {
             <span>{`  "providerKeyId": "${proof.receipt.providerKeyId}",`}</span>
             <span>{`  "providerPayload": "${proof.receipt.verificationPayloadHash}",`}</span>
             <span>{`  "oracleSignal": "${proof.oracleSignal.digest}",`}</span>
+            <span>{`  "oracleRiskHash": "${proof.oracleRiskHash}",`}</span>
             <span>{`  "receiptSignature": "${proof.receipt.signature}",`}</span>
             <span>{`  "settlementId": "${proof.settlementId}",`}</span>
             <span>{`  "requestId": "${proof.requestId}",`}</span>
@@ -313,6 +314,7 @@ export function AgenticWorkflowClient() {
               ["status", proof.agentJob.status],
               ["input hash", shortHash(proof.agentJob.inputHash)],
               ["policy hash", shortHash(proof.agentJob.policyHash)],
+              ["oracle risk", shortHash(proof.oracleRiskHash)],
             ]}
           />
           <ModelCard

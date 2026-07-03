@@ -94,6 +94,7 @@ export type AgenticWorkflowProof = {
   flowRun: FlowRun
   generatedAt: string
   offer: SignedOffer
+  oracleRiskHash: string
   oracleSignal: OracleRiskSignal
   payer: string
   policy: string
@@ -188,6 +189,7 @@ export function buildAgenticDemoProof(options: ProofOptions = {}): AgenticWorkfl
   const authorization = createPaymentAuthorization(offer, usage)
   const receipt = createSignedReceipt(offer, authorization, generatedAt, flowRun)
   const oracleSignal = createOracleRiskSignal(workflowId, selectedApi, generatedAt)
+  const oracleRiskHash = `0x${stableDigest(`risk-router:${workflowId}:${oracleSignal.digest}`)}${stableDigest(oracleSignal.signalId)}`
   const effectiveSettlementId = flowRun.settlementId ?? settlementId
 
   const agentJob: ArcAgentJob = {
@@ -206,6 +208,8 @@ export function buildAgenticDemoProof(options: ProofOptions = {}): AgenticWorkfl
       provider: selectedApi.providerName,
       providerSigningKeyId: receipt.providerKeyId,
       providerSignatureAlgorithm: receipt.signatureAlgorithm,
+      oracleRiskHash,
+      riskRouter: "policy_oracle_ccip_receipt_validation",
       x402OfferId: offer.offerId,
     },
     outputHash: `0x${stableDigest(`output:${receipt.receiptId}:${workflowId}`)}${stableDigest("output")}`,
@@ -280,6 +284,7 @@ export function buildAgenticDemoProof(options: ProofOptions = {}): AgenticWorkfl
     flowRun,
     generatedAt,
     offer,
+    oracleRiskHash,
     oracleSignal,
     payer: shortAddress(baseAgent.address),
     policy: "ALLOW",
@@ -332,6 +337,7 @@ export function buildAgenticProofFromStored(stored: StoredAgenticProof): Agentic
       txHash: agentJob.txHash ?? stored.flowRun.txHash ?? proof.receipt.txHash,
       verified: Boolean(agentJob.receiptHash && (agentJob.txHash ?? stored.flowRun.txHash)),
     },
+    oracleRiskHash: typeof agentJob.metadata.oracleRiskHash === "string" ? agentJob.metadata.oracleRiskHash : proof.oracleRiskHash,
     requestId: stored.flowRun.requestId ?? proof.requestId,
     recipient: shortAddress(stored.flowRun.recipientAddress),
     reputation: `${stored.flowRun.reputationScoreBefore} -> ${stored.flowRun.reputationScoreAfter}`,

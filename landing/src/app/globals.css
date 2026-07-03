@@ -5011,7 +5011,9 @@ h3 {
 
 .interop-status-card,
 .interop-route-card,
+.interop-risk-router,
 .interop-panel,
+.interop-failure-panel,
 .interop-bottom-band {
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -5063,6 +5065,15 @@ h3 {
 .interop-route-card {
   margin-bottom: 18px;
   padding: 20px;
+}
+
+.interop-risk-router,
+.interop-failure-panel {
+  margin-bottom: 18px;
+  padding: 20px;
+  background:
+    linear-gradient(135deg, rgba(20, 184, 166, 0.08), rgba(4, 10, 16, 0.34)),
+    rgba(13, 21, 30, 0.86);
 }
 
 .interop-route-head {
@@ -5134,7 +5145,7 @@ h3 {
 
 .interop-evidence-grid {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 10px;
   margin-top: 14px;
 }
@@ -5213,6 +5224,148 @@ h3 {
   margin: 6px 0 0;
   color: var(--muted);
   line-height: 1.5;
+}
+
+.interop-router-flow {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.interop-router-flow article,
+.interop-failure-grid article {
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.065);
+  border-radius: 8px;
+  background: rgba(4, 10, 16, 0.42);
+}
+
+.interop-router-flow article {
+  position: relative;
+  min-height: 176px;
+}
+
+.interop-router-flow article:not(:last-child)::after {
+  position: absolute;
+  top: 28px;
+  right: -10px;
+  width: 10px;
+  height: 1px;
+  background: rgba(45, 212, 191, 0.38);
+  content: "";
+}
+
+.interop-router-flow i {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid rgba(95, 191, 255, 0.22);
+  border-radius: 8px;
+  color: var(--cyan);
+  font-style: normal;
+  font-weight: 850;
+}
+
+.interop-router-flow strong,
+.interop-router-flow span,
+.interop-router-flow code,
+.interop-failure-grid code,
+.interop-failure-grid strong,
+.interop-failure-grid span {
+  display: block;
+}
+
+.interop-router-flow strong {
+  margin-top: 16px;
+  color: var(--text);
+  font-size: 16px;
+}
+
+.interop-router-flow span,
+.interop-failure-grid span {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.interop-router-flow code {
+  margin-top: 14px;
+  color: #2dd4bf;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.interop-router-flow .is-review code {
+  color: var(--yellow);
+}
+
+.interop-router-hash {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.interop-router-hash div {
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid rgba(95, 191, 255, 0.12);
+  border-radius: 8px;
+  background: rgba(4, 10, 16, 0.36);
+}
+
+.interop-router-hash span {
+  display: block;
+  color: var(--cyan);
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.interop-router-hash strong {
+  display: block;
+  margin-top: 8px;
+  overflow-wrap: anywhere;
+  color: var(--text);
+  font-family: "Space Mono", "SFMono-Regular", monospace;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.interop-failure-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.interop-failure-grid article {
+  border-color: rgba(245, 158, 11, 0.18);
+  background: rgba(245, 158, 11, 0.04);
+}
+
+.interop-failure-grid code {
+  overflow: hidden;
+  color: var(--yellow);
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.interop-failure-grid strong {
+  margin-top: 10px;
+  color: var(--text);
+  font-size: 15px;
 }
 
 .interop-proof-list {
@@ -9368,6 +9521,9 @@ a.ops-history-run:hover {
   .submission-proof,
   .submission-link-grid,
   .submission-review-script,
+  .interop-router-flow,
+  .interop-router-hash,
+  .interop-failure-grid,
   .submission-fit,
   .agentic-proof-grid,
   .agentic-x402-chain,
@@ -9519,6 +9675,9 @@ a.ops-history-run:hover {
   .gas-form,
   .interop-evidence-grid,
   .interop-route-visual,
+  .interop-router-flow,
+  .interop-router-hash,
+  .interop-failure-grid,
   .wallet-metrics,
   .wallet-form,
   .radar-method,
@@ -9628,6 +9787,10 @@ a.ops-history-run:hover {
 
   .proof-chain-step {
     grid-template-columns: 38px minmax(0, 1fr);
+  }
+
+  .interop-router-flow article:not(:last-child)::after {
+    display: none;
   }
 
   .proof-chain-step code,
