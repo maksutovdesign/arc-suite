@@ -2,6 +2,7 @@ import {
   ArrowRightLeft,
   AlertTriangle,
   CheckCircle2,
+  Clock3,
   FileCheck2,
   Fingerprint,
   Network,
@@ -12,6 +13,7 @@ import {
 } from "lucide-react"
 
 import { EcosystemNav } from "../EcosystemNav"
+import { arcNetworkResilience } from "../../lib/network-resilience"
 
 export const metadata = {
   title: "Arc Interop — CCIP Route Demo",
@@ -31,6 +33,10 @@ const routeRun = {
   validationState: "validation_missing -> review",
   proofHash: "sha256:9db7c7c9e467c79e9f12f4ddf8b912fedc7ce6bf8f6f4dd9a9a648cc8e3f2048",
   messageId: "0xarc2048ccip00000000000000000000000000000000000000000000000091fa",
+  rpcLatencyMs: 184,
+  feedFreshnessMs: 730,
+  deviationBps: 0,
+  explorerUrl: "https://testnet.arcscan.app",
 }
 
 const routeSteps = [
@@ -64,6 +70,14 @@ const evidence = [
   ["Message id", shortHash(routeRun.messageId)],
   ["Proof hash", shortHash(routeRun.proofHash)],
 ]
+
+const routeHistory = [
+  ["09:12:00", "policy_passed", "Treasury, Shield and Reputation gates passed."],
+  ["09:12:01", "oracle_attached", "Chainlink route signal attached as oracleRiskHash."],
+  ["09:12:02", "ccip_route_ready", "Arc Testnet selector and router matched."],
+  ["09:12:03", "receipt_required", "Provider receipt required before fulfillment."],
+  ["09:12:04", "validation_required", "Validation artifact required before reputation update."],
+] as const
 
 export default function InteropPage() {
   return (
@@ -151,6 +165,32 @@ export default function InteropPage() {
           </div>
         </section>
 
+        <section className="interop-route-card">
+          <div className="interop-route-head">
+            <div>
+              <span>Interop v2 readiness</span>
+              <h2>Route status, feed freshness and RPC health.</h2>
+            </div>
+            <strong>Adapter-ready</strong>
+          </div>
+          <div className="interop-evidence-grid">
+            <div><span>CCIP status</span><strong>prepared</strong></div>
+            <div><span>Feed freshness</span><strong>{routeRun.feedFreshnessMs} ms</strong></div>
+            <div><span>Deviation</span><strong>{routeRun.deviationBps} bps</strong></div>
+            <div><span>RPC latency</span><strong>{routeRun.rpcLatencyMs} ms</strong></div>
+            <div><span>Explorer</span><strong>Arcscan-ready</strong></div>
+            <div><span>History</span><strong>{routeHistory.length} states</strong></div>
+          </div>
+          <div className="interop-proof-list">
+            {routeHistory.map(([time, state, detail]) => (
+              <div key={state}>
+                <dt>{time} · {state}</dt>
+                <dd>{detail}</dd>
+              </div>
+            ))}
+          </div>
+        </section>
+
         <div className="interop-grid">
           <section className="interop-panel">
             <div className="interop-panel-head">
@@ -214,6 +254,39 @@ export default function InteropPage() {
                 <span>{detail}</span>
               </article>
             ))}
+          </div>
+        </section>
+
+        <section className="interop-failure-panel">
+          <div className="interop-panel-head">
+            <Clock3 size={20} />
+            <div>
+              <span>Arc Network Resilience</span>
+              <h2>Load-aware settlement states.</h2>
+            </div>
+          </div>
+          <p className="interop-note">
+            {arcNetworkResilience.summary} During planned Arc Testnet load testing, congestion or delayed
+            block production should become an execution state, not a false product failure.
+          </p>
+          <div className="interop-failure-grid">
+            {arcNetworkResilience.states.map((item) => (
+              <article key={item.state}>
+                <code>{item.state}</code>
+                <strong>{item.action}</strong>
+                <span>{item.detail}</span>
+              </article>
+            ))}
+          </div>
+          <div className="interop-router-hash">
+            <div>
+              <span>Status source</span>
+              <strong>{arcNetworkResilience.statusPageUrl}</strong>
+            </div>
+            <div>
+              <span>Monitor policy</span>
+              <strong>{arcNetworkResilience.monitorPolicy[0]}</strong>
+            </div>
           </div>
         </section>
 

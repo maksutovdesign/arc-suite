@@ -17,7 +17,8 @@ The latest release includes a recorded demo, Arc Testnet settlement evidence whe
 - Latest production proof API: https://arcsuite-app.vercel.app/api/agentic/latest-proof
 - Flow operator console: https://arcsuite-app.vercel.app/flow
 - Repository: https://github.com/maksutovdesign/arc-suite
-- Release: https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.06.30-agentic-proof-package
+- Interop / Risk Router: https://arcsuite-app.vercel.app/interop
+- Release: https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.07.04-interop-risk-router
 - Demo video: https://github.com/maksutovdesign/arc-suite/releases/download/v2026.06.28-real-arc-settlement/arc-suite-agentic-workflow-demo.mov
 - Arc Testnet proof: https://testnet.arcscan.app/tx/0x41210539368a78f6bbc08b088a95430dc0f64e9379ad9226173fc3ce565d733b
 
@@ -41,6 +42,8 @@ The latest release includes a recorded demo, Arc Testnet settlement evidence whe
 7. Added a Proof Archive and `/api/agentic/proofs`, making recent Marketplace purchase receipts queryable and visible.
 8. Added provider signing metadata to x402-style receipts: provider key id, signing algorithm and verification payload hash.
 9. Added Arc Provider Trust Center for API providers to reconcile signed receipts, provider keys, paid jobs and proof links.
+10. Added Arc Interop & Risk Router with Chainlink-on-Arc CCIP route evidence, `oracleRiskHash`, artifact gates and a reviewer-readable cross-chain route envelope.
+11. Added Arc Network Resilience framing so load testing, congestion, retry and deferred settlement are handled as explicit execution states instead of product failures.
 
 ## Suggested Review Script
 
@@ -72,4 +75,4 @@ That loop is the product: identity, policy, settlement, receipt and reputation i
 2. Add Circle webhook reconciliation for settlement status updates.
 3. Replace demo provider signing metadata with provider-owned keys.
 4. Add provider API cards that can be purchased directly from Marketplace.
-5. Add a compact operator dashboard for the last live settlements, policy denials and reputation changes.
+5. Add live CCIP route status, Chainlink feed freshness/deviation and Arc network status adapters.

@@ -39,6 +39,14 @@ const integrations = [
   },
 ]
 
+const onboardingFlow = [
+  ["01", "Create API listing", "Provider defines endpoint, SLA, category and verification requirements."],
+  ["02", "Set price", "USDC price, quota and prepaid balance rules become part of the offer."],
+  ["03", "Publish x402 offer", "Marketplace exposes a signed machine-readable offer for agents."],
+  ["04", "Agent buys access", "Treasury, Shield, Reputation and Interop gates run before fulfillment."],
+  ["05", "Receipt appears in Proof", "Provider signature, settlement reference and validation artifacts become reviewable."],
+] as const
+
 export default async function ProviderPage() {
   const overview = await getProviderTrustOverview(12)
   const latest = overview.receipts[0]
@@ -107,6 +115,25 @@ export default async function ProviderPage() {
             <small>In recent proof history</small>
           </article>
         </div>
+
+        <section className="provider-section provider-panel">
+          <div className="private-panel-title">
+            <div>
+              <span>Provider onboarding</span>
+              <h2>From API listing to proof-backed paid access.</h2>
+            </div>
+            <Store size={22} />
+          </div>
+          <div className="grant-reviewer-grid">
+            {onboardingFlow.map(([index, title, detail]) => (
+              <div key={title}>
+                <i>{index}</i>
+                <strong>{title}</strong>
+                <span>{detail}</span>
+              </div>
+            ))}
+          </div>
+        </section>
 
         <section className="provider-section provider-split">
           <article className="provider-panel">

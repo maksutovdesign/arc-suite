@@ -20,9 +20,11 @@ For a short hackathon submission view, see [`HACKATHON.md`](HACKATHON.md).
 
 **Demo video:** [arc-suite-agentic-workflow-demo.mov](https://github.com/maksutovdesign/arc-suite/releases/download/v2026.06.28-real-arc-settlement/arc-suite-agentic-workflow-demo.mov)
 
-**Release package:** [v2026.07.02-grant-review-hotfix](https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.07.02-grant-review-hotfix)
+**Release package:** [v2026.07.04-interop-risk-router](https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.07.04-interop-risk-router)
 
 **Grant update:** [`docs/submission/grant-update.md`](docs/submission/grant-update.md)
+
+**Questbook update pack:** [`docs/submission/questbook-update-pack-2026-07-09.md`](docs/submission/questbook-update-pack-2026-07-09.md)
 
 **Application resubmission copy:** [`docs/submission/application-resubmission-copy.md`](docs/submission/application-resubmission-copy.md)
 
@@ -46,6 +48,7 @@ For a short hackathon submission view, see [`HACKATHON.md`](HACKATHON.md).
 6. Open [Arc Provider](https://arcsuite-app.vercel.app/provider) and click **Create provider receipt** to generate a provider-side demo receipt and proof.
 7. Open [Arc Flow](https://arcsuite-app.vercel.app/flow) to see the operator console behind the same workflow model.
 8. Review the artifact failure handling states on `/agentic-workflow` and `/proof`: `policy_passed`, `execution_failed`, `receipt_missing`, `validation_missing` and `dispute_opened`.
+9. Open [Arc Interop](https://arcsuite-app.vercel.app/interop) to review Chainlink/CCIP route evidence, `oracleRiskHash` and Arc Network Resilience states.
 
 **Agentic Economy Track features:**
 - Autonomous agent purchase of an x402 API using USDC.
@@ -53,6 +56,7 @@ For a short hackathon submission view, see [`HACKATHON.md`](HACKATHON.md).
 - ERC-8183-compatible job envelope with input, policy, output, receipt and validation hashes.
 - Policy-gated payment path: Treasury budget, Reputation access, Shield compliance screening.
 - Chainlink-on-Arc oracle/CCIP readiness signal in the policy chain for market, reserve or route evidence.
+- Arc Network Resilience layer: `network_congested`, `retry_scheduled`, `deferred_settlement` and `settlement_recorded` are handled separately from app failures and agent reputation.
 - QuickNode/RPC readiness surface with Arc chain ID, RPC latency, explorer, indexing and fallback RPC state.
 - Arc Testnet settlement proof when configured, with tx hash and explorer link.
 - Signed offer, payment authorization and demo provider signature for review.
@@ -70,6 +74,7 @@ For a short hackathon submission view, see [`HACKATHON.md`](HACKATHON.md).
 | 🛡️ **Arc Reputation** | [reputation-five.vercel.app](https://reputation-five.vercel.app) | On-chain trust scoring layer for agents |
 | 🛒 **Arc Marketplace** | [marketplace-eosin-eight.vercel.app](https://marketplace-eosin-eight.vercel.app) | Discovery platform for x402-enabled APIs |
 | **Arc Provider** | [arcsuite-app.vercel.app/provider](https://arcsuite-app.vercel.app/provider) | Provider receipt trust center for signed x402 jobs, keys and proof links |
+| **Arc Interop** | [arcsuite-app.vercel.app/interop](https://arcsuite-app.vercel.app/interop) | Chainlink/CCIP-ready route evidence, oracle risk and load-aware settlement states |
 | **Arc Shield** | [arcsuite-app.vercel.app/shield](https://arcsuite-app.vercel.app/shield) | Circle compliance plus Chainlink-on-Arc risk evidence |
 | **Arc Flow** | [arcsuite-app.vercel.app/flow](https://arcsuite-app.vercel.app/flow) | Compliance, oracle evidence and settlement-ready payment orchestration |
 | **Judge Mode** | [arcsuite-app.vercel.app/judge](https://arcsuite-app.vercel.app/judge) | One-page reviewer path with pitch, click path and embedded workflow demo |
@@ -104,6 +109,8 @@ The demonstrated operation is:
 `AI agent identity -> x402 signed offer -> Treasury budget check -> Shield screening -> Chainlink oracle/CCIP signal -> Billing usage event -> Arc Testnet settlement-ready path -> signed receipt -> Reputation update -> proof page`
 
 This gives Arc/Circle reviewers a concrete artifact to evaluate: one payment path, one settlement reference when configured, one policy chain, and one receipt bundle.
+
+Arc Suite also treats Arc Testnet load testing and congestion as explicit network states. A policy pass does not automatically become a completed settlement when receipt, validation or network evidence is missing; the job can remain `retry_scheduled` or `deferred_settlement` until transaction evidence is recorded.
 
 ### Settlement verification
 

@@ -1,6 +1,7 @@
 "use client"
 
 import { type CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { arcNetworkResilience } from "../../lib/network-resilience"
 
 const API_KEY_STORAGE = "arc_ops_health_key"
 
@@ -394,6 +395,30 @@ export function OpsHealthClient() {
                   meta={summary.services.infra.fallbackRpc.label}
                   status={summary.services.infra.fallbackRpc.status}
                 />
+              </div>
+            </div>
+
+            <div className="analytics-card analytics-card-wide">
+              <div className="analytics-card-head">
+                <h2>Arc Testnet Resilience</h2>
+                <a href={arcNetworkResilience.statusPageUrl}>Status page</a>
+              </div>
+              <div className="ops-infra-grid">
+                <Metric label="Network state" value={labelize(arcNetworkResilience.currentState)} status="ok" />
+                <Metric label="Retry policy" value="idempotent" status="ok" />
+                <Metric label="Settlement mode" value="deferred-safe" status="ok" />
+                <Metric label="Reputation guard" value="isolated" status="ok" />
+              </div>
+              <div className="ops-status-list">
+                {arcNetworkResilience.states.map((item) => (
+                  <ServiceRow
+                    detail={item.detail}
+                    key={item.state}
+                    label={labelize(item.state)}
+                    meta={item.action}
+                    status="ok"
+                  />
+                ))}
               </div>
             </div>
 

@@ -18,6 +18,7 @@ import {
 
 import { LatestProofLink } from "../LatestProofLink"
 import { SiteHeader } from "../SiteHeader"
+import { arcNetworkResilience } from "../../lib/network-resilience"
 
 export const metadata = {
   title: "Grant Review Package - Arc Suite",
@@ -26,7 +27,7 @@ export const metadata = {
 
 const latestProofUrl = "/proof?id=flow_agentic_01a50e12e6c4"
 const demoUrl = "https://treasury-umber.vercel.app/demo"
-const releaseUrl = "https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.07.02-grant-review-hotfix"
+const releaseUrl = "https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.07.04-interop-risk-router"
 const videoUrl = "https://drive.google.com/file/d/1TpkfepfGCEXDfh-YWIfGLRGuohHAJmjP/view?usp=sharing"
 
 const reviewerSteps = [
@@ -62,6 +63,12 @@ const integrationMatrix = [
     icon: RadioTower,
   },
   {
+    name: "Arc Network Resilience",
+    status: "Testnet-ready",
+    detail: "Load-aware states keep network congestion, retry scheduling and deferred settlement separate from product failures and agent reputation.",
+    icon: ShieldCheck,
+  },
+  {
     name: "CCTP",
     status: "Planned",
     detail: "Roadmap item for Arc to Ethereum/Base cross-chain USDC movement after mainnet readiness.",
@@ -85,6 +92,7 @@ const currentStatus = [
   ["Live product", "Production web MVP deployed on Vercel with Supabase-backed APIs."],
   ["Review proof", "Proof pages connect workflow id, policy checks, x402 receipt and settlement reference."],
   ["Monitoring", "Production monitor, Sentry runtime and Ops Health surface are active."],
+  ["Network resilience", arcNetworkResilience.summary],
   ["Roadmap", "Grant unlocks live Arc deployment, Circle Wallets expansion, CCTP and contract work."],
 ] as const
 
@@ -126,7 +134,7 @@ const reviewerConsole = [
   },
   {
     title: "Release",
-    detail: "Hotfix tag with grant layout and production monitor stability updates.",
+    detail: "Interop and Risk Router release with Chainlink/CCIP-ready route evidence.",
     href: releaseUrl,
     icon: ListChecks,
     external: true,
