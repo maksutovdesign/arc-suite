@@ -1,6 +1,6 @@
 "use client"
 
-import { ArrowRightLeft, CircleDollarSign, Fingerprint, KeyRound, RefreshCw, Save, ShieldCheck, UserRoundCog, WalletCards } from "lucide-react"
+import { ArrowRightLeft, CircleDollarSign, CreditCard, Fingerprint, KeyRound, Network, RefreshCw, Save, ShieldCheck, UserRoundCog, WalletCards, Zap } from "lucide-react"
 import { useCallback, useEffect, useRef, useState } from "react"
 
 import type { WalletAccount, WalletLifecycleEvent, WalletOverview, WalletSigningPolicy } from "@/lib/backend/schema"
@@ -18,6 +18,14 @@ const stableFxRoutes = [
   { route: "USDC -> EURC", signal: "StableFX-ready quote", state: "priced" },
   { route: "EURC invoice -> USDC budget", signal: "Policy-priced settlement", state: "planned" },
   { route: "Fiat top-up -> agent wallet", signal: "Gateway funding path", state: "planned" },
+] as const
+
+const appLayerFlows = [
+  { label: "Balances", value: "USDC / EURC", detail: "Arc-native account surface", icon: CircleDollarSign },
+  { label: "Payments", value: "Policy-gated", detail: "Operator limits before movement", icon: ShieldCheck },
+  { label: "Card-like spend", value: "Daily cap", detail: "Agent budgets act like controls", icon: CreditCard },
+  { label: "CCTP", value: "Hidden route", detail: "Cross-chain movement stays behind UX", icon: Network },
+  { label: "Gas", value: "Abstracted", detail: "Sponsored execution model", icon: Zap },
 ] as const
 
 export function WalletDashboardClient() {
@@ -172,6 +180,19 @@ export function WalletDashboardClient() {
               <em>{item.state}</em>
             </div>
           ))}
+        </div>
+        <div className="wallet-app-layer">
+          {appLayerFlows.map((item) => {
+            const Icon = item.icon
+            return (
+              <div key={item.label}>
+                <Icon size={17} />
+                <span>{item.label}</span>
+                <strong>{item.value}</strong>
+                <small>{item.detail}</small>
+              </div>
+            )
+          })}
         </div>
       </section>
 

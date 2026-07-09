@@ -9008,7 +9008,8 @@ a.ops-history-run:hover {
 }
 
 .wallet-account-grid,
-.wallet-fx-routes {
+.wallet-fx-routes,
+.wallet-app-layer {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
@@ -9016,7 +9017,8 @@ a.ops-history-run:hover {
 }
 
 .wallet-account-card,
-.wallet-fx-route {
+.wallet-fx-route,
+.wallet-app-layer > div {
   min-width: 0;
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -9089,6 +9091,38 @@ a.ops-history-run:hover {
 .wallet-fx-route em {
   color: var(--green);
   font-style: normal;
+}
+
+.wallet-app-layer {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.wallet-app-layer > div {
+  display: grid;
+  gap: 7px;
+  padding: 14px;
+}
+
+.wallet-app-layer svg {
+  color: var(--blue);
+}
+
+.wallet-app-layer span {
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.wallet-app-layer strong,
+.wallet-app-layer small {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.wallet-app-layer small {
+  color: var(--muted);
+  line-height: 1.45;
 }
 
 .wallet-lower,
@@ -9777,6 +9811,7 @@ a.ops-history-run:hover {
   .wallet-metrics,
   .wallet-account-grid,
   .wallet-fx-routes,
+  .wallet-app-layer,
   .wallet-form,
   .radar-method,
   .radar-fit-grid,

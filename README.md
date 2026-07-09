@@ -57,7 +57,7 @@ For a short hackathon submission view, see [`HACKATHON.md`](HACKATHON.md).
 - Policy-gated payment path: Treasury budget, Reputation access, Shield compliance screening.
 - Chainlink-on-Arc oracle/CCIP readiness signal in the policy chain for market, reserve or route evidence.
 - Arc Network Resilience layer: `network_congested`, `retry_scheduled`, `deferred_settlement` and `settlement_recorded` are handled separately from app failures and agent reputation.
-- Multicurrency Wallet OS surface inspired by Arc's app-layer direction: one USDC spending base, EURC invoice rail, fiat/Gateway-ready funding path and StableFX-ready route model.
+- Arc Account Layer inside Wallet OS, inspired by Arc's app-layer direction: one USDC/EURC-facing account surface, FX-ready routes, card-like spend controls, hidden CCTP status and gas abstraction state.
 - QuickNode/RPC readiness surface with Arc chain ID, RPC latency, explorer, indexing and fallback RPC state.
 - Arc Testnet settlement proof when configured, with tx hash and explorer link.
 - Signed offer, payment authorization and demo provider signature for review.
@@ -113,7 +113,7 @@ This gives Arc/Circle reviewers a concrete artifact to evaluate: one payment pat
 
 Arc Suite also treats Arc Testnet load testing and congestion as explicit network states. A policy pass does not automatically become a completed settlement when receipt, validation or network evidence is missing; the job can remain `retry_scheduled` or `deferred_settlement` until transaction evidence is recorded.
 
-The Wallet OS surface also reflects the application-layer direction visible in newer Arc partner examples: one agent balance, multiple currency rails, and custody hidden behind policy-safe wallet operations. Today this is represented as a USDC base account with EURC, StableFX and Gateway-ready paths; live EURC/Gateway execution remains part of the roadmap.
+The Wallet OS surface also reflects the application-layer direction visible in newer Arc partner examples: one account, multiple currency rails, payments, FX, CCTP and gas abstraction hidden behind a simple money movement experience. Arc Suite applies that pattern to agents: a USDC/EURC-facing operational account with card-like spend controls, custody status and policy-safe wallet operations. Live EURC/Gateway execution remains part of the roadmap.
 
 ### Settlement verification
 
@@ -587,7 +587,7 @@ Apply `landing/supabase/migrations/2026062302_arc_wallet_os.sql`. Arc Wallet OS 
 - developer-controlled, user-controlled and modular wallet inventory;
 - workspace roles and custody-specific recovery paths;
 - signing policies with approvals, USDC limits, Shield and reputation gates;
-- a multicurrency account surface for USDC base budgets, EURC invoice rails, StableFX-ready quotes and fiat/Gateway-ready top-up paths;
+- an Arc Account Layer for USDC/EURC-facing balances, FX-ready routes, card-like spend controls, hidden CCTP status and gas abstraction state;
 - auditable lifecycle requests that remain pending until Circle confirms the provider operation.
 
 The endpoints are `GET /api/wallets/overview`, `POST /api/wallets/actions`, and

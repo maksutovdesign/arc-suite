@@ -27,7 +27,7 @@ export const metadata = {
 
 const latestProofUrl = "/proof?id=flow_agentic_01a50e12e6c4"
 const demoUrl = "https://treasury-umber.vercel.app/demo"
-const releaseUrl = "https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.07.04-interop-risk-router"
+const releaseUrl = "https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.07.09-multicurrency-wallet-ux"
 const videoUrl = "https://drive.google.com/file/d/1TpkfepfGCEXDfh-YWIfGLRGuohHAJmjP/view?usp=sharing"
 
 const reviewerSteps = [
@@ -48,6 +48,12 @@ const integrationMatrix = [
     name: "Circle Wallets",
     status: "Demo-ready",
     detail: "Developer-controlled wallet path prepared for real agent wallet creation and settlement evidence.",
+    icon: WalletCards,
+  },
+  {
+    name: "Wallet OS / account layer",
+    status: "Demo-ready",
+    detail: "One agent-facing account surface for USDC spending, EURC invoices, FX-ready routes, card-like controls, CCTP and gas abstraction states.",
     icon: WalletCards,
   },
   {
@@ -93,6 +99,7 @@ const currentStatus = [
   ["Review proof", "Proof pages connect workflow id, policy checks, x402 receipt and settlement reference."],
   ["Monitoring", "Production monitor, Sentry runtime and Ops Health surface are active."],
   ["Network resilience", arcNetworkResilience.summary],
+  ["Application layer", "Wallet OS now models Arc-native money movement as one operational account instead of raw wallet/chain mechanics."],
   ["Roadmap", "Grant unlocks live Arc deployment, Circle Wallets expansion, CCTP and contract work."],
 ] as const
 
@@ -150,8 +157,9 @@ const reviewerConsole = [
 
 const roadmap = [
   ["Weeks 1-4", "Arc deployment + Circle Wallets", "Deploy the core Treasury, Reputation and Marketplace infrastructure to Arc-ready production paths and expand real wallet creation/balance reads."],
-  ["Weeks 5-9", "On-chain reputation + x402 + oracle risk", "Move reputation score storage and API access gating toward on-chain records, complete the x402 payment loop and attach Chainlink data/CCIP route evidence to policy decisions."],
-  ["Weeks 10-14", "CCTP / CCIP + public beta", "Add cross-chain USDC and interoperability support, provider onboarding, public docs and the first external API/provider integrations."],
+  ["Weeks 5-8", "Multicurrency Wallet OS", "Connect the agent account layer to live balances, USDC/EURC account views, FX-ready routes, card-like spend controls and hidden gas/CCTP status."],
+  ["Weeks 9-12", "On-chain reputation + x402 + oracle risk", "Move reputation score storage and API access gating toward on-chain records, complete the x402 payment loop and attach Chainlink data/CCIP route evidence to policy decisions."],
+  ["Weeks 13-16", "CCTP / CCIP + public beta", "Add cross-chain USDC and interoperability support, provider onboarding, public docs and the first external API/provider integrations."],
 ] as const
 
 const knownLimits = [
@@ -171,8 +179,8 @@ export default function GrantPage() {
             <h1>Arc Suite is a production web MVP for agentic USDC commerce.</h1>
             <p>
               This page gives reviewers one clean path through the product: run the agentic workflow,
-              inspect the proof, confirm Circle integration status, and understand exactly what grant
-              funding turns from settlement-ready infrastructure into live Arc deployment.
+              inspect the proof, confirm Circle integration status, and see how Arc-native money movement
+              becomes an application layer for agents: balances, payments, FX routes, hidden gas and policy controls.
             </p>
             <div className="agentic-actions">
               <a className="button primary" href="/judge">
@@ -270,7 +278,8 @@ export default function GrantPage() {
             <p>
               The demo joins Treasury budget enforcement, Shield risk screening, Marketplace access,
               Chainlink oracle/CCIP readiness, Provider receipt validation and Reputation updates
-              into one auditable operation.
+              into one auditable operation. Wallet OS turns the same primitives into one account-style
+              interface instead of exposing raw settlement mechanics to every operator.
             </p>
           </div>
           <div className="grant-proof-links">
