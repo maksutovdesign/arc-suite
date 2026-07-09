@@ -1,12 +1,24 @@
 "use client"
 
-import { Fingerprint, KeyRound, RefreshCw, Save, ShieldCheck, UserRoundCog, WalletCards } from "lucide-react"
+import { ArrowRightLeft, CircleDollarSign, Fingerprint, KeyRound, RefreshCw, Save, ShieldCheck, UserRoundCog, WalletCards } from "lucide-react"
 import { useCallback, useEffect, useRef, useState } from "react"
 
 import type { WalletAccount, WalletLifecycleEvent, WalletOverview, WalletSigningPolicy } from "@/lib/backend/schema"
 import { demoWalletOverview } from "../demoWorkspace"
 
 const API_KEY_STORAGE = "arc_wallet_os_key"
+
+const multicurrencyAccounts = [
+  { asset: "USDC", balance: "3,072.93", role: "Agent spend base", status: "implemented" },
+  { asset: "EURC", balance: "1,184.20", role: "Invoice and FX quote rail", status: "planned" },
+  { asset: "Fiat rail", balance: "Gateway-ready", role: "Top-up path for operators", status: "planned" },
+] as const
+
+const stableFxRoutes = [
+  { route: "USDC -> EURC", signal: "StableFX-ready quote", state: "priced" },
+  { route: "EURC invoice -> USDC budget", signal: "Policy-priced settlement", state: "planned" },
+  { route: "Fiat top-up -> agent wallet", signal: "Gateway funding path", state: "planned" },
+] as const
 
 export function WalletDashboardClient() {
   const [apiKey, setApiKey] = useState("")
@@ -135,6 +147,33 @@ export function WalletDashboardClient() {
         <Metric label="User custody" value={String(summary.userControlledWallets)} icon={<Fingerprint size={18} />} />
         <Metric label="Pending ops" value={String(summary.pendingOperations)} icon={<RefreshCw size={18} />} />
       </div>
+
+      <section className="wallet-panel wallet-account-surface">
+        <PanelHead eyebrow="Application layer" title="One agent balance, multiple currencies" icon={<CircleDollarSign size={20} />} />
+        <p className="wallet-account-copy">
+          Wallet OS is the operator layer behind a Pulsar-style experience: agents keep a USDC spending base, price invoices in EURC,
+          and prepare fiat funding paths without exposing the custody complexity underneath.
+        </p>
+        <div className="wallet-account-grid">
+          {multicurrencyAccounts.map((item) => (
+            <div className="wallet-account-card" key={item.asset}>
+              <span>{item.asset}</span>
+              <strong>{item.balance}</strong>
+              <small>{item.role}</small>
+              <em className={`wallet-account-status is-${item.status}`}>{item.status}</em>
+            </div>
+          ))}
+        </div>
+        <div className="wallet-fx-routes">
+          {stableFxRoutes.map((item) => (
+            <div className="wallet-fx-route" key={item.route}>
+              <ArrowRightLeft size={16} />
+              <span><strong>{item.route}</strong><small>{item.signal}</small></span>
+              <em>{item.state}</em>
+            </div>
+          ))}
+        </div>
+      </section>
 
       <div className="wallet-grid">
         <section className="wallet-panel">

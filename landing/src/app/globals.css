@@ -8995,6 +8995,102 @@ a.ops-history-run:hover {
   gap: 16px;
 }
 
+.wallet-account-surface {
+  margin: 18px 0;
+}
+
+.wallet-account-copy {
+  max-width: 880px;
+  margin: 14px 0 0;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.wallet-account-grid,
+.wallet-fx-routes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.wallet-account-card,
+.wallet-fx-route {
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.wallet-account-card {
+  position: relative;
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+}
+
+.wallet-account-card span,
+.wallet-account-card small,
+.wallet-fx-route small {
+  color: var(--muted);
+}
+
+.wallet-account-card span,
+.wallet-fx-route em {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.wallet-account-card strong {
+  overflow-wrap: anywhere;
+  font-size: 24px;
+}
+
+.wallet-account-card small {
+  min-height: 34px;
+  line-height: 1.5;
+}
+
+.wallet-account-status {
+  width: fit-content;
+  padding: 5px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-style: normal;
+  color: var(--blue);
+  background: rgba(96, 165, 250, 0.12);
+}
+
+.wallet-account-status.is-implemented {
+  color: var(--green);
+  background: rgba(52, 211, 153, 0.12);
+}
+
+.wallet-fx-route {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 13px;
+}
+
+.wallet-fx-route svg {
+  color: var(--blue);
+}
+
+.wallet-fx-route strong,
+.wallet-fx-route small {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.wallet-fx-route em {
+  color: var(--green);
+  font-style: normal;
+}
+
 .wallet-lower,
 .wallet-events {
   margin-top: 16px;
@@ -9679,6 +9775,8 @@ a.ops-history-run:hover {
   .interop-router-hash,
   .interop-failure-grid,
   .wallet-metrics,
+  .wallet-account-grid,
+  .wallet-fx-routes,
   .wallet-form,
   .radar-method,
   .radar-fit-grid,

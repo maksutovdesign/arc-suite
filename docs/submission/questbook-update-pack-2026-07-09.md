@@ -8,6 +8,8 @@ Arc Suite is an operating layer for autonomous agent commerce on Arc and Circle.
 
 The product is live as a production web MVP on Vercel with Supabase-backed APIs, Sentry monitoring, production health checks and a reviewer-ready demo flow. The current release adds Arc Interop & Risk Router: a Chainlink/CCIP-ready route layer that connects policy, oracle risk, cross-chain route evidence, provider receipt state and validation artifacts in one proof envelope.
 
+The latest Wallet OS update also reflects Arc's application-layer direction shown by recent partner activity: one agent-facing balance, multiple currency rails and custody hidden behind policy-safe wallet operations. In the product this is framed as a USDC base account with EURC invoice, StableFX-ready route and fiat/Gateway-ready funding paths.
+
 ## Current status and traction
 
 - Production web MVP deployed at https://arcsuite-app.vercel.app
@@ -15,6 +17,7 @@ The product is live as a production web MVP on Vercel with Supabase-backed APIs,
 - Agentic workflow demo: https://arcsuite-app.vercel.app/agentic-workflow
 - Proof page: https://arcsuite-app.vercel.app/proof
 - Arc Interop & Risk Router: https://arcsuite-app.vercel.app/interop
+- Multicurrency Wallet OS: https://arcsuite-app.vercel.app/wallets
 - Provider trust center: https://arcsuite-app.vercel.app/provider
 - Supabase-backed API and proof records
 - Sentry runtime monitoring and production health checks
@@ -30,6 +33,7 @@ Implemented or demo-ready:
 - x402-style signed offer and receipt architecture for machine-to-machine API purchases.
 - Arc Testnet settlement-ready path with proof recording when the Circle/Arc path is configured.
 - Chainlink-on-Arc route evidence model using Arc Testnet CCIP Router `0xdE4E7FED43FAC37EB21aA0643d9852f75332eab8` and chain selector `3034092155422581607`.
+- Multicurrency agent account surface: USDC spending base, EURC invoice rail, StableFX-ready quote route and fiat/Gateway-ready funding path.
 
 Planned next:
 
@@ -48,11 +52,15 @@ Create agent wallets through Circle Developer Controlled Wallets, read live bala
 
 Expand Arc Interop into a full route module: CCIP route run UI, Chainlink feed freshness/deviation, RPC health, explorer links and route status history.
 
-### Milestone 3 - Provider onboarding
+### Milestone 3 - Multicurrency Wallet OS
+
+Connect the Wallet OS surface to live Circle Wallet balances and future EURC/Gateway/StableFX adapters so one agent account can display spending budget, invoice currency, funding route and policy state without exposing custody complexity to the user.
+
+### Milestone 4 - Provider onboarding
 
 Turn the provider page into a working flow: provider creates an API listing, sets a price, publishes an x402 offer, agent buys access and the provider receipt appears in Proof.
 
-### Milestone 4 - Arc Network Resilience
+### Milestone 5 - Arc Network Resilience
 
 Add resilience states for Arc Testnet conditions: `network_congested`, `retry_scheduled`, `deferred_settlement`, `settlement_recorded`. This keeps agent reputation and access-control decisions separate from temporary testnet congestion or load testing.
 

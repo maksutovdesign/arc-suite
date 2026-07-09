@@ -57,6 +57,7 @@ For a short hackathon submission view, see [`HACKATHON.md`](HACKATHON.md).
 - Policy-gated payment path: Treasury budget, Reputation access, Shield compliance screening.
 - Chainlink-on-Arc oracle/CCIP readiness signal in the policy chain for market, reserve or route evidence.
 - Arc Network Resilience layer: `network_congested`, `retry_scheduled`, `deferred_settlement` and `settlement_recorded` are handled separately from app failures and agent reputation.
+- Multicurrency Wallet OS surface inspired by Arc's app-layer direction: one USDC spending base, EURC invoice rail, fiat/Gateway-ready funding path and StableFX-ready route model.
 - QuickNode/RPC readiness surface with Arc chain ID, RPC latency, explorer, indexing and fallback RPC state.
 - Arc Testnet settlement proof when configured, with tx hash and explorer link.
 - Signed offer, payment authorization and demo provider signature for review.
@@ -84,7 +85,7 @@ For a short hackathon submission view, see [`HACKATHON.md`](HACKATHON.md).
 | **Arc Billing** | [arcsuite-app.vercel.app/billing](https://arcsuite-app.vercel.app/billing) | x402 usage metering, prepaid balances, invoices and settlement batches |
 | **Arc Escrow** | [arcsuite-app.vercel.app/escrow](https://arcsuite-app.vercel.app/escrow) | Programmable agent deals, milestones, disputes and contract events |
 | **Arc Gas** | [arcsuite-app.vercel.app/gas](https://arcsuite-app.vercel.app/gas) | Gas sponsorship policy, Paymaster/Gas Station limits and reporting |
-| **Arc Wallet OS** | [arcsuite-app.vercel.app/wallets](https://arcsuite-app.vercel.app/wallets) | Developer/user/modular wallet lifecycle, roles and signing policies |
+| **Arc Wallet OS** | [arcsuite-app.vercel.app/wallets](https://arcsuite-app.vercel.app/wallets) | Developer/user/modular wallet lifecycle, roles, signing policies and multicurrency agent accounts |
 | **Execution Control** | [arcsuite-app.vercel.app/executions](https://arcsuite-app.vercel.app/executions) | Unified Circle provider queue, retries and webhook reconciliation |
 | **Arc Radar** | [arcsuite-app.vercel.app/radar](https://arcsuite-app.vercel.app/radar) | Arc builder intelligence, primitive usage, traction signals and opportunity gaps |
 | **Arc Private** | [arcsuite-app.vercel.app/private](https://arcsuite-app.vercel.app/private) | Private stablecoin payment intents, selective disclosure and policy-safe proof |
@@ -111,6 +112,8 @@ The demonstrated operation is:
 This gives Arc/Circle reviewers a concrete artifact to evaluate: one payment path, one settlement reference when configured, one policy chain, and one receipt bundle.
 
 Arc Suite also treats Arc Testnet load testing and congestion as explicit network states. A policy pass does not automatically become a completed settlement when receipt, validation or network evidence is missing; the job can remain `retry_scheduled` or `deferred_settlement` until transaction evidence is recorded.
+
+The Wallet OS surface also reflects the application-layer direction visible in newer Arc partner examples: one agent balance, multiple currency rails, and custody hidden behind policy-safe wallet operations. Today this is represented as a USDC base account with EURC, StableFX and Gateway-ready paths; live EURC/Gateway execution remains part of the roadmap.
 
 ### Settlement verification
 
@@ -584,6 +587,7 @@ Apply `landing/supabase/migrations/2026062302_arc_wallet_os.sql`. Arc Wallet OS 
 - developer-controlled, user-controlled and modular wallet inventory;
 - workspace roles and custody-specific recovery paths;
 - signing policies with approvals, USDC limits, Shield and reputation gates;
+- a multicurrency account surface for USDC base budgets, EURC invoice rails, StableFX-ready quotes and fiat/Gateway-ready top-up paths;
 - auditable lifecycle requests that remain pending until Circle confirms the provider operation.
 
 The endpoints are `GET /api/wallets/overview`, `POST /api/wallets/actions`, and
