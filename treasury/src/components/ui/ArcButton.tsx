@@ -37,8 +37,8 @@ const STYLES = {
 }
 
 const SIZES = {
-  sm: "h-7 px-3 text-xs rounded-lg gap-1.5",
-  md: "h-8 px-3.5 text-sm rounded-xl gap-2",
+  sm: "min-h-7 px-3 py-1.5 text-xs rounded-lg gap-1.5",
+  md: "min-h-8 px-3.5 py-1.5 text-sm rounded-xl gap-2",
   icon: "size-8 rounded-xl",
 }
 
@@ -57,7 +57,7 @@ export function ArcButton({
   return (
     <button
       type="button"
-      className={`inline-flex items-center justify-center font-medium transition-all duration-150 cursor-pointer select-none disabled:opacity-50 hover:opacity-80 active:scale-95 ${sizeClass} ${className}`}
+      className={`inline-flex min-w-0 items-center justify-center whitespace-normal text-center font-medium leading-tight transition-all duration-150 cursor-pointer select-none disabled:opacity-50 hover:opacity-80 active:scale-95 ${sizeClass} ${className}`}
       style={style}
       {...props}
     >

@@ -102,7 +102,7 @@ export default async function AgentDetailPage({ params }: { params: Promise<{ id
           </div>
         </div>
 
-        <div className="relative flex w-full items-center gap-2 sm:w-auto">
+        <div className="relative flex w-full flex-wrap items-center gap-2 sm:w-auto">
           <ArcButton disabled={isDemo} title={isDemo ? "Demo workspace is read-only" : "Top up wallet"} variant="primary" size="sm" icon={Zap}>
             Top Up
           </ArcButton>
@@ -120,13 +120,13 @@ export default async function AgentDetailPage({ params }: { params: Promise<{ id
             { label: "Total Transactions", value: agent.txCount.toLocaleString(), icon: ArrowLeftRight, color: "#a78bfa", sub: `Last: ${agent.lastActive}` },
           ].map(({ label, value, icon: Icon, color, sub }) => (
             <div key={label} className="p-4 rounded-2xl flex flex-col gap-2" style={arcCard}>
-              <div className="flex items-center justify-between">
+              <div className="flex items-start justify-between gap-2">
                 <span className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: "#7a8fa8" }}>{label}</span>
                 <div className="size-7 rounded-lg flex items-center justify-center" style={{ background: `${color}18`, border: `1px solid ${color}30` }}>
                   <Icon className="size-3.5" style={{ color }} />
                 </div>
               </div>
-              <p className="text-2xl font-bold text-white tracking-tight" style={{ letterSpacing: "-0.03em" }}>{value}</p>
+              <p className="break-words text-xl font-bold text-white tracking-tight sm:text-2xl" style={{ letterSpacing: "-0.03em" }}>{value}</p>
               <p className="text-[11px]" style={{ color: sub.startsWith("⚠") ? "#f87171" : "#7a8fa8" }}>{sub}</p>
             </div>
           ))}
@@ -137,7 +137,7 @@ export default async function AgentDetailPage({ params }: { params: Promise<{ id
           <div className="flex flex-col gap-4 xl:col-span-1">
             {/* 7-day mini chart */}
             <div className="p-4 rounded-2xl" style={arcCard}>
-              <div className="flex items-center justify-between mb-3">
+              <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                 <span className="text-sm font-semibold text-white">7-Day Spend</span>
                 <span className="text-xs font-bold" style={{ color: grad.from }}>{formatUSDC(weeklySpend)}</span>
               </div>
@@ -162,7 +162,7 @@ export default async function AgentDetailPage({ params }: { params: Promise<{ id
                 { label: "Daily",   spent: agent.dailySpent,   limit: agent.dailyLimit,    pct: dPct },
               ].map(({ label, spent, limit, pct }) => (
                 <div key={label} className="space-y-1.5">
-                  <div className="flex items-center justify-between text-xs">
+                  <div className="flex flex-wrap items-center justify-between gap-1 text-xs">
                     <span style={{ color: "#7a8fa8" }}>{label} limit</span>
                     <span style={{ color: pct > 90 ? "#f87171" : "#C7C5D1" }}>
                       {formatUSDC(spent)} <span style={{ color: "#7a8fa8" }}>/ {formatUSDC(limit)}</span>
@@ -188,9 +188,9 @@ export default async function AgentDetailPage({ params }: { params: Promise<{ id
                 { label: "Tags", value: agent.tags.join(", ") },
                 { label: "Wallet", value: agent.address },
               ].map(({ label, value }) => (
-                <div key={label} className="flex items-start justify-between gap-4">
+                <div key={label} className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
                   <span className="text-[11px] shrink-0" style={{ color: "#7a8fa8" }}>{label}</span>
-                  <span className="text-[11px] font-medium text-right text-white font-mono">{value}</span>
+                  <span className="break-all text-[11px] font-medium text-white font-mono sm:text-right">{value}</span>
                 </div>
               ))}
             </div>
@@ -198,7 +198,7 @@ export default async function AgentDetailPage({ params }: { params: Promise<{ id
 
           {/* Right: Transaction history */}
           <div className="rounded-2xl p-4 xl:col-span-2" style={arcCard}>
-            <div className="flex items-center justify-between mb-4">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
               <span className="text-sm font-semibold text-white">
                 Transaction History
                 <span className="ml-2 text-[11px] font-normal" style={{ color: "#7a8fa8" }}>
@@ -225,14 +225,14 @@ export default async function AgentDetailPage({ params }: { params: Promise<{ id
                   return (
                     <div
                       key={tx.id}
-                      className="arc-tx-row flex items-center gap-3 py-3 rounded-xl px-2 -mx-2"
+                      className="arc-tx-row flex flex-col gap-2 py-3 rounded-xl px-2 -mx-2 sm:flex-row sm:items-center sm:gap-3"
                       style={{ borderBottom: i < agentTxs.length - 1 ? "1px solid rgba(255,255,255,0.04)" : "none" }}
                     >
                       <StatusIcon status={tx.status} />
 
                       <div className="flex-1 min-w-0">
                         <p className="text-xs font-medium text-white truncate">{tx.description}</p>
-                        <div className="flex items-center gap-2 mt-0.5">
+                        <div className="mt-0.5 flex min-w-0 flex-wrap items-center gap-2">
                           {tx.explorerUrl ? (
                             <a
                               className="flex items-center gap-1 text-[10px] font-mono hover:underline"
@@ -261,7 +261,7 @@ export default async function AgentDetailPage({ params }: { params: Promise<{ id
                         >
                           {tx.category.replace("_", " ")}
                         </span>
-                        <span className="text-xs font-bold text-white tabular-nums w-16 text-right">
+                        <span className="text-xs font-bold text-white tabular-nums sm:w-16 sm:text-right">
                           {formatUSDC(tx.amount)}
                         </span>
                       </div>
@@ -274,7 +274,7 @@ export default async function AgentDetailPage({ params }: { params: Promise<{ id
         </div>
 
         <div className="p-4 rounded-2xl" style={arcCard}>
-          <div className="flex items-center justify-between mb-4">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
             <span className="text-sm font-semibold text-white">
               Access Decisions
               <span className="ml-2 text-[11px] font-normal" style={{ color: "#7a8fa8" }}>
@@ -288,11 +288,10 @@ export default async function AgentDetailPage({ params }: { params: Promise<{ id
               No access checks recorded for this agent yet.
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <div className="min-w-[680px] space-y-0">
+            <div className="space-y-0">
               {agentDecisions.map((decision, index) => (
                 <div
-                  className="grid grid-cols-[24px_minmax(0,1fr)_90px_90px_120px] items-center gap-3 py-2.5 text-xs"
+                  className="grid grid-cols-[24px_minmax(0,1fr)_76px] items-center gap-3 py-2.5 text-xs sm:grid-cols-[24px_minmax(0,1fr)_90px_90px_120px]"
                   key={decision.id}
                   style={{ borderBottom: index < agentDecisions.length - 1 ? "1px solid rgba(255,255,255,0.04)" : "none" }}
                 >
@@ -307,12 +306,11 @@ export default async function AgentDetailPage({ params }: { params: Promise<{ id
                       score {decision.score} / required {decision.requiredScore} · daily {decision.dailyBudgetUsedPct}%
                     </p>
                   </div>
-                  <span className="font-mono" style={{ color: "#5FBFFF" }}>{decision.apiId}</span>
+                  <span className="hidden font-mono sm:inline" style={{ color: "#5FBFFF" }}>{decision.apiId}</span>
                   <span className="text-right text-white">{formatUSDC(decision.amountUsdc)}</span>
-                  <span className="text-right text-[10px]" style={{ color: "#7a8fa8" }}>{formatTimestamp(decision.createdAt)}</span>
+                  <span className="hidden text-right text-[10px] sm:inline" style={{ color: "#7a8fa8" }}>{formatTimestamp(decision.createdAt)}</span>
                 </div>
               ))}
-              </div>
             </div>
           )}
         </div>
@@ -348,7 +346,7 @@ function SwapControlsCard({ monthlyPct, dailyPct }: { monthlyPct: number; dailyP
         </span>
       </div>
 
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
         {[
           { label: "Venue", value: "Uniswap" },
           { label: "Per swap", value: "$25" },

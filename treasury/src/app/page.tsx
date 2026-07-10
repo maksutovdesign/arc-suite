@@ -84,7 +84,7 @@ export default async function DashboardPage() {
       <AlertBanner />
 
       {/* Stats grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 px-6 pt-5">
+      <div className="grid grid-cols-2 gap-3 px-4 pt-5 sm:px-6 lg:grid-cols-4">
         <StatCard
           title="Total USDC Managed"
           value={formatUSDC(stats.totalUSDCManaged)}
@@ -117,7 +117,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 px-6 pt-4">
+      <div className="grid grid-cols-1 gap-4 px-4 pt-4 sm:px-6 lg:grid-cols-3">
         <div className="lg:col-span-2 p-4" style={arcCard}>
           <SectionTitle>Spend Over Time — 7 days</SectionTitle>
           <SpendChart />
@@ -129,7 +129,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* Agent budgets + Recent txs */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 px-6 pt-4 pb-6">
+      <div className="grid grid-cols-1 gap-4 px-4 pt-4 pb-6 sm:px-6 lg:grid-cols-2">
         {/* Agent budgets */}
         <div className="p-4" style={arcCard}>
           <SectionTitle actionLabel="View all" actionHref="/agents">Agent Budgets</SectionTitle>
@@ -138,17 +138,17 @@ export default async function DashboardPage() {
               const pct = pctUsed(agent.monthlySpent, agent.monthlyBudget)
               return (
                 <div key={agent.id} className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex min-w-0 items-center gap-2">
                       <div
                         className="size-6 rounded-lg flex items-center justify-center shrink-0"
                         style={{ background: "rgba(77,142,233,0.15)", border: "1px solid rgba(77,142,233,0.2)" }}
                       >
                         <Bot className="size-3" style={{ color: "#5FBFFF" }} />
                       </div>
-                      <span className="text-sm font-medium text-white">{agent.name}</span>
+                      <span className="min-w-0 truncate text-sm font-medium text-white">{agent.name}</span>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <AgentStatusBadge status={agent.status} />
                       <span className="text-[11px]" style={{ color: "#7a8fa8" }}>
                         {formatUSDC(agent.monthlySpent)} / {formatUSDC(agent.monthlyBudget)}
@@ -208,7 +208,7 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      <div className="px-6 pb-6">
+      <div className="px-4 pb-6 sm:px-6">
         <div className="p-4" style={arcCard}>
           <SectionTitle>Access Decisions</SectionTitle>
           {accessDecisions.length === 0 ? (
@@ -219,7 +219,7 @@ export default async function DashboardPage() {
             <div className="space-y-0">
               {accessDecisions.slice(0, 8).map((decision, index) => (
                 <div
-                  className="grid grid-cols-[24px_minmax(0,1fr)_90px_90px_120px] items-center gap-3 py-2.5 text-xs"
+                  className="grid grid-cols-[24px_minmax(0,1fr)_76px] items-center gap-3 py-2.5 text-xs sm:grid-cols-[24px_minmax(0,1fr)_90px_90px_120px]"
                   key={decision.id}
                   style={{ borderBottom: index < accessDecisions.length - 1 ? "1px solid rgba(255,255,255,0.04)" : "none" }}
                 >
@@ -232,9 +232,9 @@ export default async function DashboardPage() {
                     <p className="truncate font-medium text-white">{agentNames.get(decision.agentId) ?? decision.agentId}</p>
                     <p className="truncate text-[10px]" style={{ color: "#7a8fa8" }}>{decision.reason}</p>
                   </div>
-                  <span className="font-mono" style={{ color: "#5FBFFF" }}>{decision.apiId}</span>
+                  <span className="hidden font-mono sm:inline" style={{ color: "#5FBFFF" }}>{decision.apiId}</span>
                   <span className="text-right text-white">{formatUSDC(decision.amountUsdc)}</span>
-                  <span className="text-right text-[10px]" style={{ color: "#7a8fa8" }}>{formatTimestamp(decision.createdAt)}</span>
+                  <span className="hidden text-right text-[10px] sm:inline" style={{ color: "#7a8fa8" }}>{formatTimestamp(decision.createdAt)}</span>
                 </div>
               ))}
             </div>

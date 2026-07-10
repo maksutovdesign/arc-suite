@@ -12,7 +12,7 @@ export function AlertBanner() {
 
   return (
     <div
-      className="mx-6 mt-4 rounded-2xl px-4 py-3"
+      className="mx-4 mt-4 rounded-2xl px-4 py-3 sm:mx-6"
       style={{
         background: "rgba(248,113,113,0.08)",
         border: "1px solid rgba(248,113,113,0.25)",

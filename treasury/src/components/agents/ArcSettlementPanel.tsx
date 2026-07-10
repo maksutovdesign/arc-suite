@@ -90,7 +90,7 @@ export function ArcSettlementPanel({ agent, apiListings, isDemo = false }: Props
 
   return (
     <div className="space-y-4 rounded-2xl p-4" style={cardStyle}>
-      <div className="flex items-start justify-between gap-3">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <div className="flex items-center gap-2">
             <Send className="size-4" style={{ color: "#5FBFFF" }} />
@@ -112,7 +112,7 @@ export function ArcSettlementPanel({ agent, apiListings, isDemo = false }: Props
         </span>
       </div>
 
-      <div className="grid grid-cols-[minmax(0,1fr)_120px] gap-2">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-[minmax(0,1fr)_120px]">
         <label className="space-y-1">
           <span className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: "#7a8fa8" }}>API policy</span>
           <select className="h-9 w-full rounded-lg px-2 text-xs text-white outline-none" onChange={(event) => selectApi(event.target.value)} style={fieldStyle} value={apiId}>
@@ -154,7 +154,7 @@ export function ArcSettlementPanel({ agent, apiListings, isDemo = false }: Props
         </div>
       </label>
 
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
         <Metric label="Chain" value={`Arc ${config?.chainId ?? 5042002}`} />
         <Metric label="Min score" value={String(activeApi?.minReputationScore ?? "—")} />
         <Metric label="Memo" value={memoReference ? "Attached" : "Required"} />

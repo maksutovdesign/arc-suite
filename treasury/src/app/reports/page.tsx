@@ -37,9 +37,9 @@ export default function ReportsPage() {
         actions={<ArcButton variant="outline" size="sm" icon={Download}>Export CSV</ArcButton>}
       />
 
-      <div className="p-6 space-y-5">
+      <div className="space-y-5 p-4 sm:p-6">
         {/* KPI strip */}
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
           {[
             {
               label: "Total Transactions",
@@ -67,10 +67,10 @@ export default function ReportsPage() {
             },
           ].map(({ label, value, sub, color }) => (
             <div key={label} className="p-4 rounded-2xl" style={arcCard}>
-              <p className="text-[10px] font-semibold uppercase tracking-widest mb-2" style={{ color: "#7a8fa8" }}>
+              <p className="mb-2 text-[9px] font-semibold uppercase tracking-widest sm:text-[10px]" style={{ color: "#7a8fa8" }}>
                 {label}
               </p>
-              <p className="text-2xl font-bold text-white" style={{ letterSpacing: "-0.03em", color }}>
+              <p className="break-words text-xl font-bold text-white sm:text-2xl" style={{ letterSpacing: "-0.03em", color }}>
                 {value}
               </p>
               <p className="text-[11px] mt-1" style={{ color: "#7a8fa8" }}>{sub}</p>
@@ -79,8 +79,8 @@ export default function ReportsPage() {
         </div>
 
         {/* Charts row 1 */}
-        <div className="grid grid-cols-3 gap-5">
-          <div className="col-span-2 p-4 rounded-2xl" style={arcCard}>
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
+          <div className="p-4 rounded-2xl lg:col-span-2" style={arcCard}>
             <SectionLabel>Daily Spend — Last 7 Days</SectionLabel>
             <SpendChart />
           </div>
@@ -91,9 +91,9 @@ export default function ReportsPage() {
         </div>
 
         {/* Charts row 2 */}
-        <div className="grid grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
           {/* Agent bar chart */}
-          <div className="col-span-2 p-4 rounded-2xl" style={arcCard}>
+          <div className="p-4 rounded-2xl lg:col-span-2" style={arcCard}>
             <SectionLabel>Monthly Spend by Agent</SectionLabel>
             <ArcBarChart data={AGENT_BAR_DATA} height={220} />
           </div>
@@ -104,12 +104,12 @@ export default function ReportsPage() {
             <div className="space-y-3">
               {CATEGORY_BREAKDOWN.map((cat) => (
                 <div key={cat.name} className="space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex min-w-0 items-center gap-2">
                       <span className="size-2 rounded-full shrink-0" style={{ background: cat.color }} />
-                      <span className="text-xs text-white">{cat.name}</span>
+                      <span className="min-w-0 truncate text-xs text-white">{cat.name}</span>
                     </div>
-                    <span className="text-xs font-bold" style={{ color: cat.color }}>{cat.value}%</span>
+                    <span className="shrink-0 text-xs font-bold" style={{ color: cat.color }}>{cat.value}%</span>
                   </div>
                   <div
                     className="h-1.5 rounded-full overflow-hidden"
@@ -144,11 +144,11 @@ export default function ReportsPage() {
               return (
                 <div
                   key={agent.id}
-                  className="flex items-center gap-4 py-3"
+                  className="grid grid-cols-[28px_32px_minmax(0,1fr)_auto] items-center gap-3 py-3 sm:grid-cols-[32px_32px_minmax(0,1fr)_128px_144px] sm:gap-4"
                   style={{ borderBottom: i < sortedBySpend.length - 1 ? "1px solid rgba(255,255,255,0.04)" : "none" }}
                 >
                   {/* Rank */}
-                  <div className="w-8 text-center">
+                  <div className="text-center">
                     {i < 3 ? (
                       <span className="text-base">{medals[i]}</span>
                     ) : (
@@ -166,17 +166,17 @@ export default function ReportsPage() {
 
                   {/* Name + network */}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-white">{agent.name}</p>
+                    <p className="truncate text-sm font-semibold text-white">{agent.name}</p>
                     <p className="text-[10px]" style={{ color: "#7a8fa8" }}>{agent.network}</p>
                   </div>
 
                   {/* Progress bar */}
-                  <div className="w-32">
+                  <div className="hidden sm:block">
                     <ArcProgress value={pct} size="sm" />
                   </div>
 
                   {/* Spend + budget */}
-                  <div className="text-right w-36 shrink-0">
+                  <div className="text-right">
                     <p className="text-sm font-bold text-white">{formatUSDC(agent.monthlySpent)}</p>
                     <p className="text-[10px]" style={{ color: "#7a8fa8" }}>
                       {pct}% of {formatUSDC(agent.monthlyBudget)}

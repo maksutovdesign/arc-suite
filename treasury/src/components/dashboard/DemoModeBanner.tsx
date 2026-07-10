@@ -4,7 +4,7 @@ import { Lock, PlayCircle } from "lucide-react"
 export function DemoModeBanner() {
   return (
     <div
-      className="flex items-center justify-between gap-4 px-6 py-3"
+      className="flex flex-col items-start justify-between gap-3 px-4 py-3 sm:flex-row sm:items-center sm:px-6"
       style={{
         background: "linear-gradient(90deg, rgba(95,191,255,0.14), rgba(52,211,153,0.08))",
         borderBottom: "1px solid rgba(95,191,255,0.2)",
@@ -19,7 +19,7 @@ export function DemoModeBanner() {
         </div>
         <div className="min-w-0">
           <p className="text-sm font-semibold text-white">Demo workspace</p>
-          <p className="text-[11px] truncate" style={{ color: "#a9b8c9" }}>
+          <p className="text-[11px] leading-snug" style={{ color: "#a9b8c9" }}>
             Live pilot data is connected. Budget edits, agent changes, and key rotation are read-only in this session.
           </p>
         </div>

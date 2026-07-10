@@ -23,17 +23,17 @@ export function AgentsGrid({ agents, isDemo = false }: Props) {
 
   return (
     <>
-      <div className="flex items-center justify-between gap-2 px-6 pt-5">
-        <span className="text-xs" style={{ color: "#7a8fa8" }}>
+      <div className="flex flex-wrap items-center gap-2 px-4 pt-5 sm:px-6">
+        <span className="min-w-[120px] flex-1 text-xs" style={{ color: "#7a8fa8" }}>
           {agents.length} registered · {activeCount} active · {alertCount} alert
         </span>
         <div
-          className="relative flex items-center"
+          className="relative flex min-w-[160px] flex-1 items-center sm:flex-none"
           style={{ border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, background: "rgba(255,255,255,0.04)" }}
         >
           <Search className="absolute left-2.5 size-3.5" style={{ color: "#7a8fa8" }} />
           <input
-            className="pl-8 pr-3 h-8 text-sm bg-transparent outline-none w-44 placeholder:text-[#7a8fa8]"
+            className="h-8 w-full bg-transparent pl-8 pr-3 text-sm outline-none placeholder:text-[#7a8fa8] sm:w-44"
             placeholder="Search agents..."
             style={{ color: "#C7C5D1" }}
           />
@@ -42,6 +42,7 @@ export function AgentsGrid({ agents, isDemo = false }: Props) {
           disabled={isDemo}
           icon={Plus}
           onClick={() => setShowModal(true)}
+          className="flex-1 sm:flex-none"
           size="md"
           title={isDemo ? "Demo workspace is read-only" : "Create a new agent"}
           variant="primary"
@@ -50,12 +51,12 @@ export function AgentsGrid({ agents, isDemo = false }: Props) {
         </ArcButton>
       </div>
       {isDemo && (
-        <div className="mx-6 mt-3 rounded-xl px-3 py-2 text-xs" style={{ background: "rgba(95,191,255,0.08)", border: "1px solid rgba(95,191,255,0.18)", color: "#a9b8c9" }}>
+        <div className="mx-4 mt-3 rounded-xl px-3 py-2 text-xs sm:mx-6" style={{ background: "rgba(95,191,255,0.08)", border: "1px solid rgba(95,191,255,0.18)", color: "#a9b8c9" }}>
           Demo mode uses live pilot data. Creating new agents is disabled so the workspace stays stable for every visitor.
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 p-6">
+      <div className="grid grid-cols-1 gap-4 p-4 sm:p-6 md:grid-cols-2 xl:grid-cols-3">
         {agents.map((agent, idx) => {
           const grad = AGENT_GRADIENTS[idx % AGENT_GRADIENTS.length]
           const mPct = pctUsed(agent.monthlySpent, agent.monthlyBudget)
@@ -75,7 +76,7 @@ export function AgentsGrid({ agents, isDemo = false }: Props) {
             >
               <div className="h-0.5 w-full shrink-0" style={{ background: `linear-gradient(90deg, ${grad.from}, ${grad.to})` }} />
 
-              <div className="flex items-start justify-between p-4 pb-3">
+              <div className="flex items-start justify-between gap-2 p-4 pb-3">
                 <Link className="flex items-center gap-3 flex-1 min-w-0" href={`/agents/${agent.id}`}>
                   <div
                     className="size-10 rounded-xl flex items-center justify-center shrink-0"
@@ -93,7 +94,7 @@ export function AgentsGrid({ agents, isDemo = false }: Props) {
                   </div>
                 </Link>
 
-                <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                <div className="flex shrink-0 items-center gap-1.5">
                   <AgentStatusBadge status={agent.status} />
                   <button
                     aria-label="Agent options"
@@ -123,7 +124,7 @@ export function AgentsGrid({ agents, isDemo = false }: Props) {
 
               <Link className="block px-4 pb-3 space-y-3" href={`/agents/${agent.id}`}>
                 <div className="space-y-1.5">
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-wrap items-center justify-between gap-1">
                     <span className="text-[11px]" style={{ color: "#7a8fa8" }}>Monthly budget</span>
                     <span className="text-[11px] font-medium" style={{ color: mPct > 90 ? "#f87171" : "#C7C5D1" }}>
                       {formatUSDC(agent.monthlySpent)} <span style={{ color: "#7a8fa8" }}>/ {formatUSDC(agent.monthlyBudget)}</span>
@@ -133,7 +134,7 @@ export function AgentsGrid({ agents, isDemo = false }: Props) {
                 </div>
 
                 <div className="space-y-1.5">
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-wrap items-center justify-between gap-1">
                     <span className="text-[11px]" style={{ color: "#7a8fa8" }}>Daily limit</span>
                     <span className="text-[11px] font-medium" style={{ color: dPct > 90 ? "#f87171" : "#C7C5D1" }}>
                       {formatUSDC(agent.dailySpent)} <span style={{ color: "#7a8fa8" }}>/ {formatUSDC(agent.dailyLimit)}</span>
@@ -143,10 +144,10 @@ export function AgentsGrid({ agents, isDemo = false }: Props) {
                 </div>
               </Link>
 
-              <div className="flex items-center justify-between px-4 py-3 mt-auto" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-                <div className="flex items-center gap-1.5">
+              <div className="mt-auto flex flex-wrap items-center justify-between gap-2 px-4 py-3" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+                <div className="flex min-w-0 items-center gap-1.5">
                   <Activity className="size-3" style={{ color: "#7a8fa8" }} />
-                  <span className="text-[10px]" style={{ color: "#7a8fa8" }}>{agent.txCount.toLocaleString()} txs · {agent.lastActive}</span>
+                  <span className="truncate text-[10px]" style={{ color: "#7a8fa8" }}>{agent.txCount.toLocaleString()} txs · {agent.lastActive}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <Network className="size-3" style={{ color: "#7a8fa8" }} />

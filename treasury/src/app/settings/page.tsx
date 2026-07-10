@@ -68,9 +68,9 @@ export default async function SettingsPage() {
         glow
       />
 
-      <div className="p-6 grid grid-cols-2 gap-5 max-w-4xl">
+      <div className="grid max-w-4xl grid-cols-1 gap-5 p-4 sm:p-6 lg:grid-cols-2">
         {/* API Keys */}
-        <div className="col-span-2">
+        <div className="lg:col-span-2">
           <SectionCard title="Workspace Access" icon={Key}>
             <WorkspaceSecurityPanel initialSecurity={security} isDemo={isDemo} />
           </SectionCard>
@@ -88,7 +88,7 @@ export default async function SettingsPage() {
                 className="p-3 rounded-xl"
                 style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)" }}
               >
-                <div className="flex items-center justify-between mb-2">
+                <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
                   <span className="text-sm font-medium text-white">{hook.name}</span>
                   <div className="flex items-center gap-1.5">
                     {hook.ok && <Check className="size-3.5" style={{ color: "#34d399" }} />}
@@ -97,8 +97,8 @@ export default async function SettingsPage() {
                     </span>
                   </div>
                 </div>
-                <p className="text-[10px] font-mono mb-2" style={{ color: "#7a8fa8" }}>{hook.url}</p>
-                <div className="flex gap-1">
+                <p className="mb-2 truncate text-[10px] font-mono" style={{ color: "#7a8fa8" }}>{hook.url}</p>
+                <div className="flex flex-wrap gap-1">
                   {hook.events.map((e) => (
                     <span
                       key={e}
@@ -127,10 +127,10 @@ export default async function SettingsPage() {
             ].map((net) => (
               <div
                 key={net.name}
-                className="flex items-center justify-between p-3 rounded-xl"
+                className="flex flex-col items-start gap-3 p-3 rounded-xl sm:flex-row sm:items-center sm:justify-between"
                 style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)" }}
               >
-                <div className="flex items-center gap-2.5">
+                <div className="flex min-w-0 items-center gap-2.5">
                   <div
                     className="size-2 rounded-full"
                     style={{
@@ -138,9 +138,9 @@ export default async function SettingsPage() {
                       boxShadow: net.connected ? "0 0 6px rgba(52,211,153,0.8)" : "none",
                     }}
                   />
-                  <div>
+                  <div className="min-w-0">
                     <p className="text-sm font-medium text-white">{net.name}</p>
-                    <p className="text-[10px] font-mono" style={{ color: "#7a8fa8" }}>
+                    <p className="truncate text-[10px] font-mono" style={{ color: "#7a8fa8" }}>
                       {net.rpc} · chain {net.chainId}
                     </p>
                   </div>
@@ -161,9 +161,9 @@ export default async function SettingsPage() {
         </SectionCard>
 
         {/* Security */}
-        <div className="col-span-2">
+        <div className="lg:col-span-2">
           <SectionCard title="Security & Limits" icon={Shield}>
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <div>
                 <SettingRow label="Require approval for tx over" value="$50.00" action="Edit" />
                 <SettingRow label="Auto-pause on budget breach" value="Enabled" action="Toggle" />
@@ -206,7 +206,7 @@ export default async function SettingsPage() {
                 </span>
               </div>
 
-              <div className="mt-4 grid grid-cols-4 gap-2">
+              <div className="mt-4 grid grid-cols-2 gap-2 md:grid-cols-4">
                 {[
                   { label: "Signatures", value: "Migration plan" },
                   { label: "Transport", value: "PQ-safe TLS watch" },

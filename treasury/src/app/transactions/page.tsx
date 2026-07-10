@@ -64,7 +64,7 @@ export default async function TransactionsPage() {
       />
 
       {/* Summary strip */}
-      <div className="flex items-center gap-6 px-6 py-3" style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-2 px-4 py-3 sm:px-6 sm:gap-x-6" style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
         {[
           { label: "Total settled",  value: formatUSDC(total),   color: "#5FBFFF" },
           { label: "Completed",      value: `${transactions.filter((transaction) => transaction.status === "completed").length}`, color: "#34d399" },
@@ -80,7 +80,7 @@ export default async function TransactionsPage() {
       </div>
 
       {/* Table */}
-      <div className="p-6">
+      <div className="p-4 sm:p-6">
         <div
           className="mb-4 grid gap-3 rounded-2xl p-4 md:grid-cols-[1.2fr_1fr]"
           style={{ background: "linear-gradient(160deg,#263a52,#1e3247)", border: "1px solid rgba(167,139,250,0.16)" }}
@@ -97,7 +97,7 @@ export default async function TransactionsPage() {
               </p>
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
             {[
               { label: "Calls", value: "3" },
               { label: "Policy", value: "Per call" },

@@ -33,15 +33,15 @@ export function StatCard({ title, value, sub, icon: Icon, trend, accent = "defau
 
   return (
     <div
-      className="rounded-2xl p-4 flex flex-col gap-3"
+      className="min-w-0 rounded-2xl p-4 flex flex-col gap-3"
       style={{
         background: "linear-gradient(135deg, #263a52 0%, #1e3247 100%)",
         border: "1px solid rgba(255,255,255,0.08)",
         boxShadow: `0 0 20px ${styles.glow}`,
       }}
     >
-      <div className="flex items-center justify-between">
-        <p className="text-[11px] font-medium uppercase tracking-widest" style={{ color: "#7a8fa8" }}>
+      <div className="flex items-start justify-between gap-2">
+        <p className="min-w-0 text-[10px] font-medium uppercase tracking-widest sm:text-[11px]" style={{ color: "#7a8fa8" }}>
           {title}
         </p>
         <div
@@ -54,12 +54,12 @@ export function StatCard({ title, value, sub, icon: Icon, trend, accent = "defau
 
       <div>
         <p
-          className="text-2xl font-bold tracking-tight text-white"
+          className="break-words text-xl font-bold tracking-tight text-white sm:text-2xl"
           style={{ fontFamily: "'Space Grotesk', sans-serif", letterSpacing: "-0.03em" }}
         >
           {value}
         </p>
-        <div className="flex items-center gap-2 mt-1">
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1">
           {sub && <p className="text-[11px]" style={{ color: "#7a8fa8" }}>{sub}</p>}
           {trend && (
             <span

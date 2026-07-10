@@ -136,10 +136,27 @@
   body {
     @apply bg-background text-foreground;
     font-family: 'Space Grotesk', system-ui, sans-serif;
+    overflow-x: hidden;
   }
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Space Grotesk', system-ui, sans-serif;
     font-weight: 600;
     letter-spacing: -0.02em;
+  }
+}
+
+@media (max-width: 640px) {
+  html,
+  body {
+    max-width: 100%;
+  }
+
+  main {
+    min-width: 0;
+  }
+
+  .recharts-wrapper,
+  .recharts-surface {
+    max-width: 100%;
   }
 }

@@ -136,7 +136,7 @@ export function WorkspaceSecurityPanel({ initialSecurity, isDemo = false }: { in
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <Metric label="Workspace" value={security?.workspace.name ?? "Arc pilot"} />
         <Metric label="Members" value={String(security?.members.length ?? 0)} />
         <Metric label="Active keys" value={String(activeKeys.length)} />
@@ -174,7 +174,7 @@ export function WorkspaceSecurityPanel({ initialSecurity, isDemo = false }: { in
             <Shield className="size-4" style={{ color: "#5FBFFF" }} />
             <p className="text-xs font-semibold text-white">Treasury admin session</p>
           </div>
-          <div className="grid grid-cols-[1fr_auto] gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto]">
             <input
               className="h-9 w-full rounded-lg px-3 text-sm outline-none"
               placeholder="Enter admin key"
@@ -200,7 +200,7 @@ export function WorkspaceSecurityPanel({ initialSecurity, isDemo = false }: { in
       )}
 
       <div className="rounded-xl p-3" style={cardStyle}>
-        <div className="grid grid-cols-[1fr_auto] gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto]">
           <label className="space-y-1.5">
             <span className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "#7a8fa8" }}>Key name</span>
             <input
@@ -213,6 +213,7 @@ export function WorkspaceSecurityPanel({ initialSecurity, isDemo = false }: { in
           </label>
           <div className="flex items-end">
             <ArcButton
+              className="w-full sm:w-auto"
               variant="primary"
               size="md"
               icon={Plus}
@@ -247,13 +248,13 @@ export function WorkspaceSecurityPanel({ initialSecurity, isDemo = false }: { in
 
       <div className="space-y-2">
         {(security?.apiKeys ?? []).map((key) => (
-          <div key={key.id} className="flex items-center justify-between gap-3 rounded-xl p-3" style={cardStyle}>
+          <div key={key.id} className="flex flex-col gap-3 rounded-xl p-3 sm:flex-row sm:items-center sm:justify-between" style={cardStyle}>
             <div className="flex items-center gap-3 min-w-0">
               <div className="size-8 rounded-lg flex items-center justify-center" style={{ background: "rgba(77,142,233,0.1)", border: "1px solid rgba(77,142,233,0.15)" }}>
                 <Key className="size-3.5" style={{ color: "#5FBFFF" }} />
               </div>
               <div className="min-w-0">
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <p className="text-sm font-medium text-white truncate">{key.name}</p>
                   <Status active={!key.revokedAt} />
                 </div>
@@ -283,7 +284,7 @@ export function WorkspaceSecurityPanel({ initialSecurity, isDemo = false }: { in
         ))}
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         {(security?.members ?? []).map((member) => (
           <div key={member.id} className="rounded-xl p-3 flex items-center gap-3" style={cardStyle}>
             <div className="size-8 rounded-lg flex items-center justify-center" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }}>
@@ -291,7 +292,7 @@ export function WorkspaceSecurityPanel({ initialSecurity, isDemo = false }: { in
             </div>
             <div className="min-w-0">
               <p className="text-sm font-medium text-white truncate">{member.name}</p>
-              <p className="text-[10px]" style={{ color: "#7a8fa8" }}>{member.role} · {member.email}</p>
+              <p className="truncate text-[10px]" style={{ color: "#7a8fa8" }}>{member.role} · {member.email}</p>
             </div>
           </div>
         ))}

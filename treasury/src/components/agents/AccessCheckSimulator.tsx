@@ -97,7 +97,7 @@ export function AccessCheckSimulator({ agent, apiListings }: Props) {
 
   return (
     <div className="p-4 rounded-2xl space-y-3" style={cardStyle}>
-      <div className="flex items-start justify-between gap-3">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <p className="text-sm font-semibold text-white">Access Check Simulator</p>
           <p className="mt-1 text-[11px]" style={{ color: "#7a8fa8" }}>
@@ -119,7 +119,7 @@ export function AccessCheckSimulator({ agent, apiListings }: Props) {
         )}
       </div>
 
-      <div className="grid grid-cols-[minmax(0,1fr)_120px] gap-2">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-[minmax(0,1fr)_120px]">
         <label className="space-y-1">
           <span className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: "#7a8fa8" }}>API</span>
           <select
@@ -151,7 +151,7 @@ export function AccessCheckSimulator({ agent, apiListings }: Props) {
       </div>
 
       {activeApi && (
-        <div className="grid grid-cols-3 gap-2 text-[11px]">
+        <div className="grid grid-cols-1 gap-2 text-[11px] sm:grid-cols-3">
           <Metric label="Provider" value={activeApi.providerName} />
           <Metric label="Price" value={`${formatUSDC(activeApi.priceUsdc)} / ${activeApi.pricingUnit}`} />
           <Metric label="Min score" value={String(activeApi.minReputationScore)} />
@@ -165,7 +165,7 @@ export function AccessCheckSimulator({ agent, apiListings }: Props) {
       {decision && (
         <div className="rounded-xl p-3 text-[11px]" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
           <p className="font-semibold text-white">{decision.reason}</p>
-          <div className="mt-2 grid grid-cols-4 gap-2">
+          <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
             <Metric label="Score" value={String(decision.score)} />
             <Metric label="Required" value={String(decision.requiredScore)} />
             <Metric label="Monthly" value={`${decision.monthlyBudgetUsedPct}%`} />

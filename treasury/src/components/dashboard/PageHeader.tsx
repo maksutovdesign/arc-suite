@@ -13,7 +13,7 @@ interface PageHeaderProps {
 export function PageHeader({ title, subtitle, icon: Icon, actions, glow }: PageHeaderProps) {
   return (
     <div
-      className="relative flex items-center justify-between px-6 py-4 overflow-hidden"
+      className="relative flex flex-col items-start justify-between gap-3 overflow-hidden px-4 py-4 sm:flex-row sm:items-center sm:px-6"
       style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
     >
       {/* Subtle ambient glow */}
@@ -26,7 +26,7 @@ export function PageHeader({ title, subtitle, icon: Icon, actions, glow }: PageH
         />
       )}
 
-      <div className="relative flex items-center gap-3">
+      <div className="relative flex min-w-0 items-center gap-3">
         {Icon && (
           <div
             className="size-9 rounded-xl flex items-center justify-center shrink-0"
@@ -38,7 +38,7 @@ export function PageHeader({ title, subtitle, icon: Icon, actions, glow }: PageH
             <Icon className="size-4" style={{ color: "#5FBFFF" }} />
           </div>
         )}
-        <div>
+        <div className="min-w-0">
           <h1
             className="text-lg font-semibold tracking-tight text-white"
             style={{ fontFamily: "'Space Grotesk', sans-serif", letterSpacing: "-0.02em" }}
@@ -46,14 +46,14 @@ export function PageHeader({ title, subtitle, icon: Icon, actions, glow }: PageH
             {title}
           </h1>
           {subtitle && (
-            <p className="text-xs mt-0.5" style={{ color: "#7a8fa8" }}>
+            <p className="mt-0.5 max-w-full text-xs leading-snug" style={{ color: "#7a8fa8" }}>
               {subtitle}
             </p>
           )}
         </div>
       </div>
 
-      {actions && <div className="relative flex items-center gap-2">{actions}</div>}
+      {actions && <div className="relative flex w-full flex-wrap items-center gap-2 sm:w-auto sm:justify-end">{actions}</div>}
     </div>
   )
 }

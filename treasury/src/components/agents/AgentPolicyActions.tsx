@@ -36,7 +36,7 @@ export function AgentPolicyActions({ agent, isDemo = false }: Props) {
 
   return (
     <div className="space-y-3">
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
         {agent.status === "paused" ? (
           <ArcButton
             disabled={isPending || isDemo}
@@ -62,7 +62,7 @@ export function AgentPolicyActions({ agent, isDemo = false }: Props) {
         )}
       </div>
 
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         <label className="space-y-1">
           <span className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: "#7a8fa8" }}>
             Monthly

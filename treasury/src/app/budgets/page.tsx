@@ -28,7 +28,7 @@ export default function BudgetsPage() {
         actions={<ArcButton variant="primary" size="sm" icon={Plus}>New Rule</ArcButton>}
       />
 
-      <div className="p-6 space-y-5">
+      <div className="space-y-5 p-4 sm:p-6">
         {/* Active Alerts */}
         <div
           className="rounded-2xl overflow-hidden"
@@ -51,7 +51,7 @@ export default function BudgetsPage() {
             {unresolvedAlerts.map((alert) => (
               <div
                 key={alert.id}
-                className="flex items-start justify-between p-3 rounded-xl"
+                className="flex flex-col gap-3 p-3 rounded-xl sm:flex-row sm:items-start sm:justify-between"
                 style={{
                   background: alert.severity === "critical"
                     ? "rgba(248,113,113,0.06)"
@@ -59,13 +59,13 @@ export default function BudgetsPage() {
                   border: `1px solid ${alert.severity === "critical" ? "rgba(248,113,113,0.2)" : "rgba(245,158,11,0.2)"}`,
                 }}
               >
-                <div className="flex items-start gap-3">
+                <div className="flex min-w-0 items-start gap-3">
                   <AlertTriangle
                     className="size-4 mt-0.5 shrink-0"
                     style={{ color: alert.severity === "critical" ? "#f87171" : "#f59e0b" }}
                   />
                   <div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <span className="text-sm font-semibold text-white">{alert.agentName}</span>
                       <span
                         className="text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider"
@@ -81,8 +81,8 @@ export default function BudgetsPage() {
                     <p className="text-xs mt-0.5" style={{ color: "#7a8fa8" }}>{alert.message}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <ArcButton variant="danger" size="sm">Pause agent</ArcButton>
+                <div className="flex flex-wrap items-center gap-2 sm:shrink-0">
+                  <ArcButton className="flex-1 sm:flex-none" variant="danger" size="sm">Pause agent</ArcButton>
                   <ArcButton variant="outline" size="sm">Resolve</ArcButton>
                 </div>
               </div>
@@ -93,7 +93,7 @@ export default function BudgetsPage() {
         {/* Budget controls per agent */}
         <div style={arcCard} className="overflow-hidden">
           <div
-            className="flex items-center justify-between px-4 py-3"
+            className="flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
             style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
           >
             <div className="flex items-center gap-2">
@@ -111,8 +111,8 @@ export default function BudgetsPage() {
               return (
                 <div key={agent.id} className="p-4">
                   {/* Agent header row */}
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-3">
+                  <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex min-w-0 items-center gap-3">
                       <div
                         className="size-9 rounded-xl flex items-center justify-center"
                         style={{ background: "rgba(77,142,233,0.12)", border: "1px solid rgba(77,142,233,0.2)" }}
@@ -120,18 +120,18 @@ export default function BudgetsPage() {
                         <Bot className="size-4" style={{ color: "#5FBFFF" }} />
                       </div>
                       <div>
-                        <p className="text-sm font-semibold text-white">{agent.name}</p>
+                        <p className="truncate text-sm font-semibold text-white">{agent.name}</p>
                         <p className="text-[10px] font-mono" style={{ color: "#7a8fa8" }}>{agent.address}</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <AgentStatusBadge status={agent.status} />
                       <ArcButton variant="outline" size="sm" icon={Settings2}>Edit limits</ArcButton>
                     </div>
                   </div>
 
                   {/* Two budget bars side by side */}
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
                     {[
                       { label: "Monthly budget", spent: agent.monthlySpent, limit: agent.monthlyBudget, pct: mPct },
                       { label: "Daily limit",    spent: agent.dailySpent,   limit: agent.dailyLimit,    pct: dPct },
