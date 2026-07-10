@@ -10233,8 +10233,12 @@ a.ops-history-run:hover {
 }
 
 .product-panel-stats strong {
-  font-size: clamp(21px, 2.4vw, 25px);
+  display: block;
+  font-size: clamp(20px, 2.1vw, 24px);
   line-height: 1.05;
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+  white-space: nowrap !important;
 }
 
 .flow-metrics,

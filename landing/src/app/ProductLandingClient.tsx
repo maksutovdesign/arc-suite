@@ -34,8 +34,8 @@ const productDetails = [
     image: "/screenshots/treasury-dashboard-20260603.png",
     imageAlt: "Arc Treasury dashboard with managed USDC, spend charts, budget alerts and agent wallet controls",
     stats: [
-      ["$3,072.93", "managed USDC"],
-      ["$1,527.07", "monthly spend"],
+      ["$3.1K", "managed USDC"],
+      ["$1.5K", "monthly spend"],
       ["3", "active alerts"],
     ],
     bullets: ["Monthly and daily limits", "Critical budget alerts", "Wallet-level reporting"],
@@ -349,8 +349,8 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
         return {
           ...product,
           stats: [
-            [formatUsd(pilotSummary.treasury.managedUsdc), "managed USDC"],
-            [formatUsd(pilotSummary.treasury.monthlySpentUsdc), "monthly spend"],
+            [`$${formatCompact(pilotSummary.treasury.managedUsdc)}`, "managed USDC"],
+            [`$${formatCompact(pilotSummary.treasury.monthlySpentUsdc)}`, "monthly spend"],
             [String(pilotSummary.treasury.activeAlerts), "active alerts"],
           ],
         }
