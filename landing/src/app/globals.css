@@ -10166,3 +10166,116 @@ a.ops-history-run:hover {
     display: none;
   }
 }
+
+/* Product page visual alignment pass */
+.radar-hero h1,
+.private-hero h1,
+.blueprints-hero h1 {
+  max-width: 850px;
+  margin: 10px 0 20px;
+  font-size: clamp(48px, 4.6vw, 64px);
+  line-height: 1.02;
+  letter-spacing: 0;
+}
+
+.radar-hero p:not(.kicker),
+.private-hero p:not(.kicker),
+.blueprints-hero p:not(.kicker) {
+  max-width: 760px;
+  margin: 0;
+  font-size: 19px;
+  line-height: 1.58;
+}
+
+.shield-heading,
+.gas-heading,
+.wallet-heading,
+.flow-heading,
+.interop-hero {
+  grid-template-columns: minmax(0, 1.4fr) minmax(320px, 0.6fr);
+  gap: 28px;
+  align-items: end;
+  margin-bottom: 28px;
+}
+
+.shield-heading h1,
+.gas-heading h1,
+.wallet-heading h1,
+.interop-hero h1,
+.flow-heading h1 {
+  margin: 4px 0 12px;
+  font-size: 64px;
+  line-height: 1.02;
+  letter-spacing: 0;
+}
+
+.shield-heading p:not(.kicker),
+.gas-heading p:not(.kicker),
+.wallet-heading p:not(.kicker),
+.interop-hero p,
+.flow-heading p:not(.kicker) {
+  max-width: 760px;
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.65;
+}
+
+.product-panel-stats strong,
+.flow-metric strong,
+.gas-metric strong,
+.wallet-metric strong,
+.provider-metrics article strong,
+.interop-evidence-grid strong,
+.interop-router-hash strong {
+  overflow-wrap: normal;
+  word-break: normal;
+  white-space: nowrap;
+}
+
+.product-panel-stats strong {
+  font-size: clamp(21px, 2.4vw, 25px);
+  line-height: 1.05;
+}
+
+.flow-metrics,
+.gas-metrics,
+.wallet-metrics,
+.interop-evidence-grid {
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+}
+
+.flow-metric strong,
+.gas-metric strong,
+.wallet-metric strong {
+  font-size: clamp(24px, 3vw, 32px);
+  line-height: 1.05;
+}
+
+.interop-evidence-grid strong,
+.interop-router-hash strong {
+  display: block;
+  overflow: hidden;
+  max-width: 100%;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 900px) {
+  .radar-hero h1,
+  .private-hero h1,
+  .blueprints-hero h1,
+  .shield-heading h1,
+  .gas-heading h1,
+  .wallet-heading h1,
+  .interop-hero h1,
+  .flow-heading h1 {
+    font-size: clamp(38px, 12vw, 48px);
+  }
+
+  .flow-metrics,
+  .gas-metrics,
+  .wallet-metrics,
+  .interop-evidence-grid,
+  .product-panel-stats {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,17 +1,18 @@
 "use client"
 
 import { useState } from "react"
-import { AlertTriangle, CheckCircle2, Bell, BellOff, ShieldAlert, History } from "lucide-react"
+import type { LucideIcon } from "lucide-react"
+import { AlertTriangle, CheckCircle2, Bell, BellOff, ShieldAlert, History, BarChart3, CalendarDays, CircleDollarSign, Zap } from "lucide-react"
 import { PageHeader } from "@/components/dashboard/PageHeader"
 import { ArcButton } from "@/components/ui/ArcButton"
 import { ALERTS } from "@/data/mock"
 import { formatTimestamp } from "@/lib/utils"
 
-const TYPE_META: Record<string, { label: string; icon: string }> = {
-  daily_limit:    { label: "Daily Limit",    icon: "📊" },
-  monthly_limit:  { label: "Monthly Limit",  icon: "📅" },
-  low_balance:    { label: "Low Balance",    icon: "💰" },
-  unusual_spend:  { label: "Unusual Spend",  icon: "⚡" },
+const TYPE_META: Record<string, { label: string; icon: LucideIcon }> = {
+  daily_limit:    { label: "Daily Limit",    icon: BarChart3 },
+  monthly_limit:  { label: "Monthly Limit",  icon: CalendarDays },
+  low_balance:    { label: "Low Balance",    icon: CircleDollarSign },
+  unusual_spend:  { label: "Unusual Spend",  icon: Zap },
 }
 
 const arcCard = {
@@ -65,6 +66,7 @@ export default function AlertsPage() {
               {active.map((alert) => {
                 const isCritical = alert.severity === "critical"
                 const meta = TYPE_META[alert.type]
+                const Icon = meta?.icon ?? AlertTriangle
 
                 return (
                   <div
@@ -85,9 +87,10 @@ export default function AlertsPage() {
                         style={{
                           background: isCritical ? "rgba(248,113,113,0.12)" : "rgba(245,158,11,0.12)",
                           border: `1px solid ${isCritical ? "rgba(248,113,113,0.25)" : "rgba(245,158,11,0.25)"}`,
+                          color: isCritical ? "#f87171" : "#f59e0b",
                         }}
                       >
-                        {meta?.icon ?? "⚠"}
+                        <Icon className="size-5" strokeWidth={2.2} />
                       </div>
 
                       <div>
@@ -139,6 +142,7 @@ export default function AlertsPage() {
             <div className="space-y-2">
               {resolved.map((alert) => {
                 const meta = TYPE_META[alert.type]
+                const Icon = meta?.icon ?? BellOff
                 return (
                   <div
                     key={alert.id}
@@ -146,7 +150,7 @@ export default function AlertsPage() {
                     style={{ ...arcCard, opacity: 0.6 }}
                   >
                     <div className="flex items-center gap-3">
-                      <BellOff className="size-4 shrink-0" style={{ color: "#7a8fa8" }} />
+                      <Icon className="size-4 shrink-0" style={{ color: "#7a8fa8" }} />
                       <div>
                         <div className="flex items-center gap-2">
                           <span className="text-sm font-semibold text-white">{alert.agentName}</span>
