@@ -24,6 +24,20 @@ The latest Wallet OS update also reflects Arc's application-layer direction show
 - GitHub release: https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.07.04-interop-risk-router
 - Demo video: https://drive.google.com/file/d/1TpkfepfGCEXDfh-YWIfGLRGuohHAJmjP/view?usp=sharing
 
+## Fresh Arc ecosystem alignment
+
+Arc Suite has been updated around three recent ecosystem signals:
+
+- **Arc x Chainlink:** Arc now has a public path for market data, proof-of-reserve style signals and CCIP interoperability on testnet. Arc Suite maps this into Arc Interop: route evidence, Chainlink CCIP router metadata, oracle risk hashes, route status history and proof-gated settlement states.
+- **Arc x Pulsar:** Arc is highlighting products where Arc is the settlement layer behind a real app experience, not only developer infrastructure. Arc Suite applies that app-layer pattern to agents through Wallet OS: one operational account surface for USDC spending, EURC invoice rails, FX-ready routes, card-like controls, CCTP status and gas abstraction.
+- **Arc Testnet load testing:** Arc has surfaced network resilience as a real product requirement. Arc Suite now models congestion-aware states such as `network_congested`, `retry_scheduled`, `deferred_settlement` and `settlement_recorded` so temporary network conditions do not get confused with agent failure or compliance failure.
+
+Reference links:
+
+- Arc x Chainlink: https://community.arc.io/home/blogs/arc-x-chainlink-data-and-cross-chain-infrastructure-for-arc-builders-2026-06-30
+- Arc x Pulsar: https://community.arc.io/home/blogs/arc-x-pulsar-consumer-stablecoin-money-movement-on-arc-2026-07-09
+- Arc status page: https://status.arc.io/
+
 ## Circle and Arc usage
 
 Implemented or demo-ready:

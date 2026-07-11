@@ -103,6 +103,21 @@ const currentStatus = [
   ["Roadmap", "Grant unlocks live Arc deployment, Circle Wallets expansion, CCTP and contract work."],
 ] as const
 
+const ecosystemSignals = [
+  [
+    "Arc x Chainlink",
+    "Arc Suite maps this into Interop: CCIP route evidence, oracle risk hashes, feed freshness and proof-gated settlement states.",
+  ],
+  [
+    "Arc x Pulsar",
+    "Wallet OS follows the same app-layer pattern: one account surface for USDC/EURC balances, payments, FX-ready routes and hidden gas/CCTP state.",
+  ],
+  [
+    "Arc status / load testing",
+    "Ops and Interop separate network congestion from product failure, so jobs can retry or defer settlement without damaging agent reputation.",
+  ],
+] as const
+
 const reviewerConsole = [
   {
     title: "Live demo",
@@ -286,6 +301,22 @@ export default function GrantPage() {
             <a href="/flow">Flow console <ArrowRight size={15} /></a>
             <a href="/provider">Provider receipts <ArrowRight size={15} /></a>
             <a href="/proofs">Proof archive <ArrowRight size={15} /></a>
+          </div>
+        </section>
+
+        <section className="grant-section">
+          <div className="submission-section-head">
+            <p className="kicker">Ecosystem fit</p>
+            <h2>Built around the latest Arc direction.</h2>
+          </div>
+          <div className="grant-status-grid">
+            {ecosystemSignals.map(([title, detail]) => (
+              <div key={title}>
+                <RadioTower size={18} />
+                <strong>{title}</strong>
+                <p>{detail}</p>
+              </div>
+            ))}
           </div>
         </section>
 
