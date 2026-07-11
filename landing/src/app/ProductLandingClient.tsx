@@ -265,8 +265,8 @@ const metrics = [
 ]
 
 const treasuryResults = [
-  ["Managed USDC", "$3,072.93", "Across all demo wallets"],
-  ["Monthly spend", "$1,527.07", "of $4,400 total budget"],
+  ["Managed USDC", "$3.1K", "Across all demo wallets"],
+  ["Monthly spend", "$1.5K", "of $4.4K total budget"],
   ["Active alerts", "3", "2 critical, 1 warning"],
   ["Avg tx cost", "$0.061", "Across agent activity"],
 ]
@@ -309,6 +309,8 @@ const formatCompact = (value: number) =>
     notation: "compact",
   }).format(value)
 
+const formatCompactUsd = (value: number) => `$${formatCompact(value)}`
+
 const story = [
   {
     title: "Operators set policy",
@@ -349,8 +351,8 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
         return {
           ...product,
           stats: [
-            [`$${formatCompact(pilotSummary.treasury.managedUsdc)}`, "managed USDC"],
-            [`$${formatCompact(pilotSummary.treasury.monthlySpentUsdc)}`, "monthly spend"],
+            [formatCompactUsd(pilotSummary.treasury.managedUsdc), "managed USDC"],
+            [formatCompactUsd(pilotSummary.treasury.monthlySpentUsdc), "monthly spend"],
             [String(pilotSummary.treasury.activeAlerts), "active alerts"],
           ],
         }
@@ -392,8 +394,8 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
     : metrics
   const liveTreasuryResults = pilotSummary
     ? [
-        ["Managed USDC", formatUsd(pilotSummary.treasury.managedUsdc), "Across pilot wallets"],
-        ["Monthly spend", formatUsd(pilotSummary.treasury.monthlySpentUsdc), `of ${formatUsd(pilotSummary.treasury.monthlyBudgetUsdc)} total budget`],
+        ["Managed USDC", formatCompactUsd(pilotSummary.treasury.managedUsdc), "Across pilot wallets"],
+        ["Monthly spend", formatCompactUsd(pilotSummary.treasury.monthlySpentUsdc), `of ${formatCompactUsd(pilotSummary.treasury.monthlyBudgetUsdc)} total budget`],
         ["Active alerts", String(pilotSummary.treasury.activeAlerts), `${pilotSummary.treasury.criticalAlerts} critical`],
         ["Avg tx cost", formatUsd(pilotSummary.treasury.avgTxCostUsdc), "Across completed agent activity"],
       ]

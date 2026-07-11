@@ -3579,7 +3579,9 @@ h3 {
   display: block;
   margin-bottom: 10px;
   color: var(--cyan);
-  font-size: 26px;
+  font-size: clamp(22px, 2.4vw, 30px);
+  line-height: 1;
+  white-space: nowrap;
 }
 
 .result-metric-grid span,
