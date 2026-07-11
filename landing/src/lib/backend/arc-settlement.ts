@@ -28,6 +28,21 @@ export type ArcTransferReceipt = {
   providerReceipt: Record<string, unknown>
 }
 
+export type ArcWalletExecutionReadiness = ArcSettlementConfiguration & {
+  circle: {
+    apiConfigured: boolean
+    entitySecretConfigured: boolean
+    tokenLookup: "configured" | "resolved" | "missing" | "unavailable"
+    balanceReadable: boolean
+    balanceUsdc: number | null
+    tokenId: string | null
+    tokenSymbol: string | null
+    lastCheckedAt: string
+    errorCode: string | null
+    errorMessage: string | null
+  }
+}
+
 export function getArcSettlementConfiguration(): ArcSettlementConfiguration {
   const sourceWalletId = process.env.ARC_SOURCE_WALLET_ID?.trim() || null
   const sourceAddress = normalizeAddress(process.env.ARC_SOURCE_WALLET_ADDRESS)
@@ -124,6 +139,65 @@ export async function sendArcTestnetUsdc(input: {
   }
 }
 
+export async function readArcWalletExecutionReadiness(): Promise<ArcWalletExecutionReadiness> {
+  const config = getArcSettlementConfiguration()
+  const baseCircle = {
+    apiConfigured: Boolean(process.env.CIRCLE_API_KEY),
+    entitySecretConfigured: Boolean(process.env.CIRCLE_ENTITY_SECRET),
+    tokenLookup: config.usdcTokenId ? "configured" as const : "missing" as const,
+    balanceReadable: false,
+    balanceUsdc: null,
+    tokenId: config.usdcTokenId,
+    tokenSymbol: null,
+    lastCheckedAt: new Date().toISOString(),
+    errorCode: null,
+    errorMessage: null,
+  }
+
+  if (!baseCircle.apiConfigured || !baseCircle.entitySecretConfigured || !config.sourceWalletId) {
+    return { ...config, circle: baseCircle }
+  }
+
+  try {
+    const client = await createCircleClient()
+    const response = await client.getWalletTokenBalance({
+      id: config.sourceWalletId,
+      includeAll: true,
+      tokenAddresses: [config.usdcTokenAddress],
+    })
+    const balances = response.data?.tokenBalances ?? []
+    const exact = balances.find((balance) => normalizeAddress(balance.token.tokenAddress) === config.usdcTokenAddress)
+    const usdc = exact ?? balances.find((balance) => {
+      const symbol = balance.token.symbol?.toUpperCase()
+      const name = balance.token.name?.toUpperCase()
+      return symbol === "USDC" || name?.includes("USDC")
+    })
+
+    return {
+      ...config,
+      circle: {
+        ...baseCircle,
+        tokenLookup: usdc?.token.id ? "resolved" : baseCircle.tokenLookup,
+        balanceReadable: Boolean(usdc),
+        balanceUsdc: parseTokenAmount(usdc?.amount),
+        tokenId: usdc?.token.id ?? config.usdcTokenId,
+        tokenSymbol: usdc?.token.symbol ?? null,
+      },
+    }
+  } catch (error) {
+    const safe = toSafeCircleError(error)
+    return {
+      ...config,
+      circle: {
+        ...baseCircle,
+        tokenLookup: "unavailable",
+        errorCode: "circle_balance_read_failed",
+        errorMessage: typeof safe.message === "string" ? safe.message : "Circle balance read failed",
+      },
+    }
+  }
+}
+
 async function resolveArcUsdcTokenId(
   client: CircleDeveloperControlledWalletsClient,
   config: ArcSettlementConfiguration,
@@ -211,6 +285,12 @@ function normalizeAddress(value: string | undefined | null) {
 function parsePositiveNumber(value: string | undefined, fallback: number) {
   const parsed = Number(value)
   return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback
+}
+
+function parseTokenAmount(value: unknown) {
+  if (typeof value !== "string" && typeof value !== "number") return null
+  const parsed = Number(value)
+  return Number.isFinite(parsed) ? parsed : null
 }
 
 function formatUsdcAmount(amount: number) {

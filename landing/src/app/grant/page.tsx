@@ -47,7 +47,7 @@ const integrationMatrix = [
   {
     name: "Circle Wallets",
     status: "Demo-ready",
-    detail: "Developer-controlled wallet path prepared for real agent wallet creation and settlement evidence.",
+    detail: "Developer-controlled wallet path prepared for real agent wallet creation, read-only balance checks and settlement evidence.",
     icon: WalletCards,
   },
   {
@@ -100,6 +100,7 @@ const currentStatus = [
   ["Monitoring", "Production monitor, Sentry runtime and Ops Health surface are active."],
   ["Network resilience", arcNetworkResilience.summary],
   ["Application layer", "Wallet OS now models Arc-native money movement as one operational account instead of raw wallet/chain mechanics."],
+  ["Circle Wallet execution", "Wallet OS exposes source wallet, token lookup and balance readiness before any policy-gated transfer is attempted."],
   ["Roadmap", "Grant unlocks live Arc deployment, Circle Wallets expansion, CCTP and contract work."],
 ] as const
 

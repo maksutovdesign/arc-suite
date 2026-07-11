@@ -8,6 +8,27 @@ import { demoWalletOverview } from "../demoWorkspace"
 
 const API_KEY_STORAGE = "arc_wallet_os_key"
 
+type ExecutionReadiness = {
+  configured: boolean
+  chain: string
+  chainId: number
+  sourceWalletId: string | null
+  sourceAddress: string | null
+  usdcTokenId: string | null
+  defaultRecipient: string | null
+  maxAmountUsdc: number
+  missing: string[]
+  circle: {
+    tokenLookup: "configured" | "resolved" | "missing" | "unavailable"
+    balanceReadable: boolean
+    balanceUsdc: number | null
+    tokenId: string | null
+    tokenSymbol: string | null
+    lastCheckedAt: string
+    errorMessage: string | null
+  }
+}
+
 const multicurrencyAccounts = [
   { asset: "USDC", balance: "3,072.93", role: "Agent spend base", status: "implemented" },
   { asset: "EURC", balance: "1,184.20", role: "Invoice and FX quote rail", status: "planned" },
@@ -39,6 +60,7 @@ export function WalletDashboardClient() {
   const [busy, setBusy] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
+  const [executionReadiness, setExecutionReadiness] = useState<ExecutionReadiness | null>(null)
   const loaded = useRef(false)
 
   const connect = useCallback(async (nextKey = apiKey) => {
@@ -47,10 +69,17 @@ export function WalletDashboardClient() {
     setBusy("connect")
     setError(null)
     try {
-      const response = await fetch("/api/wallets/overview", { cache: "no-store", headers: { "x-arc-api-key": key } })
+      const [response, readinessResponse] = await Promise.all([
+        fetch("/api/wallets/overview", { cache: "no-store", headers: { "x-arc-api-key": key } }),
+        fetch("/api/wallets/execution-readiness", { cache: "no-store", headers: { "x-arc-api-key": key } }),
+      ])
       if (response.status === 401) throw new Error("Invalid API key or missing read scope.")
       const payload = await response.json() as { overview: WalletOverview | null }
       if (!response.ok || !payload.overview) throw new Error("Arc Wallet OS migration is required.")
+      if (readinessResponse.ok) {
+        const readinessPayload = await readinessResponse.json() as { readiness: ExecutionReadiness }
+        setExecutionReadiness(readinessPayload.readiness)
+      }
       setOverview(payload.overview)
       const nextWalletId = walletId || payload.overview.wallets[0]?.id || ""
       setWalletId(nextWalletId)
@@ -196,6 +225,24 @@ export function WalletDashboardClient() {
         </div>
       </section>
 
+      <section className="wallet-panel wallet-live-readiness">
+        <PanelHead eyebrow="Circle execution readiness" title="Read-only wallet path" icon={<Zap size={20} />} />
+        <p className="wallet-account-copy">
+          Wallet OS checks the live Circle path before a policy-gated transfer is attempted: credentials, source wallet,
+          Arc Testnet USDC token lookup and current readable balance.
+        </p>
+        <div className="wallet-readiness-grid">
+          <ReadinessCell label="Circle path" value={executionReadiness ? executionReadiness.configured ? "Configured" : "Needs env" : "Demo mode"} tone={executionReadiness?.configured ? "ok" : "warn"} />
+          <ReadinessCell label="Source wallet" value={shortId(executionReadiness?.sourceWalletId)} />
+          <ReadinessCell label="USDC balance" value={formatUsdcBalance(executionReadiness?.circle.balanceUsdc)} tone={executionReadiness?.circle.balanceReadable ? "ok" : "warn"} />
+          <ReadinessCell label="Token lookup" value={executionReadiness?.circle.tokenLookup ?? "locked"} tone={executionReadiness?.circle.tokenLookup === "resolved" || executionReadiness?.circle.tokenLookup === "configured" ? "ok" : "warn"} />
+          <ReadinessCell label="Max transfer" value={executionReadiness ? `${executionReadiness.maxAmountUsdc} USDC` : "policy-gated"} />
+          <ReadinessCell label="Last check" value={executionReadiness ? formatDate(executionReadiness.circle.lastCheckedAt) : "Connect key"} />
+        </div>
+        {executionReadiness?.circle.errorMessage && <p className="wallet-readiness-note">Circle read returned: {executionReadiness.circle.errorMessage}</p>}
+        {executionReadiness?.missing.length ? <p className="wallet-readiness-note">Missing production env: {executionReadiness.missing.join(", ")}</p> : null}
+      </section>
+
       <div className="wallet-grid">
         <section className="wallet-panel">
           <PanelHead eyebrow="Wallet registry" title="Custody & lifecycle" icon={<WalletCards size={20} />} />
@@ -258,9 +305,12 @@ export function WalletDashboardClient() {
 
 function Metric({ label, value, icon }: { label: string; value: string; icon: React.ReactNode }) { return <div className="wallet-metric"><span>{icon}{label}</span><strong>{value}</strong></div> }
 function PanelHead({ eyebrow, title, icon }: { eyebrow: string; title: string; icon: React.ReactNode }) { return <div className="flow-panel-title"><div><span>{eyebrow}</span><h2>{title}</h2></div>{icon}</div> }
+function ReadinessCell({ label, value, tone = "neutral" }: { label: string; value: string; tone?: "ok" | "warn" | "neutral" }) { return <div className={`wallet-readiness-cell is-${tone}`}><span>{label}</span><strong>{value}</strong></div> }
 function NumberField({ label, value, onChange, step = "0.01" }: { label: string; value: number; onChange: (value: number) => void; step?: string }) { return <label><span>{label}</span><input min="0" step={step} type="number" value={value} onChange={(event) => onChange(Number(event.target.value))} /></label> }
 function custodyName(value: WalletAccount["custodyModel"]) { return value === "developer" ? "Developer-controlled" : value === "user" ? "User-controlled" : "Modular" }
 function actionLabel(value: WalletLifecycleEvent["action"]) { return value.replaceAll("_", " ").replace(/^\w/, (letter) => letter.toUpperCase()) }
 function walletName(wallets: WalletAccount[], id: string) { return wallets.find((wallet) => wallet.id === id)?.name ?? id }
 function formatDate(value: string) { return new Date(value).toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" }) }
+function shortId(value: string | null | undefined) { return value ? `${value.slice(0, 8)}...${value.slice(-4)}` : "Not configured" }
+function formatUsdcBalance(value: number | null | undefined) { return typeof value === "number" ? `${value.toLocaleString("en-US", { maximumFractionDigits: 6 })} USDC` : "Unreadable" }
 function readStoredApiKey() { return typeof window === "undefined" ? "" : window.sessionStorage.getItem(API_KEY_STORAGE) ?? window.sessionStorage.getItem("arc_gas_key") ?? window.sessionStorage.getItem("arc_shield_key") ?? "" }

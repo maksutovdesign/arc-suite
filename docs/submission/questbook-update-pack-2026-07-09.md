@@ -43,7 +43,7 @@ Reference links:
 Implemented or demo-ready:
 
 - USDC-denominated budgets, payment amounts, receipts and proof records.
-- Circle Wallets execution path prepared for developer-controlled agent wallets and balance/transfer evidence.
+- Circle Wallets execution path now includes a read-only readiness layer for source wallet, Arc Testnet USDC token lookup, readable balance and transfer guardrails before policy-gated settlement.
 - x402-style signed offer and receipt architecture for machine-to-machine API purchases.
 - Arc Testnet settlement-ready path with proof recording when the Circle/Arc path is configured.
 - Chainlink-on-Arc route evidence model using Arc Testnet CCIP Router `0xdE4E7FED43FAC37EB21aA0643d9852f75332eab8` and chain selector `3034092155422581607`.
@@ -51,7 +51,7 @@ Implemented or demo-ready:
 
 Planned next:
 
-- Live Circle Wallet creation, balance reads and USDC testnet transfers from the app.
+- Live Circle Wallet creation and USDC testnet transfers from the app; read-only Circle wallet balance readiness is now surfaced in Wallet OS.
 - CCTP / CCIP route status adapters.
 - Circle Gateway and Paymaster integration for production-grade agent funding and sponsored execution.
 - Arc contracts for reputation, escrow and settlement records.

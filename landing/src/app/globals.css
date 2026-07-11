@@ -9132,6 +9132,61 @@ a.ops-history-run:hover {
   margin-top: 16px;
 }
 
+.wallet-live-readiness {
+  margin: 18px 0;
+}
+
+.wallet-readiness-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.wallet-readiness-cell {
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.wallet-readiness-cell span,
+.wallet-readiness-cell strong {
+  display: block;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.wallet-readiness-cell span {
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.wallet-readiness-cell strong {
+  margin-top: 8px;
+  color: var(--text);
+  font-size: 16px;
+  line-height: 1.25;
+}
+
+.wallet-readiness-cell.is-ok strong {
+  color: var(--green);
+}
+
+.wallet-readiness-cell.is-warn strong {
+  color: var(--amber);
+}
+
+.wallet-readiness-note {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
 .wallet-panel {
   min-width: 0;
   padding: 22px;
@@ -9811,6 +9866,7 @@ a.ops-history-run:hover {
   .interop-router-hash,
   .interop-failure-grid,
   .wallet-metrics,
+  .wallet-readiness-grid,
   .wallet-account-grid,
   .wallet-fx-routes,
   .wallet-app-layer,
