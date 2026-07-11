@@ -34,7 +34,7 @@ const productDetails = [
     image: "/screenshots/treasury-dashboard-20260603.png",
     imageAlt: "Arc Treasury dashboard with managed USDC, spend charts, budget alerts and agent wallet controls",
     stats: [
-      ["$3.1K", "managed USDC"],
+      ["$3K", "managed USDC"],
       ["$1.5K", "monthly spend"],
       ["3", "active alerts"],
     ],
@@ -83,7 +83,7 @@ const productDetails = [
     imageAlt: "Arc Provider trust center showing provider signing keys, paid receipt registry and Arc proof links",
     stats: [
       ["12", "recent receipts"],
-      ["ed25519", "provider signing"],
+      ["Ed25519", "provider signing"],
       ["100%", "proof-linked jobs"],
     ],
     bullets: ["Provider signing metadata", "Paid job reconciliation", "Proof-linked fulfillment"],
@@ -179,7 +179,7 @@ const productDetails = [
     imageAlt: "Arc Interop console showing Arc Testnet to Ethereum Sepolia CCIP route status, selector, router and proof hash",
     stats: [
       ["CCIP", "route-ready"],
-      ["303409...", "Arc selector"],
+      ["303409…", "Arc selector"],
       ["1", "proof envelope"],
     ],
     bullets: ["Arc to Sepolia route view", "Router and selector evidence", "Proof hash before finalization"],
@@ -309,7 +309,7 @@ const formatCompact = (value: number) =>
     notation: "compact",
   }).format(value)
 
-const formatCompactUsd = (value: number) => `$${formatCompact(value)}`
+const formatCompactUsd = (value: number) => `$${formatCompact(value).replace(".0", "")}`
 
 const story = [
   {
