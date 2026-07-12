@@ -310,7 +310,9 @@ const formatCompact = (value: number) =>
   }).format(value)
 
 const formatCompactUsd = (value: number) => `$${formatCompact(value).replace(".0", "")}`
-const formatCardUsd = (value: number) => value >= 1000 ? `$${(value / 1000).toFixed(2)}K` : formatUsd(value)
+const formatCardUsd = (value: number) => value >= 1000 ? formatCompactUsd(value) : formatUsd(value)
+const formatBudgetRatio = (spent: number, limit: number) =>
+  `${formatCompactUsd(spent)} / ${formatCompactUsd(limit)}`
 
 const story = [
   {
@@ -1088,7 +1090,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
                 <span>TradeBot monthly budget</span>
                 <strong>
                   {tradeBotBudget
-                    ? `${formatUsd(tradeBotBudget.spentUsdc)} / ${formatUsd(tradeBotBudget.limitUsdc)}`
+                    ? formatBudgetRatio(tradeBotBudget.spentUsdc, tradeBotBudget.limitUsdc)
                     : "$476.89 / $500"}
                 </strong>
               </div>

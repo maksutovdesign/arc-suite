@@ -8,7 +8,7 @@ import { CategoryChart } from "@/components/charts/CategoryChart"
 import { ArcBarChart } from "@/components/charts/BarChart"
 import { AGENTS, CATEGORY_BREAKDOWN, STATS, AGENT_BAR_DATA } from "@/data/mock"
 import { ARC_CARD } from "@/lib/styles"
-import { formatUSDC, pctUsed } from "@/lib/utils"
+import { formatCompactUSDC, formatUSDC, pctUsed } from "@/lib/utils"
 
 export const metadata: Metadata = { title: "Reports — Arc Treasury" }
 
@@ -50,41 +50,41 @@ export default function ReportsPage() {
             {
               label: "Budget Used",
               value: `${budgetPct}%`,
-              sub: `${formatUSDC(remaining)} remaining`,
+              sub: `${formatCompactUSDC(remaining)} remaining`,
               color: budgetPct > 80 ? "#f59e0b" : "#34d399",
             },
             {
               label: "Total USDC Settled",
-              value: formatUSDC(STATS.monthlySpent),
-              sub: `of ${formatUSDC(STATS.monthlyBudget)} budget`,
+              value: formatCompactUSDC(STATS.monthlySpent),
+              sub: `of ${formatCompactUSDC(STATS.monthlyBudget)} budget`,
               color: "#5FBFFF",
             },
             {
               label: "Top Spender",
               value: sortedBySpend[0].name.split("-")[0],
-              sub: `${formatUSDC(sortedBySpend[0].monthlySpent)} this month`,
+              sub: `${formatCompactUSDC(sortedBySpend[0].monthlySpent)} this month`,
               color: "#f87171",
             },
           ].map(({ label, value, sub, color }) => (
-            <div key={label} className="p-4 rounded-2xl" style={arcCard}>
+            <div key={label} className="min-w-0 p-4 rounded-2xl" style={arcCard}>
               <p className="mb-2 text-[9px] font-semibold uppercase tracking-widest sm:text-[10px]" style={{ color: "#7a8fa8" }}>
                 {label}
               </p>
-              <p className="break-words text-xl font-bold text-white sm:text-2xl" style={{ letterSpacing: "-0.03em", color }}>
+              <p className="overflow-hidden whitespace-nowrap text-2xl font-bold leading-none text-white [overflow-wrap:normal]" style={{ letterSpacing: "0", color }}>
                 {value}
               </p>
-              <p className="text-[11px] mt-1" style={{ color: "#7a8fa8" }}>{sub}</p>
+              <p className="mt-1 text-[11px] leading-snug" style={{ color: "#7a8fa8" }}>{sub}</p>
             </div>
           ))}
         </div>
 
         {/* Charts row 1 */}
         <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
-          <div className="p-4 rounded-2xl lg:col-span-2" style={arcCard}>
+          <div className="min-w-0 overflow-hidden p-4 rounded-2xl lg:col-span-2" style={arcCard}>
             <SectionLabel>Daily Spend — Last 7 Days</SectionLabel>
             <SpendChart />
           </div>
-          <div className="p-4 rounded-2xl" style={arcCard}>
+          <div className="min-w-0 overflow-hidden p-4 rounded-2xl" style={arcCard}>
             <SectionLabel>Spend by Category</SectionLabel>
             <CategoryChart />
           </div>
@@ -93,7 +93,7 @@ export default function ReportsPage() {
         {/* Charts row 2 */}
         <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
           {/* Agent bar chart */}
-          <div className="p-4 rounded-2xl lg:col-span-2" style={arcCard}>
+          <div className="min-w-0 overflow-hidden p-4 rounded-2xl lg:col-span-2" style={arcCard}>
             <SectionLabel>Monthly Spend by Agent</SectionLabel>
             <ArcBarChart data={AGENT_BAR_DATA} height={220} />
           </div>
@@ -177,9 +177,9 @@ export default function ReportsPage() {
 
                   {/* Spend + budget */}
                   <div className="text-right">
-                    <p className="text-sm font-bold text-white">{formatUSDC(agent.monthlySpent)}</p>
-                    <p className="text-[10px]" style={{ color: "#7a8fa8" }}>
-                      {pct}% of {formatUSDC(agent.monthlyBudget)}
+                    <p className="whitespace-nowrap text-sm font-bold text-white">{formatCompactUSDC(agent.monthlySpent)}</p>
+                    <p className="whitespace-nowrap text-[10px]" style={{ color: "#7a8fa8" }}>
+                      {pct}% of {formatCompactUSDC(agent.monthlyBudget)}
                     </p>
                   </div>
                 </div>

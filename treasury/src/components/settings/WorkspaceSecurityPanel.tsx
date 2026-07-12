@@ -136,7 +136,7 @@ export function WorkspaceSecurityPanel({ initialSecurity, isDemo = false }: { in
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+      <div className="grid grid-cols-3 gap-2 sm:gap-3">
         <Metric label="Workspace" value={security?.workspace.name ?? "Arc pilot"} />
         <Metric label="Members" value={String(security?.members.length ?? 0)} />
         <Metric label="Active keys" value={String(activeKeys.length)} />
@@ -258,8 +258,8 @@ export function WorkspaceSecurityPanel({ initialSecurity, isDemo = false }: { in
                   <p className="text-sm font-medium text-white truncate">{key.name}</p>
                   <Status active={!key.revokedAt} />
                 </div>
-                <p className="text-[11px] font-mono mt-0.5" style={{ color: "#7a8fa8" }}>{key.keyPrefix}</p>
-                <p className="text-[10px] mt-1" style={{ color: "#7a8fa8" }}>{key.scopes.join(", ")} · last used {formatDate(key.lastUsedAt)}</p>
+                <p className="truncate text-[11px] font-mono mt-0.5" style={{ color: "#7a8fa8" }}>{key.keyPrefix}</p>
+                <p className="truncate text-[10px] mt-1" style={{ color: "#7a8fa8" }}>{key.scopes.join(", ")} · last used {formatDate(key.lastUsedAt)}</p>
               </div>
             </div>
             <div className="flex items-center gap-2 shrink-0">
@@ -303,9 +303,9 @@ export function WorkspaceSecurityPanel({ initialSecurity, isDemo = false }: { in
 
 function Metric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-xl p-3" style={cardStyle}>
+    <div className="min-w-0 rounded-xl p-3" style={cardStyle}>
       <p className="text-[10px] uppercase tracking-wider" style={{ color: "#7a8fa8" }}>{label}</p>
-      <strong className="block text-lg text-white mt-1">{value}</strong>
+      <strong className="mt-1 block truncate text-base text-white sm:text-lg">{value}</strong>
     </div>
   )
 }

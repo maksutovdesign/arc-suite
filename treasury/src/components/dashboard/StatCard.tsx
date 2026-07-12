@@ -52,10 +52,10 @@ export function StatCard({ title, value, sub, icon: Icon, trend, accent = "defau
         </div>
       </div>
 
-      <div>
+      <div className="min-w-0">
         <p
-          className="break-words text-xl font-bold tracking-tight text-white sm:text-2xl"
-          style={{ fontFamily: "'Space Grotesk', sans-serif", letterSpacing: "-0.03em" }}
+          className="min-w-0 overflow-hidden text-2xl font-bold leading-none tracking-tight text-white [overflow-wrap:normal] [text-wrap:nowrap] sm:text-3xl"
+          style={{ fontFamily: "'Space Grotesk', sans-serif", letterSpacing: "0" }}
         >
           {value}
         </p>

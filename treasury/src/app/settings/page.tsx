@@ -42,12 +42,12 @@ function SectionCard({ title, icon: Icon, children }: {
 function SettingRow({ label, value, action }: { label: string; value: string; action?: string }) {
   return (
     <div
-      className="flex items-center justify-between py-3"
+      className="flex flex-col gap-2 py-3 sm:flex-row sm:items-center sm:justify-between"
       style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
     >
       <span className="text-sm" style={{ color: "#C7C5D1" }}>{label}</span>
-      <div className="flex items-center gap-3">
-        <span className="text-sm font-semibold text-white">{value}</span>
+      <div className="flex min-w-0 items-center justify-between gap-3 sm:justify-end">
+        <span className="min-w-0 truncate text-sm font-semibold text-white">{value}</span>
         {action && <ArcButton variant="ghost" size="sm">{action}</ArcButton>}
       </div>
     </div>
@@ -181,9 +181,9 @@ export default async function SettingsPage() {
                   { label: "Monthly global cap",  used: 1527, limit: 4400, color: "#5FBFFF" },
                 ].map(({ label, used, limit, color }) => (
                   <div key={label} className="mb-4">
-                    <div className="flex items-center justify-between text-xs mb-1.5">
+                    <div className="flex items-center justify-between gap-3 text-xs mb-1.5">
                       <span style={{ color: "#7a8fa8" }}>{label}</span>
-                      <span style={{ color }}>${used.toLocaleString()} / ${limit.toLocaleString()}</span>
+                      <span className="whitespace-nowrap" style={{ color }}>${used.toLocaleString()} / ${limit.toLocaleString()}</span>
                     </div>
                     <ArcProgress value={Math.round((used / limit) * 100)} showLabel />
                   </div>

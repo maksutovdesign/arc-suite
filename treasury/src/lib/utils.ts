@@ -11,6 +11,15 @@ export function formatUSDC(amount: number): string {
   return `$${amount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 }
 
+export function formatCompactUSDC(amount: number): string {
+  if (Math.abs(amount) >= 1000) {
+    const value = amount / 1000
+    const digits = Math.abs(value) >= 10 ? 0 : 1
+    return `$${value.toFixed(digits).replace(/\.0$/, "")}K`
+  }
+  return formatUSDC(amount)
+}
+
 export function pctUsed(spent: number, budget: number): number {
   if (!budget) return 0  // guard against division by zero
   return Math.min(100, Math.round((spent / budget) * 100))

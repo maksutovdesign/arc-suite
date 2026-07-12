@@ -26,7 +26,7 @@ import { CategoryChart } from "@/components/charts/CategoryChart"
 import { AgentStatusBadge } from "@/components/agents/AgentStatusBadge"
 import { getTreasuryDashboardData } from "@/lib/arc-api"
 import { CAT_STYLE } from "@/lib/styles"
-import { formatUSDC, pctUsed, formatTimestamp } from "@/lib/utils"
+import { formatCompactUSDC, formatUSDC, pctUsed, formatTimestamp } from "@/lib/utils"
 
 export const dynamic = "force-dynamic"
 
@@ -87,7 +87,7 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-2 gap-3 px-4 pt-5 sm:px-6 lg:grid-cols-4">
         <StatCard
           title="Total USDC Managed"
-          value={formatUSDC(stats.totalUSDCManaged)}
+          value={formatCompactUSDC(stats.totalUSDCManaged)}
           sub="Across all wallets"
           icon={DollarSign}
           trend={{ value: "+12.4% this week", up: true }}
@@ -101,8 +101,8 @@ export default async function DashboardPage() {
         />
         <StatCard
           title="Monthly Spend"
-          value={formatUSDC(stats.monthlySpent)}
-          sub={`of ${formatUSDC(stats.monthlyBudget)} budget`}
+          value={formatCompactUSDC(stats.monthlySpent)}
+          sub={`of ${formatCompactUSDC(stats.monthlyBudget)} budget`}
           icon={TrendingUp}
           accent={pctUsed(stats.monthlySpent, stats.monthlyBudget) > 80 ? "warning" : "default"}
           trend={{ value: `${pctUsed(stats.monthlySpent, stats.monthlyBudget)}% used`, up: false }}
@@ -150,8 +150,8 @@ export default async function DashboardPage() {
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
                       <AgentStatusBadge status={agent.status} />
-                      <span className="text-[11px]" style={{ color: "#7a8fa8" }}>
-                        {formatUSDC(agent.monthlySpent)} / {formatUSDC(agent.monthlyBudget)}
+                      <span className="whitespace-nowrap text-[11px]" style={{ color: "#7a8fa8" }}>
+                        {formatCompactUSDC(agent.monthlySpent)} / {formatCompactUSDC(agent.monthlyBudget)}
                       </span>
                     </div>
                   </div>
@@ -233,7 +233,7 @@ export default async function DashboardPage() {
                     <p className="truncate text-[10px]" style={{ color: "#7a8fa8" }}>{decision.reason}</p>
                   </div>
                   <span className="hidden font-mono sm:inline" style={{ color: "#5FBFFF" }}>{decision.apiId}</span>
-                  <span className="text-right text-white">{formatUSDC(decision.amountUsdc)}</span>
+                  <span className="whitespace-nowrap text-right text-white">{formatUSDC(decision.amountUsdc)}</span>
                   <span className="hidden text-right text-[10px] sm:inline" style={{ color: "#7a8fa8" }}>{formatTimestamp(decision.createdAt)}</span>
                 </div>
               ))}

@@ -120,9 +120,9 @@ export default function AlertsPage() {
                       </div>
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-2 sm:ml-4 sm:shrink-0">
-                      <ArcButton className="flex-1 sm:flex-none" variant="danger" size="sm">Pause agent</ArcButton>
-                      <ArcButton variant="primary" size="sm" onClick={() => setResolvedIds(s => new Set(s).add(alert.id))}>Resolve</ArcButton>
+                    <div className="grid w-full grid-cols-2 gap-2 sm:ml-4 sm:flex sm:w-auto sm:shrink-0">
+                      <ArcButton className="w-full sm:w-auto" variant="danger" size="sm">Pause</ArcButton>
+                      <ArcButton className="w-full sm:w-auto" variant="primary" size="sm" onClick={() => setResolvedIds(s => new Set(s).add(alert.id))}>Resolve</ArcButton>
                     </div>
                   </div>
                 )

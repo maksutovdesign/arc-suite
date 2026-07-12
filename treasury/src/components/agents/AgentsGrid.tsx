@@ -9,7 +9,7 @@ import { ArcButton } from "@/components/ui/ArcButton"
 import { ArcProgress } from "@/components/ui/ArcProgress"
 import type { Agent } from "@/data/mock"
 import { AGENT_GRADIENTS } from "@/lib/styles"
-import { formatUSDC, pctUsed } from "@/lib/utils"
+import { formatCompactUSDC, formatUSDC, pctUsed } from "@/lib/utils"
 
 type Props = {
   agents: Agent[]
@@ -116,28 +116,28 @@ export function AgentsGrid({ agents, isDemo = false }: Props) {
                     <Wallet className="size-3.5" style={{ color: "#7a8fa8" }} />
                     <span className="text-xs" style={{ color: "#7a8fa8" }}>Wallet balance</span>
                   </div>
-                  <span className="text-sm font-bold" style={{ color: agent.balance < 50 ? "#f87171" : "#E8E6F0" }}>
-                    {formatUSDC(agent.balance)}
+                  <span className="whitespace-nowrap text-sm font-bold" style={{ color: agent.balance < 50 ? "#f87171" : "#E8E6F0" }}>
+                    {formatCompactUSDC(agent.balance)}
                   </span>
                 </div>
               </Link>
 
               <Link className="block px-4 pb-3 space-y-3" href={`/agents/${agent.id}`}>
                 <div className="space-y-1.5">
-                  <div className="flex flex-wrap items-center justify-between gap-1">
+                  <div className="flex items-center justify-between gap-2">
                     <span className="text-[11px]" style={{ color: "#7a8fa8" }}>Monthly budget</span>
-                    <span className="text-[11px] font-medium" style={{ color: mPct > 90 ? "#f87171" : "#C7C5D1" }}>
-                      {formatUSDC(agent.monthlySpent)} <span style={{ color: "#7a8fa8" }}>/ {formatUSDC(agent.monthlyBudget)}</span>
+                    <span className="whitespace-nowrap text-[11px] font-medium" style={{ color: mPct > 90 ? "#f87171" : "#C7C5D1" }}>
+                      {formatCompactUSDC(agent.monthlySpent)} <span style={{ color: "#7a8fa8" }}>/ {formatCompactUSDC(agent.monthlyBudget)}</span>
                     </span>
                   </div>
                   <ArcProgress showLabel value={mPct} />
                 </div>
 
                 <div className="space-y-1.5">
-                  <div className="flex flex-wrap items-center justify-between gap-1">
+                  <div className="flex items-center justify-between gap-2">
                     <span className="text-[11px]" style={{ color: "#7a8fa8" }}>Daily limit</span>
-                    <span className="text-[11px] font-medium" style={{ color: dPct > 90 ? "#f87171" : "#C7C5D1" }}>
-                      {formatUSDC(agent.dailySpent)} <span style={{ color: "#7a8fa8" }}>/ {formatUSDC(agent.dailyLimit)}</span>
+                    <span className="whitespace-nowrap text-[11px] font-medium" style={{ color: dPct > 90 ? "#f87171" : "#C7C5D1" }}>
+                      {formatCompactUSDC(agent.dailySpent)} <span style={{ color: "#7a8fa8" }}>/ {formatCompactUSDC(agent.dailyLimit)}</span>
                     </span>
                   </div>
                   <ArcProgress showLabel size="sm" value={dPct} />

@@ -7,7 +7,7 @@ import { ArcProgress } from "@/components/ui/ArcProgress"
 import { ArcButton } from "@/components/ui/ArcButton"
 import { AgentStatusBadge } from "@/components/agents/AgentStatusBadge"
 import { AGENTS, ALERTS } from "@/data/mock"
-import { formatUSDC, pctUsed } from "@/lib/utils"
+import { formatCompactUSDC, formatUSDC, pctUsed } from "@/lib/utils"
 
 const arcCard = {
   background: "linear-gradient(160deg, #263a52 0%, #1e3247 100%)",
@@ -81,9 +81,9 @@ export default function BudgetsPage() {
                     <p className="text-xs mt-0.5" style={{ color: "#7a8fa8" }}>{alert.message}</p>
                   </div>
                 </div>
-                <div className="flex flex-wrap items-center gap-2 sm:shrink-0">
-                  <ArcButton className="flex-1 sm:flex-none" variant="danger" size="sm">Pause agent</ArcButton>
-                  <ArcButton variant="outline" size="sm">Resolve</ArcButton>
+                <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:shrink-0">
+                  <ArcButton className="w-full sm:w-auto" variant="danger" size="sm">Pause</ArcButton>
+                  <ArcButton className="w-full sm:w-auto" variant="outline" size="sm">Resolve</ArcButton>
                 </div>
               </div>
             ))}
@@ -153,10 +153,10 @@ export default function BudgetsPage() {
                         <ArcProgress value={pct} />
                         <div className="flex items-center justify-between">
                           <span className="text-[10px] font-medium" style={{ color: "#5FBFFF" }}>
-                            {formatUSDC(spent)}
+                            {formatCompactUSDC(spent)}
                           </span>
                           <span className="text-[10px]" style={{ color: "#7a8fa8" }}>
-                            of {formatUSDC(limit)}
+                            of {formatCompactUSDC(limit)}
                           </span>
                         </div>
                       </div>
