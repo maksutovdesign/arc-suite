@@ -27,7 +27,7 @@ export const metadata = {
 
 const latestProofUrl = "/proof?id=flow_agentic_01a50e12e6c4"
 const demoUrl = "https://treasury-umber.vercel.app/demo"
-const releaseUrl = "https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.07.09-multicurrency-wallet-ux"
+const releaseUrl = "https://github.com/maksutovdesign/arc-suite/tree/v2026.07.12-circle-wallet-readiness"
 const videoUrl = "https://drive.google.com/file/d/1TpkfepfGCEXDfh-YWIfGLRGuohHAJmjP/view?usp=sharing"
 
 const reviewerSteps = [
@@ -142,6 +142,13 @@ const reviewerConsole = [
     external: false,
   },
   {
+    title: "Wallet readiness",
+    detail: "Check Circle source wallet, token lookup, readable balance and transfer guardrails.",
+    href: "/wallets",
+    icon: WalletCards,
+    external: false,
+  },
+  {
     title: "Known limits",
     detail: "Clear review language for demo-ready rails and pending Arc mainnet deployment.",
     href: "#known-limits",
@@ -156,7 +163,7 @@ const reviewerConsole = [
     external: false,
   },
   {
-    title: "Release",
+    title: "Version tag",
     detail: "Interop and Risk Router release with Chainlink/CCIP-ready route evidence.",
     href: releaseUrl,
     icon: ListChecks,

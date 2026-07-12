@@ -61,6 +61,16 @@ const checks = [
     },
   },
   {
+    name: "wallet execution readiness auth guard",
+    run: async () => {
+      const response = await fetchWithRetry(`${bases.landing}/api/wallets/execution-readiness`)
+      assertStatus(response, 401)
+      assertSecurityHeaders(response)
+      assert(response.headers.has("x-request-id"), "wallet readiness response includes x-request-id")
+      return "401 protected"
+    },
+  },
+  {
     name: "analytics CORS preflight",
     run: async () => {
       const response = await fetchWithRetry(`${bases.landing}/api/analytics/events`, {
@@ -131,7 +141,7 @@ const checks = [
   },
   {
     name: "Grant review package page",
-    run: async () => checkHtmlPage(`${bases.landing}/grant`, ["Grant review package", "Integration status matrix", "Known limits"]),
+    run: async () => checkHtmlPage(`${bases.landing}/grant`, ["Grant review package", "Integration status matrix", "Wallet readiness", "Known limits"]),
   },
   {
     name: "Submission page",
@@ -163,7 +173,7 @@ const checks = [
   },
   {
     name: "Arc Wallet OS page",
-    run: async () => checkHtmlPage(`${bases.landing}/wallets`, ["Arc Wallet OS", "Demo workspace"]),
+    run: async () => checkHtmlPage(`${bases.landing}/wallets`, ["Arc Wallet OS", "Demo workspace", "Circle execution readiness"]),
   },
   {
     name: "Arc Execution Control page",
