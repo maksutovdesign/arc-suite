@@ -18,7 +18,7 @@ The latest release includes a recorded demo, Arc Testnet settlement evidence whe
 - Flow operator console: https://arcsuite-app.vercel.app/flow
 - Repository: https://github.com/maksutovdesign/arc-suite
 - Interop / Risk Router: https://arcsuite-app.vercel.app/interop
-- Release: https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.07.04-interop-risk-router
+- Release: https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.07.12-mobile-layout-hotfix
 - Demo video: https://github.com/maksutovdesign/arc-suite/releases/download/v2026.06.28-real-arc-settlement/arc-suite-agentic-workflow-demo.mov
 - Arc Testnet proof: https://testnet.arcscan.app/tx/0x41210539368a78f6bbc08b088a95430dc0f64e9379ad9226173fc3ce565d733b
 
@@ -44,6 +44,7 @@ The latest release includes a recorded demo, Arc Testnet settlement evidence whe
 9. Added Arc Provider Trust Center for API providers to reconcile signed receipts, provider keys, paid jobs and proof links.
 10. Added Arc Interop & Risk Router with Chainlink-on-Arc CCIP route evidence, `oracleRiskHash`, artifact gates and a reviewer-readable cross-chain route envelope.
 11. Added Arc Network Resilience framing so load testing, congestion, retry and deferred settlement are handled as explicit execution states instead of product failures.
+12. Fixed the reviewer-facing mobile layout: compact Treasury metrics, non-wrapping USDC values, safer chart legends and mobile action rows that stay inside cards.
 
 ## Suggested Review Script
 
