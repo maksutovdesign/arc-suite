@@ -39,6 +39,14 @@ const workflowStages = [
   { key: "reputation", label: "Reputation update", detail: "Successful payment raises the agent trust score.", icon: BadgeCheck },
 ] as const
 
+const memoLedger = [
+  ["invoice_id", "INV-ARC-2048", "Provider invoice tied to the API purchase."],
+  ["job_id", "job_erc8183_2048", "ERC-8183 job envelope reference."],
+  ["customer_ref", "arc-corp-demo", "Workspace/customer context for reconciliation."],
+  ["batch_ref", "batch_api_meter_07", "Downstream billing batch and export key."],
+  ["emit_rule", "success_only", "Memo evidence is attached after the underlying call succeeds."],
+] as const
+
 type LiveSettlementStatus =
   | { enabled: false; status: "disabled" }
   | { enabled: true; status: "confirmed"; explorerUrl: string | null; settlementId: string; txHash: string | null }
@@ -263,6 +271,25 @@ export function AgenticWorkflowClient() {
           <BadgeCheck size={18} />
           <strong>Trust feedback loop</strong>
           <span>The successful payment becomes a new reputation signal for future access checks.</span>
+        </div>
+      </section>
+
+      <section className="agentic-failure-handling" aria-label="Transaction memo ledger">
+        <div className="flow-panel-title">
+          <div>
+            <span>Transaction memo ledger</span>
+            <h2>Business context travels with the proof.</h2>
+          </div>
+          <ReceiptText size={21} />
+        </div>
+        <div className="agentic-failure-grid">
+          {memoLedger.map(([key, value, detail]) => (
+            <div className="agentic-failure-card is-info" key={key}>
+              <code>{key}</code>
+              <strong>{value}</strong>
+              <span>{detail}</span>
+            </div>
+          ))}
         </div>
       </section>
 

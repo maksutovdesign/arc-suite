@@ -56,6 +56,13 @@ const unifiedBalanceReadiness = [
   { step: "Trace", method: "onBroadcast tx hash", status: "captured", detail: "Latest transaction hash is retained for support and proof." },
 ] as const
 
+const gatewayDecisionMap = [
+  ["Raw Gateway", "custom attestation, x402 debugging, provider-level settlement control"],
+  ["Unified Balance Kit", "one spendable balance, estimateSpend, forwarding and operator UX"],
+  ["Swap Kit", "cross-chain swap status, USD rates and route tracking"],
+  ["Bridge Kit", "chain mismatch, rejected switch and latest failed tx hash handling"],
+] as const
+
 export function WalletDashboardClient() {
   const [apiKey, setApiKey] = useState("")
   const [overview, setOverview] = useState<WalletOverview | null>(demoWalletOverview)
@@ -237,6 +244,16 @@ export function WalletDashboardClient() {
               <strong>{item.method}</strong>
               <em>{item.status}</em>
               <small>{item.detail}</small>
+            </article>
+          ))}
+        </div>
+        <div className="wallet-unified-grid" aria-label="Gateway to Unified Balance Kit decision map">
+          {gatewayDecisionMap.map(([label, detail]) => (
+            <article key={label}>
+              <span>{label}</span>
+              <strong>{label === "Unified Balance Kit" ? "preferred app surface" : "specialized path"}</strong>
+              <em>{label === "Unified Balance Kit" ? "default" : "fallback"}</em>
+              <small>{detail}</small>
             </article>
           ))}
         </div>

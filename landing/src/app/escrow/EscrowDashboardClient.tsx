@@ -21,6 +21,14 @@ import { demoAgents, demoEscrowOverview } from "../demoWorkspace"
 const API_KEY_STORAGE = "arc_shield_key"
 type Payload = { configured: boolean; overview: EscrowOverview | null }
 
+const creditLifecycle = [
+  ["KYB/KYT gate", "Borrower, lender and asset wallet pass compliance before deal activation."],
+  ["Principal lock", "USDC principal is reserved against the milestone schedule."],
+  ["Interest schedule", "Expected yield, due dates and payment references become memo fields."],
+  ["Distribution", "Release principal/interest only after validation artifacts arrive."],
+  ["Default / review", "Missed receipt or validation opens dispute instead of positive reputation."],
+] as const
+
 export function EscrowDashboardClient() {
   const [apiKey, setApiKey] = useState("")
   const [overview, setOverview] = useState<EscrowOverview | null>(demoEscrowOverview)
@@ -232,6 +240,23 @@ export function EscrowDashboardClient() {
           ))}
         </section>
       </div>
+
+      <section className="billing-panel">
+        <PanelHead eyebrow="Private credit lifecycle" title="RWA-style deal controls" icon={<Gavel size={20} />} />
+        <p className="billing-copy">
+          Escrow can model a Tradable-style private credit workflow without turning the demo into a lending app:
+          compliance gates, principal lock, memo-based payment schedule and proof-gated distributions.
+        </p>
+        <div className="interop-failure-grid">
+          {creditLifecycle.map(([title, detail]) => (
+            <article key={title}>
+              <code>{title}</code>
+              <strong>{title}</strong>
+              <span>{detail}</span>
+            </article>
+          ))}
+        </div>
+      </section>
     </section>
   )
 }

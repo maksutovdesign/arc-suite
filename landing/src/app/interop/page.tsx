@@ -79,6 +79,13 @@ const routeHistory = [
   ["09:12:04", "validation_required", "Validation artifact required before reputation update."],
 ] as const
 
+const swapRoutes = [
+  ["USDC -> EURC", "Stablecoin FX", "0.04% slippage", "quote-ready"],
+  ["USDC -> RWA cash leg", "Private credit settlement", "kyb-gated", "policy-ready"],
+  ["USDC -> ETH", "Liquidity venue route", "Uniswap-ready", "adapter-ready"],
+  ["Gateway balance -> Solana recipient", "Forwarded spend", "useForwarder", "planned"],
+] as const
+
 export default function InteropPage() {
   return (
     <main>
@@ -189,6 +196,29 @@ export default function InteropPage() {
               </div>
             ))}
           </div>
+        </section>
+
+        <section className="interop-route-card">
+          <div className="interop-route-head">
+            <div>
+              <span>Swap and liquidity routing</span>
+              <h2>Uniswap and Stablecoin Kit paths as route evidence.</h2>
+            </div>
+            <strong>FX-ready</strong>
+          </div>
+          <div className="interop-evidence-grid">
+            {swapRoutes.map(([pair, purpose, signal, status]) => (
+              <div key={pair}>
+                <span>{purpose}</span>
+                <strong>{pair}</strong>
+                <small>{signal} · {status}</small>
+              </div>
+            ))}
+          </div>
+          <p className="interop-note">
+            Arc Suite treats swaps as auditable money movement: quote, route, memo, transaction hash
+            and proof status can be attached to the same job envelope as API payments.
+          </p>
         </section>
 
         <div className="interop-grid">
