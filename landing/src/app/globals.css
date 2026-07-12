@@ -969,12 +969,10 @@ h3 {
 
 .product-panel-stats strong {
   display: block;
-  overflow: hidden;
   margin-bottom: 8px;
   color: var(--cyan);
-  font-size: clamp(24px, 2.1vw, 30px);
+  font-size: clamp(24px, 1.8vw, 30px);
   line-height: 1;
-  text-overflow: ellipsis;
   white-space: nowrap;
   overflow-wrap: normal !important;
   word-break: normal !important;
@@ -3594,12 +3592,10 @@ h3 {
 
 .result-metric-grid strong {
   display: block;
-  overflow: hidden;
   margin-bottom: 10px;
   color: var(--cyan);
-  font-size: clamp(26px, 2.6vw, 36px);
+  font-size: clamp(28px, 2.2vw, 36px);
   line-height: 1;
-  text-overflow: ellipsis;
   white-space: nowrap;
   overflow-wrap: normal !important;
   word-break: normal !important;
@@ -10477,7 +10473,7 @@ a.ops-history-run:hover {
 
 .product-panel-stats strong {
   display: block;
-  font-size: clamp(20px, 2.1vw, 24px);
+  font-size: clamp(24px, 2vw, 30px);
   line-height: 1.05;
   overflow-wrap: normal !important;
   word-break: normal !important;

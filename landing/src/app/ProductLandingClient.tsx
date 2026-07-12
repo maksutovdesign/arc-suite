@@ -310,6 +310,11 @@ const formatCompact = (value: number) =>
   }).format(value)
 
 const formatCompactUsd = (value: number) => `$${formatCompact(value).replace(".0", "")}`
+const formatMetricUsd = (value: number) => {
+  if (value < 1000) return formatUsd(value)
+  const compact = (value / 1000).toFixed(2).replace(/\.?0+$/, "")
+  return `$${compact}K`
+}
 const formatCardUsd = (value: number) => value >= 1000 ? formatCompactUsd(value) : formatUsd(value)
 const formatBudgetRatio = (spent: number, limit: number) =>
   `${formatCompactUsd(spent)} / ${formatCompactUsd(limit)}`
@@ -354,8 +359,8 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
         return {
           ...product,
           stats: [
-            [formatCardUsd(pilotSummary.treasury.managedUsdc), "managed USDC"],
-            [formatCardUsd(pilotSummary.treasury.monthlySpentUsdc), "monthly spend"],
+            [formatMetricUsd(pilotSummary.treasury.managedUsdc), "managed USDC"],
+            [formatMetricUsd(pilotSummary.treasury.monthlySpentUsdc), "monthly spend"],
             [String(pilotSummary.treasury.activeAlerts), "active alerts"],
           ],
         }
@@ -397,8 +402,8 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
     : metrics
   const liveTreasuryResults = pilotSummary
     ? [
-        ["Managed USDC", formatCardUsd(pilotSummary.treasury.managedUsdc), "Across pilot wallets"],
-        ["Monthly spend", formatCardUsd(pilotSummary.treasury.monthlySpentUsdc), `of ${formatCardUsd(pilotSummary.treasury.monthlyBudgetUsdc)} total budget`],
+        ["Managed USDC", formatMetricUsd(pilotSummary.treasury.managedUsdc), "Across pilot wallets"],
+        ["Monthly spend", formatMetricUsd(pilotSummary.treasury.monthlySpentUsdc), `of ${formatMetricUsd(pilotSummary.treasury.monthlyBudgetUsdc)} total budget`],
         ["Active alerts", String(pilotSummary.treasury.activeAlerts), `${pilotSummary.treasury.criticalAlerts} critical`],
         ["Avg tx cost", formatUsd(pilotSummary.treasury.avgTxCostUsdc), "Across completed agent activity"],
       ]
