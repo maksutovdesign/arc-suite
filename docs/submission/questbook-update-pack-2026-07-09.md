@@ -21,7 +21,7 @@ The latest Wallet OS update also reflects Arc's application-layer direction show
 - Provider trust center: https://arcsuite-app.vercel.app/provider
 - Supabase-backed API and proof records
 - Sentry runtime monitoring and production health checks
-- GitHub release: https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.07.12-circle-wallet-readiness
+- GitHub release: https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.07.12-memo-balance-routing
 - Demo video: https://drive.google.com/file/d/1TpkfepfGCEXDfh-YWIfGLRGuohHAJmjP/view?usp=sharing
 
 ## Fresh Arc ecosystem alignment
