@@ -83,7 +83,7 @@ const productDetails = [
     imageAlt: "Arc Provider trust center showing provider signing keys, paid receipt registry and Arc proof links",
     stats: [
       ["12", "recent receipts"],
-      ["Ed25519", "provider signing"],
+      ["EdDSA", "provider signing"],
       ["100%", "proof-linked jobs"],
     ],
     bullets: ["Provider signing metadata", "Paid job reconciliation", "Proof-linked fulfillment"],
@@ -179,7 +179,7 @@ const productDetails = [
     imageAlt: "Arc Interop console showing Arc Testnet to Ethereum Sepolia CCIP route status, selector, router and proof hash",
     stats: [
       ["CCIP", "route-ready"],
-      ["303409…", "Arc selector"],
+      ["Arc ID", "selector"],
       ["1", "proof envelope"],
     ],
     bullets: ["Arc to Sepolia route view", "Router and selector evidence", "Proof hash before finalization"],
@@ -310,6 +310,7 @@ const formatCompact = (value: number) =>
   }).format(value)
 
 const formatCompactUsd = (value: number) => `$${formatCompact(value).replace(".0", "")}`
+const formatCardUsd = (value: number) => value >= 1000 ? `$${(value / 1000).toFixed(2)}K` : formatUsd(value)
 
 const story = [
   {
@@ -351,8 +352,8 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
         return {
           ...product,
           stats: [
-            [formatCompactUsd(pilotSummary.treasury.managedUsdc), "managed USDC"],
-            [formatCompactUsd(pilotSummary.treasury.monthlySpentUsdc), "monthly spend"],
+            [formatCardUsd(pilotSummary.treasury.managedUsdc), "managed USDC"],
+            [formatCardUsd(pilotSummary.treasury.monthlySpentUsdc), "monthly spend"],
             [String(pilotSummary.treasury.activeAlerts), "active alerts"],
           ],
         }
@@ -394,8 +395,8 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
     : metrics
   const liveTreasuryResults = pilotSummary
     ? [
-        ["Managed USDC", formatCompactUsd(pilotSummary.treasury.managedUsdc), "Across pilot wallets"],
-        ["Monthly spend", formatCompactUsd(pilotSummary.treasury.monthlySpentUsdc), `of ${formatCompactUsd(pilotSummary.treasury.monthlyBudgetUsdc)} total budget`],
+        ["Managed USDC", formatCardUsd(pilotSummary.treasury.managedUsdc), "Across pilot wallets"],
+        ["Monthly spend", formatCardUsd(pilotSummary.treasury.monthlySpentUsdc), `of ${formatCardUsd(pilotSummary.treasury.monthlyBudgetUsdc)} total budget`],
         ["Active alerts", String(pilotSummary.treasury.activeAlerts), `${pilotSummary.treasury.criticalAlerts} critical`],
         ["Avg tx cost", formatUsd(pilotSummary.treasury.avgTxCostUsdc), "Across completed agent activity"],
       ]
@@ -683,8 +684,8 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
                     <small>OpenAI Gateway · 0.018 USDC</small>
                   </div>
                   <div className="provider-preview-grid">
-                    <div><span>Provider key</span><strong>pk_live_ed25519</strong></div>
-                    <div><span>Algorithm</span><strong>ed25519</strong></div>
+                    <div><span>Provider key</span><strong>pk_live...</strong></div>
+                    <div><span>Algorithm</span><strong>EdDSA</strong></div>
                     <div><span>Receipt</span><strong>rcpt_84de</strong></div>
                     <div><span>Settlement</span><strong>0x4121...</strong></div>
                   </div>
@@ -785,7 +786,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
                     <div><span>Target</span><strong>Ethereum Sepolia</strong><small>Collateral / provider route</small></div>
                   </div>
                   <div className="interop-preview-grid">
-                    <div><span>Selector</span><strong>303409...</strong></div>
+                    <div><span>Selector</span><strong>Arc ID</strong></div>
                     <div><span>Router</span><strong>0xdE4E...</strong></div>
                     <div><span>Envelope</span><strong>1 proof</strong></div>
                   </div>

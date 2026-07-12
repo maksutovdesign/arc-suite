@@ -114,6 +114,14 @@ export default async function ProofPage({ searchParams }: ProofPageProps) {
       icon: Workflow,
     },
   ]
+  const transactionMemo = {
+    schema: "arc.memo.v1",
+    memoId: `memo_${flowRun.id.slice(-8)}`,
+    invoiceRef: `INV-${api.id.toUpperCase()}-${flowRun.id.slice(-4)}`,
+    customerRef: agent.id,
+    batchRef: `batch_${usage.id.slice(-6)}`,
+    eventState: hasLiveSettlementEvidence ? "emitted_on_success" : "prepared_until_settlement",
+  }
 
   return (
     <main>
@@ -178,6 +186,28 @@ export default async function ProofPage({ searchParams }: ProofPageProps) {
               <span>{`  "txHash": "${receipt.txHash}",`}</span>
               <span>{`  "validationResult": "${receipt.validationResult}"`}</span>
               <span>{`}`}</span>
+            </div>
+          </section>
+
+          <section className="proof-panel proof-memo">
+            <div className="flow-panel-title">
+              <div>
+                <span>Transaction memo</span>
+                <h2>Business context attached to the payment.</h2>
+              </div>
+              <FileCheck2 size={21} />
+            </div>
+            <p>
+              Arc memos make the transaction reconcilable beyond a raw hash: invoice, agent, customer
+              and batch references stay attached to the proof envelope and can be indexed by downstream systems.
+            </p>
+            <div className="proof-memo-grid">
+              {Object.entries(transactionMemo).map(([label, value]) => (
+                <div key={label}>
+                  <span>{label}</span>
+                  <strong>{value}</strong>
+                </div>
+              ))}
             </div>
           </section>
         </div>

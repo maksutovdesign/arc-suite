@@ -2,6 +2,7 @@
 
 import {
   Activity,
+  ArrowRightLeft,
   ArrowUpRight,
   Check,
   CircleDollarSign,
@@ -32,6 +33,12 @@ type SettlementConfig = {
   allowedRecipients: string[]
   maxAmountUsdc: number
 }
+
+const swapRoutes = [
+  { pair: "USDC -> EURC", method: "Swap Kit route", status: "quote-ready", detail: "Uses to.chain and to.recipientAddress routing." },
+  { pair: "Agent budget -> provider currency", method: "Unified Balance spend", status: "mapped", detail: "Gateway spend can forward after policy approval." },
+  { pair: "Failure trace", method: "Latest tx hash", status: "captured", detail: "Nonce and route errors keep the latest on-chain hash for review." },
+] as const
 
 export function FlowDashboardClient() {
   const [apiKey, setApiKey] = useState("")
@@ -203,6 +210,26 @@ export function FlowDashboardClient() {
           )}
         </section>
       </div>
+
+      <section className="flow-panel flow-swap-routes">
+        <div className="flow-panel-title">
+          <div>
+            <span>Stablecoin route adapter</span>
+            <h2>Swap and unified balance readiness.</h2>
+          </div>
+          <ArrowRightLeft size={21} />
+        </div>
+        <div className="flow-swap-grid">
+          {swapRoutes.map((item) => (
+            <article key={item.pair}>
+              <span>{item.pair}</span>
+              <strong>{item.method}</strong>
+              <em>{item.status}</em>
+              <small>{item.detail}</small>
+            </article>
+          ))}
+        </div>
+      </section>
 
       <section className="flow-panel flow-history">
         <div className="flow-panel-title"><div><span>Execution history</span><h2>Recent autonomous payment runs</h2></div><strong>{runs.length} loaded</strong></div>

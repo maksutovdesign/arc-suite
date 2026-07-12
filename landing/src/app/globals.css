@@ -956,6 +956,7 @@ h3 {
 }
 
 .product-panel-stats div {
+  min-width: 0;
   min-height: 94px;
   padding: 16px;
   border: 1px solid var(--line);
@@ -965,15 +966,22 @@ h3 {
 
 .product-panel-stats strong {
   display: block;
+  overflow: hidden;
   margin-bottom: 8px;
   color: var(--cyan);
   font-size: 25px;
   line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .product-panel-stats span {
+  display: block;
+  overflow-wrap: normal;
   color: var(--muted);
   font-size: 12px;
+  line-height: 1.25;
+  word-break: normal;
 }
 
 .product-panel-copy ul {
@@ -3568,6 +3576,7 @@ h3 {
 }
 
 .result-metric-grid div {
+  min-width: 0;
   min-height: 112px;
   padding: 18px;
   border: 1px solid var(--line);
@@ -3577,10 +3586,12 @@ h3 {
 
 .result-metric-grid strong {
   display: block;
+  overflow: hidden;
   margin-bottom: 10px;
   color: var(--cyan);
-  font-size: clamp(22px, 2.4vw, 30px);
+  font-size: clamp(20px, 2vw, 26px);
   line-height: 1;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
@@ -3620,7 +3631,11 @@ h3 {
 }
 
 .budget-visual strong {
+  overflow: hidden;
   color: var(--red);
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .budget-visual i,
@@ -5833,6 +5848,60 @@ a.ops-history-run:hover {
   font-size: 21px;
 }
 
+.flow-swap-routes {
+  margin-top: 16px;
+}
+
+.flow-swap-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.flow-swap-grid article {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid rgba(95, 191, 255, 0.16);
+  border-radius: 8px;
+  background: rgba(95, 191, 255, 0.05);
+}
+
+.flow-swap-grid span,
+.flow-swap-grid strong,
+.flow-swap-grid small {
+  display: block;
+  min-width: 0;
+}
+
+.flow-swap-grid span {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.flow-swap-grid strong {
+  overflow: hidden;
+  margin-top: 7px;
+  color: var(--text);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.flow-swap-grid em {
+  display: inline-flex;
+  margin: 10px 0;
+  color: var(--green);
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.flow-swap-grid small {
+  color: var(--muted);
+  line-height: 1.45;
+}
+
 .flow-form {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -7366,6 +7435,52 @@ a.ops-history-run:hover {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 12px;
   line-height: 1.6;
+}
+
+.proof-memo {
+  grid-column: 1 / -1;
+}
+
+.proof-memo p {
+  margin: 0 0 16px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.proof-memo-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.proof-memo-grid div {
+  min-width: 0;
+  padding: 13px;
+  border: 1px solid rgba(95, 191, 255, 0.16);
+  border-radius: 8px;
+  background: rgba(95, 191, 255, 0.05);
+}
+
+.proof-memo-grid span,
+.proof-memo-grid strong {
+  display: block;
+  min-width: 0;
+}
+
+.proof-memo-grid span {
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.proof-memo-grid strong {
+  overflow: hidden;
+  margin-top: 8px;
+  color: var(--text);
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .proof-chain,
@@ -9127,6 +9242,59 @@ a.ops-history-run:hover {
   line-height: 1.45;
 }
 
+.wallet-unified-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.wallet-unified-grid article {
+  min-width: 0;
+  padding: 15px;
+  border: 1px solid rgba(95, 191, 255, 0.16);
+  border-radius: 8px;
+  background: rgba(95, 191, 255, 0.05);
+}
+
+.wallet-unified-grid span,
+.wallet-unified-grid strong,
+.wallet-unified-grid small {
+  display: block;
+  min-width: 0;
+}
+
+.wallet-unified-grid span {
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.wallet-unified-grid strong {
+  overflow: hidden;
+  margin-top: 8px;
+  color: var(--text);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wallet-unified-grid em {
+  display: inline-flex;
+  margin: 10px 0;
+  color: var(--green);
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.wallet-unified-grid small {
+  color: var(--muted);
+  line-height: 1.45;
+}
+
 .wallet-lower,
 .wallet-events {
   margin-top: 16px;
@@ -9668,6 +9836,7 @@ a.ops-history-run:hover {
   .shield-workspace,
   .flow-heading,
   .flow-layout,
+  .flow-swap-grid,
   .billing-heading,
   .billing-grid,
   .gas-heading,
@@ -9676,6 +9845,7 @@ a.ops-history-run:hover {
   .interop-grid,
   .wallet-heading,
   .wallet-grid,
+  .wallet-unified-grid,
   .execution-heading,
   .escrow-heading,
   .escrow-layout,
@@ -9720,6 +9890,7 @@ a.ops-history-run:hover {
   .submission-workflow,
   .proof-hero,
   .proof-grid,
+  .proof-memo-grid,
   .proof-failure-grid,
   .proof-archive-grid,
   .agentic-proof-strip,

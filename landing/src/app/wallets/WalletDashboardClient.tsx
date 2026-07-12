@@ -49,6 +49,13 @@ const appLayerFlows = [
   { label: "Gas", value: "Abstracted", detail: "Sponsored execution model", icon: Zap },
 ] as const
 
+const unifiedBalanceReadiness = [
+  { step: "Deposit", method: "Gateway -> unified balance", status: "mapped", detail: "Funding path can move behind the account surface." },
+  { step: "Balance", method: "kit.unifiedBalance.*", status: "ready", detail: "One readable USDC state for operator controls." },
+  { step: "Spend", method: "useForwarder-ready", status: "planned", detail: "Forwarded spend can support routed destinations." },
+  { step: "Trace", method: "onBroadcast tx hash", status: "captured", detail: "Latest transaction hash is retained for support and proof." },
+] as const
+
 export function WalletDashboardClient() {
   const [apiKey, setApiKey] = useState("")
   const [overview, setOverview] = useState<WalletOverview | null>(demoWalletOverview)
@@ -222,6 +229,16 @@ export function WalletDashboardClient() {
               </div>
             )
           })}
+        </div>
+        <div className="wallet-unified-grid" aria-label="Unified Balance Kit readiness">
+          {unifiedBalanceReadiness.map((item) => (
+            <article key={item.step}>
+              <span>{item.step}</span>
+              <strong>{item.method}</strong>
+              <em>{item.status}</em>
+              <small>{item.detail}</small>
+            </article>
+          ))}
         </div>
       </section>
 

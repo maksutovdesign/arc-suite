@@ -4,6 +4,7 @@ import {
   CircleDollarSign,
   FileCheck2,
   Gauge,
+  HandCoins,
   KeyRound,
   ListChecks,
   LockKeyhole,
@@ -57,6 +58,24 @@ const integrationMatrix = [
     icon: WalletCards,
   },
   {
+    name: "Transaction memos",
+    status: "Demo-ready",
+    detail: "Proof records now include invoice, agent, customer and batch references so a transaction hash can be reconciled by downstream systems.",
+    icon: FileCheck2,
+  },
+  {
+    name: "Unified Balance Kit",
+    status: "Mapped",
+    detail: "Gateway deposit, balance, forwarded spend and latest transaction hash capture are represented as Wallet OS readiness states.",
+    icon: HandCoins,
+  },
+  {
+    name: "Swap Kit / liquidity",
+    status: "Mapped",
+    detail: "Arc Flow models cross-chain swap routing, destination recipients, status tracking and failure trace handling for stablecoin-native flows.",
+    icon: Network,
+  },
+  {
     name: "x402 / Gateway",
     status: "Demo-ready",
     detail: "Signed offer and receipt architecture for machine-to-machine API payment flows.",
@@ -100,6 +119,8 @@ const currentStatus = [
   ["Monitoring", "Production monitor, Sentry runtime and Ops Health surface are active."],
   ["Network resilience", arcNetworkResilience.summary],
   ["Application layer", "Wallet OS now models Arc-native money movement as one operational account instead of raw wallet/chain mechanics."],
+  ["Transaction memos", "Proof pages now attach business context to payment evidence: invoice, agent, customer and batch references."],
+  ["Stablecoin Kits", "Wallet OS and Flow map Unified Balance Kit, Gateway spend, Swap Kit routing and latest tx hash capture into the review path."],
   ["Circle Wallet execution", "Wallet OS exposes source wallet, token lookup and balance readiness before any policy-gated transfer is attempted."],
   ["Roadmap", "Grant unlocks live Arc deployment, Circle Wallets expansion, CCTP and contract work."],
 ] as const
@@ -112,6 +133,18 @@ const ecosystemSignals = [
   [
     "Arc x Pulsar",
     "Wallet OS follows the same app-layer pattern: one account surface for USDC/EURC balances, payments, FX-ready routes and hidden gas/CCTP state.",
+  ],
+  [
+    "Transaction memos",
+    "Proof now treats memo context as first-class evidence, so settlement references can map back to invoices, jobs, customers and batches.",
+  ],
+  [
+    "Stablecoin Kits",
+    "Arc Suite maps Unified Balance Kit, Swap Kit and Gateway forwarding updates into product states instead of exposing low-level routing complexity.",
+  ],
+  [
+    "Arc x Tradable / Uniswap",
+    "The roadmap now includes private-credit style deal lifecycle, compliance evidence and liquidity-aware stablecoin routes for provider settlement.",
   ],
   [
     "Arc status / load testing",
@@ -180,8 +213,8 @@ const reviewerConsole = [
 
 const roadmap = [
   ["Weeks 1-4", "Arc deployment + Circle Wallets", "Deploy the core Treasury, Reputation and Marketplace infrastructure to Arc-ready production paths and expand real wallet creation/balance reads."],
-  ["Weeks 5-8", "Multicurrency Wallet OS", "Connect the agent account layer to live balances, USDC/EURC account views, FX-ready routes, card-like spend controls and hidden gas/CCTP status."],
-  ["Weeks 9-12", "On-chain reputation + x402 + oracle risk", "Move reputation score storage and API access gating toward on-chain records, complete the x402 payment loop and attach Chainlink data/CCIP route evidence to policy decisions."],
+  ["Weeks 5-8", "Multicurrency Wallet OS", "Connect the agent account layer to live balances, USDC/EURC account views, Unified Balance Kit states, FX-ready routes, card-like spend controls and hidden gas/CCTP status."],
+  ["Weeks 9-12", "On-chain reputation + x402 + oracle risk", "Move reputation score storage and API access gating toward on-chain records, complete the x402 payment loop, attach transaction memos and Chainlink data/CCIP route evidence to policy decisions."],
   ["Weeks 13-16", "CCTP / CCIP + public beta", "Add cross-chain USDC and interoperability support, provider onboarding, public docs and the first external API/provider integrations."],
 ] as const
 
