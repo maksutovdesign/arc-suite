@@ -5,6 +5,7 @@ import {
   FileCheck2,
   Gauge,
   HandCoins,
+  Layers3,
   KeyRound,
   ListChecks,
   LockKeyhole,
@@ -150,6 +151,47 @@ const ecosystemSignals = [
     "Arc status / load testing",
     "Ops and Interop separate network congestion from product failure, so jobs can retry or defer settlement without damaging agent reputation.",
   ],
+] as const
+
+const arcDocsAlignment = [
+  [
+    "Transaction memos",
+    "Proof now treats a payment as more than a hash: invoiceRef, jobId, agentId, providerId, batchRef and policy state are attached to the same proof envelope.",
+    "/proof",
+    FileCheck2,
+  ],
+  [
+    "Gateway -> Unified Balance",
+    "Wallet OS maps Gateway deposit, balance, spend, forwarding and tx-hash capture into one operator-facing account surface.",
+    "/wallets",
+    HandCoins,
+  ],
+  [
+    "Stablecoin Kits",
+    "Flow and Wallet OS model bridge, swap, forwarded spend, failed trace and latest on-chain transaction hash states as product-level evidence.",
+    "/flow",
+    Layers3,
+  ],
+  [
+    "CCIP / Chainlink on Arc",
+    "Interop exposes route, router, selector, oracleRiskHash, feed freshness, RPC health and artifact-gating status before settlement finalization.",
+    "/interop",
+    RadioTower,
+  ],
+  [
+    "Network resilience",
+    "Ops and Interop separate Arc Testnet congestion, retries and deferred settlement from product failures and reputation penalties.",
+    "/ops",
+    ShieldCheck,
+  ],
+] as const
+
+const nextBuildOrder = [
+  ["01", "Memo Proof v2", "Make transaction memos first-class in Treasury and Proof: invoice, job, batch, agent and provider references."],
+  ["02", "Unified Balance Console", "Show one spendable balance with Gateway funding, forwarded spend, latest tx hash and route status."],
+  ["03", "Interop Route Runner", "Turn CCIP route readiness into a runnable route history with selector, router, message id and retry state."],
+  ["04", "Real Circle Wallet execution", "Create/read agent wallets, fetch live balance, execute testnet USDC transfer and write tx status to Supabase."],
+  ["05", "Risk + artifact gating", "Keep jobs in review when policy passed but receipt, memo, validation or network evidence is missing."],
 ] as const
 
 const reviewerConsole = [
@@ -356,6 +398,39 @@ export default function GrantPage() {
                 <RadioTower size={18} />
                 <strong>{title}</strong>
                 <p>{detail}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="grant-section">
+          <div className="submission-section-head">
+            <p className="kicker">Arc docs alignment</p>
+            <h2>Mapped to primitives reviewers already care about.</h2>
+          </div>
+          <div className="grant-console-grid">
+            {arcDocsAlignment.map(([title, detail, href, Icon]) => (
+              <a href={href as string} key={title as string}>
+                <Icon size={19} />
+                <strong>{title as string}</strong>
+                <span>{detail as string}</span>
+                <ArrowRight size={15} />
+              </a>
+            ))}
+          </div>
+        </section>
+
+        <section className="grant-section">
+          <div className="submission-section-head">
+            <p className="kicker">Next build order</p>
+            <h2>What we should implement next.</h2>
+          </div>
+          <div className="grant-reviewer-grid">
+            {nextBuildOrder.map(([index, title, detail]) => (
+              <div key={title}>
+                <i>{index}</i>
+                <strong>{title}</strong>
+                <span>{detail}</span>
               </div>
             ))}
           </div>

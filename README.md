@@ -115,6 +115,18 @@ Arc Suite also treats Arc Testnet load testing and congestion as explicit networ
 
 The Wallet OS surface also reflects the application-layer direction visible in newer Arc partner examples: one account, multiple currency rails, payments, FX, CCTP and gas abstraction hidden behind a simple money movement experience. Arc Suite applies that pattern to agents: a USDC/EURC-facing operational account with card-like spend controls, custody status and policy-safe wallet operations. Live EURC/Gateway execution remains part of the roadmap.
 
+### Arc docs alignment
+
+Recent Arc docs and ecosystem updates are reflected in the reviewer path:
+
+- **Transaction memos:** Proof carries invoice, job, agent, provider, batch and policy references alongside the tx reference.
+- **Gateway -> Unified Balance:** Wallet OS maps deposit, balance, spend, forwarding and latest tx hash into one account surface.
+- **Stablecoin Kits:** Flow models bridge, swap, forwarded spend, failed trace and latest on-chain transaction hash states as product evidence.
+- **Chainlink / CCIP:** Interop exposes router, selector, oracle risk hash, feed freshness, RPC health and route evidence.
+- **Network resilience:** Ops separates congestion, retries and deferred settlement from app failures and agent reputation penalties.
+
+Next build order: Memo Proof v2, Unified Balance Console, Interop Route Runner, real Circle Wallet execution, then risk and artifact gating.
+
 ### Settlement verification
 
 The production smoke flow is wired for API-specific Arc Testnet USDC settlement through Circle Wallets and records the following settlement evidence when the Circle/Arc path is configured:
