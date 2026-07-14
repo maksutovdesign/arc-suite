@@ -7459,7 +7459,7 @@ a.ops-history-run:hover {
 
 .proof-memo-grid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 10px;
 }
 
@@ -7489,6 +7489,40 @@ a.ops-history-run:hover {
   margin-top: 8px;
   color: var(--text);
   font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.proof-memo-export {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid rgba(52, 211, 153, 0.16);
+  border-radius: 8px;
+  background: rgba(52, 211, 153, 0.05);
+}
+
+.proof-memo-export > span {
+  grid-column: 1 / -1;
+  color: var(--green);
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.proof-memo-export code {
+  min-width: 0;
+  overflow: hidden;
+  padding: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.24);
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.35;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -9305,6 +9339,76 @@ a.ops-history-run:hover {
   line-height: 1.45;
 }
 
+.wallet-live-adapter {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.8fr) minmax(0, 1.6fr);
+  gap: 14px;
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px solid rgba(52, 211, 153, 0.16);
+  border-radius: 8px;
+  background: rgba(52, 211, 153, 0.045);
+}
+
+.wallet-live-adapter > div:first-child span,
+.wallet-live-adapter-grid span {
+  display: block;
+  color: var(--green);
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.wallet-live-adapter > div:first-child strong {
+  display: block;
+  margin-top: 8px;
+  color: var(--text);
+  font-size: 18px;
+  line-height: 1.2;
+}
+
+.wallet-live-adapter > div:first-child small,
+.wallet-live-adapter-grid small {
+  display: block;
+  margin-top: 8px;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.wallet-live-adapter-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.wallet-live-adapter-grid article {
+  min-width: 0;
+  padding: 13px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.wallet-live-adapter-grid strong {
+  display: block;
+  overflow: hidden;
+  margin-top: 8px;
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wallet-live-adapter-grid .is-ok strong {
+  color: var(--green);
+}
+
+.wallet-live-adapter-grid .is-warn strong {
+  color: var(--amber);
+}
+
 .wallet-lower,
 .wallet-events {
   margin-top: 16px;
@@ -9951,6 +10055,7 @@ a.ops-history-run:hover {
   .wallet-heading,
   .wallet-grid,
   .wallet-unified-grid,
+  .wallet-live-adapter,
   .execution-heading,
   .escrow-heading,
   .escrow-layout,
@@ -9996,6 +10101,7 @@ a.ops-history-run:hover {
   .proof-hero,
   .proof-grid,
   .proof-memo-grid,
+  .proof-memo-export,
   .proof-failure-grid,
   .proof-archive-grid,
   .agentic-proof-strip,
@@ -10147,6 +10253,8 @@ a.ops-history-run:hover {
   .wallet-account-grid,
   .wallet-fx-routes,
   .wallet-app-layer,
+  .wallet-live-adapter,
+  .wallet-live-adapter-grid,
   .wallet-form,
   .radar-method,
   .radar-fit-grid,
@@ -10171,6 +10279,8 @@ a.ops-history-run:hover {
   .agentic-failure-grid,
   .proof-hero,
   .proof-grid,
+  .proof-memo-grid,
+  .proof-memo-export,
   .proof-failure-grid,
   .proof-artifact-grid,
   .proof-archive-grid,

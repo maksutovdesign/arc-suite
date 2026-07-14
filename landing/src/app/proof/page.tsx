@@ -43,6 +43,7 @@ export default async function ProofPage({ searchParams }: ProofPageProps) {
   const validation = proof.agentValidation
   const artifacts = proof.artifacts
   const hasLiveSettlementEvidence = proof.proofSource === "supabase" && Boolean(flowRun.txHash)
+  const latestSettlement = recentSettlements[0] ?? null
   const receipt = {
     agentIdentity: proof.agentIdentity.id,
     agentJobId: proof.agentJob.id,
@@ -120,8 +121,20 @@ export default async function ProofPage({ searchParams }: ProofPageProps) {
     invoiceRef: `INV-${api.id.toUpperCase()}-${flowRun.id.slice(-4)}`,
     customerRef: agent.id,
     batchRef: `batch_${usage.id.slice(-6)}`,
+    settlementRef: latestSettlement?.id ?? proof.settlementId,
+    txHash: shortHash(latestSettlement?.txHash ?? proof.txHash ?? "pending"),
     eventState: hasLiveSettlementEvidence ? "emitted_on_success" : "prepared_until_settlement",
   }
+  const memoExportRows = [
+    ["job_id", receipt.agentJobId],
+    ["workflow_id", receipt.workflowId],
+    ["provider", proof.provider],
+    ["api_id", api.id],
+    ["amount_usdc", flowRun.amountUsdc.toFixed(3)],
+    ["memo_state", transactionMemo.eventState],
+    ["settlement_ref", transactionMemo.settlementRef],
+    ["tx_hash", latestSettlement?.txHash ?? proof.txHash ?? "pending"],
+  ] as const
 
   return (
     <main>
@@ -207,6 +220,12 @@ export default async function ProofPage({ searchParams }: ProofPageProps) {
                   <span>{label}</span>
                   <strong>{value}</strong>
                 </div>
+              ))}
+            </div>
+            <div className="proof-memo-export" aria-label="Memo reconciliation export">
+              <span>Reconciliation export</span>
+              {memoExportRows.map(([label, value]) => (
+                <code key={label}>{label}={value}</code>
               ))}
             </div>
           </section>

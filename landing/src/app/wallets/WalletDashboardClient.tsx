@@ -174,6 +174,7 @@ export function WalletDashboardClient() {
   const wallet = overview?.wallets.find((item) => item.id === walletId) ?? null
   const transactionReady = isTransactionReady(executionReadiness)
   const readinessStatus = !executionReadiness ? "Connect key" : transactionReady ? "Ready for smoke transfer" : "Blocked"
+  const gatewayExecutionRows = buildGatewayExecutionRows(executionReadiness, transactionReady)
 
   return (
     <section className="analytics-shell wallet-shell">
@@ -258,6 +259,25 @@ export function WalletDashboardClient() {
               <small>{detail}</small>
             </article>
           ))}
+        </div>
+        <div className="wallet-live-adapter" aria-label="Gateway execution adapter">
+          <div>
+            <span>Gateway execution adapter</span>
+            <strong>Balance {"->"} Spend {"->"} Forward {"->"} Trace</strong>
+            <small>
+              Maps the latest Gateway and Stablecoin Kit update into one operator path:
+              readable balance, spend estimate, forwarded route and transaction hash capture.
+            </small>
+          </div>
+          <div className="wallet-live-adapter-grid">
+            {gatewayExecutionRows.map((item) => (
+              <article className={`is-${item.tone}`} key={item.label}>
+                <span>{item.label}</span>
+                <strong>{item.value}</strong>
+                <small>{item.detail}</small>
+              </article>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -381,6 +401,34 @@ function buildReadinessChecks(readiness: ExecutionReadiness | null) {
     { label: "Recipient policy", ok: recipientReady, detail: readiness.defaultRecipient ? shortId(readiness.defaultRecipient) : "Allowlist can be used without exposing recipients in UI." },
     { label: "Guardrail", ok: readiness.maxAmountUsdc > 0, detail: `Max ${readiness.maxAmountUsdc} USDC per smoke transfer.` },
   ]
+}
+function buildGatewayExecutionRows(readiness: ExecutionReadiness | null, transactionReady: boolean) {
+  return [
+    {
+      label: "Balance",
+      value: formatUsdcBalance(readiness?.circle.balanceUsdc),
+      detail: readiness?.circle.balanceReadable ? "Live Circle wallet balance read." : "Falls back to demo until Circle read is available.",
+      tone: readiness?.circle.balanceReadable ? "ok" : "warn",
+    },
+    {
+      label: "Estimate spend",
+      value: readiness ? `${readiness.maxAmountUsdc} USDC max` : "policy gated",
+      detail: "Spend remains bounded before provider access or route execution.",
+      tone: readiness ? "ok" : "neutral",
+    },
+    {
+      label: "Forward route",
+      value: transactionReady ? "armed" : "review",
+      detail: transactionReady ? "Ready for a controlled Arc Testnet smoke transfer." : "Waits for env, token lookup and recipient policy.",
+      tone: transactionReady ? "ok" : "warn",
+    },
+    {
+      label: "Tx trace",
+      value: readiness?.sourceAddress ? shortId(readiness.sourceAddress) : "not attached",
+      detail: "Latest on-chain hash can be attached to Proof and support workflows.",
+      tone: readiness?.sourceAddress ? "ok" : "neutral",
+    },
+  ] as const
 }
 function NumberField({ label, value, onChange, step = "0.01" }: { label: string; value: number; onChange: (value: number) => void; step?: string }) { return <label><span>{label}</span><input min="0" step={step} type="number" value={value} onChange={(event) => onChange(Number(event.target.value))} /></label> }
 function custodyName(value: WalletAccount["custodyModel"]) { return value === "developer" ? "Developer-controlled" : value === "user" ? "User-controlled" : "Modular" }

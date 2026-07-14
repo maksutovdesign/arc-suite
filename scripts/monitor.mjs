@@ -3,7 +3,7 @@ import { appendFile } from "node:fs/promises"
 const DEFAULTS = {
   landing: "https://arcsuite-app.vercel.app",
   treasury: "https://treasury-umber.vercel.app",
-  reputation: "https://reputation-five.vercel.app",
+  reputation: "https://arcsuite-app.vercel.app",
   marketplace: "https://marketplace-eosin-eight.vercel.app",
 }
 
@@ -20,6 +20,7 @@ const requireSupabase = process.env.ARC_MONITOR_REQUIRE_SUPABASE !== "false"
 const latencyWarnMs = numberFromEnv("ARC_MONITOR_LATENCY_WARN_MS", 5_000)
 const latencyFailMs = numberFromEnv("ARC_MONITOR_LATENCY_FAIL_MS", 15_000)
 const treasuryLatencyWarnMs = numberFromEnv("ARC_MONITOR_TREASURY_LATENCY_WARN_MS", 12_000)
+const oracleLatencyWarnMs = numberFromEnv("ARC_MONITOR_ORACLE_LATENCY_WARN_MS", 12_000)
 const marketplaceLatencyWarnMs = numberFromEnv("ARC_MONITOR_MARKETPLACE_LATENCY_WARN_MS", 15_000)
 const marketplaceLatencyFailMs = numberFromEnv("ARC_MONITOR_MARKETPLACE_LATENCY_FAIL_MS", 45_000)
 
@@ -52,6 +53,7 @@ const checks = [
   },
   {
     name: "oracle risk signal auth guard",
+    latencyWarnMs: oracleLatencyWarnMs,
     run: async () => {
       const response = await fetchWithRetry(`${bases.landing}/api/oracle/signals`)
       assertStatus(response, 401)
