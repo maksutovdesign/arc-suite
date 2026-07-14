@@ -172,6 +172,8 @@ export function WalletDashboardClient() {
 
   const summary = overview?.summary ?? { totalWallets: 0, activeWallets: 0, userControlledWallets: 0, pendingOperations: 0 }
   const wallet = overview?.wallets.find((item) => item.id === walletId) ?? null
+  const transactionReady = isTransactionReady(executionReadiness)
+  const readinessStatus = !executionReadiness ? "Connect key" : transactionReady ? "Ready for smoke transfer" : "Blocked"
 
   return (
     <section className="analytics-shell wallet-shell">
@@ -260,10 +262,13 @@ export function WalletDashboardClient() {
       </section>
 
       <section className="wallet-panel wallet-live-readiness">
-        <PanelHead eyebrow="Circle execution readiness" title="Read-only wallet path" icon={<Zap size={20} />} />
+        <div className="wallet-readiness-head">
+          <PanelHead eyebrow="Live transaction readiness" title="Circle Wallet execution" icon={<Zap size={20} />} />
+          <span className={`wallet-readiness-status ${transactionReady ? "is-ok" : executionReadiness ? "is-warn" : "is-neutral"}`}>{readinessStatus}</span>
+        </div>
         <p className="wallet-account-copy">
-          Wallet OS checks the live Circle path before a policy-gated transfer is attempted: credentials, source wallet,
-          Arc Testnet USDC token lookup and current readable balance.
+          Wallet OS checks the Circle path before a policy-gated transfer is attempted: credentials, source wallet,
+          Arc Testnet USDC token lookup, readable balance, recipient policy and smoke-transfer guardrails.
         </p>
         <div className="wallet-readiness-grid">
           <ReadinessCell label="Circle path" value={executionReadiness ? executionReadiness.configured ? "Configured" : "Needs env" : "Demo mode"} tone={executionReadiness?.configured ? "ok" : "warn"} />
@@ -273,6 +278,16 @@ export function WalletDashboardClient() {
           <ReadinessCell label="Max transfer" value={executionReadiness ? `${executionReadiness.maxAmountUsdc} USDC` : "policy-gated"} />
           <ReadinessCell label="Last check" value={executionReadiness ? formatDate(executionReadiness.circle.lastCheckedAt) : "Connect key"} />
         </div>
+        <div className="wallet-readiness-checks">
+          {buildReadinessChecks(executionReadiness).map((check) => (
+            <div className={`wallet-readiness-check ${check.ok ? "is-ok" : "is-warn"}`} key={check.label}>
+              <span>{check.ok ? "Ready" : "Missing"}</span>
+              <strong>{check.label}</strong>
+              <small>{check.detail}</small>
+            </div>
+          ))}
+        </div>
+        <p className="wallet-readiness-note">Next controlled smoke: 0.003 USDC from the configured source wallet after a write-scope Circle key is present.</p>
         {executionReadiness?.circle.errorMessage && <p className="wallet-readiness-note">Circle read returned: {executionReadiness.circle.errorMessage}</p>}
         {executionReadiness?.missing.length ? <p className="wallet-readiness-note">Missing production env: {executionReadiness.missing.join(", ")}</p> : null}
       </section>
@@ -340,6 +355,33 @@ export function WalletDashboardClient() {
 function Metric({ label, value, icon }: { label: string; value: string; icon: React.ReactNode }) { return <div className="wallet-metric"><span>{icon}{label}</span><strong>{value}</strong></div> }
 function PanelHead({ eyebrow, title, icon }: { eyebrow: string; title: string; icon: React.ReactNode }) { return <div className="flow-panel-title"><div><span>{eyebrow}</span><h2>{title}</h2></div>{icon}</div> }
 function ReadinessCell({ label, value, tone = "neutral" }: { label: string; value: string; tone?: "ok" | "warn" | "neutral" }) { return <div className={`wallet-readiness-cell is-${tone}`}><span>{label}</span><strong>{value}</strong></div> }
+function isTransactionReady(readiness: ExecutionReadiness | null) {
+  if (!readiness) return false
+  const tokenReady = readiness.circle.tokenLookup === "configured" || readiness.circle.tokenLookup === "resolved"
+  return readiness.configured && tokenReady && readiness.circle.balanceReadable && Boolean(readiness.sourceWalletId) && Boolean(readiness.sourceAddress) && readiness.missing.length === 0
+}
+function buildReadinessChecks(readiness: ExecutionReadiness | null) {
+  if (!readiness) {
+    return [
+      { label: "Arc API key", ok: false, detail: "Connect a scoped key to inspect the production wallet path." },
+      { label: "Circle env", ok: false, detail: "Circle credentials are checked after connection." },
+      { label: "Source wallet", ok: false, detail: "Source wallet is checked after connection." },
+      { label: "USDC token", ok: false, detail: "Arc Testnet USDC lookup is checked after connection." },
+      { label: "Balance read", ok: false, detail: "Readable balance is checked after connection." },
+      { label: "Recipient policy", ok: false, detail: "Recipient allowlist is checked after connection." },
+    ]
+  }
+  const tokenReady = readiness.circle.tokenLookup === "configured" || readiness.circle.tokenLookup === "resolved"
+  const recipientReady = !readiness.missing.some((item) => item.includes("ARC_SETTLEMENT_ALLOWED_RECIPIENTS") || item.includes("ARC_SETTLEMENT_DEFAULT_RECIPIENT"))
+  return [
+    { label: "Production env", ok: readiness.configured, detail: readiness.missing.length ? readiness.missing.join(", ") : "Circle and Arc settlement env are present." },
+    { label: "Source wallet", ok: Boolean(readiness.sourceWalletId && readiness.sourceAddress), detail: readiness.sourceAddress ? shortId(readiness.sourceAddress) : "Source wallet env is not configured." },
+    { label: "USDC token", ok: tokenReady, detail: readiness.circle.tokenId ? shortId(readiness.circle.tokenId) : "Token lookup must resolve Arc Testnet USDC." },
+    { label: "Balance read", ok: readiness.circle.balanceReadable, detail: formatUsdcBalance(readiness.circle.balanceUsdc) },
+    { label: "Recipient policy", ok: recipientReady, detail: readiness.defaultRecipient ? shortId(readiness.defaultRecipient) : "Allowlist can be used without exposing recipients in UI." },
+    { label: "Guardrail", ok: readiness.maxAmountUsdc > 0, detail: `Max ${readiness.maxAmountUsdc} USDC per smoke transfer.` },
+  ]
+}
 function NumberField({ label, value, onChange, step = "0.01" }: { label: string; value: number; onChange: (value: number) => void; step?: string }) { return <label><span>{label}</span><input min="0" step={step} type="number" value={value} onChange={(event) => onChange(Number(event.target.value))} /></label> }
 function custodyName(value: WalletAccount["custodyModel"]) { return value === "developer" ? "Developer-controlled" : value === "user" ? "User-controlled" : "Modular" }
 function actionLabel(value: WalletLifecycleEvent["action"]) { return value.replaceAll("_", " ").replace(/^\w/, (letter) => letter.toUpperCase()) }

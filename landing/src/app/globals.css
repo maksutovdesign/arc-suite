@@ -9314,6 +9314,40 @@ a.ops-history-run:hover {
   margin: 18px 0;
 }
 
+.wallet-readiness-head {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.wallet-readiness-status {
+  flex: 0 0 auto;
+  max-width: 220px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.wallet-readiness-status.is-ok {
+  border-color: rgba(52, 211, 153, 0.42);
+  background: rgba(52, 211, 153, 0.1);
+  color: var(--green);
+}
+
+.wallet-readiness-status.is-warn {
+  border-color: rgba(245, 158, 11, 0.42);
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--amber);
+}
+
 .wallet-readiness-grid {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
@@ -9355,6 +9389,67 @@ a.ops-history-run:hover {
 }
 
 .wallet-readiness-cell.is-warn strong {
+  color: var(--amber);
+}
+
+.wallet-readiness-checks {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.wallet-readiness-check {
+  min-width: 0;
+  padding: 13px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.wallet-readiness-check span,
+.wallet-readiness-check strong,
+.wallet-readiness-check small {
+  display: block;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.wallet-readiness-check span {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.wallet-readiness-check strong {
+  margin-top: 8px;
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.25;
+}
+
+.wallet-readiness-check small {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.wallet-readiness-check.is-ok {
+  border-color: rgba(52, 211, 153, 0.24);
+}
+
+.wallet-readiness-check.is-ok span {
+  color: var(--green);
+}
+
+.wallet-readiness-check.is-warn {
+  border-color: rgba(245, 158, 11, 0.28);
+}
+
+.wallet-readiness-check.is-warn span {
   color: var(--amber);
 }
 
@@ -10048,6 +10143,7 @@ a.ops-history-run:hover {
   .interop-failure-grid,
   .wallet-metrics,
   .wallet-readiness-grid,
+  .wallet-readiness-checks,
   .wallet-account-grid,
   .wallet-fx-routes,
   .wallet-app-layer,
@@ -10101,6 +10197,15 @@ a.ops-history-run:hover {
 
   .provider-receipt-head {
     display: none;
+  }
+
+  .wallet-readiness-head {
+    display: grid;
+  }
+
+  .wallet-readiness-status {
+    width: fit-content;
+    max-width: 100%;
   }
 
   .provider-receipt-row {
