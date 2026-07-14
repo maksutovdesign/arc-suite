@@ -173,7 +173,7 @@ const checks = [
   },
   {
     name: "Arc Wallet OS page",
-    run: async () => checkHtmlPage(`${bases.landing}/wallets`, ["Arc Wallet OS", "Demo workspace", "Circle execution readiness"]),
+    run: async () => checkHtmlPage(`${bases.landing}/wallets`, ["Arc Wallet OS", "Demo workspace", "Circle Wallet execution"]),
   },
   {
     name: "Arc Execution Control page",
