@@ -12,8 +12,8 @@ export const metadata = {
 const highlights = [
   "One-click agentic workflow demo",
   "x402 signed offer, authorization and receipt",
-  "Policy chain before value movement",
-  "Proof page with tx hash, job id and validation evidence",
+  "Policy chain before settlement finalization",
+  "Proof page with tx hash when configured, job id and validation evidence",
 ]
 
 const latestProofUrl = "/proof?id=flow_agentic_01a50e12e6c4"
@@ -29,7 +29,7 @@ export default function JudgePage() {
             <h1>Review Arc Suite as one end-to-end agentic commerce workflow.</h1>
             <p>
               Start here for the grant or hackathon review: run an AI agent API purchase, inspect the
-              x402 receipt, then open the proof page that ties policy, settlement and reputation to the
+              x402 receipt, then open the proof page that ties policy, settlement readiness and reputation to the
               same workflow id.
             </p>
             <div className="agentic-actions">

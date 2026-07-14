@@ -28,14 +28,14 @@ export const metadata = {
 }
 
 const latestProofUrl = "/proof?id=flow_agentic_01a50e12e6c4"
-const demoUrl = "https://treasury-umber.vercel.app/demo"
-const releaseUrl = "https://github.com/maksutovdesign/arc-suite/tree/v2026.07.12-circle-wallet-readiness"
+const demoUrl = "https://arcsuite-app.vercel.app/judge"
+const releaseUrl = "https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.07.14-gateway-memos"
 const videoUrl = "https://drive.google.com/file/d/1TpkfepfGCEXDfh-YWIfGLRGuohHAJmjP/view?usp=sharing"
 
 const reviewerSteps = [
   ["01", "Open Judge Mode", "Start from the guided one-page reviewer flow."],
   ["02", "Run workflow", "Trigger policy check, x402 offer, receipt and reputation update."],
-  ["03", "Open proof", "Review settlement reference, signed receipt and policy chain."],
+  ["03", "Open proof", "Review settlement evidence, signed receipt and policy chain."],
   ["04", "Check console", "Inspect Flow, Treasury, Reputation and Provider views."],
 ] as const
 
@@ -116,7 +116,7 @@ const integrationMatrix = [
 
 const currentStatus = [
   ["Live product", "Production web MVP deployed on Vercel with Supabase-backed APIs."],
-  ["Review proof", "Proof pages connect workflow id, policy checks, x402 receipt and settlement reference."],
+  ["Review proof", "Proof pages connect workflow id, policy checks, x402 receipt and settlement evidence."],
   ["Monitoring", "Production monitor, Sentry runtime and Ops Health surface are active."],
   ["Network resilience", arcNetworkResilience.summary],
   ["Application layer", "Wallet OS now models Arc-native money movement as one operational account instead of raw wallet/chain mechanics."],
@@ -137,7 +137,7 @@ const ecosystemSignals = [
   ],
   [
     "Transaction memos",
-    "Proof now treats memo context as first-class evidence, so settlement references can map back to invoices, jobs, customers and batches.",
+    "Proof now treats memo context as first-class evidence, so settlement evidence can map back to invoices, jobs, customers and batches.",
   ],
   [
     "Stablecoin Kits",

@@ -60,7 +60,7 @@ const revealPolicy = [
   ["Operator", "Full workspace audit trail", "Internal spend control and incident response"],
   ["Provider", "Paid / unpaid receipt", "Fulfillment without exposing the agent treasury"],
   ["Auditor", "Policy pass, chain, timestamp", "Compliance evidence without commercial leakage"],
-  ["Public", "Minimal settlement reference", "Forward-compatible explorer proof"],
+  ["Public", "Minimal settlement evidence", "Forward-compatible explorer proof"],
 ]
 
 const integrationFit = [

@@ -7,10 +7,6 @@ import type { AnalyticsSource } from "@/lib/backend/schema"
 
 const ALLOWED_ORIGINS = [
   "https://arcsuite-app.vercel.app",
-  "https://landing-nu-olive-43.vercel.app",
-  "https://treasury-umber.vercel.app",
-  "https://reputation-five.vercel.app",
-  "https://marketplace-eosin-eight.vercel.app",
   "http://127.0.0.1:3100",
   "http://127.0.0.1:3000",
   "http://localhost:3100",

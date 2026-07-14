@@ -193,7 +193,7 @@ export const demoFlowPayload: { auditStorage: boolean; runs: FlowRun[]; summary:
       steps: [
         { key: "screening", label: "Shield screening", status: "passed", detail: "No sanctions or high-risk category", completedAt: "2026-06-23T09:35:11Z" },
         { key: "access", label: "Access policy", status: "blocked", detail: "Score 812 below required 850", completedAt: "2026-06-23T09:35:13Z" },
-        { key: "settlement", label: "Arc settlement", status: "skipped", detail: "No value moved", completedAt: null },
+        { key: "settlement", label: "Arc settlement", status: "skipped", detail: "Settlement not finalized", completedAt: null },
         { key: "reputation", label: "Reputation update", status: "skipped", detail: "Blocked before payment", completedAt: null },
       ],
       screeningId: "scr_demo_002",

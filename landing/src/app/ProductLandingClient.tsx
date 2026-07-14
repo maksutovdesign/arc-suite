@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import {
   BadgeCheck,
   Boxes,
@@ -78,7 +78,7 @@ const productDetails = [
     eyebrow: "Receipt trust center",
     icon: Braces,
     title: "Provider-side proof that paid agent requests are safe to fulfill.",
-    text: "Give API providers a receipt registry with signing key metadata, paid job history, settlement references and proof links for every agentic x402 purchase.",
+    text: "Give API providers a receipt registry with signing key metadata, paid job history, settlement evidence and proof links for every agentic x402 purchase.",
     image: "",
     imageAlt: "Arc Provider trust center showing provider signing keys, paid receipt registry and Arc proof links",
     stats: [
@@ -110,9 +110,9 @@ const productDetails = [
     eyebrow: "Payment orchestration",
     icon: Workflow,
     title: "One policy-gated path from intent to settlement proof.",
-    text: "Orchestrate Shield screening, Chainlink oracle/CCIP evidence, reputation and budget access checks, Circle wallet execution readiness, Arc settlement references and the resulting reputation update under one run ID.",
+    text: "Orchestrate Shield screening, Chainlink oracle/CCIP evidence, reputation and budget access checks, Circle wallet execution readiness, Arc settlement evidence and the resulting reputation update under one run ID.",
     image: "",
-    imageAlt: "Arc Flow pipeline showing screening, access policy, settlement reference and reputation update",
+    imageAlt: "Arc Flow pipeline showing screening, access policy, settlement evidence and reputation update",
     stats: [
       ["4", "atomic stages"],
       ["1", "auditable run ID"],
@@ -338,7 +338,7 @@ const story = [
   },
 ]
 
-const liveDemoUrl = "https://treasury-umber.vercel.app/demo"
+const liveDemoUrl = "https://arcsuite-app.vercel.app/judge"
 const latestProofUrl = "/proof?id=flow_agentic_01a50e12e6c4"
 const realSettlementExplorerUrl =
   "https://testnet.arcscan.app/tx/0x41210539368a78f6bbc08b088a95430dc0f64e9379ad9226173fc3ce565d733b"
@@ -352,6 +352,14 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
   const [activeProductKey, setActiveProductKey] = useState(productDetails[0].key)
   const pilotSummary = initialPilotSummary
   const apiStatus = initialApiStatus
+
+  useEffect(() => {
+    const requestedProduct = new URLSearchParams(window.location.search).get("product")
+    if (requestedProduct && productDetails.some((product) => product.key === requestedProduct)) {
+      setActiveProductKey(requestedProduct)
+    }
+  }, [])
+
   const liveProductDetails = useMemo(() => {
     if (!pilotSummary) return productDetails
     return productDetails.map((product) => {
@@ -523,7 +531,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
           <p>
             The final submission is built around one auditable operation: an agent receives an x402 offer,
             passes policy and oracle-risk checks, follows a settlement-ready Circle Wallets path, and leaves a proof
-            artifact with receipt, Chainlink signal, settlement reference and reputation context.
+            artifact with receipt, Chainlink signal, settlement evidence and reputation context.
           </p>
         </div>
         <div className="demo-proof-card">
@@ -559,7 +567,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
           </div>
           <div>
             <span>Release package</span>
-            <strong>v2026.06.30</strong>
+            <strong>v2026.07.14-gateway-memos</strong>
             <a href="/grant">Open package notes</a>
           </div>
         </div>

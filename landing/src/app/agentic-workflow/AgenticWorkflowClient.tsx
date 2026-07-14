@@ -183,7 +183,7 @@ export function AgenticWorkflowClient() {
             <ProofItem label="Oracle signal" value={proof.oracleSignal.result.toUpperCase()} tone="success" />
             <ProofItem label="Budget" value={proof.budget} />
             <ProofItem label="Billing event" value={proof.billingEvent} />
-            <ProofItem label="Amount settled" value={proof.amount} tone="success" />
+            <ProofItem label="Amount authorized" value={proof.amount} tone="success" />
             <ProofItem label="Reputation" value={proof.reputation} tone="success" />
           </div>
           <div className="agentic-x402-chain" aria-label="x402 signed offer and demo provider receipt">

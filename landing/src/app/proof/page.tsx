@@ -18,7 +18,7 @@ import { SiteHeader } from "../SiteHeader"
 
 export const metadata = {
   title: "Proof - Arc Suite",
-  description: "Arc Suite proof page with settlement reference, x402 receipt and policy chain.",
+  description: "Arc Suite proof page with settlement evidence, x402 receipt and policy chain.",
 }
 
 export const dynamic = "force-dynamic"
@@ -103,7 +103,7 @@ export default async function ProofPage({ searchParams }: ProofPageProps) {
     {
       label: "Arc settlement",
       detail: hasLiveSettlementEvidence
-        ? `${flowRun.amountUsdc.toFixed(3)} USDC settlement reference recorded`
+        ? `${flowRun.amountUsdc.toFixed(3)} USDC settlement evidence recorded`
         : `${flowRun.amountUsdc.toFixed(3)} USDC settlement-ready proof trail`,
       result: hasLiveSettlementEvidence ? "confirmed" : "ready",
       icon: CircleDollarSign,
@@ -143,10 +143,10 @@ export default async function ProofPage({ searchParams }: ProofPageProps) {
         <div className="proof-hero">
           <div>
             <p className="kicker">Settlement proof</p>
-            <h1>Settlement reference, receipt and policy chain in one audit view.</h1>
+            <h1>Settlement evidence, receipt and policy chain in one audit view.</h1>
             <p>
               This page turns the Agentic Workflow Demo into a reviewer-ready proof artifact:
-              the x402 receipt, policy decisions, Arc settlement reference and validation evidence
+              the x402 receipt, policy decisions, Arc settlement evidence when configured and validation evidence
               are tied to the same workflow and agent job IDs.
             </p>
           </div>
@@ -162,7 +162,7 @@ export default async function ProofPage({ searchParams }: ProofPageProps) {
             <div className="flow-panel-title">
               <div>
                 <span>Arc Testnet</span>
-                <h2>Settlement reference</h2>
+                <h2>Settlement readiness</h2>
               </div>
               <CircleDollarSign size={21} />
             </div>
@@ -235,7 +235,7 @@ export default async function ProofPage({ searchParams }: ProofPageProps) {
           <div className="flow-panel-title">
             <div>
               <span>Policy chain</span>
-              <h2>Every gate before value moved</h2>
+              <h2>Every gate before settlement finalization</h2>
             </div>
             <ShieldCheck size={21} />
           </div>

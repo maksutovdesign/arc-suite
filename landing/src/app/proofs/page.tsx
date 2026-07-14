@@ -6,7 +6,7 @@ import { SiteHeader } from "../SiteHeader"
 
 export const metadata = {
   title: "Proof Archive - Arc Suite",
-  description: "Recent Arc Suite agentic workflow proofs with settlement references and x402 receipts.",
+  description: "Recent Arc Suite agentic workflow proofs with settlement evidence and x402 receipts.",
 }
 
 export const dynamic = "force-dynamic"
@@ -27,7 +27,7 @@ export default async function ProofArchivePage() {
             <h1>Every agentic workflow should leave a receipt trail.</h1>
             <p>
               Recent Arc Suite workflows are collected here with policy status, x402 receipt evidence,
-              settlement reference and Arcscan links when a live Arc Testnet transfer is available.
+              settlement evidence and Arcscan links when a live Arc Testnet transfer is available.
             </p>
           </div>
           <div className="proof-verdict">

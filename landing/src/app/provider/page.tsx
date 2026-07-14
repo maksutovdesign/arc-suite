@@ -34,7 +34,7 @@ const integrations = [
   },
   {
     icon: FileCheck2,
-    text: "External reviewers can verify the receipt, policy chain and settlement reference from one URL.",
+    text: "External reviewers can verify the receipt, policy chain and settlement evidence from one URL.",
     title: "Proof",
   },
 ]
@@ -44,7 +44,7 @@ const onboardingFlow = [
   ["02", "Set price", "USDC price, quota and prepaid balance rules become part of the offer."],
   ["03", "Publish x402 offer", "Marketplace exposes a signed machine-readable offer for agents."],
   ["04", "Agent buys access", "Treasury, Shield, Reputation and Interop gates run before fulfillment."],
-  ["05", "Receipt appears in Proof", "Provider signature, settlement reference and validation artifacts become reviewable."],
+  ["05", "Receipt appears in Proof", "Provider signature, settlement evidence and validation artifacts become reviewable."],
 ] as const
 
 export default async function ProviderPage() {
@@ -62,7 +62,7 @@ export default async function ProviderPage() {
             <p>
               Arc Provider closes the loop between Marketplace and Proof: API providers get
               a live receipt registry, signing-key surface, fulfillment evidence and direct
-              links to every policy chain and Arc settlement reference.
+              links to every policy chain and Arc settlement evidence when configured.
             </p>
             <div className="radar-actions">
               <ProviderDemoRunButton />

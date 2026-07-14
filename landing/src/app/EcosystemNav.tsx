@@ -44,9 +44,9 @@ const suiteUrl = process.env.NEXT_PUBLIC_ARC_SUITE_URL ?? (
 )
 
 const products = [
-  { id: "treasury", label: "Treasury", href: isProduction ? "https://treasury-umber.vercel.app" : "http://localhost:3001", color: "#5fbfff", icon: Landmark },
-  { id: "reputation", label: "Reputation", href: isProduction ? "https://reputation-five.vercel.app" : "http://localhost:3002", color: "#a78bfa", icon: BadgeCheck },
-  { id: "marketplace", label: "Marketplace", href: isProduction ? "https://marketplace-eosin-eight.vercel.app" : "http://localhost:3003", color: "#34d399", icon: Store },
+  { id: "treasury", label: "Treasury", href: `${suiteUrl}/?product=treasury#system`, color: "#5fbfff", icon: Landmark },
+  { id: "reputation", label: "Reputation", href: `${suiteUrl}/?product=reputation#system`, color: "#a78bfa", icon: BadgeCheck },
+  { id: "marketplace", label: "Marketplace", href: `${suiteUrl}/?product=marketplace#system`, color: "#34d399", icon: Store },
   { id: "provider", label: "Provider", href: `${suiteUrl}/provider`, color: "#f472b6", icon: Braces },
   { id: "flow", label: "Flow", href: `${suiteUrl}/flow`, color: "#22d3ee", icon: Workflow },
   { id: "billing", label: "Billing", href: `${suiteUrl}/billing`, color: "#fbbf24", icon: ReceiptText },
