@@ -18,7 +18,7 @@ The latest release includes a recorded demo, Arc Testnet settlement evidence whe
 - Flow operator console: https://arcsuite-app.vercel.app/flow
 - Repository: https://github.com/maksutovdesign/arc-suite
 - Interop / Risk Router: https://arcsuite-app.vercel.app/interop
-- Release: https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.07.12-mobile-layout-hotfix
+- Release: https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.07.14-gateway-memos
 - Demo video: https://github.com/maksutovdesign/arc-suite/releases/download/v2026.06.28-real-arc-settlement/arc-suite-agentic-workflow-demo.mov
 - Arc Testnet proof: https://testnet.arcscan.app/tx/0x41210539368a78f6bbc08b088a95430dc0f64e9379ad9226173fc3ce565d733b
 

@@ -1,4 +1,4 @@
-# Arc Suite Hackathon Submission
+# Arc Suite Hackathon Roadmap
 
 ## Track
 
@@ -6,14 +6,32 @@
 
 ## Short Pitch
 
-Arc Suite is an operating layer for autonomous AI-agent commerce on Arc. It shows one complete USDC workflow: an AI agent requests a paid x402 API, receives a signed offer, passes policy and compliance checks, settles on Arc Testnet, receives a signed receipt, updates reputation and leaves a proof page with the transaction hash and policy chain.
+Arc Suite is working infrastructure for autonomous AI-agent commerce on Arc. It lets teams deploy agents with wallets, programmable USDC budgets, policy checks, reputation scores, paid API access and proof records.
+
+The core demo shows one agent deciding whether it can buy an API: it receives an x402-style offer, checks budget and risk policy, prepares the Circle/Arc settlement path, records receipt evidence, updates reputation and leaves a reviewer-ready proof trail.
+
+## Judge Narrative
+
+**Problem:** AI agents are starting to act as economic participants, but most teams do not have a safe operating layer for agent wallets, spend limits, provider trust, compliance checks and payment proofs.
+
+**Solution:** Arc Suite gives agents a programmable money control plane:
+
+- **Treasury:** USDC budgets, per-agent spend rules and alerts.
+- **Reputation:** trust scores and validation history for agents/providers.
+- **Marketplace / Provider:** paid API access through x402-style offers and receipts.
+- **Shield:** compliance and risk checks before settlement.
+- **Flow:** policy-to-payment execution path.
+- **Proof:** transaction, receipt, memo and policy evidence in one place.
+- **Interop:** Chainlink/CCIP-ready route and oracle risk evidence.
+
+**Why Arc/Circle:** Arc is positioned for stablecoin-native settlement, predictable fees, transaction memos, gas abstraction and app-layer money movement. Circle provides the primitives for USDC, wallets, paymaster/gateway-style payment flows and contracts.
 
 ## Links
 
 - **GitHub:** [github.com/maksutovdesign/arc-suite](https://github.com/maksutovdesign/arc-suite)
 - **Grant update:** [`docs/submission/grant-update.md`](docs/submission/grant-update.md)
 - **Demo video:** [arc-suite-agentic-workflow-demo.mov](https://github.com/maksutovdesign/arc-suite/releases/download/v2026.06.28-real-arc-settlement/arc-suite-agentic-workflow-demo.mov)
-- **Release package:** [v2026.06.30-agentic-proof-package](https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.06.30-agentic-proof-package)
+- **Release package:** [v2026.07.14-gateway-memos](https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.07.14-gateway-memos)
 - **Main landing:** [arcsuite-app.vercel.app](https://arcsuite-app.vercel.app)
 - **Submission page:** [arcsuite-app.vercel.app/submission](https://arcsuite-app.vercel.app/submission)
 - **Judge mode:** [arcsuite-app.vercel.app/judge](https://arcsuite-app.vercel.app/judge)
@@ -31,16 +49,32 @@ Arc Suite is an operating layer for autonomous AI-agent commerce on Arc. It show
 1. Open **Judge Mode**.
 2. Click **Run agentic workflow**.
 3. Watch the pipeline move through:
-   `Agent intent -> x402 offer -> Treasury budget -> Shield screening -> Billing usage -> Arc settlement -> Reputation update`.
+   `Agent intent -> x402 offer -> Treasury budget -> Shield screening -> Billing usage -> settlement-ready Arc path -> Reputation update`.
 4. Inspect the signed offer, agent payment authorization and signed provider receipt.
 5. Click **Latest proof** or the generated proof link to verify the generated run:
-   - Arc Testnet transaction hash
+   - Arc Testnet transaction hash when configured
    - x402 receipt JSON
    - provider signing key id, algorithm and payload hash
    - policy chain
    - agent job id
    - validation evidence
    - artifact signatures
+
+## Three-Minute Video Script
+
+0:00-0:20 - Open `/grant` or `/judge`, state the pitch: Arc Suite is infrastructure for AI agents that need to spend USDC safely.
+
+0:20-0:55 - Run `/agentic-workflow`: show agent intent, x402 offer, budget check, Shield risk check and settlement-ready path.
+
+0:55-1:25 - Open `/proof`: show transaction reference, receipt JSON, transaction memo context, policy chain and validation artifacts.
+
+1:25-1:55 - Open `/provider`: show provider-side receipt, signing key and proof link.
+
+1:55-2:25 - Open `/treasury` or `/flow`: show budgets, alerts and operator controls.
+
+2:25-2:45 - Open `/interop`: show Chainlink/CCIP route evidence, oracle risk hash and network resilience state.
+
+2:45-3:00 - Close with roadmap: real Circle wallet execution, stronger x402 provider onboarding and live Arc settlement proofs.
 
 ## Real Settlement Proof
 
@@ -75,6 +109,86 @@ On June 30, 2026 the production settlement smoke confirmed a real API-specific A
 - Provider Trust Center for API providers to reconcile signed receipts, provider keys, paid jobs and proof links.
 - Provider demo-run action that creates a signed receipt, records a proof and opens the provider-side proof URL.
 - Supabase-ready schema for agent identities, jobs, artifacts and validations.
+
+## Hackathon Roadmap
+
+### Checkpoint 1 - Coherent agentic demo
+
+Goal: make the project instantly understandable to judges.
+
+Deliverables:
+
+- One clear reviewer entry point: `/grant` and `/judge`.
+- One-click agent workflow: agent intent -> x402 offer -> budget policy -> risk check -> proof.
+- Proof page with receipt, policy chain, transaction memo context and validation artifacts.
+- Provider page that explains how an API seller reconciles paid jobs.
+- README and `HACKATHON.md` aligned around the Agentic Economy track.
+- No broken mobile layout, clipped metrics or empty proof pages on the reviewer path.
+
+Success criteria:
+
+- A judge can understand the product in under three minutes.
+- The demo shows autonomous agent decisioning, not just dashboards.
+- Every claim points to a visible screen, API response or proof artifact.
+
+### Checkpoint 2 - Circle/Arc execution depth
+
+Goal: strengthen the technical core behind the demo.
+
+Deliverables:
+
+- Circle Developer Controlled Wallet readiness: source wallet, token lookup, balance state and transfer guardrails.
+- Real or gated Arc Testnet USDC settlement record when credentials/faucet path are stable.
+- Supabase write path for transaction hash, status, receipt and policy result.
+- Treasury, Proof and Reputation all read from the same workflow/proof record.
+- Network resilience states: `network_congested`, `retry_scheduled`, `deferred_settlement`, `settlement_recorded`.
+- Interop evidence: CCIP route card, Chainlink router/selector metadata, oracle risk hash and RPC health.
+
+Success criteria:
+
+- A workflow has one durable job id from intent through proof.
+- Settlement, receipt and validation are separate states, so missing artifacts do not look like success.
+- The product remains honest: "settlement-ready" unless a real tx hash is shown.
+
+### Final Submission - Polished product package
+
+Goal: present Arc Suite as a focused, working product.
+
+Deliverables:
+
+- 3-minute demo video.
+- GitHub repo with clean README, latest release and hackathon roadmap.
+- Production deployment at `https://arcsuite-app.vercel.app`.
+- `/grant` page with demo, release, known limits, Circle products used and roadmap.
+- Production monitor green.
+- Short X/community post that explains the agentic workflow.
+
+Success criteria:
+
+- The judge sees a real use case: AI agent buys an API with programmable USDC controls.
+- Circle/Arc usage is explicit: USDC, Wallets, payment/settlement path, contracts/proof model, Paymaster/Gateway/CCTP roadmap.
+- The scope is tight enough to finish well.
+
+## Must-Have Scope
+
+- Agent identity and job envelope.
+- Wallet/budget policy.
+- Provider x402-style offer and receipt.
+- Risk/compliance check before payment.
+- Settlement-ready Arc path with tx hash when configured.
+- Proof page with memo/reconciliation data.
+- Reputation update after successful workflow.
+- Mobile-safe reviewer path.
+
+## De-Scope For Hackathon
+
+- Full mainnet launch.
+- Full provider marketplace economics.
+- Heavy privacy implementation.
+- Complex multi-chain production routing.
+- Large admin CRM.
+
+These remain roadmap items, not blockers for the Agentic Economy submission.
 
 ## Why Arc Suite
 

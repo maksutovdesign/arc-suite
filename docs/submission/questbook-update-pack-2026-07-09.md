@@ -22,7 +22,7 @@ The latest Wallet OS update also reflects Arc's application-layer direction show
 - Supabase-backed API and proof records
 - Sentry runtime monitoring and production health checks
 - Reviewer-facing mobile layout hotfix: compact Treasury metrics, stable chart legends and no clipped action buttons on mobile.
-- GitHub release: https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.07.12-mobile-layout-hotfix
+- GitHub release: https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.07.14-gateway-memos
 - Demo video: https://drive.google.com/file/d/1TpkfepfGCEXDfh-YWIfGLRGuohHAJmjP/view?usp=sharing
 
 ## Fresh Arc ecosystem alignment
