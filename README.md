@@ -134,7 +134,7 @@ The production smoke flow is wired for API-specific Arc Testnet USDC settlement 
 - **Amount:** `0.003 USDC`
 - **API:** `api_02` / `GPT-4o Proxy`
 - **Settlement ID:** `set_a70296d1-87f9-4753-8935-7e330a2fc3d2`
-- **Settlement reference:** [`0x41210539368a78f6bbc08b088a95430dc0f64e9379ad9226173fc3ce565d733b`](https://testnet.arcscan.app/tx/0x41210539368a78f6bbc08b088a95430dc0f64e9379ad9226173fc3ce565d733b)
+- **Settlement evidence:** [`0x41210539368a78f6bbc08b088a95430dc0f64e9379ad9226173fc3ce565d733b`](https://testnet.arcscan.app/tx/0x41210539368a78f6bbc08b088a95430dc0f64e9379ad9226173fc3ce565d733b)
 - **Path:** `policy check -> Circle Wallets tokenId lookup -> Arc Testnet USDC transfer when enabled -> Supabase audit -> proof link`
 
 ---

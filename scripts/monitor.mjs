@@ -99,7 +99,7 @@ const checks = [
   },
   {
     name: "Proof page",
-    run: async () => checkHtmlPage(`${bases.landing}/proof`, ["Settlement reference", "Artifact failure handling", "policy chain"]),
+    run: async () => checkHtmlPage(`${bases.landing}/proof`, ["Settlement evidence", "Artifact failure handling", "policy chain"]),
   },
   {
     name: "Proof archive page",

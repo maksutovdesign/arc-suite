@@ -25,7 +25,7 @@ const explorerUrl =
 const reviewerLinks = [
   ["Judge Mode", "One-page reviewer flow", "https://arcsuite-app.vercel.app/judge"],
   ["Agentic Workflow", "Run the policy-to-proof demo", "https://arcsuite-app.vercel.app/agentic-workflow"],
-  ["Latest Proof", "Settlement reference, x402 receipt and policy chain", latestProofUrl],
+  ["Latest Proof", "Settlement evidence, x402 receipt and policy chain", latestProofUrl],
   ["Proof Archive", "Recent workflow receipts and settlement evidence", "https://arcsuite-app.vercel.app/proofs"],
   ["Flow Console", "Operator view behind the workflow", "https://arcsuite-app.vercel.app/flow"],
 ] as const

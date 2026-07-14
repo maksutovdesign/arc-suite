@@ -122,7 +122,7 @@ export default function PrivatePage() {
               <div><span>Reveal</span><strong>SCOPED</strong></div>
             </div>
             <div className="private-proof-hash">
-              <span>Settlement reference</span>
+              <span>Settlement evidence</span>
               <strong>0x9c4e...71b2</strong>
             </div>
           </div>

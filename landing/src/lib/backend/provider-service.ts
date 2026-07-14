@@ -151,7 +151,7 @@ export function providerFulfillmentPolicies(): ProviderFulfillmentPolicy[] {
       title: "Budget locked",
     },
     {
-      description: "Provider signs the receipt payload with a visible key id and settlement reference.",
+      description: "Provider signs the receipt payload with a visible key id and settlement evidence.",
       key: "receipt_signed",
       required: true,
       title: "Receipt signed",
