@@ -5,6 +5,7 @@ import {
   Check,
   CircleDollarSign,
   FileCheck2,
+  Fingerprint,
   RadioTower,
   ReceiptText,
   ShieldCheck,
@@ -42,6 +43,7 @@ export default async function ProofPage({ searchParams }: ProofPageProps) {
   const usage = proof.usage
   const validation = proof.agentValidation
   const artifacts = proof.artifacts
+  const integrity = proof.paymentIntegrity
   const hasLiveSettlementEvidence = proof.proofSource === "supabase" && Boolean(flowRun.txHash)
   const latestSettlement = recentSettlements[0] ?? null
   const receipt = {
@@ -117,7 +119,7 @@ export default async function ProofPage({ searchParams }: ProofPageProps) {
   ]
   const transactionMemo = {
     schema: "arc.memo.v1",
-    memoId: `memo_${flowRun.id.slice(-8)}`,
+    memoId: integrity.memoReference,
     invoiceRef: `INV-${api.id.toUpperCase()}-${flowRun.id.slice(-4)}`,
     customerRef: agent.id,
     batchRef: `batch_${usage.id.slice(-6)}`,
@@ -230,6 +232,48 @@ export default async function ProofPage({ searchParams }: ProofPageProps) {
             </div>
           </section>
         </div>
+
+        <section className="proof-panel proof-integrity">
+          <div className="flow-panel-title">
+            <div>
+              <span>Payment integrity</span>
+              <h2>Policy pass is not final settlement.</h2>
+            </div>
+            <Fingerprint size={21} />
+          </div>
+          <p className="proof-integrity-copy">
+            The job can execute after policy approval, but final proof stays review-held until the request hash,
+            single-use nonce, memo reference, receipt digest and validation evidence match the same job envelope.
+          </p>
+          <div className="proof-integrity-grid">
+            <div>
+              <span>Request hash</span>
+              <strong>{integrity.requestHash}</strong>
+            </div>
+            <div>
+              <span>Envelope hash</span>
+              <strong>{integrity.envelopeHash}</strong>
+            </div>
+            <div>
+              <span>Nonce</span>
+              <strong>{integrity.nonce}</strong>
+            </div>
+            <div>
+              <span>Artifact gate</span>
+              <strong>{integrity.artifactGate}</strong>
+            </div>
+          </div>
+          <div className="proof-integrity-stage-list">
+            {integrity.stages.map((stage) => (
+              <div className={`proof-integrity-stage is-${stage.result}`} key={stage.state}>
+                <span>{stage.label}</span>
+                <strong>{stage.detail}</strong>
+                <code>{stage.evidence}</code>
+                <em>{stage.result}</em>
+              </div>
+            ))}
+          </div>
+        </section>
 
         <section className="proof-panel proof-chain">
           <div className="flow-panel-title">

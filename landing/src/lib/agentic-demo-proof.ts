@@ -77,6 +77,26 @@ export type ArtifactFailureHandling = {
   state: ArtifactFailureState
 }
 
+export type PaymentIntegrityResult = "passed" | "ready" | "review"
+
+export type PaymentIntegrityStage = {
+  detail: string
+  evidence: string
+  label: string
+  result: PaymentIntegrityResult
+  state: "request_bound" | "nonce_locked" | "memo_attached" | "artifact_gated"
+}
+
+export type PaymentIntegrityGuard = {
+  artifactGate: string
+  envelopeHash: string
+  memoReference: string
+  nonce: string
+  replayWindow: string
+  requestHash: string
+  stages: PaymentIntegrityStage[]
+}
+
 export type AgenticWorkflowProof = {
   agent: Agent
   agentIdentity: ArcAgentIdentity
@@ -96,6 +116,7 @@ export type AgenticWorkflowProof = {
   offer: SignedOffer
   oracleRiskHash: string
   oracleSignal: OracleRiskSignal
+  paymentIntegrity: PaymentIntegrityGuard
   payer: string
   policy: string
   price: string
@@ -266,6 +287,15 @@ export function buildAgenticDemoProof(options: ProofOptions = {}): AgenticWorkfl
     score: 98,
     signature: `sig_validator_${stableDigest(`validator:${workflowId}:${receipt.digest}`).slice(0, 24)}`,
   }
+  const paymentIntegrity = createPaymentIntegrityGuard({
+    agentJob,
+    authorization,
+    flowRun,
+    offer,
+    receipt,
+    validation: agentValidation,
+    workflowId,
+  })
 
   return {
     agent: baseAgent,
@@ -286,6 +316,7 @@ export function buildAgenticDemoProof(options: ProofOptions = {}): AgenticWorkfl
     offer,
     oracleRiskHash,
     oracleSignal,
+    paymentIntegrity,
     payer: shortAddress(baseAgent.address),
     policy: "ALLOW",
     price: `${selectedApi.priceUsdc.toFixed(3)} USDC / ${selectedApi.pricingUnit}`,
@@ -384,6 +415,67 @@ function createArtifactFailureHandling(): ArtifactFailureHandling[] {
       state: "dispute_opened",
     },
   ]
+}
+
+function createPaymentIntegrityGuard({
+  agentJob,
+  authorization,
+  flowRun,
+  offer,
+  receipt,
+  validation,
+  workflowId,
+}: {
+  agentJob: ArcAgentJob
+  authorization: PaymentAuthorization
+  flowRun: FlowRun
+  offer: SignedOffer
+  receipt: SignedReceipt
+  validation: ArcAgentJobValidation
+  workflowId: string
+}): PaymentIntegrityGuard {
+  const requestHash = `0x${stableDigest(`request:${flowRun.requestId ?? workflowId}:${offer.payloadHash}:${authorization.digest}`)}${stableDigest("request")}`
+  const envelopeHash = `0x${stableDigest(`envelope:${agentJob.id}:${agentJob.policyHash}:${receipt.digest}:${validation.evidenceHash}`)}${stableDigest("envelope")}`
+  const memoReference = `memo_${stableDigest(`memo:${workflowId}:${receipt.settlementId}`).slice(0, 12)}`
+
+  return {
+    artifactGate: "review-held until receipt and validation hashes match",
+    envelopeHash,
+    memoReference,
+    nonce: authorization.nonce,
+    replayWindow: "single-use nonce per x402 offer",
+    requestHash,
+    stages: [
+      {
+        detail: "API request, policy decision and x402 offer share one request hash.",
+        evidence: shortHash(requestHash),
+        label: "Request bound",
+        result: "passed",
+        state: "request_bound",
+      },
+      {
+        detail: "The payment authorization is single-use and cannot be replayed for another job.",
+        evidence: authorization.nonce,
+        label: "Nonce locked",
+        result: "passed",
+        state: "nonce_locked",
+      },
+      {
+        detail: "Invoice, agent, batch and settlement references travel with the proof envelope.",
+        evidence: memoReference,
+        label: "Memo attached",
+        result: "ready",
+        state: "memo_attached",
+      },
+      {
+        detail: "If receipt or validation evidence is missing, settlement proof is held for review.",
+        evidence: shortHash(envelopeHash),
+        label: "Artifact gated",
+        result: "review",
+        state: "artifact_gated",
+      },
+    ],
+  }
 }
 
 export function shortAddress(value: string | null) {
