@@ -13,6 +13,7 @@ import {
   Network,
   Radar,
   ReceiptText,
+  Scale,
   ShieldCheck,
   Store,
   WalletCards,
@@ -30,6 +31,7 @@ export type ArcProductId =
   | "flow"
   | "billing"
   | "escrow"
+  | "credit"
   | "shield"
   | "gas"
   | "interop"
@@ -51,6 +53,7 @@ const products = [
   { id: "flow", label: "Flow", href: `${suiteUrl}/flow`, color: "#22d3ee", icon: Workflow },
   { id: "billing", label: "Billing", href: `${suiteUrl}/billing`, color: "#fbbf24", icon: ReceiptText },
   { id: "escrow", label: "Escrow", href: `${suiteUrl}/escrow`, color: "#fb7185", icon: Handshake },
+  { id: "credit", label: "Credit", href: `${suiteUrl}/credit`, color: "#facc15", icon: Scale },
   { id: "shield", label: "Shield", href: `${suiteUrl}/shield`, color: "#f59e0b", icon: ShieldCheck },
   { id: "gas", label: "Gas", href: `${suiteUrl}/gas`, color: "#38bdf8", icon: Fuel },
   { id: "interop", label: "Interop", href: `${suiteUrl}/interop`, color: "#14b8a6", icon: Network },

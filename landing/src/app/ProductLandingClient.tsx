@@ -12,6 +12,7 @@ import {
   Network,
   Radar,
   ReceiptText,
+  Scale,
   ShieldCheck,
   Store,
   WalletCards,
@@ -153,6 +154,22 @@ const productDetails = [
     bullets: ["Milestone state machine", "Release, refund and disputes", "Arc onchain event receipts"],
   },
   {
+    key: "credit",
+    name: "Arc Credit",
+    eyebrow: "Private credit lifecycle",
+    icon: Scale,
+    title: "Policy-gated private credit and RWA settlement workflows.",
+    text: "Model borrower/provider onboarding, KYB/KYT gates, repayment schedules, milestone escrow, transaction memos and proof trails for Arc-native credit flows.",
+    image: "",
+    imageAlt: "Arc Credit console showing private credit deal intake, KYB and KYT gates, escrow schedules and proof-linked repayments",
+    stats: [
+      ["5", "lifecycle stages"],
+      ["3", "risk gates"],
+      ["1", "proof trail"],
+    ],
+    bullets: ["KYB/KYT-ready deal intake", "Escrow repayment schedule", "Memo-backed reconciliation"],
+  },
+  {
     key: "gas",
     name: "Arc Gas",
     eyebrow: "Gas sponsorship",
@@ -258,7 +275,7 @@ const steps = [
 ]
 
 const metrics = [
-  ["14", "connected products"],
+  ["15", "connected products"],
   ["25,482", "agent transactions in demo"],
   ["24.8M", "marketplace request volume"],
   ["99.72%", "average uptime in marketplace stats"],
@@ -402,7 +419,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
   const activeProduct = liveProductDetails.find((product) => product.key === activeProductKey) ?? liveProductDetails[0]
   const liveMetrics = pilotSummary
     ? [
-        ["14", "connected products"],
+        ["15", "connected products"],
         [formatCompact(pilotSummary.marketplace.requests), "marketplace request volume"],
         [`${pilotSummary.marketplace.avgUptimePct}%`, "average uptime from API"],
         [apiStatus === "live" ? "Live" : "Fallback", "pilot API status"],
@@ -599,7 +616,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
       <section className="section" id="system">
         <div className="section-heading">
           <p className="kicker">The product system</p>
-          <h2>Fourteen connected products. One economic operating layer.</h2>
+          <h2>Fifteen connected products. One economic operating layer.</h2>
           <p>
             Arc Suite is designed around a shared cast of agents moving through the
             complete economic journey, from wallet spend to trust scoring to service access.
