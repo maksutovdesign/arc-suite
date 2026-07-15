@@ -355,6 +355,29 @@ const story = [
   },
 ]
 
+const readinessSignals = [
+  {
+    title: "Unified balance path",
+    text: "Gateway and Unified Balance Kit patterns are represented as a balance and spend layer, so agent wallets can evolve from raw payment operations into cleaner account-style UX.",
+    status: "kit-ready",
+  },
+  {
+    title: "Memo reconciliation",
+    text: "Proof envelopes can carry job id, invoice reference, agent id, provider receipt and policy state, so operators can explain why a payment happened after the transaction settles.",
+    status: "proof-linked",
+  },
+  {
+    title: "Private credit rails",
+    text: "Credit jobs combine KYB/KYT gates, escrow schedules, repayment references and artifact review before a facility leaves review.",
+    status: "review-gated",
+  },
+  {
+    title: "Network resilience",
+    text: "Congestion, failed traces and missing artifacts become retry or review states instead of silent settlement claims.",
+    status: "fail-closed",
+  },
+] as const
+
 const liveDemoUrl = "https://arcsuite-app.vercel.app/judge"
 const latestProofUrl = "/proof?id=flow_agentic_01a50e12e6c4"
 const realSettlementExplorerUrl =
@@ -475,7 +498,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
             Arc Suite is a connected product system built for autonomous USDC commerce:
             Treasury controls spend, Shield screens counterparties, Reputation scores behavior,
             Marketplace sells x402 API access, Provider verifies signed receipts, Billing meters usage, Escrow governs delivery,
-            Gas sponsors execution, Wallet OS governs custody, Radar maps the builder ecosystem,
+            Credit structures repayment workflows, Gas sponsors execution, Wallet OS governs custody, Radar maps the builder ecosystem,
             Interop adds CCIP route evidence, Chainlink on Arc adds market and reserve signals, Private protects sensitive payment context, Blueprints turns patterns into templates,
             and Flow runs the complete policy pipeline.
           </p>
@@ -608,6 +631,31 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
                 <h3>{item.title}</h3>
                 <p>{item.text}</p>
               </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="section provider-section provider-panel" aria-label="Arc Suite readiness layer">
+        <div className="private-panel-title">
+          <div>
+            <span>Arc readiness layer</span>
+            <h2>Balances, memos, credit and resilience share one proof surface.</h2>
+            <p>
+              Arc Suite tracks the newer Arc builder patterns without overstating live settlement:
+              Gateway and Unified Balance readiness, memo-backed reconciliation, private-credit lifecycle
+              and status-aware execution.
+            </p>
+          </div>
+          <ReceiptText size={22} />
+        </div>
+        <div className="provider-integration-grid">
+          {readinessSignals.map((item) => (
+            <article key={item.title}>
+              <ReceiptText size={20} />
+              <h3>{item.title}</h3>
+              <p>{item.text}</p>
+              <em>{item.status}</em>
             </article>
           ))}
         </div>

@@ -40,6 +40,12 @@ const riskGates = [
   ["Artifact gating", "Missing receipt or validation evidence blocks settlement and opens review."],
 ] as const
 
+const balanceSignals = [
+  ["Gateway balance path", "Credit facilities can reference account-style USDC/EURC balances while preserving policy checks."],
+  ["Transaction memo", "Repayment, borrower, invoice and facility context can be attached to the proof trail."],
+  ["Failed trace", "When execution fails, the latest available transaction hash is captured for review instead of disappearing."],
+] as const
+
 export default function CreditPage() {
   return (
     <main>
@@ -48,7 +54,7 @@ export default function CreditPage() {
         <div className="provider-hero">
           <div>
             <p className="kicker">Private credit & RWA lifecycle</p>
-            <h1>Policy-gated credit workflows for Arc-native settlement.</h1>
+            <h1>Policy-gated credit workflows for Arc-native finance.</h1>
             <p>
               Arc Credit turns private-credit operations into auditable Arc Suite workflows:
               intake, KYB/KYT review, escrowed milestones, memo-backed repayment references
@@ -93,6 +99,25 @@ export default function CreditPage() {
           <article><span>Settlement mode</span><strong>Review</strong><small>Fail closed until evidence is complete</small></article>
           <article><span>Memo references</span><strong>1:1</strong><small>Repayment context maps to proof</small></article>
         </div>
+
+        <section className="provider-section provider-panel">
+          <div className="private-panel-title">
+            <div>
+              <span>Gateway and memos</span>
+              <h2>Credit operations need balance state and repayment context.</h2>
+            </div>
+            <ReceiptText size={22} />
+          </div>
+          <div className="provider-key-list">
+            {balanceSignals.map(([title, detail]) => (
+              <div key={title}>
+                <FileCheck2 size={17} />
+                <span><strong>{title}</strong><small>{detail}</small></span>
+                <em>ready</em>
+              </div>
+            ))}
+          </div>
+        </section>
 
         <section className="provider-section provider-panel">
           <div className="private-panel-title">
