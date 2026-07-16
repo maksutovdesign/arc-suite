@@ -377,7 +377,7 @@ const readinessSignals = [
   },
 ] as const
 
-const liveDemoUrl = "https://arcsuite-app.vercel.app/judge"
+const liveDemoUrl = "https://arcsuite-app.vercel.app/?product=treasury"
 const latestProofUrl = "/proof?id=flow_agentic_01a50e12e6c4"
 const realSettlementExplorerUrl =
   "https://testnet.arcscan.app/tx/0x41210539368a78f6bbc08b088a95430dc0f64e9379ad9226173fc3ce565d733b"

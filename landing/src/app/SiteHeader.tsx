@@ -4,7 +4,7 @@ import Link from "next/link"
 
 import { BrandMark } from "./BrandMark"
 
-const liveDemoUrl = "https://arcsuite-app.vercel.app/judge"
+const liveDemoUrl = "https://arcsuite-app.vercel.app/?product=treasury"
 
 export type SiteHeaderVariant = "marketing" | "review" | "console"
 
