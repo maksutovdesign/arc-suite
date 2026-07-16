@@ -506,8 +506,6 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
               className="button primary"
               href={liveDemoUrl}
               onClick={() => trackLandingConversion({ eventName: "demo_click", placement: "hero" })}
-              target="_blank"
-              rel="noreferrer"
             >
               Launch live demo
             </a>
@@ -1379,8 +1377,6 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
             className="button primary"
             href={liveDemoUrl}
             onClick={() => trackLandingConversion({ eventName: "demo_click", placement: "bottom_cta" })}
-            target="_blank"
-            rel="noreferrer"
           >
             Launch live demo
           </a>

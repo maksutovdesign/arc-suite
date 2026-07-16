@@ -82,7 +82,7 @@ export function SiteHeader({
           </div>
         </details>
         {showDemo && (
-          <a className="nav-demo" href={demoHref} onClick={onDemoClick} target="_blank" rel="noreferrer">
+          <a className="nav-demo" href={demoHref} onClick={onDemoClick}>
             Demo
           </a>
         )}
