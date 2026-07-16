@@ -77,8 +77,7 @@ export function EcosystemNav({ current }: { current: ArcProductId }) {
     if (typeof window === "undefined" || window.location.pathname !== "/") return
 
     event.preventDefault()
-    const url = new URL(product.href)
-    window.history.pushState(null, "", `${url.pathname}${url.search}${url.hash}`)
+    window.history.pushState(null, "", `/?product=${product.id}#system`)
     window.dispatchEvent(new Event("arc-product-change"))
     document.getElementById("system")?.scrollIntoView({ block: "start", behavior: "smooth" })
   }
