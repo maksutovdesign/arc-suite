@@ -382,22 +382,48 @@ const latestProofUrl = "/proof?id=flow_agentic_01a50e12e6c4"
 const realSettlementExplorerUrl =
   "https://testnet.arcscan.app/tx/0x41210539368a78f6bbc08b088a95430dc0f64e9379ad9226173fc3ce565d733b"
 
+function readProductFromUrl() {
+  if (typeof window === "undefined") return productDetails[0].key
+  const requestedProduct = new URLSearchParams(window.location.search).get("product")
+  return productDetails.some((product) => product.key === requestedProduct)
+    ? requestedProduct
+    : productDetails[0].key
+}
+
 type ProductLandingClientProps = {
   initialApiStatus: "live" | "fallback"
   initialPilotSummary: PilotSummary | null
 }
 
 export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: ProductLandingClientProps) {
-  const [activeProductKey, setActiveProductKey] = useState(productDetails[0].key)
+  const [activeProductKey, setActiveProductKey] = useState(readProductFromUrl)
   const pilotSummary = initialPilotSummary
   const apiStatus = initialApiStatus
 
   useEffect(() => {
-    const requestedProduct = new URLSearchParams(window.location.search).get("product")
-    if (requestedProduct && productDetails.some((product) => product.key === requestedProduct)) {
-      window.requestAnimationFrame(() => setActiveProductKey(requestedProduct))
+    const syncProductFromUrl = () => setActiveProductKey(readProductFromUrl())
+
+    syncProductFromUrl()
+    window.addEventListener("popstate", syncProductFromUrl)
+    window.addEventListener("hashchange", syncProductFromUrl)
+    window.addEventListener("arc-product-change", syncProductFromUrl)
+
+    return () => {
+      window.removeEventListener("popstate", syncProductFromUrl)
+      window.removeEventListener("hashchange", syncProductFromUrl)
+      window.removeEventListener("arc-product-change", syncProductFromUrl)
     }
   }, [])
+
+  const selectProduct = (productKey: string) => {
+    setActiveProductKey(productKey)
+    if (typeof window === "undefined") return
+
+    const nextUrl = new URL(window.location.href)
+    nextUrl.searchParams.set("product", productKey)
+    nextUrl.hash = "system"
+    window.history.replaceState(null, "", nextUrl)
+  }
 
   const liveProductDetails = useMemo(() => {
     if (!pilotSummary) return productDetails

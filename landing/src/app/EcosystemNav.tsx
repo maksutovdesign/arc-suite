@@ -20,7 +20,7 @@ import {
   Workflow,
 } from "lucide-react"
 import { useState } from "react"
-import type { CSSProperties } from "react"
+import type { CSSProperties, MouseEvent } from "react"
 import { BrandMark } from "./BrandMark"
 
 export type ArcProductId =
@@ -72,6 +72,17 @@ const products = [
 export function EcosystemNav({ current }: { current: ArcProductId }) {
   const [isCollapsed, setIsCollapsed] = useState(false)
 
+  const handleProductClick = (event: MouseEvent<HTMLAnchorElement>, product: (typeof products)[number]) => {
+    if (!["treasury", "reputation", "marketplace"].includes(product.id)) return
+    if (typeof window === "undefined" || window.location.pathname !== "/") return
+
+    event.preventDefault()
+    const url = new URL(product.href)
+    window.history.pushState(null, "", `${url.pathname}${url.search}${url.hash}`)
+    window.dispatchEvent(new Event("arc-product-change"))
+    document.getElementById("system")?.scrollIntoView({ block: "start", behavior: "smooth" })
+  }
+
   return (
     <aside className={isCollapsed ? "ecosystem-nav is-collapsed" : "ecosystem-nav"} aria-label="Arc Suite products">
       <div className="ecosystem-nav-head">
@@ -99,6 +110,7 @@ export function EcosystemNav({ current }: { current: ArcProductId }) {
               href={product.href}
               key={product.id}
               aria-current={isCurrent ? "page" : undefined}
+              onClick={(event) => handleProductClick(event, product)}
               style={{ "--product-color": product.color } as CSSProperties}
               title={`Arc ${product.label}`}
             >
