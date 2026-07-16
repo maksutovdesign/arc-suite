@@ -6485,6 +6485,33 @@ a.ops-history-run:hover {
   margin-top: 14px;
 }
 
+.agentic-failure-callout,
+.proof-failure-callout {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.35fr) minmax(0, 1fr);
+  gap: 12px;
+  align-items: flex-start;
+  margin-top: 14px;
+  padding: 12px 14px;
+  border: 1px solid rgba(245, 158, 11, 0.22);
+  border-radius: 8px;
+  background: rgba(245, 158, 11, 0.07);
+}
+
+.agentic-failure-callout strong,
+.proof-failure-callout strong {
+  color: rgba(244, 247, 255, 0.94);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.agentic-failure-callout span,
+.proof-failure-callout span {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
 .agentic-failure-card,
 .proof-failure-card {
   min-width: 0;
@@ -10842,7 +10869,9 @@ a.ops-history-run:hover {
   .gas-metrics,
   .wallet-metrics,
   .interop-evidence-grid,
-  .product-panel-stats {
+  .product-panel-stats,
+  .agentic-failure-callout,
+  .proof-failure-callout {
     grid-template-columns: 1fr;
   }
 }

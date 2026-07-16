@@ -301,6 +301,13 @@ export function AgenticWorkflowClient() {
           </div>
           <AlertTriangle size={21} />
         </div>
+        <div className="agentic-failure-callout">
+          <strong>Policy pass does not finalize the job.</strong>
+          <span>
+            Settlement and reputation updates stay on hold until receipt and validation artifacts
+            close the same job envelope.
+          </span>
+        </div>
         <div className="agentic-failure-grid">
           {proof.artifactFailureHandling.map((item) => (
             <div className={`agentic-failure-card is-${item.severity}`} key={item.state}>

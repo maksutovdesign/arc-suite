@@ -314,6 +314,13 @@ export default async function ProofPage({ searchParams }: ProofPageProps) {
             the provider receipt or validator artifact does not arrive, the envelope moves into a
             bounded review state instead of silently becoming a successful settlement.
           </p>
+          <div className="proof-failure-callout">
+            <strong>Policy pass is only a precondition.</strong>
+            <span>
+              If execution, receipt or validation evidence is missing, the proof remains
+              review-held and settlement finalization is blocked.
+            </span>
+          </div>
           <div className="proof-failure-grid">
             {proof.artifactFailureHandling.map((item) => (
               <div className={`proof-failure-card is-${item.severity}`} key={item.state}>
