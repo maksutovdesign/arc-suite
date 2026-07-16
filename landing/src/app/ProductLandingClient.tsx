@@ -332,7 +332,6 @@ const formatMetricUsd = (value: number) => {
   const compact = (value / 1000).toFixed(2).replace(/\.?0+$/, "")
   return `$${compact}K`
 }
-const formatCardUsd = (value: number) => value >= 1000 ? formatCompactUsd(value) : formatUsd(value)
 const formatBudgetRatio = (spent: number, limit: number) =>
   `${formatCompactUsd(spent)} / ${formatCompactUsd(limit)}`
 
@@ -396,7 +395,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
   useEffect(() => {
     const requestedProduct = new URLSearchParams(window.location.search).get("product")
     if (requestedProduct && productDetails.some((product) => product.key === requestedProduct)) {
-      setActiveProductKey(requestedProduct)
+      window.requestAnimationFrame(() => setActiveProductKey(requestedProduct))
     }
   }, [])
 
