@@ -1935,9 +1935,9 @@ h3 {
 .radar-shell {
   display: grid;
   gap: 34px;
-  width: min(1420px, calc(100% - 48px));
+  max-width: var(--max);
   margin: 0 auto;
-  padding: 42px 0 80px;
+  padding: 78px 24px 96px;
 }
 
 .radar-hero {
@@ -2396,9 +2396,9 @@ h3 {
 .private-shell {
   display: grid;
   gap: 34px;
-  width: min(1420px, calc(100% - 48px));
+  max-width: var(--max);
   margin: 0 auto;
-  padding: 42px 0 80px;
+  padding: 78px 24px 96px;
 }
 
 .private-hero,
@@ -2743,9 +2743,9 @@ h3 {
 .blueprints-shell {
   display: grid;
   gap: 34px;
-  width: min(1420px, calc(100% - 48px));
+  max-width: var(--max);
   margin: 0 auto;
-  padding: 42px 0 80px;
+  padding: 78px 24px 96px;
 }
 
 .blueprints-hero,
@@ -7022,7 +7022,7 @@ a.ops-history-run:hover {
 .grant-shell {
   width: min(100% - 48px, 1320px);
   margin: 0 auto;
-  padding: 112px 0 96px;
+  padding: 58px 0 96px;
 }
 
 .grant-hero {
@@ -8000,9 +8000,9 @@ a.ops-history-run:hover {
 .provider-shell {
   display: grid;
   gap: 28px;
-  max-width: 1380px;
-  min-height: 100vh;
-  padding: 30px clamp(18px, 3vw, 42px) 70px;
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 78px 24px 96px;
 }
 
 .provider-hero,
@@ -10492,8 +10492,7 @@ a.ops-history-run:hover {
   .private-shell,
   .blueprints-shell,
   .agentic-shell {
-    width: min(100% - 28px, 1420px);
-    padding-top: 28px;
+    padding-top: 48px;
   }
 
   .agentic-hero h1 {
