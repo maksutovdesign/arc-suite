@@ -20,19 +20,29 @@ const apiHeaders = [
 // Standalone deployments backing the single Arc Suite domain via Multi-Zones.
 // Each product app sets basePath: "/<product>", so we proxy both the pages and
 // their basePath-scoped assets/API under one origin (arcsuite-app.vercel.app).
+// NOTE: an env var set to "" must fall back to the default (?? only guards
+// undefined), otherwise the proxy target becomes empty and /treasury would
+// self-rewrite back to the landing page.
+const zoneTarget = (value: string | undefined, fallback: string) => {
+  const trimmed = value?.trim()
+  return trimmed && /^https?:\/\//.test(trimmed) ? trimmed.replace(/\/+$/, "") : fallback
+}
+
 const zoneTargets = {
-  treasury: process.env.NEXT_PUBLIC_ARC_TREASURY_URL ?? "https://treasury-umber.vercel.app",
-  reputation: process.env.NEXT_PUBLIC_ARC_REPUTATION_URL ?? "https://reputation-five.vercel.app",
-  marketplace: process.env.NEXT_PUBLIC_ARC_MARKETPLACE_URL ?? "https://marketplace-eosin-eight.vercel.app",
+  treasury: zoneTarget(process.env.NEXT_PUBLIC_ARC_TREASURY_URL, "https://treasury-umber.vercel.app"),
+  reputation: zoneTarget(process.env.NEXT_PUBLIC_ARC_REPUTATION_URL, "https://reputation-five.vercel.app"),
+  marketplace: zoneTarget(process.env.NEXT_PUBLIC_ARC_MARKETPLACE_URL, "https://marketplace-eosin-eight.vercel.app"),
 }
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   async rewrites() {
-    return Object.entries(zoneTargets).flatMap(([product, target]) => [
-      { source: `/${product}`, destination: `${target}/${product}` },
-      { source: `/${product}/:path*`, destination: `${target}/${product}/:path*` },
-    ])
+    return {
+      beforeFiles: Object.entries(zoneTargets).flatMap(([product, target]) => [
+        { source: `/${product}`, destination: `${target}/${product}` },
+        { source: `/${product}/:path*`, destination: `${target}/${product}/:path*` },
+      ]),
+    }
   },
   async headers() {
     return [
