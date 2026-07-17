@@ -4,6 +4,7 @@ import { useState, useTransition } from "react"
 import type { MouseEvent } from "react"
 import { CheckCircle2, ExternalLink, PlayCircle, ReceiptText, ShieldCheck, X } from "lucide-react"
 import { ArcButton } from "@/components/ui/ArcButton"
+import { apiPath } from "@/lib/base-path"
 
 type Props = {
   apiId: string
@@ -46,7 +47,7 @@ export function RunPaidWorkflowButton({ apiId, compact = false }: Props) {
 
     startTransition(async () => {
       try {
-        const response = await fetch("/api/arc/agentic/workflows", {
+        const response = await fetch(apiPath("/api/arc/agentic/workflows"), {
           body: JSON.stringify({
             apiId,
             sessionId: `marketplace:${apiId}:${Date.now()}`,

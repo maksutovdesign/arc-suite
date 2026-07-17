@@ -20,7 +20,7 @@ import {
   Workflow,
 } from "lucide-react"
 import { useState } from "react"
-import type { CSSProperties, MouseEvent } from "react"
+import type { CSSProperties } from "react"
 import { BrandMark } from "./BrandMark"
 
 export type ArcProductId =
@@ -46,9 +46,9 @@ const suiteUrl = process.env.NEXT_PUBLIC_ARC_SUITE_URL ?? (
 )
 
 const products = [
-  { id: "treasury", label: "Treasury", href: `${suiteUrl}/?product=treasury#system`, color: "#5fbfff", icon: Landmark },
-  { id: "reputation", label: "Reputation", href: `${suiteUrl}/?product=reputation#system`, color: "#a78bfa", icon: BadgeCheck },
-  { id: "marketplace", label: "Marketplace", href: `${suiteUrl}/?product=marketplace#system`, color: "#34d399", icon: Store },
+  { id: "treasury", label: "Treasury", href: `${suiteUrl}/treasury`, color: "#5fbfff", icon: Landmark },
+  { id: "reputation", label: "Reputation", href: `${suiteUrl}/reputation`, color: "#a78bfa", icon: BadgeCheck },
+  { id: "marketplace", label: "Marketplace", href: `${suiteUrl}/marketplace`, color: "#34d399", icon: Store },
   { id: "provider", label: "Provider", href: `${suiteUrl}/provider`, color: "#f472b6", icon: Braces },
   { id: "flow", label: "Flow", href: `${suiteUrl}/flow`, color: "#22d3ee", icon: Workflow },
   { id: "billing", label: "Billing", href: `${suiteUrl}/billing`, color: "#fbbf24", icon: ReceiptText },
@@ -71,16 +71,6 @@ const products = [
 
 export function EcosystemNav({ current }: { current: ArcProductId }) {
   const [isCollapsed, setIsCollapsed] = useState(false)
-
-  const handleProductClick = (event: MouseEvent<HTMLAnchorElement>, product: (typeof products)[number]) => {
-    if (!["treasury", "reputation", "marketplace"].includes(product.id)) return
-    if (typeof window === "undefined" || window.location.pathname !== "/") return
-
-    event.preventDefault()
-    window.history.pushState(null, "", `/?product=${product.id}#system`)
-    window.dispatchEvent(new Event("arc-product-change"))
-    document.getElementById("system")?.scrollIntoView({ block: "start", behavior: "smooth" })
-  }
 
   return (
     <aside className={isCollapsed ? "ecosystem-nav is-collapsed" : "ecosystem-nav"} aria-label="Arc Suite products">
@@ -109,7 +99,6 @@ export function EcosystemNav({ current }: { current: ArcProductId }) {
               href={product.href}
               key={product.id}
               aria-current={isCurrent ? "page" : undefined}
-              onClick={(event) => handleProductClick(event, product)}
               style={{ "--product-color": product.color } as CSSProperties}
               title={`Arc ${product.label}`}
             >

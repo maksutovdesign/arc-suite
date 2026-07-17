@@ -53,15 +53,9 @@ export function EcosystemNav({ current }: { current: ProductId }) {
     process.env.NODE_ENV === "production" ? "https://arcsuite-app.vercel.app" : "http://localhost:3100"
   )
   const urls = {
-    treasury: process.env.NEXT_PUBLIC_ARC_TREASURY_URL ?? (
-      process.env.NODE_ENV === "production" ? "https://treasury-umber.vercel.app" : "http://localhost:3001"
-    ),
-    reputation: process.env.NEXT_PUBLIC_ARC_REPUTATION_URL ?? (
-      process.env.NODE_ENV === "production" ? "https://reputation-five.vercel.app" : "http://localhost:3002"
-    ),
-    marketplace: process.env.NEXT_PUBLIC_ARC_MARKETPLACE_URL ?? (
-      process.env.NODE_ENV === "production" ? "https://marketplace-eosin-eight.vercel.app" : "http://localhost:3003"
-    ),
+    treasury: `${suiteUrl}/treasury`,
+    reputation: `${suiteUrl}/reputation`,
+    marketplace: `${suiteUrl}/marketplace`,
     provider: `${suiteUrl}/provider`,
     flow: `${suiteUrl}/flow`,
     billing: `${suiteUrl}/billing`,

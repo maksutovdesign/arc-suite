@@ -6,6 +6,7 @@ import { CheckCircle2, ShieldCheck, XCircle } from "lucide-react"
 import { ArcButton } from "@/components/ui/ArcButton"
 import { RunPaidWorkflowButton } from "@/components/browse/RunPaidWorkflowButton"
 import type { AccessDecision } from "@/lib/arc-api"
+import { apiPath } from "@/lib/base-path"
 
 type Props = {
   apiId: string
@@ -28,7 +29,7 @@ export function RequestAccessButton({ apiId, amountUsdc, compact = false }: Prop
 
     startTransition(async () => {
       try {
-        const response = await fetch("/api/arc/access/check", {
+        const response = await fetch(apiPath("/api/arc/access/check"), {
           body: JSON.stringify({
             agentId: DEMO_AGENT_ID,
             amountUsdc,

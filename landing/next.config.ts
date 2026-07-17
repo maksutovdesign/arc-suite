@@ -17,8 +17,23 @@ const apiHeaders = [
   { key: "Cache-Control", value: "no-store, no-cache, must-revalidate" },
 ]
 
+// Standalone deployments backing the single Arc Suite domain via Multi-Zones.
+// Each product app sets basePath: "/<product>", so we proxy both the pages and
+// their basePath-scoped assets/API under one origin (arcsuite-app.vercel.app).
+const zoneTargets = {
+  treasury: process.env.NEXT_PUBLIC_ARC_TREASURY_URL ?? "https://treasury-umber.vercel.app",
+  reputation: process.env.NEXT_PUBLIC_ARC_REPUTATION_URL ?? "https://reputation-five.vercel.app",
+  marketplace: process.env.NEXT_PUBLIC_ARC_MARKETPLACE_URL ?? "https://marketplace-eosin-eight.vercel.app",
+}
+
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  async rewrites() {
+    return Object.entries(zoneTargets).flatMap(([product, target]) => [
+      { source: `/${product}`, destination: `${target}/${product}` },
+      { source: `/${product}/:path*`, destination: `${target}/${product}/:path*` },
+    ])
+  },
   async headers() {
     return [
       {

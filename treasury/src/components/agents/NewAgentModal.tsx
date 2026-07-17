@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { X, Bot, Zap, CheckCircle2 } from "lucide-react"
 import { ArcButton } from "@/components/ui/ArcButton"
+import { apiPath } from "@/lib/base-path"
 
 interface Props {
   onClose: () => void
@@ -42,7 +43,7 @@ export function NewAgentModal({ onClose }: Props) {
     setIsCreating(true)
     setError(null)
     try {
-      const response = await fetch("/api/arc/agents", {
+      const response = await fetch(apiPath("/api/arc/agents"), {
         body: JSON.stringify({
           dailyLimitUsdc: Math.max(10, Number(budget) / 20),
           monthlyBudgetUsdc: Number(budget),

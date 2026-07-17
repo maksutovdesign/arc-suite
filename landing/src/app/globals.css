@@ -1051,6 +1051,30 @@ h3 {
   object-position: top left;
 }
 
+.product-panel-shot a.product-live-cta {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 15px;
+  border-radius: 8px;
+  background: var(--cyan);
+  color: #03060a;
+  font-size: 12px;
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+  transition: filter 0.15s ease, transform 0.15s ease;
+}
+
+.product-panel-shot a.product-live-cta:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
 .shield-product-preview {
   display: grid;
   align-content: start;

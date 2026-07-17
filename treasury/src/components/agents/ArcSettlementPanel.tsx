@@ -7,6 +7,7 @@ import { ArcButton } from "@/components/ui/ArcButton"
 import type { Agent } from "@/data/mock"
 import type { ApiListing, ArcSettlementConfiguration, ArcSettlementOutcome } from "@/lib/arc-api"
 import { formatUSDC } from "@/lib/utils"
+import { apiPath } from "@/lib/base-path"
 
 type Props = {
   agent: Agent
@@ -28,7 +29,7 @@ export function ArcSettlementPanel({ agent, apiListings, isDemo = false }: Props
 
   useEffect(() => {
     let active = true
-    fetch("/api/arc/settlements", { cache: "no-store" })
+    fetch(apiPath("/api/arc/settlements"), { cache: "no-store" })
       .then(async (response) => {
         if (!response.ok) throw new Error("Settlement configuration is unavailable")
         return response.json() as Promise<ArcSettlementConfiguration>
@@ -57,7 +58,7 @@ export function ArcSettlementPanel({ agent, apiListings, isDemo = false }: Props
     setOutcome(null)
     startTransition(async () => {
       try {
-        const response = await fetch("/api/arc/settlements", {
+        const response = await fetch(apiPath("/api/arc/settlements"), {
           body: JSON.stringify({
             agentId: agent.id,
             apiId,

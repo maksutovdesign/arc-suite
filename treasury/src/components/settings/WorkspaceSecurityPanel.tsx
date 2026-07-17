@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react"
 import { Check, Copy, Key, Plus, RotateCcw, Shield, UserRound, XCircle } from "lucide-react"
 import { ArcButton } from "@/components/ui/ArcButton"
 import type { WorkspaceApiKey, WorkspaceApiKeyCreated, WorkspaceSecurity } from "@/lib/arc-api"
+import { apiPath } from "@/lib/base-path"
 
 const cardStyle = {
   background: "rgba(255,255,255,0.03)",
@@ -28,7 +29,7 @@ export function WorkspaceSecurityPanel({ initialSecurity, isDemo = false }: { in
   const activeKeys = useMemo(() => security?.apiKeys.filter((key) => !key.revokedAt) ?? [], [security])
 
   async function refresh() {
-    const response = await fetch("/api/arc/workspace/security")
+    const response = await fetch(apiPath("/api/arc/workspace/security"))
     if (response.status === 401) {
       setIsLocked(true)
       setError("Unlock a Treasury admin session to manage workspace access.")
@@ -46,7 +47,7 @@ export function WorkspaceSecurityPanel({ initialSecurity, isDemo = false }: { in
     setPending("unlock")
     setError(null)
     try {
-      const response = await fetch("/api/arc/session", {
+      const response = await fetch(apiPath("/api/arc/session"), {
         body: JSON.stringify({ adminKey }),
         headers: { "Content-Type": "application/json" },
         method: "POST",
@@ -70,7 +71,7 @@ export function WorkspaceSecurityPanel({ initialSecurity, isDemo = false }: { in
     setPending("create")
     setError(null)
     try {
-      const response = await fetch("/api/arc/workspace/security", {
+      const response = await fetch(apiPath("/api/arc/workspace/security"), {
         body: JSON.stringify({ name, scopes }),
         headers: { "Content-Type": "application/json" },
         method: "POST",
@@ -94,7 +95,7 @@ export function WorkspaceSecurityPanel({ initialSecurity, isDemo = false }: { in
     setPending(`rotate:${key.id}`)
     setError(null)
     try {
-      const response = await fetch(`/api/arc/workspace/security/keys/${key.id}/rotate`, { method: "POST" })
+      const response = await fetch(apiPath(`/api/arc/workspace/security/keys/${key.id}/rotate`), { method: "POST" })
       if (!response.ok) throw new Error("Rotate failed")
       const payload = (await response.json()) as { apiKey: WorkspaceApiKeyCreated }
       setFreshKey(payload.apiKey)
@@ -114,7 +115,7 @@ export function WorkspaceSecurityPanel({ initialSecurity, isDemo = false }: { in
     setPending(`revoke:${key.id}`)
     setError(null)
     try {
-      const response = await fetch(`/api/arc/workspace/security/keys/${key.id}/revoke`, { method: "POST" })
+      const response = await fetch(apiPath(`/api/arc/workspace/security/keys/${key.id}/revoke`), { method: "POST" })
       if (!response.ok) throw new Error("Revoke failed")
       setFreshKey(null)
       await refresh()

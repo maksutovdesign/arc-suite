@@ -17,7 +17,12 @@ const apiHeaders = [
   { key: "Cache-Control", value: "no-store, no-cache, must-revalidate" },
 ];
 
+// Served under the single Arc Suite domain at /reputation (Next.js Multi-Zones).
+const basePath = "/reputation";
+
 const nextConfig: NextConfig = {
+  basePath,
+  env: { NEXT_PUBLIC_BASE_PATH: basePath },
   poweredByHeader: false,
   async headers() {
     return [

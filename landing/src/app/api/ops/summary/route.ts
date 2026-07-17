@@ -17,17 +17,17 @@ const PUBLIC_TARGETS = [
   {
     id: "treasury",
     label: "Treasury",
-    url: "https://arcsuite-app.vercel.app/",
+    url: "https://arcsuite-app.vercel.app/treasury",
   },
   {
     id: "reputation",
     label: "Reputation",
-    url: "https://arcsuite-app.vercel.app/?product=reputation#system",
+    url: "https://arcsuite-app.vercel.app/reputation",
   },
   {
     id: "marketplace",
     label: "Marketplace",
-    url: "https://arcsuite-app.vercel.app/?product=marketplace#system",
+    url: "https://arcsuite-app.vercel.app/marketplace",
   },
 ] as const
 

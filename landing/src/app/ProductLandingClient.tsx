@@ -377,8 +377,16 @@ const readinessSignals = [
   },
 ] as const
 
-const liveDemoUrl = "https://arcsuite-app.vercel.app/?product=treasury#system"
+const liveDemoUrl = "/treasury"
 const latestProofUrl = "/proof?id=flow_agentic_01a50e12e6c4"
+
+// The first three products have their own internal system. Their switcher CTA
+// must open the live product on the single Arc Suite domain (Multi-Zones).
+const productLiveUrls: Record<string, { href: string; label: string }> = {
+  treasury: { href: "/treasury", label: "Open live Treasury" },
+  reputation: { href: "/reputation", label: "Open live Reputation" },
+  marketplace: { href: "/marketplace", label: "Open live Marketplace" },
+}
 const realSettlementExplorerUrl =
   "https://testnet.arcscan.app/tx/0x41210539368a78f6bbc08b088a95430dc0f64e9379ad9226173fc3ce565d733b"
 
@@ -1008,7 +1016,23 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
                   <a href="/blueprints">Open blueprints</a>
                 </div>
               ) : (
-                <img src={activeProduct.image} alt={activeProduct.imageAlt} />
+                <>
+                  <img src={activeProduct.image} alt={activeProduct.imageAlt} />
+                  {productLiveUrls[activeProduct.key] ? (
+                    <a
+                      className="product-live-cta"
+                      href={productLiveUrls[activeProduct.key].href}
+                      onClick={() =>
+                        trackLandingConversion({
+                          eventName: "demo_click",
+                          placement: `product_${activeProduct.key}`,
+                        })
+                      }
+                    >
+                      {productLiveUrls[activeProduct.key].label}
+                    </a>
+                  ) : null}
+                </>
               )}
             </div>
           </article>

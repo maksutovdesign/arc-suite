@@ -1,6 +1,6 @@
 import { SiteHeader } from "../SiteHeader"
 
-const liveDemoUrl = "https://arcsuite-app.vercel.app/?product=treasury#system"
+const liveDemoUrl = "/treasury"
 
 const roadmap = [
   ["0-3 months", "Pilot-ready MVP", "Live Arc/Circle integration, auth, policy engine v1, score API, x402 gate demo, and basic billing."],

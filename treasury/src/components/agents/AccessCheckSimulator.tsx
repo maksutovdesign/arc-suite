@@ -8,6 +8,7 @@ import type { Agent } from "@/data/mock"
 import type { AccessDecision, ApiListing } from "@/lib/arc-api"
 import { trackTreasuryEvent } from "@/lib/analytics"
 import { formatUSDC } from "@/lib/utils"
+import { apiPath } from "@/lib/base-path"
 
 type Props = {
   agent: Agent
@@ -44,7 +45,7 @@ export function AccessCheckSimulator({ agent, apiListings }: Props) {
     })
     startTransition(async () => {
       try {
-        const response = await fetch("/api/arc/access/check", {
+        const response = await fetch(apiPath("/api/arc/access/check"), {
           body: JSON.stringify({
             agentId: agent.id,
             apiId,
