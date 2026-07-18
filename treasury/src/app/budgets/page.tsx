@@ -7,7 +7,7 @@ import { ArcProgress } from "@/components/ui/ArcProgress"
 import { ArcButton } from "@/components/ui/ArcButton"
 import { AgentStatusBadge } from "@/components/agents/AgentStatusBadge"
 import { AGENTS, ALERTS } from "@/data/mock"
-import { formatCompactUSDC, formatUSDC, pctUsed } from "@/lib/utils"
+import { formatCompactUSDC, pctUsed } from "@/lib/utils"
 
 const arcCard = {
   background: "linear-gradient(160deg, #263a52 0%, #1e3247 100%)",

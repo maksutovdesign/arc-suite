@@ -1,8 +1,8 @@
 const DEFAULTS = {
   landing: "https://arcsuite-app.vercel.app",
-  treasury: "https://treasury-umber.vercel.app",
-  reputation: "https://reputation-five.vercel.app",
-  marketplace: "https://marketplace-eosin-eight.vercel.app",
+  treasury: "https://arcsuite-app.vercel.app/treasury",
+  reputation: "https://arcsuite-app.vercel.app/reputation",
+  marketplace: "https://arcsuite-app.vercel.app/marketplace",
 }
 
 const landingBase = withoutTrailingSlash(process.env.ARC_SMOKE_LANDING_URL ?? process.env.ARC_SMOKE_BASE_URL ?? DEFAULTS.landing)
@@ -38,7 +38,7 @@ const targets = [
     url: `${landingBase}/agentic-workflow`,
   },
   {
-    expectedText: ["Transaction proof", "Transaction hash", "Policy chain"],
+    expectedText: ["Settlement proof", "Settlement evidence", "Policy chain"],
     kind: "html",
     name: "Proof page",
     url: `${landingBase}/proof`,

@@ -423,16 +423,6 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
     }
   }, [])
 
-  const selectProduct = (productKey: string) => {
-    setActiveProductKey(productKey)
-    if (typeof window === "undefined") return
-
-    const nextUrl = new URL(window.location.href)
-    nextUrl.searchParams.set("product", productKey)
-    nextUrl.hash = "system"
-    window.history.replaceState(null, "", nextUrl)
-  }
-
   const liveProductDetails = useMemo(() => {
     if (!pilotSummary) return productDetails
     return productDetails.map((product) => {

@@ -2,6 +2,7 @@ import type { NextConfig } from "next"
 import { withSentryConfig } from "@sentry/nextjs"
 
 const securityHeaders = [
+  { key: "Content-Security-Policy", value: "default-src 'self'; base-uri 'self'; connect-src 'self' https://*.ingest.sentry.io; font-src 'self' data:; form-action 'self'; frame-ancestors 'none'; img-src 'self' data: blob: https:; object-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; upgrade-insecure-requests" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
   { key: "X-Content-Type-Options", value: "nosniff" },
@@ -30,7 +31,7 @@ const zoneTarget = (value: string | undefined, fallback: string) => {
 
 const zoneTargets = {
   treasury: zoneTarget(process.env.NEXT_PUBLIC_ARC_TREASURY_URL, "https://treasury-umber.vercel.app"),
-  reputation: zoneTarget(process.env.NEXT_PUBLIC_ARC_REPUTATION_URL, "https://reputation-five.vercel.app"),
+  reputation: zoneTarget(process.env.NEXT_PUBLIC_ARC_REPUTATION_URL, "https://reputation-swart.vercel.app"),
   marketplace: zoneTarget(process.env.NEXT_PUBLIC_ARC_MARKETPLACE_URL, "https://marketplace-eosin-eight.vercel.app"),
 }
 

@@ -223,15 +223,6 @@ type InvestorLeadRow = {
   created_at: string
 }
 
-type RateLimitEventRow = {
-  id: string
-  workspace_id: string
-  route: string
-  bucket_key: string
-  ip_hash: string | null
-  created_at: string
-}
-
 type OpsHealthCheckRow = {
   id: string
   workspace_id: string
@@ -2201,46 +2192,60 @@ export async function listSupabaseInvestorLeads(limit = 100): Promise<InvestorLe
   }
 }
 
-export async function countSupabaseRateLimitEvents(input: {
+export async function consumeSupabaseRateLimit(input: {
   bucketKey: string
+  ipHash?: string | null
+  max: number
   route: string
   sinceIso: string
-}): Promise<number | null> {
+}): Promise<{ allowed: boolean; count: number } | null> {
   if (!isSupabaseConfigured()) return null
 
+  try {
+    const rows = await postRpc<Array<{ allowed: boolean; event_count: number }>>("consume_rate_limit", {
+      p_bucket_key: input.bucketKey,
+      p_ip_hash: input.ipHash ?? null,
+      p_max: input.max,
+      p_route: input.route,
+      p_since: input.sinceIso,
+      p_workspace_id: WORKSPACE_ID,
+    })
+    const decision = rows[0]
+    if (!decision) throw new Error("Rate limit RPC returned no decision")
+    return { allowed: decision.allowed, count: decision.event_count }
+  } catch (error) {
+    logSupabaseError("atomic rate limit unavailable; using compatibility path", error)
+    return consumeLegacySupabaseRateLimit(input)
+  }
+}
+
+async function consumeLegacySupabaseRateLimit(input: {
+  bucketKey: string
+  ipHash?: string | null
+  max: number
+  route: string
+  sinceIso: string
+}): Promise<{ allowed: boolean; count: number } | null> {
   try {
     const rows = await getRows<{ id: string }>(
       "rate_limit_events",
       `select=id&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&route=eq.${encodeURIComponent(input.route)}&bucket_key=eq.${encodeURIComponent(input.bucketKey)}&created_at=gte.${encodeURIComponent(input.sinceIso)}&limit=1000`,
     )
-    return rows.length
-  } catch (error) {
-    logSupabaseError("rate limit count", error)
-    return null
-  }
-}
+    if (rows.length >= input.max) return { allowed: false, count: rows.length }
 
-export async function insertSupabaseRateLimitEvent(input: {
-  bucketKey: string
-  ipHash?: string | null
-  route: string
-}): Promise<boolean> {
-  if (!isSupabaseConfigured()) return false
-
-  try {
-    await postRows<RateLimitEventRow>("rate_limit_events", [
+    await postRows("rate_limit_events", [
       {
-        id: `rl_${randomUUID()}`,
-        workspace_id: WORKSPACE_ID,
-        route: input.route,
         bucket_key: input.bucketKey,
+        id: `rl_${randomUUID()}`,
         ip_hash: input.ipHash ?? null,
+        route: input.route,
+        workspace_id: WORKSPACE_ID,
       },
     ])
-    return true
+    return { allowed: true, count: rows.length + 1 }
   } catch (error) {
-    logSupabaseError("rate limit insert", error)
-    return false
+    logSupabaseError("rate limit compatibility path", error)
+    return null
   }
 }
 

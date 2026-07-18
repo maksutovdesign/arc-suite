@@ -24,8 +24,17 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Audit dependencies
+        run: npm audit --audit-level=moderate
+
       - name: Lint all workspaces
         run: npm run lint:all
 
+      - name: Run unit and contract checks
+        run: npm test
+
       - name: Build all workspaces
         run: npm run build:all
+
+      - name: Run local API smoke checks
+        run: npm run test:api

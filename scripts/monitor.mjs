@@ -2,9 +2,9 @@ import { appendFile } from "node:fs/promises"
 
 const DEFAULTS = {
   landing: "https://arcsuite-app.vercel.app",
-  treasury: "https://treasury-umber.vercel.app",
-  reputation: "https://arcsuite-app.vercel.app",
-  marketplace: "https://marketplace-eosin-eight.vercel.app",
+  treasury: "https://arcsuite-app.vercel.app/treasury",
+  reputation: "https://arcsuite-app.vercel.app/reputation",
+  marketplace: "https://arcsuite-app.vercel.app/marketplace",
 }
 
 const MONITOR_NAME = "Arc Suite Production Monitor"
@@ -347,6 +347,7 @@ async function fetchWithRetry(url, options = {}, attempts = 3) {
 }
 
 function assertSecurityHeaders(response) {
+  assertHeaderIncludes(response, "content-security-policy", "frame-ancestors 'none'")
   assertHeaderEquals(response, "x-frame-options", "DENY")
   assertHeaderEquals(response, "x-content-type-options", "nosniff")
   assertHeaderEquals(response, "referrer-policy", "strict-origin-when-cross-origin")

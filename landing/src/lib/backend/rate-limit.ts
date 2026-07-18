@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { countSupabaseRateLimitEvents, deleteSupabaseRateLimitEventsBefore, insertSupabaseRateLimitEvent } from "./supabase"
+import { consumeSupabaseRateLimit, deleteSupabaseRateLimitEventsBefore } from "./supabase"
 
 type RateLimitInput = {
   bucketKey?: string | null
@@ -27,27 +27,19 @@ export async function enforceRateLimit(input: RateLimitInput): Promise<RateLimit
   const bucketKey = normalizeBucketKey(input.bucketKey ?? input.ipHash)
   cleanupLocalRateLimitBuckets(now)
 
-  const supabaseCount = await countSupabaseRateLimitEvents({
+  const supabaseDecision = await consumeSupabaseRateLimit({
     bucketKey,
+    ipHash: input.ipHash,
+    max: input.max,
     route: input.route,
     sinceIso: new Date(now - input.windowMs).toISOString(),
   })
 
-  if (supabaseCount !== null) {
-    if (supabaseCount >= input.max) {
-      return { allowed: false, limit: input.max, remaining: 0, resetAt }
-    }
-
-    await insertSupabaseRateLimitEvent({
-      bucketKey,
-      ipHash: input.ipHash,
-      route: input.route,
-    })
-
+  if (supabaseDecision !== null) {
     return {
-      allowed: true,
+      allowed: supabaseDecision.allowed,
       limit: input.max,
-      remaining: Math.max(0, input.max - supabaseCount - 1),
+      remaining: Math.max(0, input.max - supabaseDecision.count),
       resetAt,
     }
   }

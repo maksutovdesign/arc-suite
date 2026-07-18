@@ -454,6 +454,8 @@ Investor CRM light is captured through `/api/leads` and listed through protected
 `GET /api/leads`. Leads store the same anonymous/session ids used by analytics.
 Public lead, analytics, and access-check endpoints are rate-limited. Leads also
 include an invisible honeypot field to filter simple bot submissions.
+Apply `landing/supabase/migrations/2026071801_atomic_rate_limit.sql` so distributed
+rate-limit decisions use one transaction and remain correct under concurrent requests.
 
 ### Run locally
 
@@ -462,12 +464,15 @@ include an invisible honeypot field to filter simple bot submissions.
 git clone https://github.com/maksutovdesign/arc-suite.git
 cd arc-suite
 
-# Install all workspaces
-npm install
+# Install the exact locked dependency graph
+npm ci
 
 # Verify all apps
+npm audit --audit-level=moderate
 npm run lint:all
+npm test
 npm run build:all
+npm run test:api
 npm run test:smoke
 npm run monitor:prod
 

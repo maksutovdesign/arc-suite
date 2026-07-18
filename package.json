@@ -16,13 +16,22 @@
     "build:all": "npm run build --workspace=landing && npm run build --workspace=treasury && npm run build --workspace=reputation && npm run build --workspace=marketplace",
     "lint:all": "npm run lint --workspace=landing && npm run lint --workspace=treasury && npm run lint --workspace=reputation && npm run lint --workspace=marketplace",
     "monitor:prod": "node scripts/monitor.mjs",
-    "test:smoke": "node scripts/smoke.mjs"
+    "test": "npm run test:unit && npm run test:contracts",
+    "test:api": "node scripts/local-api-smoke.mjs",
+    "test:contracts": "node scripts/contract-check.mjs",
+    "test:smoke": "node scripts/smoke.mjs",
+    "test:unit": "node --test tests/*.test.mjs"
   },
   "overrides": {
-    "postcss": "8.5.10"
+    "@opentelemetry/core": "^2.8.0",
+    "@opentelemetry/resources": "^2.8.0",
+    "@opentelemetry/sdk-trace-base": "^2.8.0",
+    "postcss": "8.5.10",
+    "tmp": "^0.2.6"
   },
   "devDependencies": {
     "concurrently": "^9.0.0",
-    "hono": "^4.12.25"
+    "hono": "^4.12.25",
+    "solc": "^0.8.36"
   }
 }

@@ -9,7 +9,7 @@ import { ArcButton } from "@/components/ui/ArcButton"
 import { ArcProgress } from "@/components/ui/ArcProgress"
 import type { Agent } from "@/data/mock"
 import { AGENT_GRADIENTS } from "@/lib/styles"
-import { formatCompactUSDC, formatUSDC, pctUsed } from "@/lib/utils"
+import { formatCompactUSDC, pctUsed } from "@/lib/utils"
 
 type Props = {
   agents: Agent[]
