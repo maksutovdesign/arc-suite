@@ -1,4 +1,4 @@
-name: Arc Suite Production Monitor
+name: Kestrel Production Monitor
 
 on:
   push:
@@ -63,6 +63,6 @@ jobs:
         run: |
           cat > monitor-output.log <<'EOF'
           TEST alert delivery: manual workflow_dispatch requested send_test_alert=true
-          {"durationMs":0,"failures":[{"name":"alert delivery test","message":"Manual test alert from Arc Suite Production Monitor workflow."}],"status":"test"}
+          {"durationMs":0,"failures":[{"name":"alert delivery test","message":"Manual test alert from Kestrel Production Monitor workflow."}],"status":"test"}
           EOF
           node scripts/notify-monitor.mjs

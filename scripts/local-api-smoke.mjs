@@ -14,9 +14,9 @@ server.stderr.on("data", (chunk) => { serverOutput += chunk.toString() })
 
 try {
   await waitForServer()
-  await checkHtml("/", ["Arc Suite"])
+  await checkHtml("/", ["Kestrel", "Built on Arc"])
   await checkHtml("/proof", ["Settlement proof", "Settlement evidence", "Policy chain"])
-  await checkJson("/api/health", 200, (payload) => payload?.ok === true && payload?.service === "arc-suite-pilot-api")
+  await checkJson("/api/health", 200, (payload) => payload?.ok === true && payload?.service === "kestrel-pilot-api")
   await checkStatus("/api/readiness", 401)
   await checkStatus("/api/webhooks/circle", 401, { method: "POST" })
   await checkStatus("/api/analytics/events", 204, {

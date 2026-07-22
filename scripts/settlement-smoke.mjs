@@ -28,7 +28,7 @@ const response = await fetch(`${baseUrl}/api/settlements/arc`, {
     amountUsdc,
     recipientAddress,
     idempotencyKey,
-    memoLabel: "Arc Suite real settlement smoke",
+    memoLabel: "Kestrel real settlement smoke",
     memo: {
       source: "github_actions_settlement_smoke",
       purpose: "x402_api_payment",

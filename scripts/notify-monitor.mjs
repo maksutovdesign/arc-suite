@@ -65,7 +65,7 @@ function buildGithubContext() {
     sha,
     shortSha: sha.slice(0, 7),
     status: process.env.ARC_MONITOR_STATUS ?? "failure",
-    workflow: process.env.GITHUB_WORKFLOW ?? "Arc Suite Production Monitor",
+    workflow: process.env.GITHUB_WORKFLOW ?? "Kestrel Production Monitor",
   }
 }
 
@@ -95,8 +95,8 @@ function extractMonitorResult(text) {
 
 async function notifySlack(webhookUrl, context, output, monitorResult) {
   const title = context.status === "test"
-    ? "Arc Suite production monitor test alert"
-    : "Arc Suite production monitor failed"
+    ? "Kestrel production monitor test alert"
+    : "Kestrel production monitor failed"
   const failureList = formatMonitorSignal(monitorResult, output)
 
   const payload = {
@@ -169,8 +169,8 @@ async function notifySentry(dsn, context, output, monitorResult) {
   const parsed = parseSentryDsn(dsn)
   const timestamp = new Date().toISOString()
   const message = context.status === "test"
-    ? "Arc Suite production monitor test alert"
-    : "Arc Suite production monitor failed"
+    ? "Kestrel production monitor test alert"
+    : "Kestrel production monitor failed"
   const event = {
     culprit: context.workflow,
     environment: process.env.ARC_SENTRY_ENVIRONMENT ?? process.env.SENTRY_ENVIRONMENT ?? "production",

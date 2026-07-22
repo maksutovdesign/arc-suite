@@ -7,7 +7,7 @@ const DEFAULTS = {
   marketplace: "https://arcsuite-app.vercel.app/marketplace",
 }
 
-const MONITOR_NAME = "Arc Suite Production Monitor"
+const MONITOR_NAME = "Kestrel Production Monitor"
 
 const bases = {
   landing: withoutTrailingSlash(process.env.ARC_MONITOR_LANDING_URL ?? process.env.ARC_SMOKE_LANDING_URL ?? DEFAULTS.landing),
@@ -36,7 +36,7 @@ const checks = [
 
       const payload = await response.json()
       assert(payload?.ok === true, "landing health payload ok=true")
-      assert(payload?.service === "arc-suite-pilot-api", "landing health service")
+      assert(payload?.service === "kestrel-pilot-api", "landing health service")
       if (requireSupabase) assert(payload?.dataSource === "supabase", "landing health dataSource=supabase")
       return `schema=${payload?.schemaVersion} dataSource=${payload?.dataSource}`
     },
@@ -87,11 +87,11 @@ const checks = [
   },
   {
     name: "landing page headers",
-    run: async () => checkHtmlPage(`${bases.landing}/`, "Arc Suite"),
+    run: async () => checkHtmlPage(`${bases.landing}/`, ["Kestrel", "Built on Arc"]),
   },
   {
-    name: "Arc Flow page",
-    run: async () => checkHtmlPage(`${bases.landing}/flow`, ["Arc Flow", "Demo workspace"]),
+    name: "Kestrel Flow page",
+    run: async () => checkHtmlPage(`${bases.landing}/flow`, ["Kestrel Flow", "Demo workspace"]),
   },
   {
     name: "Agentic Workflow page",
@@ -147,35 +147,35 @@ const checks = [
   },
   {
     name: "Submission page",
-    run: async () => checkHtmlPage(`${bases.landing}/submission`, ["Arc Suite submission", "Settlement proof", "Track fit"]),
+    run: async () => checkHtmlPage(`${bases.landing}/submission`, ["Kestrel submission", "Settlement proof", "Track fit"]),
   },
   {
     name: "Ops Health page",
     run: async () => checkHtmlPage(`${bases.landing}/ops`, ["Ops Health", "MVP control center"]),
   },
   {
-    name: "Arc Billing page",
-    run: async () => checkHtmlPage(`${bases.landing}/billing`, ["Arc Billing", "Demo workspace"]),
+    name: "Kestrel Billing page",
+    run: async () => checkHtmlPage(`${bases.landing}/billing`, ["Kestrel Billing", "Demo workspace"]),
   },
   {
-    name: "Arc Escrow page",
-    run: async () => checkHtmlPage(`${bases.landing}/escrow`, ["Arc Escrow", "Demo workspace"]),
+    name: "Kestrel Escrow page",
+    run: async () => checkHtmlPage(`${bases.landing}/escrow`, ["Kestrel Escrow", "Demo workspace"]),
   },
   {
-    name: "Arc Shield page",
-    run: async () => checkHtmlPage(`${bases.landing}/shield`, ["Arc Shield", "Demo workspace", "Continuous monitoring", "Risk Watchlist"]),
+    name: "Kestrel Shield page",
+    run: async () => checkHtmlPage(`${bases.landing}/shield`, ["Kestrel Shield", "Demo workspace", "Continuous monitoring", "Risk Watchlist"]),
   },
   {
-    name: "Arc Gas page",
-    run: async () => checkHtmlPage(`${bases.landing}/gas`, ["Arc Gas", "Demo workspace"]),
+    name: "Kestrel Gas page",
+    run: async () => checkHtmlPage(`${bases.landing}/gas`, ["Kestrel Gas", "Demo workspace"]),
   },
   {
-    name: "Arc Interop page",
-    run: async () => checkHtmlPage(`${bases.landing}/interop`, ["Arc Interop", "Risk Router", "oracleRiskHash", "3034092155422581607"]),
+    name: "Kestrel Interop page",
+    run: async () => checkHtmlPage(`${bases.landing}/interop`, ["Kestrel Interop", "Risk Router", "oracleRiskHash", "3034092155422581607"]),
   },
   {
-    name: "Arc Wallet OS page",
-    run: async () => checkHtmlPage(`${bases.landing}/wallets`, ["Arc Wallet OS", "Demo workspace", "Circle Wallet execution"]),
+    name: "Kestrel Wallets page",
+    run: async () => checkHtmlPage(`${bases.landing}/wallets`, ["Kestrel Wallets", "Demo workspace", "Circle Wallet execution"]),
   },
   {
     name: "Arc Execution Control page",
@@ -196,17 +196,17 @@ const checks = [
   {
     name: "Treasury page headers",
     latencyWarnMs: treasuryLatencyWarnMs,
-    run: async () => checkHtmlPage(`${bases.treasury}/`, "Arc Treasury"),
+    run: async () => checkHtmlPage(`${bases.treasury}/`, "Kestrel Treasury"),
   },
   {
     name: "Reputation page headers",
-    run: async () => checkHtmlPage(`${bases.reputation}/`, "Arc Reputation"),
+    run: async () => checkHtmlPage(`${bases.reputation}/`, "Kestrel Reputation"),
   },
   {
     name: "Marketplace page headers",
     latencyFailMs: marketplaceLatencyFailMs,
     latencyWarnMs: marketplaceLatencyWarnMs,
-    run: async () => checkHtmlPage(`${bases.marketplace}/`, "Arc Marketplace"),
+    run: async () => checkHtmlPage(`${bases.marketplace}/`, "Kestrel Marketplace"),
   },
 ]
 

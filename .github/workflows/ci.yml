@@ -1,4 +1,4 @@
-name: Arc Suite CI
+name: Kestrel CI
 
 on:
   pull_request:

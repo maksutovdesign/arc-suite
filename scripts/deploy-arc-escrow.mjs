@@ -83,8 +83,8 @@ const client = initiateDeveloperControlledWalletsClient({ apiKey, entitySecret }
 const entitySecretCiphertext = await client.generateEntitySecretCiphertext();
 const deployment = await request("/v1/w3s/contracts/deploy", {
   idempotencyKey: randomUUID(),
-  name: "Arc Escrow",
-  description: "Arc Suite programmable USDC milestone escrow on Arc Testnet",
+  name: "Kestrel Escrow",
+  description: "Kestrel programmable USDC milestone escrow on Arc Testnet",
   walletId,
   blockchain: BLOCKCHAIN,
   abiJson,
