@@ -8,7 +8,7 @@ const spaceGrotesk = Space_Grotesk({ variable: "--font-space-grotesk", subsets: 
 const spaceMono = Space_Mono({ variable: "--font-space-mono", subsets: ["latin"], weight: ["400","700"] })
 
 export const metadata: Metadata = {
-  title: "Arc API Marketplace — Discover x402 APIs",
+  title: "Kestrel Marketplace — Discover x402 APIs",
   description: "Discover, compare and use x402-enabled APIs paying with USDC on Arc",
 }
 
