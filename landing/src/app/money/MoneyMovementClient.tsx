@@ -195,7 +195,7 @@ export function MoneyMovementClient() {
       <header className="money-hero">
         <div>
           <p className="kicker">Circle App Kit execution core</p>
-          <h1>Move money. Apply policy. Keep proof.</h1>
+          <h1>Kestrel Money Movement</h1>
           <p>Kestrel turns Send, Bridge, Swap and Unified Balance into one controlled flow with transparent fees and Arc settlement.</p>
         </div>
         <div className="money-hero-badge"><Route size={22} /><span><strong>Production adapter</strong><small>Browser wallet · App Kit · Arc Testnet</small></span></div>

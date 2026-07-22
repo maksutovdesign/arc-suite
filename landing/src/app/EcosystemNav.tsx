@@ -48,10 +48,10 @@ const suiteUrl = process.env.NEXT_PUBLIC_ARC_SUITE_URL ?? (
 )
 
 const products = [
-  { id: "money", label: "Money Movement", href: `${suiteUrl}/money`, color: "#7dd3fc", icon: CircleDollarSign },
   { id: "treasury", label: "Treasury", href: `${suiteUrl}/treasury`, color: "#5fbfff", icon: Landmark },
   { id: "reputation", label: "Reputation", href: `${suiteUrl}/reputation`, color: "#a78bfa", icon: BadgeCheck },
   { id: "marketplace", label: "Marketplace", href: `${suiteUrl}/marketplace`, color: "#34d399", icon: Store },
+  { id: "money", label: "Money Movement", href: `${suiteUrl}/money`, color: "#7dd3fc", icon: CircleDollarSign },
   { id: "provider", label: "Provider", href: `${suiteUrl}/provider`, color: "#f472b6", icon: Braces },
   { id: "flow", label: "Flow", href: `${suiteUrl}/flow`, color: "#22d3ee", icon: Workflow },
   { id: "billing", label: "Billing", href: `${suiteUrl}/billing`, color: "#fbbf24", icon: ReceiptText },
