@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
       explorerUrl: receipt?.explorerUrl,
       providerReceipt: receipt?.providerReceipt,
     })
-    if (!deal) throw new Error("Arc Escrow migration is required.")
+    if (!deal) throw new Error("Kestrel Escrow migration is required.")
     const providerOperationId = receipt ? readProviderOperationId(receipt.providerReceipt) : null
     const job = financial ? await enqueueSupabaseExecutionJob({
       idempotencyKey: `escrow:${body.milestoneId}:${body.action}`,

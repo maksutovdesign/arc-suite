@@ -15,7 +15,7 @@ export async function PATCH(request: NextRequest) {
   }
   try {
     const policy = await updateSupabaseWalletSigningPolicy(body)
-    if (!policy) throw new Error("Arc Wallet OS migration is required.")
+    if (!policy) throw new Error("Kestrel Wallets migration is required.")
     logOperationalEvent({
       event: "wallet.policy.updated",
       requestId,

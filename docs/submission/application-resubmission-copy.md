@@ -52,7 +52,7 @@ Currently integrated or represented in the working architecture:
 
 - USDC for budgets, prices, receipts, proof records, and payment amounts.
 - Circle Wallets path for developer-controlled agent wallet creation and settlement evidence.
-- Circle Compliance-style screening through Arc Shield policy flows.
+- Circle Compliance-style screening through Kestrel Shield policy flows.
 - x402/Gateway architecture for machine-to-machine paid API access.
 - Chainlink-on-Arc evidence model for market data, Proof of Reserve and CCIP route checks.
 

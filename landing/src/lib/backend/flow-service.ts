@@ -66,7 +66,7 @@ export async function executeArcFlow(input: {
     completedAt: null,
   })
   if (!run) {
-    throw new FlowExecutionError("flow_audit_unavailable", "Arc Flow migration is required before a run can start.", 503)
+    throw new FlowExecutionError("flow_audit_unavailable", "Kestrel Flow migration is required before a run can start.", 503)
   }
 
   try {
@@ -208,7 +208,7 @@ function normalizeError(error: unknown) {
     return new FlowExecutionError("circle_compliance_unavailable", error.message, error.status === 401 || error.status === 403 ? 502 : error.status)
   }
   if (error instanceof SettlementExecutionError) return new FlowExecutionError(error.code, error.message, error.status)
-  return new FlowExecutionError("flow_execution_failed", error instanceof Error ? error.message : "Arc Flow failed.", 500)
+  return new FlowExecutionError("flow_execution_failed", error instanceof Error ? error.message : "Kestrel Flow failed.", 500)
 }
 
 function formatDelta(value: number) {

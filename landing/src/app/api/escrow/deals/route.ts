@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
         dueAt: typeof item.dueAt === "string" && item.dueAt ? item.dueAt : null,
       })),
     })
-    if (!deal) throw new Error("Arc Escrow migration is required.")
+    if (!deal) throw new Error("Kestrel Escrow migration is required.")
     logOperationalEvent({ event: "escrow.deal.created", requestId, route: "/api/escrow/deals", details: { dealId: deal.id, totalAmountUsdc: deal.totalAmountUsdc } })
     return NextResponse.json({ deal }, { status: 201, headers: requestIdHeaders(requestId) })
   } catch (reason) {

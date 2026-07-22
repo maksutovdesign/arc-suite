@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
       estimatedFeeUsdc: body.estimatedFeeUsdc,
       metadata: { source: body.source ?? "arc_gas_api" },
     })
-    if (!sponsorship) throw new Error("Arc Gas migration is required.")
+    if (!sponsorship) throw new Error("Kestrel Gas migration is required.")
     const job = sponsorship.status === "denied" ? null : await enqueueSupabaseExecutionJob({
       idempotencyKey: `gas:${sponsorship.id}`,
       kind: "gas_sponsorship",

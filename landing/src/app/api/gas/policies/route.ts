@@ -18,7 +18,7 @@ export async function PATCH(request: NextRequest) {
   }
   try {
     const policy = await updateSupabaseGasPolicy(body)
-    if (!policy) throw new Error("Arc Gas migration is required.")
+    if (!policy) throw new Error("Kestrel Gas migration is required.")
     logOperationalEvent({
       event: "gas.policy.updated",
       requestId,

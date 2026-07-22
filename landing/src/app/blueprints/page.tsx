@@ -17,7 +17,7 @@ import {
 import { EcosystemNav } from "../EcosystemNav"
 
 export const metadata = {
-  title: "Arc Blueprints — Builder Templates",
+  title: "Kestrel Blueprints — Builder Templates",
   description: "Reference templates for Arc builders using Circle wallets, x402, CCTP, escrow, gas and private payment flows.",
 }
 
@@ -104,7 +104,7 @@ export default function BlueprintsPage() {
             <p className="kicker">Builder reference templates</p>
             <h1>Turn ecosystem signal into repeatable product templates.</h1>
             <p>
-              Arc Blueprints converts Radar research into buildable templates for the
+              Kestrel Blueprints converts Radar research into buildable templates for the
               strongest public Arc patterns: payments, agentic x402, escrow, stablecoin
               FX, machine payments and private invoices.
             </p>

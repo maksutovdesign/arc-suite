@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     const execution = error instanceof FlowExecutionError
       ? error
-      : new FlowExecutionError("flow_execution_failed", "Arc Flow failed.", 500)
+      : new FlowExecutionError("flow_execution_failed", "Kestrel Flow failed.", 500)
     logOperationalEvent({
       event: "flow.run.failed",
       requestId,

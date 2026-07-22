@@ -75,13 +75,13 @@ const productDetails = [
   },
   {
     key: "provider",
-    name: "Arc Provider",
+    name: "Kestrel Provider",
     eyebrow: "Receipt trust center",
     icon: Braces,
     title: "Provider-side proof that paid agent requests are safe to fulfill.",
     text: "Give API providers a receipt registry with signing key metadata, paid job history, settlement evidence and proof links for every agentic x402 purchase.",
     image: "",
-    imageAlt: "Arc Provider trust center showing provider signing keys, paid receipt registry and Arc proof links",
+    imageAlt: "Kestrel Provider trust center showing provider signing keys, paid receipt registry and Arc proof links",
     stats: [
       ["12", "recent receipts"],
       ["EdDSA", "provider signing"],
@@ -251,13 +251,13 @@ const productDetails = [
   },
   {
     key: "blueprints",
-    name: "Arc Blueprints",
+    name: "Kestrel Blueprints",
     eyebrow: "Builder templates",
     icon: Boxes,
     title: "Reference templates for the strongest Arc builder patterns.",
     text: "Convert Radar research into repeatable implementation paths for checkout, agent x402, escrow, FX/RWA, machine payments and private invoices.",
     image: "",
-    imageAlt: "Arc Blueprints console showing template cards, module stacks, build cadence and Circle primitive map",
+    imageAlt: "Kestrel Blueprints console showing template cards, module stacks, build cadence and Circle primitive map",
     stats: [
       ["6", "templates"],
       ["14d", "pilot path"],

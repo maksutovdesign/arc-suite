@@ -15,7 +15,7 @@ import { EcosystemNav } from "../EcosystemNav"
 import { ProviderDemoRunButton } from "./ProviderDemoRunButton"
 
 export const metadata = {
-  title: "Arc Provider — Receipt Trust Center",
+  title: "Kestrel Provider — Receipt Trust Center",
   description: "Provider-facing x402 receipt registry, signing key status and fulfillment proof for Kestrel.",
 }
 
@@ -60,7 +60,7 @@ export default async function ProviderPage() {
             <p className="kicker">Provider trust center</p>
             <h1>Prove that agent API calls were paid, signed and ready to fulfill.</h1>
             <p>
-              Arc Provider closes the loop between Marketplace and Proof: API providers get
+              Kestrel Provider closes the loop between Marketplace and Proof: API providers get
               a live receipt registry, signing-key surface, fulfillment evidence and direct
               links to every policy chain and Arc settlement evidence when configured.
             </p>

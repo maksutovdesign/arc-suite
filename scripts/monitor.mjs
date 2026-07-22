@@ -106,7 +106,7 @@ const checks = [
     run: async () => checkHtmlPage(`${bases.landing}/proofs`, ["Proof archive", "Recent proofs", "receipt"]),
   },
   {
-    name: "Arc Provider page",
+    name: "Kestrel Provider page",
     run: async () => checkHtmlPage(`${bases.landing}/provider`, ["Provider trust center", "Receipt registry", "Provider keys"]),
   },
   {
@@ -178,19 +178,19 @@ const checks = [
     run: async () => checkHtmlPage(`${bases.landing}/wallets`, ["Kestrel Wallets", "Demo workspace", "Circle Wallet execution"]),
   },
   {
-    name: "Arc Execution Control page",
+    name: "Kestrel Execution Control page",
     run: async () => checkHtmlPage(`${bases.landing}/executions`, ["Execution Control", "Demo workspace"]),
   },
   {
-    name: "Arc Radar page",
+    name: "Kestrel Radar page",
     run: async () => checkHtmlPage(`${bases.landing}/radar`, ["Arc builder intelligence", "Private payments"]),
   },
   {
-    name: "Arc Private page",
+    name: "Kestrel Private page",
     run: async () => checkHtmlPage(`${bases.landing}/private`, ["Private stablecoin payments", "Selective disclosure"]),
   },
   {
-    name: "Arc Blueprints page",
+    name: "Kestrel Blueprints page",
     run: async () => checkHtmlPage(`${bases.landing}/blueprints`, ["Builder reference templates", "Six reference flows"]),
   },
   {

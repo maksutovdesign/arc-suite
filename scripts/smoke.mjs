@@ -76,25 +76,25 @@ const targets = [
   {
     expectedText: ["Execution Control", "Demo workspace"],
     kind: "html",
-    name: "Arc Execution Control",
+    name: "Kestrel Execution Control",
     url: `${landingBase}/executions`,
   },
   {
     expectedText: ["Arc builder intelligence", "Private payments"],
     kind: "html",
-    name: "Arc Radar",
+    name: "Kestrel Radar",
     url: `${landingBase}/radar`,
   },
   {
     expectedText: ["Private stablecoin payments", "Selective disclosure"],
     kind: "html",
-    name: "Arc Private",
+    name: "Kestrel Private",
     url: `${landingBase}/private`,
   },
   {
     expectedText: ["Builder reference templates", "Six reference flows"],
     kind: "html",
-    name: "Arc Blueprints",
+    name: "Kestrel Blueprints",
     url: `${landingBase}/blueprints`,
   },
   {

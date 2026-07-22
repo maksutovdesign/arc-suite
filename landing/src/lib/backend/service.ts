@@ -509,7 +509,7 @@ export async function getPilotSummary(): Promise<PilotSummary> {
       { method: "POST", path: "/api/access/check", description: "x402 access decision from score and budget policy" },
       { method: "GET", path: "/api/settlements/arc", description: "Arc Testnet settlement readiness and allowlist status" },
       { method: "POST", path: "/api/settlements/arc", description: "Policy-gated USDC transfer with Supabase and Reputation updates" },
-      { method: "GET", path: "/api/flow/runs", description: "Arc Flow execution history and summary" },
+      { method: "GET", path: "/api/flow/runs", description: "Kestrel Flow execution history and summary" },
       { method: "POST", path: "/api/flow/runs", description: "Compliance-to-settlement autonomous payment orchestration" },
       { method: "GET", path: "/api/billing/overview", description: "x402 balances, invoices, usage and settlement batches" },
       { method: "POST", path: "/api/billing/usage", description: "Atomically meter usage and charge an agent prepaid balance" },

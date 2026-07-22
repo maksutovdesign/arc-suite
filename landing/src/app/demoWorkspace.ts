@@ -21,7 +21,7 @@ export const demoAgents: Agent[] = agents
 
 export const demoApis: Array<ApiListing & { providerName: string }> = apiListings.map((api, index) => ({
   ...api,
-  providerName: ["ChainData Labs", "ModelStack", "Atmo API", "ComputeGrid", "OracleHub"][index] ?? "Arc Provider",
+  providerName: ["ChainData Labs", "ModelStack", "Atmo API", "ComputeGrid", "OracleHub"][index] ?? "Kestrel Provider",
 }))
 
 export const demoArcAgentModel: {

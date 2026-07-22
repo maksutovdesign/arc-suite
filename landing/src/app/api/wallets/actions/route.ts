@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
       detail: body.detail.trim(),
       metadata: { source: body.source ?? "wallet_os_console" },
     })
-    if (!event) throw new Error("Arc Wallet OS migration is required.")
+    if (!event) throw new Error("Kestrel Wallets migration is required.")
     const job = await enqueueSupabaseExecutionJob({
       idempotencyKey: `wallet:${event.id}`,
       kind: "wallet_operation",

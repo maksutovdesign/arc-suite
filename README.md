@@ -45,7 +45,7 @@ For a short hackathon submission view, see [`HACKATHON.md`](HACKATHON.md).
 3. Inspect the signed x402 offer, agent authorization and provider receipt.
 4. Click **Latest proof** or the generated proof link to verify the API-specific settlement evidence, provider-signed receipt metadata, policy chain and validation artifacts for that run.
 5. Open **Proof archive** to review recent workflow receipts and Marketplace purchase history.
-6. Open [Arc Provider](https://arcsuite-app.vercel.app/provider) and click **Create provider receipt** to generate a provider-side demo receipt and proof.
+6. Open [Kestrel Provider](https://arcsuite-app.vercel.app/provider) and click **Create provider receipt** to generate a provider-side demo receipt and proof.
 7. Open [Kestrel Flow](https://arcsuite-app.vercel.app/flow) to see the operator console behind the same workflow model.
 8. Review the artifact failure handling states on `/agentic-workflow` and `/proof`: `policy_passed`, `execution_failed`, `receipt_missing`, `validation_missing` and `dispute_opened`.
 9. Open [Kestrel Interop](https://arcsuite-app.vercel.app/interop) to review Chainlink/CCIP route evidence, `oracleRiskHash` and Arc Network Resilience states.
@@ -74,7 +74,7 @@ For a short hackathon submission view, see [`HACKATHON.md`](HACKATHON.md).
 | 💰 **Kestrel Treasury** | [arcsuite-app.vercel.app](https://arcsuite-app.vercel.app/?product=treasury#system) | Budget manager for AI agent wallets |
 | 🛡️ **Kestrel Reputation** | [arcsuite-app.vercel.app](https://arcsuite-app.vercel.app/?product=reputation#system) | On-chain trust scoring layer for agents |
 | 🛒 **Kestrel Marketplace** | [arcsuite-app.vercel.app](https://arcsuite-app.vercel.app/?product=marketplace#system) | Discovery platform for x402-enabled APIs |
-| **Arc Provider** | [arcsuite-app.vercel.app/provider](https://arcsuite-app.vercel.app/provider) | Provider receipt trust center for signed x402 jobs, keys and proof links |
+| **Kestrel Provider** | [arcsuite-app.vercel.app/provider](https://arcsuite-app.vercel.app/provider) | Provider receipt trust center for signed x402 jobs, keys and proof links |
 | **Kestrel Interop** | [arcsuite-app.vercel.app/interop](https://arcsuite-app.vercel.app/interop) | Chainlink/CCIP-ready route evidence, oracle risk and load-aware settlement states |
 | **Kestrel Shield** | [arcsuite-app.vercel.app/shield](https://arcsuite-app.vercel.app/shield) | Circle compliance plus Chainlink-on-Arc risk evidence |
 | **Kestrel Flow** | [arcsuite-app.vercel.app/flow](https://arcsuite-app.vercel.app/flow) | Compliance, oracle evidence and settlement-ready payment orchestration |
@@ -89,7 +89,7 @@ For a short hackathon submission view, see [`HACKATHON.md`](HACKATHON.md).
 | **Execution Control** | [arcsuite-app.vercel.app/executions](https://arcsuite-app.vercel.app/executions) | Unified Circle provider queue, retries and webhook reconciliation |
 | **Kestrel Radar** | [arcsuite-app.vercel.app/radar](https://arcsuite-app.vercel.app/radar) | Arc builder intelligence, primitive usage, traction signals and opportunity gaps |
 | **Kestrel Private** | [arcsuite-app.vercel.app/private](https://arcsuite-app.vercel.app/private) | Private stablecoin payment intents, selective disclosure and policy-safe proof |
-| **Arc Blueprints** | [arcsuite-app.vercel.app/blueprints](https://arcsuite-app.vercel.app/blueprints) | Builder reference templates for checkout, x402, escrow, FX, M2M and private invoice flows |
+| **Kestrel Blueprints** | [arcsuite-app.vercel.app/blueprints](https://arcsuite-app.vercel.app/blueprints) | Builder reference templates for checkout, x402, escrow, FX, M2M and private invoice flows |
 | **Ops Health** | [arcsuite-app.vercel.app/ops](https://arcsuite-app.vercel.app/ops) | Protected production, Supabase, monitor, Sentry and Infra Health readiness view |
 
 ---
@@ -346,11 +346,11 @@ Kestrel Private turns the largest Radar gap into a product surface: private, com
 - Integration map across Shield, Flow, Billing, Escrow, Wallet OS and Radar
 - Practical MVP framing for privacy without overpromising network-level confidentiality
 
-### Arc Blueprints — Builder Templates
+### Kestrel Blueprints — Builder Templates
 
 **`/landing/src/app/blueprints`** · [Live](https://arcsuite-app.vercel.app/blueprints)
 
-Arc Blueprints converts ecosystem intelligence into reusable product templates. It takes the strongest visible builder patterns from Radar and turns them into repeatable implementation paths for checkout links, agentic x402 APIs, escrow milestones, stablecoin FX desks, machine payments and private invoices.
+Kestrel Blueprints converts ecosystem intelligence into reusable product templates. It takes the strongest visible builder patterns from Radar and turns them into repeatable implementation paths for checkout links, agentic x402 APIs, escrow milestones, stablecoin FX desks, machine payments and private invoices.
 
 **Key features:**
 - Six reference flows mapped from public Arc builder patterns
