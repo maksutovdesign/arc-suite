@@ -2,7 +2,7 @@ import { SiteHeader } from "../SiteHeader"
 import { AnalyticsDashboardClient } from "./AnalyticsDashboardClient"
 
 export const metadata = {
-  title: "Analytics — Arc Suite",
+  title: "Analytics — Kestrel",
 }
 
 export default function AnalyticsPage() {

@@ -11,7 +11,7 @@ export const arcNetworkResilience = {
   sourceUrl: "https://x.com/arc/status/2074547232792293686",
   headline: "Arc Testnet load-aware execution",
   summary:
-    "Arc Suite separates policy approval, receipt evidence and settlement recording so temporary Arc Testnet congestion does not corrupt reputation or access decisions.",
+    "Kestrel separates policy approval, receipt evidence and settlement recording so temporary Arc Testnet congestion does not corrupt reputation or access decisions.",
   currentState: "nominal" as ArcNetworkResilienceState,
   states: [
     {

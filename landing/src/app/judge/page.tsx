@@ -5,8 +5,8 @@ import { LatestProofLink } from "../LatestProofLink"
 import { SiteHeader } from "../SiteHeader"
 
 export const metadata = {
-  title: "Judge Demo - Arc Suite",
-  description: "A hackathon-ready Arc Suite demo path for reviewers and grant evaluators.",
+  title: "Judge Demo - Kestrel",
+  description: "A hackathon-ready Kestrel demo path for reviewers and grant evaluators.",
 }
 
 const highlights = [
@@ -26,7 +26,7 @@ export default function JudgePage() {
         <div className="judge-hero">
           <div>
             <p className="kicker">Judge mode</p>
-            <h1>Review Arc Suite as one end-to-end agentic commerce workflow.</h1>
+            <h1>Review Kestrel as one end-to-end agentic commerce workflow.</h1>
             <p>
               Start here for the grant or hackathon review: run an AI agent API purchase, inspect the
               x402 receipt, then open the proof page that ties policy, settlement readiness and reputation to the

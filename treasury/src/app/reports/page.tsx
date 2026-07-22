@@ -10,7 +10,7 @@ import { AGENTS, CATEGORY_BREAKDOWN, STATS, AGENT_BAR_DATA } from "@/data/mock"
 import { ARC_CARD } from "@/lib/styles"
 import { formatCompactUSDC, formatUSDC, pctUsed } from "@/lib/utils"
 
-export const metadata: Metadata = { title: "Reports — Arc Treasury" }
+export const metadata: Metadata = { title: "Reports — Kestrel Treasury" }
 
 const arcCard = ARC_CARD
 

@@ -1,4 +1,4 @@
--- Arc Suite pilot schema.
+-- Kestrel pilot schema.
 -- Use this as the first Postgres/Supabase migration when replacing seeded data
 -- with persistent workspace data.
 

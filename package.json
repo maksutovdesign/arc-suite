@@ -1,5 +1,5 @@
 {
-  "name": "arc-suite",
+  "name": "kestrel",
   "private": true,
   "workspaces": [
     "landing",

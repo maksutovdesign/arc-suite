@@ -80,7 +80,7 @@ export function AnalyticsDashboardClient() {
           <p className="kicker">Operator analytics</p>
           <h1>Conversion dashboard</h1>
           <p>
-            Track how investors move from landing-page intent into the working Arc Treasury demo.
+            Track how investors move from landing-page intent into the working Kestrel Treasury demo.
           </p>
         </div>
         <form

@@ -22,6 +22,7 @@ import {
   X,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { ArcSuiteLogo } from "@/components/ArcSuiteLogo"
 
 const NAV = [
   { href: "/",         label: "Leaderboard", icon: LayoutDashboard },
@@ -73,14 +74,10 @@ export function RepSidebar() {
         style={{ background: "linear-gradient(180deg,#1a2d3e 0%,#162436 100%)", borderColor: "rgba(255,255,255,0.06)" }}
       >
       {/* Logo */}
-      <div className="flex items-center gap-3 px-4 py-4 border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
-        <div className="size-8 rounded-xl flex items-center justify-center shrink-0"
-          style={{ background: "linear-gradient(135deg,#a78bfa 0%,#38bdf8 100%)", boxShadow: "0 0 16px rgba(167,139,250,0.4)" }}>
-          <ShieldCheck className="size-4 text-white" />
-        </div>
+      <div className="border-b px-4 py-4" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+        <ArcSuiteLogo />
         <div>
-          <p className="text-sm font-semibold leading-none text-white">Arc Reputation</p>
-          <p className="text-[10px] mt-0.5" style={{ color: "#7a8fa8" }}>Agent Trust Layer</p>
+          <p className="mt-1.5 text-[10px]" style={{ color: "#7a8fa8" }}>Reputation · Agent Trust Layer</p>
         </div>
       </div>
 

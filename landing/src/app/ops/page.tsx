@@ -2,7 +2,7 @@ import { SiteHeader } from "../SiteHeader"
 import { OpsHealthClient } from "./OpsHealthClient"
 
 export const metadata = {
-  title: "Ops Health — Arc Suite",
+  title: "Ops Health — Kestrel",
 }
 
 export default function OpsHealthPage() {

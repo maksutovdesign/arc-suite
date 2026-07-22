@@ -14,8 +14,8 @@ import { LatestProofLink } from "../LatestProofLink"
 import { SiteHeader } from "../SiteHeader"
 
 export const metadata = {
-  title: "Submission - Arc Suite",
-  description: "Arc Suite submission page with demo video, live proof, architecture and reviewer links.",
+  title: "Submission - Kestrel",
+  description: "Kestrel submission page with demo video, live proof, architecture and reviewer links.",
 }
 
 const latestProofUrl = "https://arcsuite-app.vercel.app/proof?id=flow_agentic_01a50e12e6c4"
@@ -67,10 +67,10 @@ export default function SubmissionPage() {
       <section className="submission-shell">
         <div className="submission-hero">
           <div>
-            <p className="kicker">Arc Suite submission</p>
+            <p className="kicker">Kestrel submission</p>
             <h1>One verified agentic USDC workflow for Arc and Circle reviewers.</h1>
             <p>
-              Arc Suite packages identity, x402 offer, policy checks, Circle Wallets settlement readiness,
+              Kestrel packages identity, x402 offer, policy checks, Circle Wallets settlement readiness,
               signed receipt, reputation update and proof into one reviewer-ready flow.
             </p>
             <div className="agentic-actions">

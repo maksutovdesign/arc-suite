@@ -147,7 +147,7 @@ async function tryLiveSettlement(input: {
         sessionId: input.sessionId ?? null,
         source: "agentic_workflow",
       },
-      memoLabel: "Arc Suite agentic workflow",
+      memoLabel: "Kestrel agentic workflow",
       recipientAddress,
     })
 

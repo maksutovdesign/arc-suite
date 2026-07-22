@@ -63,9 +63,8 @@ export function SiteHeader({
 
   return (
     <nav className={`nav nav-${variant}`}>
-      <Link className="brand" href="/" aria-label="Arc Suite home">
+      <Link className="brand" href="/" aria-label="Kestrel home">
         <BrandMark idPrefix={idPrefix} />
-        <span className="brand-name">Arc Suite</span>
       </Link>
       <div className="nav-cluster">
         <div className="nav-links" aria-label={ariaLabel}>

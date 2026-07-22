@@ -217,7 +217,7 @@ function getSlackStatus() {
     channel: "#arc-alerts",
     detail: "Sentry alert rule sends production error-level issues where test tag is not set.",
     ruleId: "644605",
-    ruleName: "Arc Suite critical production errors to Slack",
+    ruleName: "Kestrel critical production errors to Slack",
     status: "ok" as ServiceStatus,
     url: "https://slack.com/app_redirect?channel=C0B8NQJEE9Z",
   }

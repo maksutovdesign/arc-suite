@@ -111,7 +111,7 @@ export function ShieldDashboardClient() {
         headers: { "x-arc-api-key": key },
       })
       if (response.status === 401) throw new Error("Invalid API key or missing read scope.")
-      if (!response.ok) throw new Error("Arc Shield data is unavailable.")
+      if (!response.ok) throw new Error("Kestrel Shield data is unavailable.")
 
       const nextPayload = await response.json() as ShieldPayload
       setPayload(nextPayload)
@@ -119,7 +119,7 @@ export function ShieldDashboardClient() {
       await loadOracleSignals(key)
       window.sessionStorage.setItem(API_KEY_STORAGE, key)
     } catch (loadError) {
-      setError(loadError instanceof Error ? loadError.message : "Could not load Arc Shield.")
+      setError(loadError instanceof Error ? loadError.message : "Could not load Kestrel Shield.")
     } finally {
       setIsLoading(false)
     }
@@ -228,7 +228,7 @@ export function ShieldDashboardClient() {
       <div className="shield-heading">
         <div>
           <p className="kicker">Compliance & risk engine</p>
-          <h1>Arc Shield</h1>
+          <h1>Kestrel Shield</h1>
           <p>
             Screen wallet addresses with Circle Compliance Engine, convert provider
             recommendations into explicit policy decisions, and keep an immutable operator trail.
@@ -319,7 +319,7 @@ export function ShieldDashboardClient() {
           </div>
           <p className="shield-footnote">
             Circle currently does not list Arc Testnet in the standalone screening chain enum.
-            Arc Shield stores supported-chain results as cross-chain identity signals; Arc settlement enforcement remains monitor-only.
+            Kestrel Shield stores supported-chain results as cross-chain identity signals; Arc settlement enforcement remains monitor-only.
           </p>
         </section>
 
@@ -421,7 +421,7 @@ export function ShieldDashboardClient() {
             ))}
           </div>
           <p className="shield-footnote">
-            Arc Shield can attach Chainlink market data, proof-of-reserve or CCIP route evidence
+            Kestrel Shield can attach Chainlink market data, proof-of-reserve or CCIP route evidence
             to the same audit trail as Circle screening before an agent request is fulfilled.
           </p>
         </section>
@@ -466,7 +466,7 @@ export function ShieldDashboardClient() {
             ))}
           </div>
           <p className="shield-footnote">
-            Arc Shield keeps previously allowed counterparties under watch. If a later
+            Kestrel Shield keeps previously allowed counterparties under watch. If a later
             provider update changes the risk profile, the policy layer can freeze spending,
             require manual review, or keep settlement enabled.
           </p>

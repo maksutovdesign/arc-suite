@@ -27,13 +27,13 @@ import type { PilotSummary } from "@/lib/backend/schema"
 const productDetails = [
   {
     key: "treasury",
-    name: "Arc Treasury",
+    name: "Kestrel Treasury",
     eyebrow: "Spend control",
     icon: Landmark,
     title: "Operator-grade spend control for AI-agent wallets.",
     text: "Set budgets, daily caps, alert thresholds and wallet rules before agents start buying data, compute, storage or API calls with USDC.",
     image: "/screenshots/treasury-dashboard-20260603.png",
-    imageAlt: "Arc Treasury dashboard with managed USDC, spend charts, budget alerts and agent wallet controls",
+    imageAlt: "Kestrel Treasury dashboard with managed USDC, spend charts, budget alerts and agent wallet controls",
     stats: [
       ["$3K", "managed USDC"],
       ["$1.5K", "monthly spend"],
@@ -43,13 +43,13 @@ const productDetails = [
   },
   {
     key: "reputation",
-    name: "Arc Reputation",
+    name: "Kestrel Reputation",
     eyebrow: "Trust layer",
     icon: BadgeCheck,
     title: "A live trust score for autonomous economic behavior.",
     text: "Score agents from 0-1000 using payment success, volume consistency, response time, dispute history and account age.",
     image: "/screenshots/reputation-leaderboard.png",
-    imageAlt: "Arc Reputation leaderboard with trust scores, tiers, score deltas and live events",
+    imageAlt: "Kestrel Reputation leaderboard with trust scores, tiers, score deltas and live events",
     stats: [
       ["961", "top score"],
       ["6", "demo agents"],
@@ -59,13 +59,13 @@ const productDetails = [
   },
   {
     key: "marketplace",
-    name: "Arc Marketplace",
+    name: "Kestrel Marketplace",
     eyebrow: "x402 access",
     icon: Store,
     title: "A pay-per-use API market that can gate requests by trust.",
     text: "Help agents discover x402 APIs with pricing, uptime, provider profiles, request volume, Chainlink-powered oracle categories and integration-ready detail pages.",
     image: "/screenshots/marketplace-browse.png",
-    imageAlt: "Arc Marketplace browse page with x402 API cards, filters, pricing, uptime and provider data",
+    imageAlt: "Kestrel Marketplace browse page with x402 API cards, filters, pricing, uptime and provider data",
     stats: [
       ["143", "APIs listed"],
       ["58", "providers"],
@@ -91,13 +91,13 @@ const productDetails = [
   },
   {
     key: "shield",
-    name: "Arc Shield",
+    name: "Kestrel Shield",
     eyebrow: "Compliance & risk",
     icon: ShieldCheck,
     title: "Address screening and auditable policy decisions before value moves.",
     text: "Use Circle Compliance Engine and Chainlink on Arc signals to classify wallet, market, reserve and route risk before value moves.",
     image: "/screenshots/shield-console.png",
-    imageAlt: "Arc Shield compliance dashboard with wallet screening, policy decision and audit log",
+    imageAlt: "Kestrel Shield compliance dashboard with wallet screening, policy decision and audit log",
     stats: [
       ["3", "policy outcomes"],
       ["30", "checks / 10 min"],
@@ -107,13 +107,13 @@ const productDetails = [
   },
   {
     key: "flow",
-    name: "Arc Flow",
+    name: "Kestrel Flow",
     eyebrow: "Payment orchestration",
     icon: Workflow,
     title: "One policy-gated path from intent to settlement proof.",
     text: "Orchestrate Shield screening, Chainlink oracle/CCIP evidence, reputation and budget access checks, Circle wallet execution readiness, Arc settlement evidence and the resulting reputation update under one run ID.",
     image: "",
-    imageAlt: "Arc Flow pipeline showing screening, access policy, settlement evidence and reputation update",
+    imageAlt: "Kestrel Flow pipeline showing screening, access policy, settlement evidence and reputation update",
     stats: [
       ["4", "atomic stages"],
       ["1", "auditable run ID"],
@@ -123,13 +123,13 @@ const productDetails = [
   },
   {
     key: "billing",
-    name: "Arc Billing",
+    name: "Kestrel Billing",
     eyebrow: "x402 metering",
     icon: ReceiptText,
     title: "Usage-based billing for APIs that software can buy autonomously.",
     text: "Meter every API call, deduct prepaid USDC credits atomically, issue invoices and aggregate nanopayments into settlement-ready provider batches.",
     image: "",
-    imageAlt: "Arc Billing console with prepaid balances, usage metering, invoices and nanopayment batches",
+    imageAlt: "Kestrel Billing console with prepaid balances, usage metering, invoices and nanopayment batches",
     stats: [
       ["402", "payment-native HTTP"],
       ["6 dp", "USDC metering"],
@@ -139,13 +139,13 @@ const productDetails = [
   },
   {
     key: "escrow",
-    name: "Arc Escrow",
+    name: "Kestrel Escrow",
     eyebrow: "Programmable deals",
     icon: Handshake,
     title: "Milestone contracts for autonomous commercial relationships.",
     text: "Create agent-to-agent agreements, hold value against delivery milestones, open disputes and release or refund USDC through confirmed Circle contract execution.",
     image: "",
-    imageAlt: "Arc Escrow console showing locked value, agent deals, milestones and dispute events",
+    imageAlt: "Kestrel Escrow console showing locked value, agent deals, milestones and dispute events",
     stats: [
       ["3", "milestone states"],
       ["2", "financial outcomes"],
@@ -155,13 +155,13 @@ const productDetails = [
   },
   {
     key: "credit",
-    name: "Arc Credit",
+    name: "Kestrel Credit",
     eyebrow: "Private credit lifecycle",
     icon: Scale,
     title: "Policy-gated private credit and RWA settlement workflows.",
     text: "Model borrower/provider onboarding, KYB/KYT gates, repayment schedules, milestone escrow, transaction memos and proof trails for Arc-native credit flows.",
     image: "",
-    imageAlt: "Arc Credit console showing private credit deal intake, KYB and KYT gates, escrow schedules and proof-linked repayments",
+    imageAlt: "Kestrel Credit console showing private credit deal intake, KYB and KYT gates, escrow schedules and proof-linked repayments",
     stats: [
       ["5", "lifecycle stages"],
       ["3", "risk gates"],
@@ -171,13 +171,13 @@ const productDetails = [
   },
   {
     key: "gas",
-    name: "Arc Gas",
+    name: "Kestrel Gas",
     eyebrow: "Gas sponsorship",
     icon: Fuel,
     title: "Agent-level gas policy for every sponsored transaction.",
     text: "Route transactions through Circle Gas Station or Paymaster modes, enforce per-agent USDC limits and preserve every sponsor or deny decision for reporting.",
     image: "",
-    imageAlt: "Arc Gas dashboard showing sponsorship limits, payment modes and transaction reporting",
+    imageAlt: "Kestrel Gas dashboard showing sponsorship limits, payment modes and transaction reporting",
     stats: [
       ["2", "Circle gas modes"],
       ["3", "limit layers"],
@@ -187,13 +187,13 @@ const productDetails = [
   },
   {
     key: "interop",
-    name: "Arc Interop",
+    name: "Kestrel Interop",
     eyebrow: "CCIP route",
     icon: Network,
     title: "Cross-chain route evidence for Arc treasury and collateral flows.",
-    text: "Show how Arc Suite prepares CCIP route runs with Chainlink router metadata, Arc Testnet selector, message status and proof hashes before settlement finalization.",
+    text: "Show how Kestrel prepares CCIP route runs with Chainlink router metadata, Arc Testnet selector, message status and proof hashes before settlement finalization.",
     image: "",
-    imageAlt: "Arc Interop console showing Arc Testnet to Ethereum Sepolia CCIP route status, selector, router and proof hash",
+    imageAlt: "Kestrel Interop console showing Arc Testnet to Ethereum Sepolia CCIP route status, selector, router and proof hash",
     stats: [
       ["CCIP", "route-ready"],
       ["Arc ID", "selector"],
@@ -203,13 +203,13 @@ const productDetails = [
   },
   {
     key: "wallets",
-    name: "Arc Wallet OS",
+    name: "Kestrel Wallets",
     eyebrow: "Wallet lifecycle",
     icon: WalletCards,
     title: "One operating system for team, client and agent wallets.",
     text: "Manage developer-controlled, user-controlled and modular Circle wallets with custody-aware roles, recovery paths, signing policies and an auditable lifecycle.",
     image: "",
-    imageAlt: "Arc Wallet OS dashboard with custody models, signing policy, roles and lifecycle events",
+    imageAlt: "Kestrel Wallets dashboard with custody models, signing policy, roles and lifecycle events",
     stats: [
       ["3", "custody models"],
       ["4", "workspace roles"],
@@ -219,29 +219,29 @@ const productDetails = [
   },
   {
     key: "radar",
-    name: "Arc Radar",
+    name: "Kestrel Radar",
     eyebrow: "Builder intelligence",
     icon: Radar,
     title: "A live map of Arc builders, primitives, traction and open gaps.",
-    text: "Turn ecosystem research into a product asset: map active builders, detect crowded categories, identify privacy gaps and show where Arc Suite can become the operating layer.",
+    text: "Turn ecosystem research into a product asset: map active builders, detect crowded categories, identify privacy gaps and show where Kestrel can become the operating layer.",
     image: "",
-    imageAlt: "Arc Radar dashboard showing Arc builder categories, primitives, opportunity gaps and Arc Suite fit",
+    imageAlt: "Radar dashboard showing Arc builder categories, primitives, opportunity gaps and Kestrel fit",
     stats: [
       ["17", "mapped builders"],
       ["9", "categories"],
       ["1", "privacy wedge"],
     ],
-    bullets: ["Builder and primitive map", "Opportunity gap analysis", "Arc Suite integration fit"],
+    bullets: ["Builder and primitive map", "Opportunity gap analysis", "Kestrel integration fit"],
   },
   {
     key: "private",
-    name: "Arc Private",
+    name: "Kestrel Private",
     eyebrow: "Private payments",
     icon: LockKeyhole,
     title: "Private, compliant USDC payment intents for agents and APIs.",
     text: "Preserve sensitive commercial context while exposing policy-safe proof: screened, paid, within limits and selectively revealable to operators, providers and auditors.",
     image: "",
-    imageAlt: "Arc Private console showing encrypted payment intent, policy decision, scoped proof and USDC settlement status",
+    imageAlt: "Kestrel Private console showing encrypted payment intent, policy decision, scoped proof and USDC settlement status",
     stats: [
       ["4", "proof scopes"],
       ["1", "privacy wedge"],
@@ -381,7 +381,7 @@ const liveDemoUrl = "/treasury"
 const latestProofUrl = "/proof?id=flow_agentic_01a50e12e6c4"
 
 // The first three products have their own internal system. Their switcher CTA
-// must open the live product on the single Arc Suite domain (Multi-Zones).
+// must open the live product on the single Kestrel domain (Multi-Zones).
 const productLiveUrls: Record<string, { href: string; label: string }> = {
   treasury: { href: "/treasury", label: "Open live Treasury" },
   reputation: { href: "/reputation", label: "Open live Reputation" },
@@ -518,7 +518,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
           <p className="kicker">AI agent infrastructure for the onchain economy</p>
           <h1>Control how agents spend, earn trust, and access paid APIs.</h1>
           <p className="hero-text">
-            Arc Suite is a connected product system built for autonomous USDC commerce:
+            Kestrel is a connected product system built for autonomous USDC commerce:
             Treasury controls spend, Shield screens counterparties, Reputation scores behavior,
             Marketplace sells x402 API access, Provider verifies signed receipts, Billing meters usage, Escrow governs delivery,
             Credit structures repayment workflows, Gas sponsors execution, Wallet OS governs custody, Radar maps the builder ecosystem,
@@ -545,7 +545,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
           </div>
         </div>
 
-        <div className="terminal" aria-label="Arc Suite enforcement loop preview">
+        <div className="terminal" aria-label="Kestrel enforcement loop preview">
           <div className="terminal-top">
             <span />
             <span />
@@ -628,7 +628,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
           </div>
           <div>
             <span>Release package</span>
-            <strong>v2026.07.14-gateway-memos</strong>
+            <strong>v2026.07.22-kestrel-app-kit</strong>
             <a href="/grant">Open package notes</a>
           </div>
         </div>
@@ -639,7 +639,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
           <p className="kicker">Product story</p>
           <h2>A control layer for agents with wallets.</h2>
           <p className="story-lede">
-            Arc Suite is designed for the moment when autonomous software becomes an
+            Kestrel is designed for the moment when autonomous software becomes an
             economic actor. The product does not stop at visibility; it turns every
             payment into a signal that can shape future access.
           </p>
@@ -657,13 +657,13 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
         </div>
       </section>
 
-      <section className="section provider-section provider-panel" aria-label="Arc Suite readiness layer">
+      <section className="section provider-section provider-panel" aria-label="Kestrel readiness layer">
         <div className="private-panel-title">
           <div>
             <span>Arc readiness layer</span>
             <h2>Balances, memos, credit and resilience share one proof surface.</h2>
             <p>
-              Arc Suite tracks the newer Arc builder patterns without overstating live settlement:
+              Kestrel tracks the newer Arc builder patterns without overstating live settlement:
               Gateway and Unified Balance readiness, memo-backed reconciliation, private-credit lifecycle
               and status-aware execution.
             </p>
@@ -687,13 +687,13 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
           <p className="kicker">The product system</p>
           <h2>Fifteen connected products. One economic operating layer.</h2>
           <p>
-            Arc Suite is designed around a shared cast of agents moving through the
+            Kestrel is designed around a shared cast of agents moving through the
             complete economic journey, from wallet spend to trust scoring to service access.
           </p>
         </div>
 
         <div className="product-switcher">
-          <div className="product-tabs" role="tablist" aria-label="Arc Suite products">
+          <div className="product-tabs" role="tablist" aria-label="Kestrel products">
             {liveProductDetails.map((product) => {
               const ProductIcon = product.icon
               return (
@@ -927,7 +927,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
                     <div className="wallet-preview-policy">
                       <span>Signing policy</span>
                       <strong>2 approvals required</strong>
-                      <p><i /> Arc Shield required</p>
+                      <p><i /> Kestrel Shield required</p>
                       <p><i /> Reputation ≥ 750</p>
                       <p><i /> 250 USDC daily limit</p>
                     </div>
@@ -1034,7 +1034,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
           <p className="kicker">Real application screenshots</p>
           <h2>The interface is already designed and implemented.</h2>
           <p>
-            These are real screenshots captured from the running Arc Suite apps:
+            These are real screenshots captured from the running Kestrel apps:
             Treasury, Reputation and Marketplace. The landing uses them as product
             proof, not decorative screens.
           </p>
@@ -1046,11 +1046,11 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
               <span />
               <span />
               <span />
-              <strong>Arc Treasury · Dashboard</strong>
+              <strong>Kestrel Treasury · Dashboard</strong>
             </div>
             <img
               src="/screenshots/treasury-dashboard-20260603.png"
-              alt="Arc Treasury dashboard showing budget alerts, managed USDC, monthly spend, charts, agent budgets and recent transactions"
+              alt="Kestrel Treasury dashboard showing budget alerts, managed USDC, monthly spend, charts, agent budgets and recent transactions"
             />
             <div className="shot-caption">
               <h3>Budget control for agent wallets</h3>
@@ -1063,11 +1063,11 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
               <span />
               <span />
               <span />
-              <strong>Arc Reputation · Leaderboard</strong>
+              <strong>Kestrel Reputation · Leaderboard</strong>
             </div>
             <img
               src="/screenshots/reputation-leaderboard.png"
-              alt="Arc Reputation leaderboard with agent trust scores, 30-day deltas, score breakdown and live events"
+              alt="Kestrel Reputation leaderboard with agent trust scores, 30-day deltas, score breakdown and live events"
             />
             <div className="shot-caption">
               <h3>Trust scoring that services can query</h3>
@@ -1080,11 +1080,11 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
               <span />
               <span />
               <span />
-              <strong>Arc Marketplace · Browse</strong>
+              <strong>Kestrel Marketplace · Browse</strong>
             </div>
             <img
               src="/screenshots/marketplace-browse.png"
-              alt="Arc Marketplace browse page with x402 API cards, filters, provider data, pricing and request metrics"
+              alt="Kestrel Marketplace browse page with x402 API cards, filters, provider data, pricing and request metrics"
             />
             <div className="shot-caption">
               <h3>x402 API discovery</h3>
@@ -1097,11 +1097,11 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
               <span />
               <span />
               <span />
-              <strong>Arc Marketplace · API detail</strong>
+              <strong>Kestrel Marketplace · API detail</strong>
             </div>
             <img
               src="/screenshots/marketplace-api.png"
-              alt="Arc Marketplace API detail page with endpoint, pricing, provider profile, reviews and integration snippets"
+              alt="Kestrel Marketplace API detail page with endpoint, pricing, provider profile, reviews and integration snippets"
             />
             <div className="shot-caption">
               <h3>Integration-ready detail pages</h3>
@@ -1131,11 +1131,11 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
             <a href="/wallets">Open Wallet OS</a>
           </article>
           <article>
-            <span>02 · Arc Gas</span>
+            <span>02 · Kestrel Gas</span>
             <h3>Agent-level sponsorship policy</h3>
             <p>Approve or deny sponsored transactions under per-transaction, daily and monthly USDC limits.</p>
             <div><strong>2</strong><small>Circle gas modes</small></div>
-            <a href="/gas">Open Arc Gas</a>
+            <a href="/gas">Open Kestrel Gas</a>
           </article>
           <article>
             <span>03 · Execution Control</span>
@@ -1152,7 +1152,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
           <p className="kicker">Provider lifecycle</p>
           <h2>Every external operation has a visible state.</h2>
           <p>
-            Arc Suite separates policy approval from provider completion. That makes
+            Kestrel separates policy approval from provider completion. That makes
             pending work, retries, failures and final onchain receipts explicit instead
             of hiding them behind a loading spinner.
           </p>
@@ -1180,7 +1180,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
           <p className="kicker">Results from the pitch deck</p>
           <h2>The landing page now carries the same numbers as the investor story.</h2>
           <p>
-            These figures are demo metrics from the Arc Suite repository and pitchdeck.
+            These figures are demo metrics from the Kestrel repository and pitchdeck.
             They are presented as product proof, not claimed revenue.
           </p>
         </div>
@@ -1323,7 +1323,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
           <h2>The suite connects operators, agents, wallets, trust, and paid APIs.</h2>
         </div>
 
-        <div className="architecture-map" aria-label="Arc Suite architecture map">
+        <div className="architecture-map" aria-label="Kestrel architecture map">
           <div className="map-node operators">
             <span>Operators</span>
             <strong>Policies, budgets, reports</strong>

@@ -50,7 +50,7 @@ export function BillingDashboardClient() {
       ])
       if ([overviewResponse, agentsResponse, apisResponse].some((response) => response.status === 401)) throw new Error("Invalid API key or missing read scope.")
       const overviewData = await overviewResponse.json() as OverviewPayload
-      if (!overviewResponse.ok || !overviewData.overview) throw new Error("Arc Billing migration is required.")
+      if (!overviewResponse.ok || !overviewData.overview) throw new Error("Kestrel Billing migration is required.")
       const agentData = await agentsResponse.json() as { agents: Agent[] }
       const apiData = await apisResponse.json() as ApiPayload
       setOverview(overviewData.overview)
@@ -61,7 +61,7 @@ export function BillingDashboardClient() {
       setApiId((current) => current || apiData.apis[0]?.id || "")
       window.sessionStorage.setItem(API_KEY_STORAGE, key)
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "Could not load Arc Billing.")
+      setError(reason instanceof Error ? reason.message : "Could not load Kestrel Billing.")
     } finally {
       setBusy(null)
     }
@@ -147,7 +147,7 @@ export function BillingDashboardClient() {
       <div className="billing-heading">
         <div>
           <p className="kicker">x402 metering & subscriptions</p>
-          <h1>Arc Billing</h1>
+          <h1>Kestrel Billing</h1>
           <p>Turn Marketplace API calls into prepaid nanopayments, invoices and settlement-ready batches.</p>
         </div>
         <div className="billing-protocol">

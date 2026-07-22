@@ -13,12 +13,12 @@ import {
 import { EcosystemNav } from "../EcosystemNav"
 
 export const metadata = {
-  title: "Arc Credit - Private Credit Lifecycle",
+  title: "Kestrel Credit - Private Credit Lifecycle",
   description: "Private credit and RWA lifecycle controls for Arc-native agent finance.",
 }
 
 const lifecycle = [
-  ["01", "Deal intake", "Borrower, lender, facility size and repayment intent are normalized into one Arc Suite envelope."],
+  ["01", "Deal intake", "Borrower, lender, facility size and repayment intent are normalized into one Kestrel envelope."],
   ["02", "KYB/KYT gates", "Shield records risk checks before funds or repayment schedules can move forward."],
   ["03", "Escrow schedule", "Escrow models milestone funding, repayment windows, release and dispute outcomes."],
   ["04", "Memo-backed payment", "Transaction memo references keep invoice, borrower and repayment context attached to settlement evidence."],
@@ -56,7 +56,7 @@ export default function CreditPage() {
             <p className="kicker">Private credit & RWA lifecycle</p>
             <h1>Policy-gated credit workflows for Arc-native finance.</h1>
             <p>
-              Arc Credit turns private-credit operations into auditable Arc Suite workflows:
+              Kestrel Credit turns private-credit operations into auditable Kestrel workflows:
               intake, KYB/KYT review, escrowed milestones, memo-backed repayment references
               and proof-linked reporting before value moves.
             </p>
@@ -69,9 +69,9 @@ export default function CreditPage() {
               </Link>
             </div>
           </div>
-          <aside className="provider-verification-card" aria-label="Arc Credit deal envelope">
+          <aside className="provider-verification-card" aria-label="Kestrel Credit deal envelope">
             <div className="provider-card-top">
-              <span>Arc Credit / deal envelope</span>
+              <span>Kestrel Credit / deal envelope</span>
               <strong>REVIEW-GATED</strong>
             </div>
             <div className="provider-receipt-main">
@@ -93,7 +93,7 @@ export default function CreditPage() {
           </aside>
         </div>
 
-        <div className="provider-metrics" aria-label="Arc Credit metrics">
+        <div className="provider-metrics" aria-label="Kestrel Credit metrics">
           <article><span>Lifecycle stages</span><strong>5</strong><small>Intake to proof trail</small></article>
           <article><span>Risk gates</span><strong>3</strong><small>KYB, KYT and artifact checks</small></article>
           <article><span>Settlement mode</span><strong>Review</strong><small>Fail closed until evidence is complete</small></article>

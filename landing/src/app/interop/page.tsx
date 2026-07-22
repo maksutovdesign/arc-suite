@@ -16,8 +16,8 @@ import { EcosystemNav } from "../EcosystemNav"
 import { arcNetworkResilience } from "../../lib/network-resilience"
 
 export const metadata = {
-  title: "Arc Interop — CCIP Route Demo",
-  description: "Chainlink CCIP route demo for Arc Suite cross-chain treasury and collateral workflows.",
+  title: "Kestrel Interop — CCIP Route Demo",
+  description: "Chainlink CCIP route demo for Kestrel cross-chain treasury and collateral workflows.",
 }
 
 const routeRun = {
@@ -94,10 +94,10 @@ export default function InteropPage() {
         <div className="interop-hero">
           <div>
             <p className="kicker">Chainlink CCIP route demo</p>
-            <h1>Arc Interop</h1>
+            <h1>Kestrel Interop</h1>
             <p>
               A route-ready demo for cross-chain treasury, collateral and settlement coordination.
-              Arc Suite checks policy, attaches Chainlink risk evidence, prepares the CCIP route,
+              Kestrel checks policy, attaches Chainlink risk evidence, prepares the CCIP route,
               and only finalizes the job when receipt and validation artifacts are present.
             </p>
           </div>
@@ -142,11 +142,11 @@ export default function InteropPage() {
           </div>
         </section>
 
-        <section className="interop-risk-router" aria-label="Arc Interop Risk Router">
+        <section className="interop-risk-router" aria-label="Kestrel Interop Risk Router">
           <div className="interop-panel-head">
             <ShieldCheck size={20} />
             <div>
-              <span>Arc Interop & Risk Router</span>
+              <span>Kestrel Interop & Risk Router</span>
               <h2>Policy → Oracle → CCIP → Receipt → Validation</h2>
             </div>
           </div>
@@ -216,7 +216,7 @@ export default function InteropPage() {
             ))}
           </div>
           <p className="interop-note">
-            Arc Suite treats swaps as auditable money movement: quote, route, memo, transaction hash
+            Kestrel treats swaps as auditable money movement: quote, route, memo, transaction hash
             and proof status can be attached to the same job envelope as API payments.
           </p>
         </section>

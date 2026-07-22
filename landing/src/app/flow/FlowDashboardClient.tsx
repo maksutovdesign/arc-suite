@@ -73,7 +73,7 @@ export function FlowDashboardClient() {
         throw new Error("Invalid API key or missing read scope.")
       }
       if (!runsResponse.ok || !agentsResponse.ok || !apisResponse.ok || !configResponse.ok) {
-        throw new Error("Arc Flow dependencies are unavailable.")
+        throw new Error("Kestrel Flow dependencies are unavailable.")
       }
       const [runsData, agentsData, apisData, configData] = await Promise.all([
         runsResponse.json() as Promise<FlowPayload>,
@@ -91,7 +91,7 @@ export function FlowDashboardClient() {
       setRecipientAddress((current) => current || configData.defaultRecipient || configData.allowedRecipients[0] || "")
       window.sessionStorage.setItem(API_KEY_STORAGE, key)
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "Could not connect Arc Flow.")
+      setError(reason instanceof Error ? reason.message : "Could not connect Kestrel Flow.")
     } finally {
       setIsLoading(false)
     }
@@ -113,7 +113,7 @@ export function FlowDashboardClient() {
     const key = apiKey.trim()
     const amount = Number(amountUsdc)
     if (!key || !agentId || !apiId || !recipientAddress || !Number.isFinite(amount) || amount <= 0) {
-      return setError("Complete the run configuration before starting Arc Flow.")
+      return setError("Complete the run configuration before starting Kestrel Flow.")
     }
     setIsRunning(true)
     setError(null)
@@ -132,10 +132,10 @@ export function FlowDashboardClient() {
       })
       const result = await response.json() as { message?: string; run?: FlowRun }
       if (result.run) setLatest(result.run)
-      if (!response.ok) setError(result.message ?? "Arc Flow stopped with an error.")
+      if (!response.ok) setError(result.message ?? "Kestrel Flow stopped with an error.")
       await connect(key)
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "Arc Flow failed.")
+      setError(reason instanceof Error ? reason.message : "Kestrel Flow failed.")
     } finally {
       setIsRunning(false)
     }
@@ -149,7 +149,7 @@ export function FlowDashboardClient() {
       <div className="flow-heading">
         <div>
           <p className="kicker">Autonomous payment orchestration</p>
-          <h1>Arc Flow</h1>
+          <h1>Kestrel Flow</h1>
           <p>One auditable run from counterparty screening to a settlement-ready Arc path and reputation update.</p>
         </div>
         <div className="flow-health">
@@ -189,7 +189,7 @@ export function FlowDashboardClient() {
             <label><span>Screening identity</span><input disabled value="ETH-SEPOLIA" /></label>
           </div>
           <button className="button primary flow-run-button" disabled={isRunning || !config?.configured} onClick={() => void runFlow()} type="button">
-            <Play size={17} /> {isRunning ? "Running policy pipeline..." : "Run Arc Flow"}
+            <Play size={17} /> {isRunning ? "Running policy pipeline..." : "Run Kestrel Flow"}
           </button>
         </section>
 

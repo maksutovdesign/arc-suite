@@ -127,7 +127,7 @@ export default function DocsPage() {
     <div className="flex flex-col min-h-full">
       <PageHeader
         title="Developer Docs"
-        subtitle="Integrate Arc Reputation into your agent infrastructure"
+        subtitle="Integrate Kestrel Reputation into your agent infrastructure"
         icon={Code}
         glow
         actions={
@@ -146,7 +146,7 @@ export default function DocsPage() {
           <div className="flex items-start gap-3">
             <Shield className="size-5 mt-0.5 shrink-0" style={{ color: "#a78bfa" }} />
             <div>
-              <p className="text-sm font-semibold text-white mb-1">What is Arc Reputation?</p>
+              <p className="text-sm font-semibold text-white mb-1">What is Kestrel Reputation?</p>
               <p className="text-xs leading-relaxed" style={{ color: "#94a3b8" }}>
                 A trust oracle for AI agents on Arc. Every on-chain transaction, dispute and response-time measurement
                 feeds into a 0–1000 score across 5 dimensions. Use the API to gate transactions, rank service

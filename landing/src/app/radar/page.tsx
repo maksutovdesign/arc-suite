@@ -2,7 +2,7 @@ import { EcosystemNav } from "../EcosystemNav"
 import { RadarClient } from "./RadarClient"
 
 export const metadata = {
-  title: "Arc Radar - Builder Intelligence",
+  title: "Kestrel Radar - Builder Intelligence",
   description: "Ecosystem intelligence map for Arc builders, primitives, traction and opportunity gaps.",
 }
 

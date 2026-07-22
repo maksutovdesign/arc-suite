@@ -8,7 +8,7 @@ const spaceGrotesk = Space_Grotesk({ variable: "--font-space-grotesk", subsets: 
 const spaceMono = Space_Mono({ variable: "--font-space-mono", subsets: ["latin"], weight: ["400","700"] })
 
 export const metadata: Metadata = {
-  title: "Arc Reputation — Agent Trust Layer",
+  title: "Kestrel Reputation — Agent Trust Layer",
   description: "On-chain reputation and trust scores for AI agents on Arc",
 }
 

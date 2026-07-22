@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation"
 import { Store, Plus, Zap } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { LiveTicker } from "@/components/dashboard/LiveTicker"
+import { ArcSuiteLogo } from "@/components/ArcSuiteLogo"
 
 const NAV = [
   { href: "/",            label: "Browse"     },
@@ -21,15 +22,9 @@ export function Topbar() {
     <header className="border-b shrink-0" style={{ background: "linear-gradient(180deg,#1a2d3e,#162436)", borderColor: "rgba(255,255,255,0.06)" }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center gap-3 lg:gap-6 overflow-hidden">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5 shrink-0">
-          <div className="size-7 rounded-lg flex items-center justify-center"
-            style={{ background: "linear-gradient(135deg,#4d8ee9,#5FBFFF)", boxShadow: "0 0 12px rgba(77,142,233,0.4)" }}>
-            <Zap className="size-3.5 text-white" />
-          </div>
-          <div>
-            <span className="text-sm font-bold text-white">Arc</span>
-            <span className="text-sm font-bold" style={{ color: "#5FBFFF" }}> Marketplace</span>
-          </div>
+        <Link href="/" className="flex shrink-0 items-center gap-2.5">
+          <ArcSuiteLogo />
+          <span className="hidden text-[10px] text-[#7a8fa8] sm:inline">Marketplace</span>
         </Link>
 
         {/* Nav */}

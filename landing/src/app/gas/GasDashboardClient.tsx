@@ -49,7 +49,7 @@ export function GasDashboardClient() {
       if (overviewResponse.status === 401 || agentsResponse.status === 401) throw new Error("Invalid API key or missing read scope.")
       const gasData = await overviewResponse.json() as OverviewPayload
       const agentData = await agentsResponse.json() as { agents: Agent[] }
-      if (!overviewResponse.ok || !gasData.overview) throw new Error("Arc Gas migration is required.")
+      if (!overviewResponse.ok || !gasData.overview) throw new Error("Kestrel Gas migration is required.")
       setOverview(gasData.overview)
       setAgents(agentData.agents)
       const nextAgent = agentId || gasData.overview.policies[0]?.agentId || agentData.agents[0]?.id || ""
@@ -57,7 +57,7 @@ export function GasDashboardClient() {
       setPolicyDraft(gasData.overview.policies.find((policy) => policy.agentId === nextAgent) ?? null)
       window.sessionStorage.setItem(API_KEY_STORAGE, key)
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "Could not load Arc Gas.")
+      setError(reason instanceof Error ? reason.message : "Could not load Kestrel Gas.")
     } finally {
       setBusy(null)
     }
@@ -140,7 +140,7 @@ export function GasDashboardClient() {
       <div className="gas-heading">
         <div>
           <p className="kicker">USDC gas control plane</p>
-          <h1>Arc Gas</h1>
+          <h1>Kestrel Gas</h1>
           <p>Sponsor agent transactions, enforce per-agent gas limits and reconcile every fee across Circle Gas Station and Paymaster modes.</p>
         </div>
         <div className="gas-protocol">

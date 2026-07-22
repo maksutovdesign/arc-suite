@@ -5,11 +5,12 @@ import { usePathname } from "next/navigation"
 import { useState } from "react"
 import {
   LayoutDashboard, Bot, ArrowLeftRight, PieChart,
-  Wallet, Bell, Settings, ChevronRight, Zap,
+  Wallet, Bell, Settings, ChevronRight,
   Building2, CreditCard, KeyRound, LifeBuoy, LogOut, Menu, Users, X,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { AGENTS, ALERTS } from "@/data/mock"
+import { ArcSuiteLogo } from "@/components/ArcSuiteLogo"
 
 // Derived counts — single source of truth
 const AGENT_COUNT   = AGENTS.length
@@ -65,16 +66,10 @@ export function Sidebar({ isDemo = false }: { isDemo?: boolean }) {
         style={{ background: "linear-gradient(180deg, #1a2d3e 0%, #162436 100%)", borderColor: "rgba(255,255,255,0.06)" }}
       >
       {/* Logo */}
-      <div className="flex items-center gap-3 px-4 py-4 border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
-        <div
-          className="size-8 rounded-xl flex items-center justify-center shrink-0"
-          style={{ background: "linear-gradient(135deg, #4d8ee9 0%, #5FBFFF 100%)", boxShadow: "0 0 16px rgba(77,142,233,0.4)" }}
-        >
-          <Zap className="size-4 text-white" />
-        </div>
+      <div className="border-b px-4 py-4" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+        <ArcSuiteLogo />
         <div>
-          <p className="text-sm font-semibold leading-none text-white tracking-tight">Arc Treasury</p>
-          <p className="text-[10px] mt-0.5" style={{ color: "#7a8fa8" }}>Agent Budget Manager</p>
+          <p className="mt-1.5 text-[10px]" style={{ color: "#7a8fa8" }}>Treasury · Agent Budget Manager</p>
         </div>
       </div>
 

@@ -2,9 +2,9 @@ import type { Metadata } from "next"
 import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "Arc Suite — AI Agent Infrastructure for the Onchain Economy",
+  title: "Kestrel — Agent Money Control Plane",
   description:
-    "Arc Suite gives AI agents spend controls, reputation scoring, and x402 API access for autonomous USDC commerce.",
+    "Kestrel gives AI agents policy-controlled wallets, multichain USDC movement, compliance checks and verifiable payment proofs. Built on Arc.",
 }
 
 export default function RootLayout({

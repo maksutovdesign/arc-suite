@@ -2,7 +2,7 @@ import type { NextConfig } from "next"
 import { withSentryConfig } from "@sentry/nextjs"
 
 const securityHeaders = [
-  { key: "Content-Security-Policy", value: "default-src 'self'; base-uri 'self'; connect-src 'self' https://*.ingest.sentry.io; font-src 'self' data:; form-action 'self'; frame-ancestors 'none'; img-src 'self' data: blob: https:; object-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; upgrade-insecure-requests" },
+  { key: "Content-Security-Policy", value: "default-src 'self'; base-uri 'self'; connect-src 'self' https: wss:; font-src 'self' data:; form-action 'self'; frame-ancestors 'none'; img-src 'self' data: blob: https:; object-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; upgrade-insecure-requests" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
   { key: "X-Content-Type-Options", value: "nosniff" },
@@ -18,7 +18,7 @@ const apiHeaders = [
   { key: "Cache-Control", value: "no-store, no-cache, must-revalidate" },
 ]
 
-// Standalone deployments backing the single Arc Suite domain via Multi-Zones.
+// Standalone deployments backing the single Kestrel domain via Multi-Zones.
 // Each product app sets basePath: "/<product>", so we proxy both the pages and
 // their basePath-scoped assets/API under one origin (arcsuite-app.vercel.app).
 // NOTE: an env var set to "" must fall back to the default (?? only guards

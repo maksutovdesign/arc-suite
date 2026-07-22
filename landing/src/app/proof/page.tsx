@@ -18,8 +18,8 @@ import { getSupabaseAgenticProof, getSupabaseRecentArcSettlements } from "@/lib/
 import { SiteHeader } from "../SiteHeader"
 
 export const metadata = {
-  title: "Proof - Arc Suite",
-  description: "Arc Suite proof page with settlement evidence, x402 receipt and policy chain.",
+  title: "Proof - Kestrel",
+  description: "Kestrel proof page with settlement evidence, x402 receipt and policy chain.",
 }
 
 export const dynamic = "force-dynamic"
@@ -310,7 +310,7 @@ export default async function ProofPage({ searchParams }: ProofPageProps) {
             <AlertTriangle size={21} />
           </div>
           <p>
-            Arc Suite separates policy approval from execution evidence. If a job clears policy but
+            Kestrel separates policy approval from execution evidence. If a job clears policy but
             the provider receipt or validator artifact does not arrive, the envelope moves into a
             bounded review state instead of silently becoming a successful settlement.
           </p>

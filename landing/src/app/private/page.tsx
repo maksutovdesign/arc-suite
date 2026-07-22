@@ -14,8 +14,8 @@ import {
 import { EcosystemNav } from "../EcosystemNav"
 
 export const metadata = {
-  title: "Arc Private — Private Stablecoin Payments",
-  description: "Privacy-ready payment policy layer for Arc Suite and private USDC commerce.",
+  title: "Kestrel Private — Private Stablecoin Payments",
+  description: "Privacy-ready payment policy layer for Kestrel and private USDC commerce.",
 }
 
 const pipeline = [
@@ -23,7 +23,7 @@ const pipeline = [
     icon: ShieldCheck,
     label: "Policy screen",
     title: "Screen first",
-    text: "Arc Shield checks address risk, workspace limits and agent reputation before any private payment intent can be prepared.",
+    text: "Kestrel Shield checks address risk, workspace limits and agent reputation before any private payment intent can be prepared.",
     state: "Required",
   },
   {
@@ -37,7 +37,7 @@ const pipeline = [
     icon: CircleDollarSign,
     label: "USDC execution",
     title: "Prepare Arc path",
-    text: "Arc Flow can route the approved payment to Circle wallets, a settlement-ready Arc Testnet path and provider reconciliation.",
+    text: "Kestrel Flow can route the approved payment to Circle wallets, a settlement-ready Arc Testnet path and provider reconciliation.",
     state: "Arc ready",
   },
   {
@@ -82,7 +82,7 @@ export default function PrivatePage() {
             <p className="kicker">Private stablecoin payments</p>
             <h1>Privacy for agent payments without losing policy control.</h1>
             <p>
-              Arc Private is the missing wedge from the builder map: private, compliant
+              Kestrel Private is the missing wedge from the builder map: private, compliant
               USDC payment intents for agents, APIs, invoices and escrow flows. The
               product keeps sensitive payment context private while exposing the exact
               proof each party needs to trust the transaction.
@@ -93,7 +93,7 @@ export default function PrivatePage() {
             </div>
           </div>
 
-          <div className="private-proof-card" aria-label="Arc Private proof preview">
+          <div className="private-proof-card" aria-label="Kestrel Private proof preview">
             <div className="private-proof-top">
               <span>ARC PRIVATE / PAYMENT INTENT</span>
               <strong>POLICY-SAFE</strong>
@@ -135,9 +135,9 @@ export default function PrivatePage() {
             <p>Radar found many payment, DeFi and x402 builders, but almost no general-purpose private payment UX.</p>
           </article>
           <article>
-            <span>Arc Suite wedge</span>
+            <span>Kestrel wedge</span>
             <strong>Compliance plus privacy</strong>
-            <p>The suite already has Shield, Flow, Billing, Escrow and Wallet OS; Arc Private turns them into a differentiated lane.</p>
+            <p>Kestrel already has Shield, Flow, Billing, Escrow and Wallets; Private turns them into a differentiated lane.</p>
           </article>
           <article>
             <span>MVP shape</span>
@@ -215,7 +215,7 @@ export default function PrivatePage() {
         <section className="private-section private-fit">
           <div className="section-heading compact">
             <p className="kicker">Suite integration</p>
-            <h2>Arc Private makes existing modules more defensible.</h2>
+            <h2>Kestrel Private makes existing modules more defensible.</h2>
           </div>
           <div className="private-fit-grid">
             {integrationFit.map(([name, text]) => (

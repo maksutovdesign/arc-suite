@@ -2272,7 +2272,7 @@ export async function insertSupabaseOpsHealthCheck(input: OpsHealthCheckInput): 
       {
         id: `ops_${randomUUID()}`,
         workspace_id: WORKSPACE_ID,
-        monitor_name: input.monitorName ?? "Arc Suite Production Monitor",
+        monitor_name: input.monitorName ?? "Kestrel Production Monitor",
         source: input.source ?? "local",
         status: input.status,
         check_count: input.checks,

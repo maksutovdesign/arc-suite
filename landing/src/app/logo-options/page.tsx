@@ -2,8 +2,8 @@ import Link from "next/link"
 
 const variants = [
   {
-    name: "01 / Arc Cyan",
-    note: "Flat Arc cyan, large white lowercase a.",
+    name: "01 / Kestrel Cyan",
+    note: "Independent K monogram with a directional flight path.",
     color: "#5fbfff",
     rx: 20,
   },
@@ -43,8 +43,8 @@ function BlueLogo({ color, rx }: { color: string; rx: number }) {
   return (
     <svg viewBox="0 0 96 96" aria-hidden="true">
       <rect x="8" y="8" width="80" height="80" rx={rx} fill={color} />
-      <text x="48" y="77" textAnchor="middle" className="logo-svg-a blue-a-full">
-        a
+      <text x="48" y="70" textAnchor="middle" className="logo-svg-a blue-a-full">
+        K
       </text>
     </svg>
   )
@@ -55,15 +55,15 @@ export default function LogoOptionsPage() {
     <main className="logo-lab">
       <section className="logo-lab-hero">
         <p className="kicker">Logo exploration</p>
-        <h1>Flat blue mark with large a.</h1>
+        <h1>Kestrel independent identity.</h1>
         <p>
-          No effects. No decoration. Just a flat blue background and a large white
-          lowercase a using the project type style.
+          A standalone product mark. Arc remains the underlying network and appears only
+          in the supporting “Built on Arc” relationship line.
         </p>
         <Link className="button secondary" href="/">Back to landing</Link>
       </section>
 
-      <section className="logo-grid" aria-label="Arc Suite flat blue logo options">
+      <section className="logo-grid" aria-label="Kestrel logo options">
         {variants.map((variant) => (
           <article className="logo-card" key={variant.name}>
             <div className="logo-preview">
@@ -76,7 +76,7 @@ export default function LogoOptionsPage() {
                 <span>
                   <BlueLogo color={variant.color} rx={variant.rx} />
                 </span>
-                <strong>Arc Suite</strong>
+                <strong>Kestrel · Built on Arc</strong>
               </div>
             </div>
           </article>

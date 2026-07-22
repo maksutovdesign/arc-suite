@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
   }
 
   const requestId = createRequestId(request)
-  const error = new Error("Arc Suite Sentry runtime test error")
+  const error = new Error("Kestrel Sentry runtime test error")
   const hasDsn = Boolean(process.env.SENTRY_DSN ?? process.env.ARC_SENTRY_DSN ?? process.env.NEXT_PUBLIC_SENTRY_DSN)
   const hasClient = Boolean(Sentry.getClient())
 

@@ -2,7 +2,7 @@ import { EcosystemNav } from "../EcosystemNav"
 import { FlowDashboardClient } from "./FlowDashboardClient"
 
 export const metadata = {
-  title: "Arc Flow — Autonomous Payment Orchestration",
+  title: "Kestrel Flow — Autonomous Payment Orchestration",
   description: "Compliance, policy, Arc settlement and reputation in one auditable workflow.",
 }
 

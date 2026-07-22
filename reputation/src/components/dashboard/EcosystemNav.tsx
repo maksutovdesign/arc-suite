@@ -13,6 +13,7 @@ import {
   WalletCards,
   Workflow,
 } from "lucide-react"
+import { ArcSuiteLogo } from "@/components/ArcSuiteLogo"
 
 type ProductId =
   | "treasury"
@@ -28,25 +29,6 @@ type ProductId =
   | "radar"
   | "private"
   | "blueprints"
-
-function ArcSuiteMark() {
-  return (
-    <span className="grid size-6 shrink-0 place-items-center" aria-hidden="true">
-      <svg viewBox="0 0 48 48" role="img" className="block size-6">
-        <rect x="3" y="3" width="42" height="42" rx="14" fill="#5fbfff" />
-        <text
-          x="24"
-          y="38.5"
-          textAnchor="middle"
-          fill="#ffffff"
-          style={{ fontFamily: "\"Space Grotesk\", \"Aptos\", system-ui, sans-serif", fontSize: 43, fontWeight: 700 }}
-        >
-          a
-        </text>
-      </svg>
-    </span>
-  )
-}
 
 export function EcosystemNav({ current }: { current: ProductId }) {
   const suiteUrl = process.env.NEXT_PUBLIC_ARC_SUITE_URL ?? (
@@ -87,14 +69,13 @@ export function EcosystemNav({ current }: { current: ProductId }) {
   return (
     <div
       className="flex shrink-0 items-center border-b border-white/[0.06] bg-white/[0.02] px-2 py-1.5 sm:px-4"
-      aria-label="Arc Suite products"
+      aria-label="Kestrel products"
     >
       <a
         href={suiteUrl}
-        className="mr-2 hidden shrink-0 items-center gap-2 text-[10px] font-semibold tracking-wide text-[#7f94aa] transition-colors hover:text-white lg:flex"
+        className="mr-3 hidden shrink-0 items-center transition-opacity hover:opacity-80 lg:flex"
       >
-        <ArcSuiteMark />
-        <span>Arc Suite</span>
+        <ArcSuiteLogo compact />
       </a>
       <div className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {products.map((product) => {
@@ -111,7 +92,7 @@ export function EcosystemNav({ current }: { current: ProductId }) {
                   ? { background: `${product.color}16`, color: product.color, borderColor: `${product.color}38` }
                   : { color: "#7a8fa8", borderColor: "transparent" }
               }
-              title={`Open Arc ${product.label}`}
+              title={`Open Kestrel ${product.label}`}
             >
               <Icon aria-hidden="true" size={14} strokeWidth={1.8} />
               <span className="hidden sm:inline">Arc {product.label}</span>

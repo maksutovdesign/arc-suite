@@ -16,7 +16,7 @@ import { ProviderDemoRunButton } from "./ProviderDemoRunButton"
 
 export const metadata = {
   title: "Arc Provider — Receipt Trust Center",
-  description: "Provider-facing x402 receipt registry, signing key status and fulfillment proof for Arc Suite.",
+  description: "Provider-facing x402 receipt registry, signing key status and fulfillment proof for Kestrel.",
 }
 
 export const dynamic = "force-dynamic"

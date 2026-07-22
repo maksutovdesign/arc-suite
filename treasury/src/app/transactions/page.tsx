@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-export const metadata: Metadata = { title: "Transactions — Arc Treasury" }
+export const metadata: Metadata = { title: "Transactions — Kestrel Treasury" }
 
 import { ArrowLeftRight, Clock, CheckCircle2, XCircle, Loader2, SlidersHorizontal, Download, ExternalLink, ReceiptText, Layers3 } from "lucide-react"
 import { PageHeader } from "@/components/dashboard/PageHeader"

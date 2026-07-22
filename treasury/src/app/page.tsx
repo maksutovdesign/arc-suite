@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-export const metadata: Metadata = { title: "Dashboard — Arc Treasury" }
+export const metadata: Metadata = { title: "Dashboard — Kestrel Treasury" }
 
 import {
   Bot,

@@ -58,7 +58,7 @@ const builders: Builder[] = [
     traction: "Low public engagement, high strategic relevance",
     signal: "medium",
     amplifiedBy: "Tagged Arc/Circle team for feedback",
-    suiteFit: ["Arc Private", "Arc Flow", "Arc Shield"],
+    suiteFit: ["Private", "Flow", "Shield"],
   },
   {
     handle: "@BenyaminStyles",
@@ -69,7 +69,7 @@ const builders: Builder[] = [
     traction: "Community video demo",
     signal: "medium",
     amplifiedBy: "Community",
-    suiteFit: ["Arc Billing", "Arc Flow", "Arc Private"],
+    suiteFit: ["Billing", "Flow", "Private"],
   },
   {
     handle: "@Audu70",
@@ -80,7 +80,7 @@ const builders: Builder[] = [
     traction: "Live demo, low public engagement",
     signal: "medium",
     amplifiedBy: "Self/community",
-    suiteFit: ["Arc Flow", "Wallet OS", "Arc Shield"],
+    suiteFit: ["Flow", "Wallets", "Shield"],
   },
   {
     handle: "@Xylonet_",
@@ -91,7 +91,7 @@ const builders: Builder[] = [
     traction: "Arc feature, 500+ likes",
     signal: "high",
     amplifiedBy: "@arc",
-    suiteFit: ["Arc Escrow", "Arc Billing", "Arc Shield"],
+    suiteFit: ["Escrow", "Billing", "Shield"],
   },
   {
     handle: "@tlay_io",
@@ -102,7 +102,7 @@ const builders: Builder[] = [
     traction: "Builder Spotlight, 400+ likes",
     signal: "high",
     amplifiedBy: "@arc, @samconnerone",
-    suiteFit: ["Arc Billing", "Wallet OS", "Arc Gas"],
+    suiteFit: ["Billing", "Wallets", "Gas"],
   },
   {
     handle: "@mrcoc0x",
@@ -113,7 +113,7 @@ const builders: Builder[] = [
     traction: "30+ services, 500+ paid testnet calls",
     signal: "high",
     amplifiedBy: "Hackathon/community context",
-    suiteFit: ["Marketplace", "Arc Billing", "Arc Reputation"],
+    suiteFit: ["Marketplace", "Billing", "Reputation"],
   },
   {
     handle: "@ProoVra",
@@ -124,7 +124,7 @@ const builders: Builder[] = [
     traction: "Hackathon thread",
     signal: "medium",
     amplifiedBy: "Hackathon/community",
-    suiteFit: ["Arc Escrow", "Arc Flow", "Arc Reputation"],
+    suiteFit: ["Escrow", "Flow", "Reputation"],
   },
   {
     handle: "@0xMASTER82",
@@ -135,7 +135,7 @@ const builders: Builder[] = [
     traction: "Launch post and public source reference",
     signal: "medium",
     amplifiedBy: "Community",
-    suiteFit: ["Arc Shield", "Arc Flow", "Treasury"],
+    suiteFit: ["Shield", "Flow", "Treasury"],
   },
   {
     handle: "@stablecorp",
@@ -146,7 +146,7 @@ const builders: Builder[] = [
     traction: "Arc spotlight, 900+ likes",
     signal: "high",
     amplifiedBy: "@arc",
-    suiteFit: ["Treasury", "Arc Flow", "Arc Shield"],
+    suiteFit: ["Treasury", "Flow", "Shield"],
   },
   {
     handle: "@Hydra12351",
@@ -157,7 +157,7 @@ const builders: Builder[] = [
     traction: "Testnet prototype",
     signal: "low",
     amplifiedBy: "Self/community",
-    suiteFit: ["Treasury", "Arc Shield", "Wallet OS"],
+    suiteFit: ["Treasury", "Shield", "Wallets"],
   },
   {
     handle: "@synthra_finance",
@@ -168,7 +168,7 @@ const builders: Builder[] = [
     traction: "Builder Spotlight",
     signal: "high",
     amplifiedBy: "@arc",
-    suiteFit: ["Arc Shield", "Arc Gas", "Execution Control"],
+    suiteFit: ["Shield", "Gas", "Execution Control"],
   },
   {
     handle: "@TowerExchange",
@@ -179,7 +179,7 @@ const builders: Builder[] = [
     traction: "Arc spotlight",
     signal: "high",
     amplifiedBy: "@arc",
-    suiteFit: ["Arc Flow", "Arc Shield", "Execution Control"],
+    suiteFit: ["Flow", "Shield", "Execution Control"],
   },
   {
     handle: "@goldskyio",
@@ -190,7 +190,7 @@ const builders: Builder[] = [
     traction: "Builders Fund spotlight, 900+ likes",
     signal: "high",
     amplifiedBy: "@arc",
-    suiteFit: ["Execution Control", "Ops Health", "Arc Radar"],
+    suiteFit: ["Execution Control", "Ops Health", "Radar"],
   },
   {
     handle: "@0x_zax",
@@ -201,7 +201,7 @@ const builders: Builder[] = [
     traction: "Thread/video, 100+ likes on stronger posts",
     signal: "high",
     amplifiedBy: "Tagged Arc/Circle team",
-    suiteFit: ["Execution Control", "Arc Flow", "Wallet OS"],
+    suiteFit: ["Execution Control", "Flow", "Wallets"],
   },
   {
     handle: "@Iblamehsan",
@@ -212,7 +212,7 @@ const builders: Builder[] = [
     traction: "Low-signal beta screenshots",
     signal: "low",
     amplifiedBy: "Self/community",
-    suiteFit: ["Arc Escrow", "Arc Shield", "Arc Private"],
+    suiteFit: ["Escrow", "Shield", "Private"],
   },
   {
     handle: "@JerryOjumah",
@@ -223,7 +223,7 @@ const builders: Builder[] = [
     traction: "Repeated Bobbilee amplification",
     signal: "high",
     amplifiedBy: "@bobbilee",
-    suiteFit: ["Arc Radar", "Builder CRM", "Pilot pipeline"],
+    suiteFit: ["Radar", "Builder CRM", "Pilot pipeline"],
   },
   {
     handle: "@BrazillianCare",
@@ -234,7 +234,7 @@ const builders: Builder[] = [
     traction: "Meetup/chapter visibility",
     signal: "medium",
     amplifiedBy: "@bobbilee",
-    suiteFit: ["Arc Radar", "Builder CRM", "Pilot pipeline"],
+    suiteFit: ["Radar", "Builder CRM", "Pilot pipeline"],
   },
 ]
 
@@ -287,8 +287,8 @@ export function RadarClient() {
           <p className="kicker">Arc builder intelligence</p>
           <h1>Where Arc builders are active, and where the gap is still open.</h1>
           <p>
-            Arc Radar turns ecosystem research into a product map: builder categories,
-            primitives, traction signals, opportunity gaps and the exact place Arc Suite can
+            Kestrel Radar turns ecosystem research into a product map: builder categories,
+            primitives, traction signals, opportunity gaps and the exact place Kestrel can
             become the operating layer for payment, agent and stablecoin apps.
           </p>
           <div className="radar-actions">
@@ -296,7 +296,7 @@ export function RadarClient() {
             <a className="button secondary" href="#gaps"><LockKeyhole size={16} /> View gaps</a>
           </div>
         </div>
-        <div className="radar-signal-card" aria-label="Arc Radar signal summary">
+        <div className="radar-signal-card" aria-label="Kestrel Radar signal summary">
           <div className="radar-orbit">
             <i />
             <i />
@@ -307,7 +307,7 @@ export function RadarClient() {
             <Metric label="Mapped builders" value={String(builders.length)} />
             <Metric label="High-signal refs" value={String(builders.filter((builder) => builder.signal === "high").length)} />
             <Metric label="Privacy refs" value={String(builders.filter((builder) => builder.category === "privacy").length)} />
-            <Metric label="Primary wedge" value="Arc Private" />
+            <Metric label="Primary wedge" value="Kestrel Private" />
           </div>
         </div>
       </div>
@@ -324,7 +324,7 @@ export function RadarClient() {
           <h2>Payments and DeFi are active. Privacy remains sparse.</h2>
           <p>
             The map is intentionally practical: every builder is mapped to both an ecosystem
-            category and the Arc Suite products that could serve them.
+            category and the Kestrel products that could serve them.
           </p>
         </div>
 
@@ -353,7 +353,7 @@ export function RadarClient() {
             <span>Builder</span>
             <span>Project</span>
             <span>Stack</span>
-            <span>Arc Suite fit</span>
+            <span>Kestrel fit</span>
             <span>Signal</span>
           </div>
           {filteredBuilders.map((builder) => {
@@ -404,7 +404,7 @@ export function RadarClient() {
           </div>
         </div>
         <div className="radar-primitive-panel">
-          <div className="shield-preview-top"><span>PRIMITIVE USAGE</span><strong>ARC SUITE FIT</strong></div>
+          <div className="shield-preview-top"><span>PRIMITIVE USAGE</span><strong>KESTREL FIT</strong></div>
           {primitives.map((primitive, index) => (
             <div className="radar-primitive-row" key={primitive}>
               <span>{primitive}</span>
@@ -416,7 +416,7 @@ export function RadarClient() {
             <LockKeyhole size={18} />
             <div>
               <span>Next flagship layer</span>
-              <strong>Arc Private</strong>
+              <strong>Kestrel Private</strong>
               <p>Private invoices, private x402 receipts, auditor view keys and policy-aware disclosure.</p>
             </div>
           </div>
@@ -425,7 +425,7 @@ export function RadarClient() {
 
       <section className="radar-section">
         <div className="section-heading compact">
-          <p className="kicker">Where Arc Suite fits</p>
+          <p className="kicker">Where Kestrel fits</p>
           <h2>Not another DEX. The operating layer around builders.</h2>
         </div>
         <div className="radar-fit-grid">
@@ -454,9 +454,9 @@ export function RadarClient() {
         <article className="radar-research-card">
           <ShieldCheck size={22} />
           <p className="kicker">Investor thesis</p>
-          <h2>Arc Suite is ecosystem-aware infrastructure.</h2>
+          <h2>Kestrel is an ecosystem-aware control plane.</h2>
           <p>
-            The ecosystem is already crowded in simple payments, DeFi and FX. Arc Suite
+            The ecosystem is already crowded in simple payments, DeFi and FX. Kestrel
             differentiates by combining risk, billing, wallet policy, execution monitoring
             and a privacy-ready settlement roadmap into one builder operating layer.
           </p>

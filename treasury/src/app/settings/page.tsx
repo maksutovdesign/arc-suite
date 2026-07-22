@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-export const metadata: Metadata = { title: "Settings — Arc Treasury" }
+export const metadata: Metadata = { title: "Settings — Kestrel Treasury" }
 
 import { Key, Webhook, Shield, Globe, Settings, Plus, Check } from "lucide-react"
 import { PageHeader } from "@/components/dashboard/PageHeader"

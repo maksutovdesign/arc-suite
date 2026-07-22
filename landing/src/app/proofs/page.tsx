@@ -5,8 +5,8 @@ import { getSupabaseRecentAgenticProofs } from "@/lib/backend/supabase"
 import { SiteHeader } from "../SiteHeader"
 
 export const metadata = {
-  title: "Proof Archive - Arc Suite",
-  description: "Recent Arc Suite agentic workflow proofs with settlement evidence and x402 receipts.",
+  title: "Proof Archive - Kestrel",
+  description: "Recent Kestrel agentic workflow proofs with settlement evidence and x402 receipts.",
 }
 
 export const dynamic = "force-dynamic"
@@ -26,7 +26,7 @@ export default async function ProofArchivePage() {
             <p className="kicker">Proof archive</p>
             <h1>Every agentic workflow should leave a receipt trail.</h1>
             <p>
-              Recent Arc Suite workflows are collected here with policy status, x402 receipt evidence,
+              Recent Kestrel workflows are collected here with policy status, x402 receipt evidence,
               settlement evidence and Arcscan links when a live Arc Testnet transfer is available.
             </p>
           </div>

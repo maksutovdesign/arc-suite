@@ -1,8 +1,8 @@
-# Arc Suite Grant Update
+# Kestrel Grant Update
 
 ## Short Submission Text
 
-Arc Suite is an operating layer for autonomous AI-agent commerce on Arc. The demo now focuses on one complete, reviewable workflow: an AI agent requests a paid x402 API, receives a signed offer, passes Treasury budget policy, Reputation access and Shield compliance checks, follows a settlement-ready Arc Testnet path through Circle Wallets, receives a signed provider receipt, updates reputation and leaves a proof page with the settlement reference, policy chain and validation artifacts.
+Kestrel is an independent agent money control plane built on Arc. The demo focuses on one complete, reviewable workflow: an AI agent requests a paid x402 API, receives a signed offer, passes Treasury budget policy, Reputation access and Shield compliance checks, follows an Arc Testnet settlement path through Circle Wallets or App Kit, receives a signed provider receipt, updates reputation and leaves a proof page with the settlement reference, policy chain and validation artifacts.
 
 The latest release includes a recorded demo, Arc Testnet settlement evidence when configured, a reviewer submission page, Judge Mode, Agentic Workflow, Proof and Flow operator screens.
 
@@ -18,7 +18,7 @@ The latest release includes a recorded demo, Arc Testnet settlement evidence whe
 - Flow operator console: https://arcsuite-app.vercel.app/flow
 - Repository: https://github.com/maksutovdesign/arc-suite
 - Interop / Risk Router: https://arcsuite-app.vercel.app/interop
-- Release: https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.07.14-gateway-memos
+- Release: https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.07.22-kestrel-app-kit
 - Demo video: https://github.com/maksutovdesign/arc-suite/releases/download/v2026.06.28-real-arc-settlement/arc-suite-agentic-workflow-demo.mov
 - Arc Testnet proof: https://testnet.arcscan.app/tx/0x41210539368a78f6bbc08b088a95430dc0f64e9379ad9226173fc3ce565d733b
 
@@ -59,7 +59,7 @@ The latest release includes a recorded demo, Arc Testnet settlement evidence whe
 
 ## Why This Fits The Agentic Economy Track
 
-Arc Suite is not just a payment button. It shows the control plane an agent economy needs:
+Kestrel is not just a payment button. It shows the control plane an agent economy needs:
 
 - Who is the agent?
 - What paid API or service is it requesting?

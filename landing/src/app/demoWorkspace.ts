@@ -45,8 +45,8 @@ export const demoArcAgentModel: {
       capabilities: ["x402.api.purchase", "arc.usdc.settlement", "compliance.screened", "reputation.scored"],
       trustModel: {
         identityRegistry: "ERC-8004 Identity",
-        reputationRegistry: "Arc Reputation",
-        validationRegistry: "Arc Flow Validation",
+        reputationRegistry: "Kestrel Reputation",
+        validationRegistry: "Kestrel Flow Validation",
       },
       metadata: { name: "DataHarvester-Pro", network: "Arc Testnet", custody: "Circle developer wallet" },
       status: "active",
@@ -399,7 +399,7 @@ export const demoWalletOverview: WalletOverview = {
     { id: "wallet_pol_002", workspaceId: WORKSPACE.id, walletId: "wal_demo_002", status: "active", approvalsRequired: 1, transactionLimitUsdc: 50, dailyLimitUsdc: 100, allowedContracts: [], requireShield: true, requireReputationScore: 650, updatedAt: "2026-06-23T09:20:00Z" },
   ],
   events: [
-    { id: "wallet_evt_001", workspaceId: WORKSPACE.id, walletId: "wal_demo_001", action: "sign", status: "confirmed", actor: "Arc Operator", detail: "Signed Arc Flow settlement.", providerOperationId: "circle_op_demo_001", txHash: "0x84de219dc51c9942a54a33c7fb56d12c18c884b7e998abb812943e923aa3a921", explorerUrl: "https://arcscan.app/tx/0x84de219dc51c9942a54a33c7fb56d12c18c884b7e998abb812943e923aa3a921", metadata: { demo: true }, createdAt: "2026-06-23T09:39:00Z", completedAt: "2026-06-23T09:39:36Z" },
+    { id: "wallet_evt_001", workspaceId: WORKSPACE.id, walletId: "wal_demo_001", action: "sign", status: "confirmed", actor: "Kestrel Operator", detail: "Signed Kestrel Flow settlement.", providerOperationId: "circle_op_demo_001", txHash: "0x84de219dc51c9942a54a33c7fb56d12c18c884b7e998abb812943e923aa3a921", explorerUrl: "https://arcscan.app/tx/0x84de219dc51c9942a54a33c7fb56d12c18c884b7e998abb812943e923aa3a921", metadata: { demo: true }, createdAt: "2026-06-23T09:39:00Z", completedAt: "2026-06-23T09:39:36Z" },
     { id: "wallet_evt_002", workspaceId: WORKSPACE.id, walletId: "wal_demo_003", action: "provision", status: "submitted", actor: "Arc Operator", detail: "Creating modular smart account.", providerOperationId: "circle_op_demo_002", txHash: null, explorerUrl: null, metadata: { demo: true }, createdAt: "2026-06-23T08:45:00Z", completedAt: null },
   ],
 }

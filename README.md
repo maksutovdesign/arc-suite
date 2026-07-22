@@ -1,6 +1,6 @@
-# Arc Suite — End-to-End Agentic Payments on Arc
+# Kestrel — Agent Money Control Plane
 
-> **Arc Suite demonstrates one complete autonomous USDC operation path on [Arc](https://arc.io) and [Circle](https://circle.com): an AI agent requests a paid x402 API, receives a signed offer, passes policy and compliance checks, follows a settlement-ready Arc Testnet path, receives a signed receipt, updates reputation, and leaves a reviewer-ready proof trail.**
+> **Kestrel demonstrates one complete autonomous USDC operation path built on [Arc](https://arc.io) and [Circle](https://circle.com): an AI agent requests a paid x402 API, receives a signed offer, passes policy and compliance checks, follows an Arc Testnet settlement path, receives a signed receipt, updates reputation, and leaves a reviewer-ready proof trail.**
 
 The suite still contains multiple product surfaces, but the grant narrative is intentionally centered on a single proof-producing workflow rather than disconnected dashboards.
 
@@ -14,13 +14,13 @@ For a short hackathon submission view, see [`HACKATHON.md`](HACKATHON.md).
 
 **Track:** Agentic Economy
 
-**One-line pitch:** Arc Suite is an operating layer for AI agents that need to buy services with USDC safely: identity, x402 offer, policy checks, Arc settlement readiness, signed receipt, reputation update and proof in one workflow.
+**One-line pitch:** Kestrel is an agent money control plane for buying services with USDC safely: identity, App Kit routing, policy checks, settlement, signed receipt, reputation update and proof in one workflow. Built on Arc.
 
 **Repository:** [github.com/maksutovdesign/arc-suite](https://github.com/maksutovdesign/arc-suite)
 
 **Demo video:** [arc-suite-agentic-workflow-demo.mov](https://github.com/maksutovdesign/arc-suite/releases/download/v2026.06.28-real-arc-settlement/arc-suite-agentic-workflow-demo.mov)
 
-**Release package:** [v2026.07.14-gateway-memos](https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.07.14-gateway-memos)
+**Release package:** [v2026.07.22-kestrel-app-kit](https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.07.22-kestrel-app-kit)
 
 **Grant update:** [`docs/submission/grant-update.md`](docs/submission/grant-update.md)
 
@@ -46,9 +46,9 @@ For a short hackathon submission view, see [`HACKATHON.md`](HACKATHON.md).
 4. Click **Latest proof** or the generated proof link to verify the API-specific settlement evidence, provider-signed receipt metadata, policy chain and validation artifacts for that run.
 5. Open **Proof archive** to review recent workflow receipts and Marketplace purchase history.
 6. Open [Arc Provider](https://arcsuite-app.vercel.app/provider) and click **Create provider receipt** to generate a provider-side demo receipt and proof.
-7. Open [Arc Flow](https://arcsuite-app.vercel.app/flow) to see the operator console behind the same workflow model.
+7. Open [Kestrel Flow](https://arcsuite-app.vercel.app/flow) to see the operator console behind the same workflow model.
 8. Review the artifact failure handling states on `/agentic-workflow` and `/proof`: `policy_passed`, `execution_failed`, `receipt_missing`, `validation_missing` and `dispute_opened`.
-9. Open [Arc Interop](https://arcsuite-app.vercel.app/interop) to review Chainlink/CCIP route evidence, `oracleRiskHash` and Arc Network Resilience states.
+9. Open [Kestrel Interop](https://arcsuite-app.vercel.app/interop) to review Chainlink/CCIP route evidence, `oracleRiskHash` and Arc Network Resilience states.
 
 **Agentic Economy Track features:**
 - Autonomous agent purchase of an x402 API using USDC.
@@ -71,24 +71,24 @@ For a short hackathon submission view, see [`HACKATHON.md`](HACKATHON.md).
 
 | App | URL | Description |
 |-----|-----|-------------|
-| 💰 **Arc Treasury** | [arcsuite-app.vercel.app](https://arcsuite-app.vercel.app/?product=treasury#system) | Budget manager for AI agent wallets |
-| 🛡️ **Arc Reputation** | [arcsuite-app.vercel.app](https://arcsuite-app.vercel.app/?product=reputation#system) | On-chain trust scoring layer for agents |
-| 🛒 **Arc Marketplace** | [arcsuite-app.vercel.app](https://arcsuite-app.vercel.app/?product=marketplace#system) | Discovery platform for x402-enabled APIs |
+| 💰 **Kestrel Treasury** | [arcsuite-app.vercel.app](https://arcsuite-app.vercel.app/?product=treasury#system) | Budget manager for AI agent wallets |
+| 🛡️ **Kestrel Reputation** | [arcsuite-app.vercel.app](https://arcsuite-app.vercel.app/?product=reputation#system) | On-chain trust scoring layer for agents |
+| 🛒 **Kestrel Marketplace** | [arcsuite-app.vercel.app](https://arcsuite-app.vercel.app/?product=marketplace#system) | Discovery platform for x402-enabled APIs |
 | **Arc Provider** | [arcsuite-app.vercel.app/provider](https://arcsuite-app.vercel.app/provider) | Provider receipt trust center for signed x402 jobs, keys and proof links |
-| **Arc Interop** | [arcsuite-app.vercel.app/interop](https://arcsuite-app.vercel.app/interop) | Chainlink/CCIP-ready route evidence, oracle risk and load-aware settlement states |
-| **Arc Shield** | [arcsuite-app.vercel.app/shield](https://arcsuite-app.vercel.app/shield) | Circle compliance plus Chainlink-on-Arc risk evidence |
-| **Arc Flow** | [arcsuite-app.vercel.app/flow](https://arcsuite-app.vercel.app/flow) | Compliance, oracle evidence and settlement-ready payment orchestration |
+| **Kestrel Interop** | [arcsuite-app.vercel.app/interop](https://arcsuite-app.vercel.app/interop) | Chainlink/CCIP-ready route evidence, oracle risk and load-aware settlement states |
+| **Kestrel Shield** | [arcsuite-app.vercel.app/shield](https://arcsuite-app.vercel.app/shield) | Circle compliance plus Chainlink-on-Arc risk evidence |
+| **Kestrel Flow** | [arcsuite-app.vercel.app/flow](https://arcsuite-app.vercel.app/flow) | Compliance, oracle evidence and settlement-ready payment orchestration |
 | **Judge Mode** | [arcsuite-app.vercel.app/judge](https://arcsuite-app.vercel.app/judge) | One-page reviewer path with pitch, click path and embedded workflow demo |
 | **Agentic Workflow Demo** | [arcsuite-app.vercel.app/agentic-workflow](https://arcsuite-app.vercel.app/agentic-workflow) | One-click AI agent purchase with policy, x402 receipt, Arc settlement path and reputation update |
 | **Proof Page** | [arcsuite-app.vercel.app/proof](https://arcsuite-app.vercel.app/proof) | Reviewer-ready settlement evidence, x402 receipt, policy chain and validation evidence |
 | **Proof Archive** | [arcsuite-app.vercel.app/proofs](https://arcsuite-app.vercel.app/proofs) | Recent agentic workflow receipts, settlement evidence and Marketplace proof history |
-| **Arc Billing** | [arcsuite-app.vercel.app/billing](https://arcsuite-app.vercel.app/billing) | x402 usage metering, prepaid balances, invoices and settlement batches |
-| **Arc Escrow** | [arcsuite-app.vercel.app/escrow](https://arcsuite-app.vercel.app/escrow) | Programmable agent deals, milestones, disputes and contract events |
-| **Arc Gas** | [arcsuite-app.vercel.app/gas](https://arcsuite-app.vercel.app/gas) | Gas sponsorship policy, Paymaster/Gas Station limits and reporting |
-| **Arc Wallet OS** | [arcsuite-app.vercel.app/wallets](https://arcsuite-app.vercel.app/wallets) | Developer/user/modular wallet lifecycle, roles, signing policies and multicurrency agent accounts |
+| **Kestrel Billing** | [arcsuite-app.vercel.app/billing](https://arcsuite-app.vercel.app/billing) | x402 usage metering, prepaid balances, invoices and settlement batches |
+| **Kestrel Escrow** | [arcsuite-app.vercel.app/escrow](https://arcsuite-app.vercel.app/escrow) | Programmable agent deals, milestones, disputes and contract events |
+| **Kestrel Gas** | [arcsuite-app.vercel.app/gas](https://arcsuite-app.vercel.app/gas) | Gas sponsorship policy, Paymaster/Gas Station limits and reporting |
+| **Kestrel Wallets** | [arcsuite-app.vercel.app/wallets](https://arcsuite-app.vercel.app/wallets) | Developer/user/modular wallet lifecycle, roles, signing policies and multicurrency agent accounts |
 | **Execution Control** | [arcsuite-app.vercel.app/executions](https://arcsuite-app.vercel.app/executions) | Unified Circle provider queue, retries and webhook reconciliation |
-| **Arc Radar** | [arcsuite-app.vercel.app/radar](https://arcsuite-app.vercel.app/radar) | Arc builder intelligence, primitive usage, traction signals and opportunity gaps |
-| **Arc Private** | [arcsuite-app.vercel.app/private](https://arcsuite-app.vercel.app/private) | Private stablecoin payment intents, selective disclosure and policy-safe proof |
+| **Kestrel Radar** | [arcsuite-app.vercel.app/radar](https://arcsuite-app.vercel.app/radar) | Arc builder intelligence, primitive usage, traction signals and opportunity gaps |
+| **Kestrel Private** | [arcsuite-app.vercel.app/private](https://arcsuite-app.vercel.app/private) | Private stablecoin payment intents, selective disclosure and policy-safe proof |
 | **Arc Blueprints** | [arcsuite-app.vercel.app/blueprints](https://arcsuite-app.vercel.app/blueprints) | Builder reference templates for checkout, x402, escrow, FX, M2M and private invoice flows |
 | **Ops Health** | [arcsuite-app.vercel.app/ops](https://arcsuite-app.vercel.app/ops) | Protected production, Supabase, monitor, Sentry and Infra Health readiness view |
 
@@ -111,9 +111,9 @@ The demonstrated operation is:
 
 This gives Arc/Circle reviewers a concrete artifact to evaluate: one payment path, one settlement evidence path when configured, one policy chain, and one receipt bundle.
 
-Arc Suite also treats Arc Testnet load testing and congestion as explicit network states. A policy pass does not automatically become a completed settlement when receipt, validation or network evidence is missing; the job can remain `retry_scheduled` or `deferred_settlement` until transaction evidence is recorded.
+Kestrel also treats Arc Testnet load testing and congestion as explicit network states. A policy pass does not automatically become a completed settlement when receipt, validation or network evidence is missing; the job can remain `retry_scheduled` or `deferred_settlement` until transaction evidence is recorded.
 
-The Wallet OS surface also reflects the application-layer direction visible in newer Arc partner examples: one account, multiple currency rails, payments, FX, CCTP and gas abstraction hidden behind a simple money movement experience. Arc Suite applies that pattern to agents: a USDC/EURC-facing operational account with card-like spend controls, custody status and policy-safe wallet operations. Live EURC/Gateway execution remains part of the roadmap.
+The wallet surface also reflects the application-layer direction visible in newer Arc partner examples: one account, multiple currency rails, payments, FX, CCTP and gas abstraction hidden behind a simple money movement experience. Kestrel applies that pattern to agents through a USDC/EURC operational account with card-like spend controls, custody status and policy-safe wallet operations.
 
 ### Arc docs alignment
 
@@ -167,7 +167,7 @@ This is the core thesis: *agentic commerce needs more than a payment button; it 
 
 ## Apps
 
-### 💰 Arc Treasury — Agent Budget Manager
+### 💰 Kestrel Treasury — Agent Budget Manager
 
 **`/?product=treasury#system`** · [Live](https://arcsuite-app.vercel.app/?product=treasury#system)
 
@@ -186,7 +186,7 @@ A B2B dashboard for teams deploying AI agents on Arc. Treasury gives operators f
 
 ---
 
-### 🛡️ Arc Reputation — Agent Trust Layer
+### 🛡️ Kestrel Reputation — Agent Trust Layer
 
 **`/?product=reputation#system`** · [Live](https://arcsuite-app.vercel.app/?product=reputation#system)
 
@@ -215,7 +215,7 @@ POST /v1/webhooks            # Subscribe to score events
 
 ---
 
-### 🛒 Arc Marketplace — x402 API Discovery
+### 🛒 Kestrel Marketplace — x402 API Discovery
 
 **`/?product=marketplace#system`** · [Live](https://arcsuite-app.vercel.app/?product=marketplace#system)
 
@@ -236,11 +236,11 @@ A discovery platform for APIs that accept payments via the [x402 protocol](https
 
 ---
 
-### Arc Shield — Compliance & Risk Engine
+### Kestrel Shield — Compliance & Risk Engine
 
 **`/landing/src/app/shield`** · [Live](https://arcsuite-app.vercel.app/shield)
 
-Arc Shield uses Circle Compliance Engine address screening as a provider signal and records a separate Arc policy decision for every request. With Arc joining Chainlink Scale, Shield also models Chainlink Data Feeds, Data Streams, Proof of Reserve and CCIP route evidence as policy inputs for market, collateral and cross-chain risk.
+Kestrel Shield uses Circle Compliance Engine address screening as a provider signal and records a separate Kestrel policy decision for every request. With Arc joining Chainlink Scale, Shield also models Chainlink Data Feeds, Data Streams, Proof of Reserve and CCIP route evidence as policy inputs for market, collateral and cross-chain risk.
 
 **Key features:**
 - Real Circle standalone address screening for supported networks
@@ -254,11 +254,11 @@ Arc Shield uses Circle Compliance Engine address screening as a provider signal 
 
 Circle currently does not list Arc Testnet in the standalone Address Screening chain enum. Shield therefore treats supported-chain screening as a cross-chain identity signal and keeps Arc settlement enforcement in monitor mode.
 
-### Arc Flow — Autonomous Payment Orchestration
+### Kestrel Flow — Autonomous Payment Orchestration
 
 **`/landing/src/app/flow`** · [Live](https://arcsuite-app.vercel.app/flow)
 
-Arc Flow is the full intent-to-settlement workflow. It chains Shield screening, Chainlink oracle/CCIP evidence, reputation policy, Marketplace access decisions, Circle wallet settlement readiness and reputation updates into one auditable run.
+Kestrel Flow is the full intent-to-settlement workflow. It chains Shield screening, Chainlink oracle/CCIP evidence, reputation policy, Marketplace access decisions, Circle wallet settlement readiness and reputation updates into one auditable run.
 
 **What the end-to-end workflow proves:**
 - AI agents can buy services with USDC while remaining bounded by operator policy.
@@ -280,11 +280,11 @@ Arc Flow is the full intent-to-settlement workflow. It chains Shield screening, 
 - Supabase audit trail for every flow run and policy step
 - Read-only demo workspace by default; live execution unlocks with a scoped Arc API key
 
-### Arc Interop & Risk Router
+### Kestrel Interop & Risk Router
 
 **`/landing/src/app/interop`** · [Live](https://arcsuite-app.vercel.app/interop)
 
-Arc Interop turns the Arc x Chainlink update into a concrete product surface. The page models a route-ready Arc Testnet → Ethereum Sepolia flow where policy, Chainlink oracle/CCIP evidence, receipt state and validation state sit inside one reviewer-readable route envelope.
+Kestrel Interop turns the Arc x Chainlink update into a concrete product surface. The page models a route-ready Arc Testnet → Ethereum Sepolia flow where policy, Chainlink oracle/CCIP evidence, receipt state and validation state sit inside one reviewer-readable route envelope.
 
 **Key features:**
 - CCIP route card with Arc Testnet source, Ethereum Sepolia target, router and chain selector.
@@ -293,11 +293,11 @@ Arc Interop turns the Arc x Chainlink update into a concrete product surface. Th
 - Artifact gating: if receipt or validation evidence is missing, the route moves to review instead of being treated as settled.
 - Upgrade path from deterministic route evidence to live Chainlink CCIP status reads.
 
-### Arc Billing — x402 Metering & Subscriptions
+### Kestrel Billing — x402 Metering & Subscriptions
 
 **`/landing/src/app/billing`** · [Live](https://arcsuite-app.vercel.app/billing)
 
-Arc Billing turns Marketplace requests into an auditable payment ledger. Usage is priced from the API listing, atomically deducted from an agent prepaid balance, added to the current invoice, and later grouped into a settlement-ready provider batch.
+Kestrel Billing turns Marketplace requests into an auditable payment ledger. Usage is priced from the API listing, atomically deducted from an agent prepaid balance, added to the current invoice, and later grouped into a settlement-ready provider batch.
 
 **Key features:**
 - Atomic, idempotent x402 usage metering
@@ -307,11 +307,11 @@ Arc Billing turns Marketplace requests into an auditable payment ledger. Usage i
 - Nanopayment aggregation for efficient settlement
 - HTTP `402 Payment Required` when prepaid credit is insufficient
 
-### Arc Escrow — Programmable Agent Deals
+### Kestrel Escrow — Programmable Agent Deals
 
 **`/landing/src/app/escrow`** · [Live](https://arcsuite-app.vercel.app/escrow)
 
-Arc Escrow coordinates commercial delivery between agents. The Supabase state machine handles deals, milestones and disputes, while financial release/refund actions fail closed until Circle contract execution returns a confirmed Arc transaction hash.
+Kestrel Escrow coordinates commercial delivery between agents. The Supabase state machine handles deals, milestones and disputes, while financial release/refund actions fail closed until Circle contract execution returns a confirmed Arc transaction hash.
 
 **Key features:**
 - Idempotent agent-to-agent agreements
@@ -321,24 +321,24 @@ Arc Escrow coordinates commercial delivery between agents. The Supabase state ma
 - Arcscan links only after confirmed transactions
 - Solidity reference contract with milestone events
 
-### Arc Radar — Builder Intelligence
+### Kestrel Radar — Builder Intelligence
 
 **`/landing/src/app/radar`** · [Live](https://arcsuite-app.vercel.app/radar)
 
-Arc Radar turns ecosystem research into a product map. It tracks public Arc builder activity, active primitives, traction signals, regional momentum and open gaps so Arc Suite can position itself as infrastructure for real builder demand instead of a generic dashboard.
+Kestrel Radar turns ecosystem research into a product map. It tracks public Arc builder activity, active primitives, traction signals, regional momentum and open gaps so Kestrel can position itself for real builder demand instead of becoming a generic dashboard.
 
 **Key features:**
 - Builder map across payments, agentic, FX, DeFi/RWA, infrastructure, prediction markets and regional chapters
 - Stack hints for Circle/Arc primitives such as CCTP, x402, Wallets, App Kit, Nanopayments, StableFX and Paymaster
 - Signal scoring by visibility, amplification, demo quality and strategic fit
 - Opportunity gap analysis for private, compliant stablecoin payments
-- Arc Suite fit matrix showing where Shield, Flow, Billing, Escrow, Gas, Wallet OS and Execution Control can serve other builders
+- Kestrel fit matrix showing where Shield, Flow, Billing, Escrow, Gas, Wallets and Execution Control can serve other builders
 
-### Arc Private — Private Stablecoin Payments
+### Kestrel Private — Private Stablecoin Payments
 
 **`/landing/src/app/private`** · [Live](https://arcsuite-app.vercel.app/private)
 
-Arc Private turns the largest Radar gap into a product surface: private, compliant USDC payment intents for agents, x402 APIs, invoices and escrow milestones. It is intentionally forward-compatible: sensitive commercial context can be hidden while policy-safe proof remains available to operators, providers and auditors.
+Kestrel Private turns the largest Radar gap into a product surface: private, compliant USDC payment intents for agents, x402 APIs, invoices and escrow milestones. It is intentionally forward-compatible: sensitive commercial context can be hidden while policy-safe proof remains available to operators, providers and auditors.
 
 **Key features:**
 - Reference flow for `screen -> encrypt intent -> settle -> reveal proof`
@@ -405,7 +405,7 @@ Each app is an independent Next.js 16 project sharing:
 
 ### Pilot API database
 
-The landing app exposes the Arc Suite pilot API. By default it uses the bundled demo seed.
+The landing app exposes the Kestrel pilot API. By default it uses the bundled demo seed.
 To switch it to Supabase/Postgres, run:
 
 ```sql
@@ -487,7 +487,7 @@ npm run dev --workspace=marketplace # → http://localhost:3003
 guards, CORS preflight, security headers, the three standalone apps, and every
 product dashboard exposed by the landing app: Shield, Flow, Billing, Escrow, Gas,
 Wallet OS, Execution Control, Radar, Private, and Blueprints. GitHub Actions also runs this monitor every 30
-minutes through `Arc Suite Production Monitor`.
+minutes through `Kestrel Production Monitor`.
 The monitor records per-check latency, writes a Markdown run summary in GitHub
 Actions, warns above `ARC_MONITOR_LATENCY_WARN_MS` (default `5000`) and fails above
 `ARC_MONITOR_LATENCY_FAIL_MS` (default `15000`).
@@ -499,7 +499,7 @@ repository secrets:
 
 The notifier is dependency-free and skips missing sinks, so the workflow stays usable
 before alert destinations are configured.
-To test delivery without breaking production, run `Arc Suite Production Monitor`
+To test delivery without breaking production, run `Kestrel Production Monitor`
 manually from GitHub Actions with `send_test_alert=true`.
 
 Runtime Sentry is configured in all Next.js apps with `@sentry/nextjs`.
@@ -554,14 +554,14 @@ The endpoint is `POST /api/settlements/arc`. It requires a workspace API key wit
 demo sessions remain read-only. Recipients must be allowlisted and every request
 must include an idempotency key.
 
-## Arc Shield compliance screening
+## Kestrel Shield compliance screening
 
-Apply `landing/supabase/migrations/2026062102_arc_shield.sql`. Arc Shield reuses
+Apply `landing/supabase/migrations/2026062102_arc_shield.sql`. Kestrel Shield reuses
 `CIRCLE_API_KEY`, `ARC_API_KEY`, `SUPABASE_URL`, and `SUPABASE_SERVICE_ROLE_KEY`.
 
 The endpoint is `GET|POST /api/shield/screenings`. Circle Compliance Engine is
 available only to eligible Circle customers; a provider `401` or `403` is stored
-as `provider_error` and Arc Shield returns a `review` decision.
+as `provider_error` and Kestrel Shield returns a `review` decision.
 
 Arc Testnet:
 - **Chain ID**: 5042002
@@ -569,7 +569,7 @@ Arc Testnet:
 - **Block explorer**: [testnet.arcscan.app](https://testnet.arcscan.app)
 - **Faucet**: [faucet.circle.com](https://faucet.circle.com)
 
-## Arc Escrow contract execution
+## Kestrel Escrow contract execution
 
 Apply `landing/supabase/migrations/2026062203_arc_escrow.sql`. The reference contract is
 `contracts/ArcEscrow.sol`; deploy it on `ARC-TESTNET` through Circle Contracts, then configure:
@@ -583,9 +583,9 @@ The Escrow API records submissions and disputes in Supabase. `release` and `refu
 fail closed until the Circle Developer-Controlled Wallet confirms the contract
 execution and returns an Arc transaction hash.
 
-## Arc Gas sponsorship control
+## Kestrel Gas sponsorship control
 
-Apply `landing/supabase/migrations/2026062301_arc_gas.sql`. Arc Gas provides:
+Apply `landing/supabase/migrations/2026062301_arc_gas.sql`. Kestrel Gas provides:
 
 - per-agent per-transaction, daily and monthly gas limits;
 - Circle Gas Station and Paymaster policy modes;
@@ -597,9 +597,9 @@ The endpoints are `GET /api/gas/overview`, `POST /api/gas/sponsorships`, and
 receipts can be attached after Circle execution while policy decisions remain
 fail-closed in Supabase.
 
-## Arc Wallet OS
+## Kestrel Wallets
 
-Apply `landing/supabase/migrations/2026062302_arc_wallet_os.sql`. Arc Wallet OS provides:
+Apply `landing/supabase/migrations/2026062302_arc_wallet_os.sql`. Kestrel Wallets provides:
 
 - developer-controlled, user-controlled and modular wallet inventory;
 - workspace roles and custody-specific recovery paths;
@@ -633,7 +633,7 @@ five minutes when the repository secret `ARC_CRON_SECRET` contains the same valu
 
 ## Built for Arc/Circle
 
-Arc Suite is designed for the **Arc community** and **Circle team** as a proof that agentic payments need a complete execution path:
+Kestrel is designed for the **Arc community** and **Circle team** as a proof that agentic payments need a complete execution path:
 
 - **Arc Testnet settlement readiness:** the workflow records a transaction hash and explorer link when configured, otherwise it exposes the readiness/fallback state.
 - **QuickNode/RPC readiness:** Ops Health exposes Arc RPC latency, chain ID, explorer, indexing status and fallback RPC state.

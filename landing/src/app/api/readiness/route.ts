@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { requireArcApiKey } from "@/lib/backend/auth"
 import { createRequestId, logOperationalEvent, requestIdHeaders } from "@/lib/backend/observability"
 import { checkSupabaseReadiness } from "@/lib/backend/supabase"
+import { getExternalIntegrationReadiness } from "@/lib/backend/external-integrations"
 
 export async function GET(request: NextRequest) {
   const requestId = createRequestId(request)
@@ -9,6 +10,7 @@ export async function GET(request: NextRequest) {
   if (unauthorized) return unauthorized
 
   const readiness = await checkSupabaseReadiness()
+  const integrations = getExternalIntegrationReadiness()
   if (!readiness.ok) {
     logOperationalEvent({
       details: {
@@ -24,8 +26,9 @@ export async function GET(request: NextRequest) {
   return NextResponse.json(
     {
       ok: readiness.ok,
-      service: "arc-suite-pilot-api",
+      service: "kestrel-pilot-api",
       supabase: readiness,
+      integrations,
     },
     { headers: requestIdHeaders(requestId), status: readiness.ok ? 200 : 503 },
   )

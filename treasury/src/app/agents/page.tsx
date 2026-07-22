@@ -5,7 +5,7 @@ import { AgentsGrid } from "@/components/agents/AgentsGrid"
 import { getTreasuryDashboardData } from "@/lib/arc-api"
 import { isTreasuryDemoMode } from "@/lib/treasury-session-server"
 
-export const metadata: Metadata = { title: "Agents — Arc Treasury" }
+export const metadata: Metadata = { title: "Agents — Kestrel Treasury" }
 export const dynamic = "force-dynamic"
 
 export default async function AgentsPage() {

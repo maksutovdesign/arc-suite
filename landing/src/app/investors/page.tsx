@@ -32,7 +32,7 @@ export default function InvestorPage() {
         <p className="kicker">Investor page</p>
         <h1>The control plane for autonomous USDC commerce.</h1>
         <p>
-          Arc Suite is a connected infrastructure product for AI agents that spend,
+          Kestrel is a connected infrastructure product for AI agents that spend,
           earn trust, and access x402 services. The wedge is not a dashboard; it is
           an enforcement loop that gets stronger as agents and API providers join.
         </p>
@@ -66,7 +66,7 @@ export default function InvestorPage() {
           <p>
             Autonomous agents need spend limits, wallets, reporting, reputation, and
             service access rules. API providers need a signal before they serve the
-            request. Arc Suite connects both sides of that market.
+            request. Kestrel connects both sides of that market.
           </p>
           <p>
             The system compounds: more agents create more behavior, better behavior

@@ -23,13 +23,13 @@ import { SiteHeader } from "../SiteHeader"
 import { arcNetworkResilience } from "../../lib/network-resilience"
 
 export const metadata = {
-  title: "Grant Review Package - Arc Suite",
-  description: "A concise grant reviewer package for Arc Suite: demo flow, Circle integrations, current status and roadmap.",
+  title: "Grant Review Package - Kestrel",
+  description: "A measurable grant package for Kestrel: App Kit execution, monetization, proof, milestones and production roadmap.",
 }
 
 const latestProofUrl = "/proof?id=flow_agentic_01a50e12e6c4"
 const demoUrl = "https://arcsuite-app.vercel.app/judge"
-const releaseUrl = "https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.07.14-gateway-memos"
+const releaseUrl = "https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.07.22-kestrel-app-kit"
 const videoUrl = "https://drive.google.com/file/d/1TpkfepfGCEXDfh-YWIfGLRGuohHAJmjP/view?usp=sharing"
 
 const reviewerSteps = [
@@ -66,14 +66,14 @@ const integrationMatrix = [
   },
   {
     name: "Unified Balance Kit",
-    status: "Mapped",
-    detail: "Gateway deposit, balance, forwarded spend and latest transaction hash capture are represented as Wallet OS readiness states.",
+    status: "Integrated",
+    detail: "The Money Movement console uses App Kit estimateSpend/spend with auto-allocation, forwarding, custom fees and resumable error handling.",
     icon: HandCoins,
   },
   {
     name: "Swap Kit / liquidity",
-    status: "Mapped",
-    detail: "Arc Flow models cross-chain swap routing, destination recipients, status tracking and failure trace handling for stablecoin-native flows.",
+    status: "Integrated",
+    detail: "The App Kit adapter estimates and executes USDC/EURC swaps with slippage, approve strategy and a disclosed developer fee.",
     icon: Network,
   },
   {
@@ -96,14 +96,14 @@ const integrationMatrix = [
   },
   {
     name: "CCTP",
-    status: "Planned",
-    detail: "Roadmap item for Arc to Ethereum/Base cross-chain USDC movement after mainnet readiness.",
+    status: "Integrated",
+    detail: "App Kit Bridge uses CCTP for supported Arc Testnet routes and preserves retryable step state, hashes and explorer URLs.",
     icon: Network,
   },
   {
     name: "Paymaster / Gas",
     status: "Planned",
-    detail: "Arc Gas models sponsored transactions, per-agent limits and USDC-funded execution policies.",
+    detail: "Kestrel Gas models sponsored transactions, per-agent limits and USDC-funded execution policies.",
     icon: Gauge,
   },
   {
@@ -121,7 +121,8 @@ const currentStatus = [
   ["Network resilience", arcNetworkResilience.summary],
   ["Application layer", "Wallet OS now models Arc-native money movement as one operational account instead of raw wallet/chain mechanics."],
   ["Transaction memos", "Proof pages now attach business context to payment evidence: invoice, agent, customer and batch references."],
-  ["Stablecoin Kits", "Wallet OS and Flow map Unified Balance Kit, Gateway spend, Swap Kit routing and latest tx hash capture into the review path."],
+  ["App Kit core", "The Money Movement console imports the official App Kit SDK and exposes live estimate/execute paths for Unified Balance, Bridge, Swap and Send."],
+  ["Monetization", "A 75 bps developer fee is disclosed before signature, with the 90% Kestrel / 10% Arc split shown explicitly."],
   ["Circle Wallet execution", "Wallet OS exposes source wallet, token lookup and balance readiness before any policy-gated transfer is attempted."],
   ["Roadmap", "Grant unlocks live Arc deployment, Circle Wallets expansion, CCTP and contract work."],
 ] as const
@@ -129,7 +130,7 @@ const currentStatus = [
 const ecosystemSignals = [
   [
     "Arc x Chainlink",
-    "Arc Suite maps this into Interop: CCIP route evidence, oracle risk hashes, feed freshness and proof-gated settlement states.",
+    "Kestrel maps this into Interop: CCIP route evidence, oracle risk hashes, feed freshness and proof-gated settlement states.",
   ],
   [
     "Arc x Pulsar",
@@ -141,7 +142,7 @@ const ecosystemSignals = [
   ],
   [
     "Stablecoin Kits",
-    "Arc Suite maps Unified Balance Kit, Swap Kit and Gateway forwarding updates into product states instead of exposing low-level routing complexity.",
+    "Kestrel uses the official App Kit SDK for Unified Balance, Swap, Bridge and Send while keeping low-level routing complexity behind one product flow.",
   ],
   [
     "Arc x Tradable / Uniswap",
@@ -187,14 +188,32 @@ const arcDocsAlignment = [
 ] as const
 
 const nextBuildOrder = [
-  ["01", "Memo Proof v2", "Make transaction memos first-class in Treasury and Proof: invoice, job, batch, agent and provider references."],
-  ["02", "Unified Balance Console", "Show one spendable balance with Gateway funding, forwarded spend, latest tx hash and route status."],
-  ["03", "Interop Route Runner", "Turn CCIP route readiness into a runnable route history with selector, router, message id and retry state."],
-  ["04", "Real Circle Wallet execution", "Create/read agent wallets, fetch live balance, execute testnet USDC transfer and write tx status to Supabase."],
-  ["05", "Risk + artifact gating", "Keep jobs in review when policy passed but receipt, memo, validation or network evidence is missing."],
+  ["01", "Independent identity", "Kestrel leads every product surface; Arc appears only as the supported network and the Built on Arc infrastructure signature."],
+  ["02", "App Kit execution", "Ship Unified Balance → Swap/Bridge → Arc settlement as one wallet-signed flow with preflight estimates."],
+  ["03", "Revenue + proof", "Collect developer fees, disclose the full breakdown and persist hashes, explorer links, trace IDs and recovery state."],
+  ["04", "Production controls", "Connect Turnkey policy signing, one compliance provider, Goldsky events and live oracle freshness checks."],
+  ["05", "Measured pilots", "Onboard pilot operators and report wallets, volume, execution success, proof completeness, fee revenue and recovery time."],
+] as const
+
+const grantMetrics = [
+  ["Pilot adoption", "3 design partners", "Operator, API provider and treasury team using the same execution flow."],
+  ["Transaction volume", "1,000 testnet operations", "Send, Bridge, Swap and Unified Balance executions with unique trace IDs."],
+  ["Settled volume", "10,000 USDC", "Cumulative testnet volume before a production rollout decision."],
+  ["Proof completeness", "> 99%", "Settled operations with policy, fee, hash, explorer and receipt evidence."],
+  ["Execution reliability", "> 95%", "Operations reaching a terminal state without manual intervention."],
+  ["Recovery objective", "< 10 minutes", "Resumable destination-mint failures retried before attestation expiration."],
+  ["Revenue signal", "75 bps", "Disclosed fee; 90% of the custom fee routes to Kestrel and 10% to Arc."],
+  ["Quote performance", "p95 < 3 seconds", "Route and fee estimate returned before a wallet signature is requested."],
 ] as const
 
 const reviewerConsole = [
+  {
+    title: "Money Movement",
+    detail: "Estimate and execute Unified Balance, Bridge, Swap or Send with fees and proof.",
+    href: "/money",
+    icon: HandCoins,
+    external: false,
+  },
   {
     title: "Live demo",
     detail: "Open the working operator demo and inspect the product surface.",
@@ -254,10 +273,10 @@ const reviewerConsole = [
 ] as const
 
 const roadmap = [
-  ["Weeks 1-4", "Arc deployment + Circle Wallets", "Deploy the core Treasury, Reputation and Marketplace infrastructure to Arc-ready production paths and expand real wallet creation/balance reads."],
-  ["Weeks 5-8", "Multicurrency Wallet OS", "Connect the agent account layer to live balances, USDC/EURC account views, Unified Balance Kit states, FX-ready routes, card-like spend controls and hidden gas/CCTP status."],
-  ["Weeks 9-12", "On-chain reputation + x402 + oracle risk", "Move reputation score storage and API access gating toward on-chain records, complete the x402 payment loop, attach transaction memos and Chainlink data/CCIP route evidence to policy decisions."],
-  ["Weeks 13-16", "CCTP / CCIP + public beta", "Add cross-chain USDC and interoperability support, provider onboarding, public docs and the first external API/provider integrations."],
+  ["Weeks 1-4", "Execution beta", "Validate the live App Kit flow, persist transaction proofs, add route telemetry and complete the first 100 wallet-signed testnet operations."],
+  ["Weeks 5-8", "Policy and compliance", "Add Turnkey-backed agent signing, a provider-neutral risk adapter and fail-closed checks before quote confirmation."],
+  ["Weeks 9-12", "Data and reconciliation", "Stream onchain events through Goldsky, reconcile App Kit operations and expose success, latency, volume and fee dashboards."],
+  ["Weeks 13-16", "Pilots and revenue", "Onboard three design partners, cross 1,000 testnet operations and validate the 75 bps execution-fee model."],
 ] as const
 
 const knownLimits = [
@@ -274,7 +293,7 @@ export default function GrantPage() {
         <section className="grant-hero">
           <div>
             <p className="kicker">Grant review package</p>
-            <h1>Arc Suite is a production web MVP for agentic USDC commerce.</h1>
+            <h1>Kestrel is a production control plane for agentic money movement.</h1>
             <p>
               This page gives reviewers one clean path through the product: run the agentic workflow,
               inspect the proof, confirm Circle integration status, and see how Arc-native money movement
@@ -296,8 +315,8 @@ export default function GrantPage() {
 
           <aside className="grant-summary-card" aria-label="Grant summary">
             <span><BadgeCheck size={16} /> Review status</span>
-            <strong>Hackathon and grant ready</strong>
-            <p>One product story, one proof path, one technical roadmap.</p>
+            <strong>Production path defined</strong>
+            <p>Independent brand, live App Kit adapter, fee model and measurable milestones.</p>
             <a href={releaseUrl} target="_blank" rel="noreferrer">
               Latest release <ArrowRight size={15} />
             </a>
@@ -433,6 +452,27 @@ export default function GrantPage() {
                 <span>{detail}</span>
               </div>
             ))}
+          </div>
+        </section>
+
+        <section className="grant-section" id="grant-metrics">
+          <div className="submission-section-head">
+            <p className="kicker">Measurable milestones</p>
+            <h2>What grant progress will be measured against.</h2>
+          </div>
+          <div className="grant-status-grid">
+            {grantMetrics.map(([title, target, detail]) => (
+              <div key={title}>
+                <Gauge size={18} />
+                <strong>{title}</strong>
+                <p><b>{target}</b> · {detail}</p>
+              </div>
+            ))}
+          </div>
+          <div className="grant-proof-links">
+            <a href="https://docs.arc.io/app-kit" target="_blank" rel="noreferrer">App Kit docs <ArrowRight size={15} /></a>
+            <a href="https://docs.arc.io/app-kit/concepts/unified-balance-fees" target="_blank" rel="noreferrer">Unified Balance fees <ArrowRight size={15} /></a>
+            <a href="https://community.arc.io/en/public/blogs/circle-developer-grants-program-relaunches-2026-05-14" target="_blank" rel="noreferrer">Circle Developer Grants <ArrowRight size={15} /></a>
           </div>
         </section>
 

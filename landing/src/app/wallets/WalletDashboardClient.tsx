@@ -69,7 +69,7 @@ export function WalletDashboardClient() {
   const [walletId, setWalletId] = useState(demoWalletOverview.wallets[0]?.id ?? "")
   const [policy, setPolicy] = useState<WalletSigningPolicy | null>(demoWalletOverview.policies[0] ?? null)
   const [action, setAction] = useState<WalletLifecycleEvent["action"]>("sign")
-  const [actor, setActor] = useState("Arc Operator")
+  const [actor, setActor] = useState("Kestrel Operator")
   const [detail, setDetail] = useState("Request Circle wallet operation under the active signing policy")
   const [busy, setBusy] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -89,7 +89,7 @@ export function WalletDashboardClient() {
       ])
       if (response.status === 401) throw new Error("Invalid API key or missing read scope.")
       const payload = await response.json() as { overview: WalletOverview | null }
-      if (!response.ok || !payload.overview) throw new Error("Arc Wallet OS migration is required.")
+      if (!response.ok || !payload.overview) throw new Error("Kestrel Wallets migration is required.")
       if (readinessResponse.ok) {
         const readinessPayload = await readinessResponse.json() as { readiness: ExecutionReadiness }
         setExecutionReadiness(readinessPayload.readiness)
@@ -100,7 +100,7 @@ export function WalletDashboardClient() {
       setPolicy(payload.overview.policies.find((item) => item.walletId === nextWalletId) ?? null)
       window.sessionStorage.setItem(API_KEY_STORAGE, key)
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "Could not load Arc Wallet OS.")
+      setError(reason instanceof Error ? reason.message : "Could not load Kestrel Wallets.")
     } finally {
       setBusy(null)
     }
@@ -181,7 +181,7 @@ export function WalletDashboardClient() {
       <div className="wallet-heading">
         <div>
           <p className="kicker">Circle wallet control plane</p>
-          <h1>Arc Wallet OS</h1>
+          <h1>Kestrel Wallets</h1>
           <p>Operate team and client wallets across developer-controlled, user-controlled and modular custody models.</p>
         </div>
         <div className="wallet-protocol"><WalletCards size={24} /><div><span>Arc Testnet</span><strong>One lifecycle, three custody models</strong><small>Circle receipt required for provider completion</small></div></div>
@@ -347,7 +347,7 @@ export function WalletDashboardClient() {
               <NumberField label="Per transaction, USDC" value={policy.transactionLimitUsdc} onChange={(value) => setPolicy({ ...policy, transactionLimitUsdc: value })} />
               <NumberField label="Daily limit, USDC" value={policy.dailyLimitUsdc} onChange={(value) => setPolicy({ ...policy, dailyLimitUsdc: value })} />
               <NumberField label="Minimum reputation" value={policy.requireReputationScore} onChange={(value) => setPolicy({ ...policy, requireReputationScore: value })} step="1" />
-              <label className="wallet-check"><input checked={policy.requireShield} onChange={(event) => setPolicy({ ...policy, requireShield: event.target.checked })} type="checkbox" /><span>Require Arc Shield</span></label>
+              <label className="wallet-check"><input checked={policy.requireShield} onChange={(event) => setPolicy({ ...policy, requireShield: event.target.checked })} type="checkbox" /><span>Require Kestrel Shield</span></label>
             </div>
             <button className="button secondary wallet-action" disabled={!apiKey.trim() || busy === "policy"} onClick={() => void savePolicy()} type="button"><Save size={16} /> Save policy</button>
           </> : <p>Connect with an API key to edit policy.</p>}

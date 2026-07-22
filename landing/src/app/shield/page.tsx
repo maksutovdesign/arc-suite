@@ -2,8 +2,8 @@ import { EcosystemNav } from "../EcosystemNav"
 import { ShieldDashboardClient } from "./ShieldDashboardClient"
 
 export const metadata = {
-  title: "Arc Shield — Compliance & Risk Engine",
-  description: "Circle-powered address screening and auditable policy decisions for Arc Suite.",
+  title: "Kestrel Shield — Compliance & Risk Engine",
+  description: "Circle-powered address screening and auditable policy decisions for Kestrel.",
 }
 
 export default function ShieldPage() {

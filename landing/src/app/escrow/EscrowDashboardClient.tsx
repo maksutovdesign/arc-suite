@@ -57,7 +57,7 @@ export function EscrowDashboardClient() {
       ])
       if (overviewResponse.status === 401 || agentsResponse.status === 401) throw new Error("Invalid API key or missing read scope.")
       const data = await overviewResponse.json() as Payload
-      if (!overviewResponse.ok || !data.overview) throw new Error("Arc Escrow migration is required.")
+      if (!overviewResponse.ok || !data.overview) throw new Error("Kestrel Escrow migration is required.")
       const agentData = await agentsResponse.json() as { agents: Agent[] }
       setOverview(data.overview)
       setAgents(agentData.agents)
@@ -66,7 +66,7 @@ export function EscrowDashboardClient() {
       setSellerAgentId((current) => current || agentData.agents.find((agent) => agent.id !== agentData.agents[0]?.id)?.id || "")
       window.sessionStorage.setItem(API_KEY_STORAGE, key)
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "Could not load Arc Escrow.")
+      setError(reason instanceof Error ? reason.message : "Could not load Kestrel Escrow.")
     } finally {
       setBusy(null)
     }
@@ -97,7 +97,7 @@ export function EscrowDashboardClient() {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-arc-api-key": apiKey.trim() },
         body: JSON.stringify({
-          title, description: "Created from the Arc Escrow operator console.",
+          title, description: "Created from the Kestrel Escrow operator console.",
           buyerAgentId, sellerAgentId,
           idempotencyKey: `escrow-ui:${crypto.randomUUID()}`,
           milestones: [{ title: milestoneTitle, description: "Operator-defined delivery milestone.", amountUsdc: amount }],
@@ -153,7 +153,7 @@ export function EscrowDashboardClient() {
       <div className="escrow-heading">
         <div>
           <p className="kicker">Programmable agent deals</p>
-          <h1>Arc Escrow</h1>
+          <h1>Kestrel Escrow</h1>
           <p>Lock commercial intent into milestones, route disputes, and release USDC only after confirmed contract execution.</p>
         </div>
         <div className={`escrow-contract ${onchain ? "is-live" : ""}`}>

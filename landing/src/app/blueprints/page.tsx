@@ -130,7 +130,7 @@ export default function BlueprintsPage() {
             <p className="kicker">Templates</p>
             <h2>Six reference flows from the Arc builder map.</h2>
             <p>
-              Each blueprint names the observed ecosystem pattern, the Arc Suite modules
+              Each blueprint names the observed ecosystem pattern, the Kestrel modules
               that implement it, and the shortest path from static demo to pilot-ready MVP.
             </p>
           </div>
@@ -200,7 +200,7 @@ export default function BlueprintsPage() {
           <FileCheck2 size={24} />
           <div>
             <p className="kicker">Investor proof</p>
-            <h2>Blueprints make Arc Suite feel expandable, not scattered.</h2>
+            <h2>Blueprints make Kestrel feel expandable, not scattered.</h2>
             <p>
               The project now has a visible mechanism for adding new products from ecosystem demand:
               Radar finds the pattern, Blueprints standardizes it, then Flow, Billing, Shield,

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" role="img" aria-labelledby="title">
+  <title id="title">Kestrel</title>
+  <defs><linearGradient id="g" x1="7" y1="7" x2="41" y2="41" gradientUnits="userSpaceOnUse"><stop stop-color="#7DD3FC"/><stop offset="1" stop-color="#6366F1"/></linearGradient></defs>
+  <rect width="48" height="48" rx="14" fill="#101826"/>
+  <path d="M14 10v28h7.2V27.4L32.6 38H42L27.3 24.1 41 10h-9.1L21.2 21.4V10H14Z" fill="url(#g)"/>
+  <path d="m31.7 8 9.1 2.2-2.4 9" fill="none" stroke="#E8F4FF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" opacity=".9"/>
+</svg>

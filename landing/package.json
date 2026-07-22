@@ -9,12 +9,15 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@circle-fin/adapter-viem-v2": "^1.14.0",
+    "@circle-fin/app-kit": "^1.10.0",
     "@circle-fin/developer-controlled-wallets": "^9.6.0",
     "@sentry/nextjs": "^10.59.0",
     "lucide-react": "^1.17.0",
     "next": "16.2.7",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "viem": "^2.55.5"
   },
   "devDependencies": {
     "@types/node": "^20",

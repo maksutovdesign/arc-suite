@@ -2,7 +2,7 @@
 
 ## Recommended project description
 
-Arc Suite is an operating layer for autonomous commerce on Arc and Circle. It gives AI agents the economic control plane they need to buy services with USDC safely: identity, budgets, x402-style offers, policy and compliance checks, Circle Wallet execution readiness, Arc settlement evidence, signed provider receipts, reputation updates and reviewer-verifiable proof records.
+Kestrel is an independent operating layer for autonomous commerce built on Arc and Circle. It gives AI agents the economic control plane they need to buy services with USDC safely: identity, budgets, x402-style offers, App Kit routing, policy and compliance checks, settlement evidence, signed provider receipts, reputation updates and reviewer-verifiable proof records.
 
 The product is live as a production web MVP at <https://arcsuite-app.vercel.app>. Landing, Treasury, Reputation and Marketplace now run through one canonical domain with shared navigation and deep links. The reviewer flow demonstrates an agent requesting a paid API, receiving an offer, passing policy checks, following a settlement-ready Arc Testnet path, receiving a provider receipt and producing an auditable proof trail.
 
@@ -19,7 +19,7 @@ The final grant release also includes Supabase-backed APIs, Sentry integration, 
 - Reputation: <https://arcsuite-app.vercel.app/reputation>
 - Marketplace: <https://arcsuite-app.vercel.app/marketplace>
 - Source code: <https://github.com/maksutovdesign/arc-suite>
-- Final release: <https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.07.19-final>
+- Current release: <https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.07.22-kestrel-app-kit>
 - Demo video: <https://drive.google.com/file/d/1TpkfepfGCEXDfh-YWIfGLRGuohHAJmjP/view?usp=sharing>
 
 ## What the grant release delivers
@@ -56,8 +56,8 @@ The final grant release also includes Supabase-backed APIs, Sentry integration, 
 
 ## Accuracy note for reviewers
 
-Arc Suite is a production web MVP with a settlement-ready Arc Testnet path. It records Arc settlement proof when the Circle/Arc execution path is configured. We do not claim live Arc mainnet settlement or fully autonomous production money movement without the corresponding transaction evidence.
+Kestrel is a production web MVP with an Arc Testnet path. It records settlement proof when the Circle/App Kit execution path is configured. We do not claim live Arc mainnet settlement or fully autonomous production money movement without the corresponding transaction evidence.
 
 ## One-line pitch
 
-Arc Suite turns autonomous agents into accountable economic actors: an agent can request an API, pass policy, pay in USDC, receive a signed receipt, update reputation and leave a verifiable proof trail.
+Kestrel turns autonomous agents into accountable economic actors: an agent can request an API, pass policy, pay in USDC, receive a signed receipt, update reputation and leave a verifiable proof trail.

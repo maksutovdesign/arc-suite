@@ -19,7 +19,7 @@ const spaceMono = Space_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "Arc Treasury — Agent Budget Manager",
+  title: "Kestrel Treasury — Agent Budget Manager",
   description: "Manage, monitor and control AI agent spending on Arc",
 }
 
