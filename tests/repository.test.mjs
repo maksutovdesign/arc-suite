@@ -78,3 +78,17 @@ test("Kestrel publishing metadata includes app and social assets", async () => {
   assert.match(manifest, /Built on Arc/)
   assert.match(socialImage, /Move money\. Apply policy\. Keep proof\./)
 })
+
+test("Money Movement is present in every product navigation", async () => {
+  const files = [
+    "landing/src/app/EcosystemNav.tsx",
+    "treasury/src/components/dashboard/EcosystemNav.tsx",
+    "reputation/src/components/dashboard/EcosystemNav.tsx",
+    "marketplace/src/components/dashboard/EcosystemNav.tsx",
+  ]
+  for (const file of files) {
+    const source = await read(file)
+    assert.match(source, /label: "Money Movement"/)
+    assert.match(source, /\/money/)
+  }
+})

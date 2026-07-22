@@ -5,6 +5,7 @@ import {
   BadgeCheck,
   Boxes,
   Braces,
+  CircleDollarSign,
   Fuel,
   Handshake,
   Landmark,
@@ -72,6 +73,22 @@ const productDetails = [
       ["99.72%", "avg uptime"],
     ],
     bullets: ["x402 API discovery", "Oracle-powered API categories", "USDC-native access path"],
+  },
+  {
+    key: "money",
+    name: "Kestrel Money Movement",
+    eyebrow: "Money movement",
+    icon: CircleDollarSign,
+    title: "One controlled flow for multichain USDC movement.",
+    text: "Estimate and execute Unified Balance, Bridge, Swap and Send through Circle App Kit with wallet-signed policy, compliance screening, transparent fees and transaction proof.",
+    image: "",
+    imageAlt: "Kestrel Money Movement console showing App Kit routes, policy controls, fee breakdown and transaction proof",
+    stats: [
+      ["4", "movement modes"],
+      ["75 bps", "developer fee"],
+      ["1", "policy proof"],
+    ],
+    bullets: ["Unified Balance, Bridge, Swap and Send", "Signed compliance preflight", "Fee and transaction proof"],
   },
   {
     key: "provider",
@@ -275,7 +292,7 @@ const steps = [
 ]
 
 const metrics = [
-  ["15", "connected products"],
+  ["16", "connected products"],
   ["25,482", "agent transactions in demo"],
   ["24.8M", "marketplace request volume"],
   ["99.72%", "average uptime in marketplace stats"],
@@ -380,20 +397,21 @@ const readinessSignals = [
 const liveDemoUrl = "/treasury"
 const latestProofUrl = "/proof?id=flow_agentic_01a50e12e6c4"
 
-// The first three products have their own internal system. Their switcher CTA
+// The first four products have their own internal system. Their switcher CTA
 // must open the live product on the single Kestrel domain (Multi-Zones).
 const productLiveUrls: Record<string, { href: string; label: string }> = {
   treasury: { href: "/treasury", label: "Open live Treasury" },
   reputation: { href: "/reputation", label: "Open live Reputation" },
   marketplace: { href: "/marketplace", label: "Open live Marketplace" },
+  money: { href: "/money", label: "Open Money Movement" },
 }
 const realSettlementExplorerUrl =
   "https://testnet.arcscan.app/tx/0x41210539368a78f6bbc08b088a95430dc0f64e9379ad9226173fc3ce565d733b"
 
-function readProductFromUrl() {
+function readProductFromUrl(): string {
   if (typeof window === "undefined") return productDetails[0].key
   const requestedProduct = new URLSearchParams(window.location.search).get("product")
-  return productDetails.some((product) => product.key === requestedProduct)
+  return requestedProduct && productDetails.some((product) => product.key === requestedProduct)
     ? requestedProduct
     : productDetails[0].key
 }
@@ -404,7 +422,7 @@ type ProductLandingClientProps = {
 }
 
 export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: ProductLandingClientProps) {
-  const [activeProductKey, setActiveProductKey] = useState(readProductFromUrl)
+  const [activeProductKey, setActiveProductKey] = useState(productDetails[0].key)
   const pilotSummary = initialPilotSummary
   const apiStatus = initialApiStatus
 
@@ -465,7 +483,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
   const activeProduct = liveProductDetails.find((product) => product.key === activeProductKey) ?? liveProductDetails[0]
   const liveMetrics = pilotSummary
     ? [
-        ["15", "connected products"],
+        ["16", "connected products"],
         [formatCompact(pilotSummary.marketplace.requests), "marketplace request volume"],
         [`${pilotSummary.marketplace.avgUptimePct}%`, "average uptime from API"],
         [apiStatus === "live" ? "Live" : "Fallback", "pilot API status"],
@@ -685,7 +703,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
       <section className="section" id="system">
         <div className="section-heading">
           <p className="kicker">The product system</p>
-          <h2>Fifteen connected products. One economic operating layer.</h2>
+          <h2>Sixteen connected products. One economic operating layer.</h2>
           <p>
             Kestrel is designed around a shared cast of agents moving through the
             complete economic journey, from wallet spend to trust scoring to service access.
@@ -751,7 +769,23 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
                 <span />
                 <strong>{activeProduct.name}</strong>
               </div>
-              {activeProduct.key === "shield" ? (
+              {activeProduct.key === "money" ? (
+                <div className="flow-product-preview" aria-label={activeProduct.imageAlt}>
+                  <div className="shield-preview-top"><span>MONEY MOVEMENT / APP KIT</span><strong>POLICY READY</strong></div>
+                  {[
+                    ["01", "Unified Balance", "ROUTE READY"],
+                    ["02", "Wallet-signed policy", "ENFORCED"],
+                    ["03", "Circle screening", "FAIL CLOSED"],
+                    ["04", "Transaction proof", "CAPTURED"],
+                  ].map(([index, label, status]) => (
+                    <div className="flow-preview-step" key={label}>
+                      <i>{index}</i><span>{label}</span><b>{status}</b>
+                    </div>
+                  ))}
+                  <div className="flow-preview-receipt"><span>Developer fee</span><code>75 bps · disclosed</code></div>
+                  <a href="/money">Open Money Movement</a>
+                </div>
+              ) : activeProduct.key === "shield" ? (
                 <div className="shield-product-preview" aria-label={activeProduct.imageAlt}>
                   <div className="shield-preview-top">
                     <span>ARC SHIELD / SCREENING</span>

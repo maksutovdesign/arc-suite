@@ -2,6 +2,7 @@ import {
   BadgeCheck,
   Boxes,
   Braces,
+  CircleDollarSign,
   Fuel,
   Handshake,
   Landmark,
@@ -19,6 +20,7 @@ type ProductId =
   | "treasury"
   | "reputation"
   | "marketplace"
+  | "money"
   | "provider"
   | "flow"
   | "billing"
@@ -38,6 +40,7 @@ export function EcosystemNav({ current }: { current: ProductId }) {
     treasury: `${suiteUrl}/treasury`,
     reputation: `${suiteUrl}/reputation`,
     marketplace: `${suiteUrl}/marketplace`,
+    money: `${suiteUrl}/money`,
     provider: `${suiteUrl}/provider`,
     flow: `${suiteUrl}/flow`,
     billing: `${suiteUrl}/billing`,
@@ -54,6 +57,7 @@ export function EcosystemNav({ current }: { current: ProductId }) {
     { id: "treasury", label: "Treasury", url: urls.treasury, color: "#5fbfff", icon: Landmark },
     { id: "reputation", label: "Reputation", url: urls.reputation, color: "#a78bfa", icon: BadgeCheck },
     { id: "marketplace", label: "Marketplace", url: urls.marketplace, color: "#34d399", icon: Store },
+    { id: "money", label: "Money Movement", url: urls.money, color: "#7dd3fc", icon: CircleDollarSign },
     { id: "provider", label: "Provider", url: urls.provider, color: "#f472b6", icon: Braces },
     { id: "flow", label: "Flow", url: urls.flow, color: "#22d3ee", icon: Workflow },
     { id: "billing", label: "Billing", url: urls.billing, color: "#fbbf24", icon: ReceiptText },
@@ -95,7 +99,7 @@ export function EcosystemNav({ current }: { current: ProductId }) {
               title={`Open Kestrel ${product.label}`}
             >
               <Icon aria-hidden="true" size={14} strokeWidth={1.8} />
-              <span className="hidden sm:inline">Arc {product.label}</span>
+              <span className="hidden sm:inline">{product.label}</span>
               {isCurrent && <span className="size-1.5 rounded-full" style={{ background: product.color }} />}
             </a>
           )
