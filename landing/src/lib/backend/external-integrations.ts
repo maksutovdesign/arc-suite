@@ -1,7 +1,9 @@
+import { getMoneyPolicyConfiguration } from "./money-policy"
+
 export type IntegrationState = "configured" | "partial" | "missing"
 
 export type ExternalIntegration = {
-  id: "app-kit" | "turnkey" | "risk" | "goldsky" | "pyth" | "chainlink" | "lifi"
+  id: "app-kit" | "money-policy" | "turnkey" | "risk" | "goldsky" | "pyth" | "chainlink" | "lifi"
   name: string
   state: IntegrationState
   capabilities: string[]
@@ -11,6 +13,7 @@ export type ExternalIntegration = {
 
 export function getExternalIntegrationReadiness(): ExternalIntegration[] {
   const riskProvider = readEnv("KESTREL_RISK_PROVIDER")?.toLowerCase() ?? "circle"
+  const moneyPolicy = getMoneyPolicyConfiguration()
   const riskRequirements = riskProvider === "trm"
     ? ["TRM_API_KEY"]
     : riskProvider === "elliptic"
@@ -26,6 +29,16 @@ export function getExternalIntegrationReadiness(): ExternalIntegration[] {
       detail: "SDK and Viem browser-wallet adapter are installed. Execution uses the user's connected signer.",
       forceConfigured: true,
     }),
+    {
+      id: "money-policy",
+      name: "Money Movement execution policy",
+      state: moneyPolicy.enabled ? "configured" : moneyPolicy.feeRecipient || moneyPolicy.complianceConfigured ? "partial" : "missing",
+      capabilities: ["wallet-signed intent", "amount cap", "recipient allowlist", "fee enforcement", "Circle screening"],
+      missing: moneyPolicy.missing,
+      detail: moneyPolicy.enabled
+        ? `Fail-closed execution is enabled with a ${moneyPolicy.maxAmountUsdc} USDC cap.`
+        : "Quotes remain available, but execution is blocked until every server policy requirement is configured.",
+    },
     integration({
       id: "turnkey",
       name: "Turnkey policy signing",

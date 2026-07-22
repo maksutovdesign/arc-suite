@@ -3,14 +3,34 @@
 import { AppKit, KitError } from "@circle-fin/app-kit"
 import { createViemAdapterFromProvider, type CreateViemAdapterFromProviderParams } from "@circle-fin/adapter-viem-v2"
 import { ArrowRight, BadgeDollarSign, CheckCircle2, CircleDollarSign, ExternalLink, RefreshCw, Route, ShieldCheck, WalletCards } from "lucide-react"
-import { useMemo, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 
 type BrowserProvider = CreateViemAdapterFromProviderParams["provider"]
 type AppAdapter = Awaited<ReturnType<typeof createViemAdapterFromProvider>>
 type Operation = "spend" | "bridge" | "swap" | "send"
 type Chain = "Arc_Testnet" | "Base_Sepolia" | "Ethereum_Sepolia" | "Arbitrum_Sepolia"
 type TimelineItem = { label: string; state: "pending" | "active" | "done" | "error"; detail: string }
-type Proof = { operation: Operation; state: string; traceId: string; recordedAt: string; txHashes: string[]; explorerUrls: string[]; raw: unknown }
+type PolicyProof = {
+  decision: string
+  reason: string
+  riskScore: string
+  riskCategories: string[]
+  ruleName: string | null
+  provider: string
+  screeningChain: string
+  screeningBasis: string
+}
+type Proof = { operation: Operation; state: string; traceId: string; recordedAt: string; txHashes: string[]; explorerUrls: string[]; policy: PolicyProof | null; raw: unknown }
+type MoneyPolicyConfiguration = {
+  enabled: boolean
+  feeBps: number
+  feeRecipient: string | null
+  maxAmountUsdc: number
+  allowlistRequired: boolean
+  complianceConfigured: boolean
+  signatureTtlSeconds: number
+  missing: string[]
+}
 
 type Eip6963Detail = {
   info: { uuid: string; name: string; icon: string; rdns: string }
@@ -38,6 +58,7 @@ const operationCopy: Record<Operation, { title: string; description: string }> =
 
 export function MoneyMovementClient() {
   const adapterRef = useRef<AppAdapter | null>(null)
+  const providerRef = useRef<BrowserProvider | null>(null)
   const [wallet, setWallet] = useState<{ address: string; name: string } | null>(null)
   const [operation, setOperation] = useState<Operation>("spend")
   const [sourceChain, setSourceChain] = useState<Chain>("Base_Sepolia")
@@ -45,6 +66,7 @@ export function MoneyMovementClient() {
   const [amount, setAmount] = useState("1.00")
   const [recipient, setRecipient] = useState("")
   const [feeRecipient, setFeeRecipient] = useState(configuredFeeRecipient)
+  const [policyConfiguration, setPolicyConfiguration] = useState<MoneyPolicyConfiguration | null>(null)
   const [busy, setBusy] = useState<"connect" | "quote" | "execute" | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [estimate, setEstimate] = useState<unknown>(null)
@@ -55,8 +77,26 @@ export function MoneyMovementClient() {
   const developerFee = Number.isFinite(amountNumber) ? amountNumber * feeBps / 10_000 : 0
   const appRevenue = developerFee * 0.9
   const arcShare = developerFee * 0.1
-  const canExecute = Boolean(wallet && adapterRef.current && recipient && amountNumber > 0 && feeRecipient)
+  const canExecute = Boolean(wallet && recipient && amountNumber > 0 && feeRecipient && policyConfiguration?.enabled)
   const estimateRows = useMemo(() => flattenEstimate(estimate), [estimate])
+
+  useEffect(() => {
+    let cancelled = false
+    void fetch("/api/money/preflight", { cache: "no-store" })
+      .then(async (response) => {
+        if (!response.ok) throw new Error("Money Movement policy configuration is unavailable.")
+        return response.json() as Promise<MoneyPolicyConfiguration>
+      })
+      .then((configuration) => {
+        if (cancelled) return
+        setPolicyConfiguration(configuration)
+        if (configuration.feeRecipient) setFeeRecipient(configuration.feeRecipient)
+      })
+      .catch((reason) => {
+        if (!cancelled) setError(errorMessage(reason))
+      })
+    return () => { cancelled = true }
+  }, [])
 
   async function connectWallet() {
     setBusy("connect")
@@ -70,9 +110,9 @@ export function MoneyMovementClient() {
       const address = accounts[0]
       if (!address) throw new Error("The wallet did not return an account.")
       adapterRef.current = await createViemAdapterFromProvider({ provider: selected.provider })
+      providerRef.current = selected.provider
       setWallet({ address, name: selected.info.name })
       setRecipient((value) => value || address)
-      setFeeRecipient((value) => value || address)
       setEvents(markTimeline("Wallet connected", "done", `${selected.info.name} · ${shortHash(address)}`))
     } catch (reason) {
       setError(errorMessage(reason))
@@ -92,6 +132,7 @@ export function MoneyMovementClient() {
     try {
       const result = await estimateOperation({ adapter, operation, sourceChain, destinationChain, amount, recipient, feeRecipient })
       setEstimate(toJsonSafe(result))
+      void recordMoneyAnalytics("money_quote_created", { amount: amountNumber, destinationChain, operation, sourceChain })
       setEvents(markTimeline("Preflight estimate", "done", "Route, fees and recipient outcome are available."))
     } catch (reason) {
       setEvents(markTimeline("Preflight estimate", "error", errorMessage(reason)))
@@ -103,15 +144,30 @@ export function MoneyMovementClient() {
 
   async function execute() {
     const adapter = adapterRef.current
-    if (!adapter || !canExecute) return setError("Connect a wallet and complete all execution fields.")
+    const provider = providerRef.current
+    if (!adapter || !provider || !wallet || !canExecute) return setError("Execution is blocked until wallet and server policy are ready.")
     setBusy("execute")
     setError(null)
-    setEvents(markTimeline("Wallet signature", "active", "Confirm the App Kit transaction in your wallet."))
+    setEvents(markTimeline("Policy & compliance", "active", "Sign the exact intent for server-side policy and Circle screening."))
     try {
+      const policyResult = await authorizeMoneyMovement({
+        provider,
+        walletAddress: wallet.address,
+        operation,
+        sourceChain,
+        destinationChain: operation === "send" ? sourceChain : destinationChain,
+        amount,
+        recipient,
+        feeRecipient,
+      })
+      setEvents(markTimeline("Policy & compliance", "done", `${policyResult.policy.provider} · ${policyResult.policy.decision} · ${policyResult.traceId.slice(0, 8)}`))
+      void recordMoneyAnalytics("money_preflight_authorized", { amount: amountNumber, destinationChain, operation, traceId: policyResult.traceId })
+      setEvents(markTimeline("Wallet signature", "active", "Confirm the App Kit transaction in your wallet."))
       const result = await executeOperation({ adapter, operation, sourceChain, destinationChain, amount, recipient, feeRecipient })
       const safeResult = toJsonSafe(result)
-      const nextProof = buildProof(operation, safeResult)
+      const nextProof = buildProof(operation, safeResult, policyResult.policy, policyResult.traceId)
       setProof(nextProof)
+      void recordMoneyAnalytics("money_execution_completed", { amount: amountNumber, destinationChain, operation, traceId: policyResult.traceId, txCount: nextProof.txHashes.length })
       setEvents((current) => current.map((item) => item.label === "Wallet signature"
         ? { ...item, state: "done", detail: "Signed and broadcast through App Kit." }
         : item.label === "Settlement proof"
@@ -120,8 +176,11 @@ export function MoneyMovementClient() {
     } catch (reason) {
       const message = errorMessage(reason)
       const resumable = reason instanceof KitError && reason.recoverability === "RESUMABLE"
+      void recordMoneyAnalytics("money_execution_blocked", { amount: amountNumber, destinationChain, operation, reason: message.slice(0, 120) })
       setEvents((current) => current.map((item) => item.label === "Wallet signature"
         ? { ...item, state: "error", detail: message }
+        : item.label === "Policy & compliance" && item.state === "active"
+          ? { ...item, state: "error", detail: message }
         : item.label === "Recovery path" && resumable
           ? { ...item, state: "active", detail: "Mint can be resumed with the returned attestation before it expires." }
           : item))
@@ -159,13 +218,15 @@ export function MoneyMovementClient() {
             <label><span>Destination chain</span><select value={operation === "send" ? sourceChain : destinationChain} onChange={(event) => setDestinationChain(event.target.value as Chain)} disabled={operation === "send"}>{chains.map((chain) => <option key={chain}>{chain}</option>)}</select></label>
             <label><span>Amount</span><div className="money-amount"><input inputMode="decimal" value={amount} onChange={(event) => setAmount(event.target.value)} /><em>USDC</em></div></label>
             <label><span>Recipient</span><input value={recipient} onChange={(event) => setRecipient(event.target.value)} placeholder="0x…" /></label>
-            <label className="money-wide"><span>Kestrel fee wallet · source-chain address</span><input value={feeRecipient} onChange={(event) => setFeeRecipient(event.target.value)} placeholder="0x…" /></label>
+            <label className="money-wide"><span>Kestrel fee wallet · enforced by server policy</span><input value={feeRecipient} readOnly placeholder="Waiting for production configuration" /></label>
           </div>
 
           <div className="money-actions">
             <button className="button secondary" disabled={!wallet || busy !== null} onClick={() => void requestQuote()} type="button"><BadgeDollarSign size={16} />{busy === "quote" ? "Estimating…" : "Estimate route"}</button>
             <button className="button primary" disabled={!canExecute || busy !== null || !estimate} onClick={() => void execute()} type="button"><ArrowRight size={16} />{busy === "execute" ? "Executing…" : "Confirm & execute"}</button>
           </div>
+          {policyConfiguration && !policyConfiguration.enabled && <div className="analytics-error">Execution is fail-closed: {policyConfiguration.missing.join(", ") || "policy configuration is incomplete"}.</div>}
+          {policyConfiguration?.enabled && <p className="money-fee-note">Execution guard: wallet-signed intent · Circle screening · {policyConfiguration.maxAmountUsdc} USDC cap{policyConfiguration.allowlistRequired ? " · recipient allowlist" : ""}.</p>}
           {error && <div className="analytics-error">{error}</div>}
         </section>
 
@@ -187,7 +248,7 @@ export function MoneyMovementClient() {
         </section>
         <section className="money-panel money-proof">
           <div className="money-panel-head"><span>04</span><div><p>Transaction proof</p><h2>Verifiable outcome</h2></div></div>
-          {proof ? <><div className="money-proof-grid"><div><span>State</span><strong>{proof.state}</strong></div><div><span>Trace</span><strong>{shortHash(proof.traceId)}</strong></div><div><span>Recorded</span><strong>{new Date(proof.recordedAt).toLocaleTimeString()}</strong></div><div><span>Transactions</span><strong>{proof.txHashes.length}</strong></div></div>{proof.explorerUrls.map((url) => <a href={url} key={url} rel="noreferrer" target="_blank">Open transaction <ExternalLink size={13} /></a>)}<pre>{JSON.stringify(proof, null, 2)}</pre></> : <div className="money-proof-empty"><CircleDollarSign size={28} /><strong>No settlement proof yet</strong><span>The completed App Kit result, hashes, explorer links and trace ID will appear here.</span></div>}
+          {proof ? <><div className="money-proof-grid"><div><span>State</span><strong>{proof.state}</strong></div><div><span>Trace</span><strong>{shortHash(proof.traceId)}</strong></div><div><span>Policy</span><strong>{proof.policy?.decision ?? "unknown"}</strong></div><div><span>Transactions</span><strong>{proof.txHashes.length}</strong></div></div>{proof.explorerUrls.map((url) => <a href={url} key={url} rel="noreferrer" target="_blank">Open transaction <ExternalLink size={13} /></a>)}<pre>{JSON.stringify(proof, null, 2)}</pre></> : <div className="money-proof-empty"><CircleDollarSign size={28} /><strong>No settlement proof yet</strong><span>The completed App Kit result, policy decision, hashes, explorer links and trace ID will appear here.</span></div>}
         </section>
       </div>
     </section>
@@ -207,6 +268,58 @@ async function discoverWallets() {
 }
 
 type OperationInput = { adapter: AppAdapter; operation: Operation; sourceChain: Chain; destinationChain: Chain; amount: string; recipient: string; feeRecipient: string }
+type AuthorizationInput = Omit<OperationInput, "adapter"> & { provider: BrowserProvider; walletAddress: string }
+
+async function authorizeMoneyMovement(input: AuthorizationInput): Promise<{ authorized: true; traceId: string; policy: PolicyProof }> {
+  const authorization = {
+    walletAddress: input.walletAddress,
+    operation: input.operation,
+    sourceChain: input.sourceChain,
+    destinationChain: input.destinationChain,
+    amount: input.amount,
+    recipient: input.recipient,
+    feeRecipient: input.feeRecipient,
+    issuedAt: new Date().toISOString(),
+    nonce: crypto.randomUUID(),
+  }
+  const message = moneyAuthorizationMessage(authorization)
+  const signature = await (input.provider as unknown as {
+    request: (request: { method: string; params: string[] }) => Promise<unknown>
+  }).request({ method: "personal_sign", params: [message, input.walletAddress] })
+  if (typeof signature !== "string") throw new Error("The wallet did not return an authorization signature.")
+
+  const response = await fetch("/api/money/preflight", {
+    body: JSON.stringify({ ...authorization, signature }),
+    headers: { "Content-Type": "application/json" },
+    method: "POST",
+  })
+  const payload = await response.json().catch(() => ({})) as {
+    authorized?: boolean
+    message?: string
+    traceId?: string
+    policy?: PolicyProof
+  }
+  if (!response.ok || !payload.authorized || !payload.traceId || !payload.policy) {
+    throw new Error(payload.message ?? "Server policy denied this execution.")
+  }
+  return { authorized: true, traceId: payload.traceId, policy: payload.policy }
+}
+
+function moneyAuthorizationMessage(input: Omit<AuthorizationInput, "provider"> & { issuedAt: string; nonce: string }) {
+  return [
+    "Kestrel Money Movement Authorization",
+    "Version: 1",
+    `Wallet: ${input.walletAddress.toLowerCase()}`,
+    `Operation: ${input.operation}`,
+    `Source chain: ${input.sourceChain}`,
+    `Destination chain: ${input.destinationChain}`,
+    `Amount: ${input.amount} USDC`,
+    `Recipient: ${input.recipient.toLowerCase()}`,
+    `Fee recipient: ${input.feeRecipient.toLowerCase()}`,
+    `Issued at: ${input.issuedAt}`,
+    `Nonce: ${input.nonce}`,
+  ].join("\n")
+}
 
 function paramsFor(input: OperationInput) {
   const customFeeValue = (Number(input.amount) * feeBps / 10_000).toFixed(6)
@@ -247,12 +360,29 @@ function markTimeline(label: string, state: TimelineItem["state"], detail: strin
   return (current: TimelineItem[]) => current.map((item) => item.label === label ? { ...item, state, detail } : item)
 }
 
-function buildProof(operation: Operation, raw: unknown): Proof {
+function buildProof(operation: Operation, raw: unknown, policy: PolicyProof, policyTraceId: string): Proof {
   const strings = collectStrings(raw)
   const txHashes = [...new Set(strings.filter((value) => /^(0x[a-fA-F0-9]{40,}|[1-9A-HJ-NP-Za-km-z]{64,})$/.test(value)))]
   const explorerUrls = [...new Set(strings.filter((value) => /^https:\/\/.+\/(tx|transaction)\//.test(value)))]
   const record = isRecord(raw) ? raw : {}
-  return { operation, state: String(record.state ?? record.status ?? "submitted"), traceId: String(record.traceId ?? crypto.randomUUID()), recordedAt: new Date().toISOString(), txHashes, explorerUrls, raw }
+  return { operation, state: String(record.state ?? record.status ?? "submitted"), traceId: String(record.traceId ?? policyTraceId), recordedAt: new Date().toISOString(), txHashes, explorerUrls, policy, raw }
+}
+
+async function recordMoneyAnalytics(eventName: string, properties: Record<string, unknown>) {
+  await fetch("/api/analytics/events", {
+    body: JSON.stringify({
+      eventName,
+      path: window.location.pathname,
+      placement: "money_movement",
+      properties,
+      source: "landing",
+      surface: "money",
+      url: window.location.href,
+    }),
+    headers: { "Content-Type": "application/json" },
+    keepalive: true,
+    method: "POST",
+  }).catch(() => undefined)
 }
 
 function flattenEstimate(value: unknown): [string, string][] {

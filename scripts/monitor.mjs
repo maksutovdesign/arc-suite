@@ -52,6 +52,16 @@ const checks = [
     },
   },
   {
+    name: "money movement execution policy",
+    run: async () => checkJsonApi(`${bases.landing}/api/money/preflight`, (payload) => {
+      assert(payload?.enabled === true, "money policy enabled")
+      assert(payload?.complianceConfigured === true, "money policy compliance configured")
+      assert(Boolean(payload?.feeRecipient), "money policy fee recipient configured")
+      assert(payload?.allowlistRequired === true, "money policy recipient allowlist required")
+      return `enabled cap=${payload.maxAmountUsdc} USDC`
+    }),
+  },
+  {
     name: "oracle risk signal auth guard",
     latencyWarnMs: oracleLatencyWarnMs,
     run: async () => {
@@ -92,6 +102,10 @@ const checks = [
   {
     name: "Kestrel Flow page",
     run: async () => checkHtmlPage(`${bases.landing}/flow`, ["Kestrel Flow", "Demo workspace"]),
+  },
+  {
+    name: "Money Movement page",
+    run: async () => checkHtmlPage(`${bases.landing}/money`, ["Money Movement", "controlled flow", "Built on Arc"]),
   },
   {
     name: "Agentic Workflow page",

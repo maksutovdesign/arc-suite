@@ -868,6 +868,15 @@ export type AnalyticsSummary = {
     demoToAccessCheckRatePct: number
     accessCheckCompletionRatePct: number
   }
+  money: {
+    quotes: number
+    preflightAuthorized: number
+    executionsCompleted: number
+    executionsBlocked: number
+    completedVolumeUsdc: number
+    estimatedKestrelRevenueUsdc: number
+    executionSuccessRatePct: number
+  }
   recent: AnalyticsEvent[]
 }
 

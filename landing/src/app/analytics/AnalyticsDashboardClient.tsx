@@ -134,6 +134,12 @@ export function AnalyticsDashboardClient() {
             <Metric label="Leads" value={String(leads.length)} />
             <Metric label="Demo to check" value={`${summary.funnel.demoToAccessCheckRatePct}%`} />
             <Metric label="Check completion" value={`${summary.funnel.accessCheckCompletionRatePct}%`} />
+            <Metric label="Money quotes" value={String(summary.money.quotes)} />
+            <Metric label="Authorized intents" value={String(summary.money.preflightAuthorized)} />
+            <Metric label="Executions" value={String(summary.money.executionsCompleted)} />
+            <Metric label="Execution success" value={`${summary.money.executionSuccessRatePct}%`} />
+            <Metric label="Completed volume" value={`${summary.money.completedVolumeUsdc} USDC`} />
+            <Metric label="Estimated revenue" value={`${summary.money.estimatedKestrelRevenueUsdc} USDC`} />
           </div>
 
           <div className="analytics-grid">

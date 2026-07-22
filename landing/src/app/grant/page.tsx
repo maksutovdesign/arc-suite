@@ -122,6 +122,7 @@ const currentStatus = [
   ["Application layer", "Wallet OS now models Arc-native money movement as one operational account instead of raw wallet/chain mechanics."],
   ["Transaction memos", "Proof pages now attach business context to payment evidence: invoice, agent, customer and batch references."],
   ["App Kit core", "The Money Movement console imports the official App Kit SDK and exposes live estimate/execute paths for Unified Balance, Bridge, Swap and Send."],
+  ["Signed execution policy", "Every live execution now requires a fresh wallet signature, recipient allowlist approval, Circle compliance screening, amount-cap validation and a server-issued policy proof."],
   ["Monetization", "A 75 bps developer fee is disclosed before signature, with the 90% Kestrel / 10% Arc split shown explicitly."],
   ["Circle Wallet execution", "Wallet OS exposes source wallet, token lookup and balance readiness before any policy-gated transfer is attempted."],
   ["Roadmap", "Grant unlocks live Arc deployment, Circle Wallets expansion, CCTP and contract work."],

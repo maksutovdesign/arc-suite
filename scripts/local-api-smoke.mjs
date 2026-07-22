@@ -16,14 +16,17 @@ try {
   await waitForServer()
   await checkHtml("/", ["Kestrel", "Built on Arc"])
   await checkHtml("/proof", ["Settlement proof", "Settlement evidence", "Policy chain"])
+  await checkHtml("/money", ["Money Movement", "controlled flow", "Built on Arc"])
   await checkJson("/api/health", 200, (payload) => payload?.ok === true && payload?.service === "kestrel-pilot-api")
+  await checkJson("/api/money/preflight", 200, (payload) => typeof payload?.enabled === "boolean"
+    && Array.isArray(payload?.missing))
   await checkStatus("/api/readiness", 401)
   await checkStatus("/api/webhooks/circle", 401, { method: "POST" })
   await checkStatus("/api/analytics/events", 204, {
     headers: { Origin: "http://localhost:3000" },
     method: "OPTIONS",
   })
-  console.log("Local API smoke checks passed (6)")
+  console.log("Local API smoke checks passed (8)")
 } finally {
   server.kill("SIGTERM")
   await Promise.race([

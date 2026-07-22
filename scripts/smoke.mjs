@@ -20,6 +20,20 @@ const targets = [
     url: `${landingBase}/api/readiness`,
   },
   {
+    kind: "json",
+    name: "money movement policy",
+    url: `${landingBase}/api/money/preflight`,
+    validate: (payload) => payload?.enabled === true
+      && payload?.complianceConfigured === true
+      && typeof payload?.feeRecipient === "string",
+  },
+  {
+    expectedText: ["Money Movement", "controlled flow", "Built on Arc"],
+    kind: "html",
+    name: "Money Movement console",
+    url: `${landingBase}/money`,
+  },
+  {
     expectedText: ["Kestrel Shield", "Demo workspace"],
     kind: "html",
     name: "Kestrel Shield console",

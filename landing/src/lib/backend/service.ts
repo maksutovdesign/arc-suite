@@ -358,6 +358,10 @@ export async function getAnalyticsSummary(limit = 200): Promise<AnalyticsSummary
   const demoClicks = countByEvent.get("demo_click") ?? 0
   const accessCheckRuns = countByEvent.get("access_check_run") ?? 0
   const accessCheckResults = countByEvent.get("access_check_result") ?? 0
+  const moneyExecutions = events.filter((event) => event.eventName === "money_execution_completed")
+  const completedVolumeUsdc = roundMoney(moneyExecutions.reduce((sum, event) => sum + numericProperty(event.properties, "amount"), 0))
+  const preflightAuthorized = countByEvent.get("money_preflight_authorized") ?? 0
+  const executionsCompleted = countByEvent.get("money_execution_completed") ?? 0
 
   return {
     funnel: {
@@ -370,11 +374,29 @@ export async function getAnalyticsSummary(limit = 200): Promise<AnalyticsSummary
       investorClicks: countByEvent.get("investors_click") ?? 0,
       xClicks: countByEvent.get("x_click") ?? 0,
     },
+    money: {
+      quotes: countByEvent.get("money_quote_created") ?? 0,
+      preflightAuthorized,
+      executionsCompleted,
+      executionsBlocked: countByEvent.get("money_execution_blocked") ?? 0,
+      completedVolumeUsdc,
+      estimatedKestrelRevenueUsdc: roundMoney(completedVolumeUsdc * 0.0075 * 0.9),
+      executionSuccessRatePct: percentage(executionsCompleted, preflightAuthorized),
+    },
     placements,
     totals,
     sources,
     recent: events.slice(0, 50),
   }
+}
+
+function numericProperty(properties: Record<string, unknown> | undefined, key: string) {
+  const value = properties?.[key]
+  return typeof value === "number" && Number.isFinite(value) ? value : 0
+}
+
+function roundMoney(value: number) {
+  return Math.round(value * 1_000_000) / 1_000_000
 }
 
 export async function createInvestorLead(input: Partial<InvestorLeadInput>): Promise<InvestorLead | null> {

@@ -50,3 +50,31 @@ test("distributed rate limiting is consumed atomically", async () => {
   assert.match(migration, /current_count >= p_max/)
   assert.match(migration, /grant execute .* service_role/i)
 })
+
+test("money execution is gated by signed server policy", async () => {
+  const [route, policy, client] = await Promise.all([
+    read("landing/src/app/api/money/preflight/route.ts"),
+    read("landing/src/lib/backend/money-policy.ts"),
+    read("landing/src/app/money/MoneyMovementClient.tsx"),
+  ])
+  assert.match(route, /verifyMessage/)
+  assert.match(route, /screenCircleAddress/)
+  assert.match(route, /money_preflight/)
+  assert.match(route, /money_preflight_nonce/)
+  assert.match(route, /authorization_replayed/)
+  assert.match(policy, /KESTREL_MONEY_EXECUTION_ENABLED/)
+  assert.match(policy, /ARC_SETTLEMENT_ALLOWED_RECIPIENTS/)
+  assert.match(client, /authorizeMoneyMovement/)
+  assert.match(client, /personal_sign/)
+})
+
+test("Kestrel publishing metadata includes app and social assets", async () => {
+  const [layout, manifest, socialImage] = await Promise.all([
+    read("landing/src/app/layout.tsx"),
+    read("landing/src/app/manifest.ts"),
+    read("landing/src/app/opengraph-image.tsx"),
+  ])
+  assert.match(layout, /summary_large_image/)
+  assert.match(manifest, /Built on Arc/)
+  assert.match(socialImage, /Move money\. Apply policy\. Keep proof\./)
+})
