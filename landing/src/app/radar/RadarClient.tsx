@@ -50,6 +50,39 @@ const categoryMeta: Record<BuilderCategory, { label: string; tone: string; icon:
 
 const builders: Builder[] = [
   {
+    handle: "@wirexapp",
+    project: "Wirex One",
+    description: "Planned non-U.S. card settlement on Arc with USDC and EURC underneath consumer and BaaS payment flows.",
+    category: "payments",
+    stack: ["Card settlement", "USDC", "EURC", "BaaS"],
+    traction: "Official Arc partner spotlight · pre-launch",
+    signal: "high",
+    amplifiedBy: "@Arc",
+    suiteFit: ["Money Movement", "Treasury", "Shield", "Billing"],
+  },
+  {
+    handle: "@cyclesmoney",
+    project: "Cycles",
+    description: "Multilateral obligation netting for invoices, payroll and supplier payments with residual USDC settlement on Arc.",
+    category: "payments",
+    stack: ["B2B clearing", "Obligation netting", "USDC", "Arc"],
+    traction: "Official Arc partner spotlight",
+    signal: "high",
+    amplifiedBy: "@Arc",
+    suiteFit: ["Treasury", "Billing", "Flow", "Escrow"],
+  },
+  {
+    handle: "@pulsar",
+    project: "Pulsar",
+    description: "Consumer stablecoin money movement across balances, payments, cards and FX with Arc-native settlement.",
+    category: "payments",
+    stack: ["App Kit", "USDC", "EURC", "StableFX", "Paymaster"],
+    traction: "Official Arc partner spotlight",
+    signal: "high",
+    amplifiedBy: "@Arc",
+    suiteFit: ["Money Movement", "Wallets", "Gas", "Shield"],
+  },
+  {
     handle: "@Torin_559",
     project: "NexusYield Protocol",
     description: "Confidential yield and RWA liquidity with TEE-shielded payments.",
@@ -239,6 +272,8 @@ const builders: Builder[] = [
 ]
 
 const opportunityGaps = [
+  ["Card settlement operations", "New", "Authorization, clearing, Arc settlement and reconciliation need one observable state machine for card-linked USDC/EURC flows."],
+  ["B2B obligation netting", "New", "Recurring invoices and supplier payments can settle only residual obligations instead of moving every gross leg."],
   ["Private payments", "Nearly empty", "Selective disclosure, private invoices and auditor view keys are the clearest wedge."],
   ["Agent receipts", "Emerging", "x402 payments are active, but private or compliance-aware receipts are still underbuilt."],
   ["Builder operations", "Fragmented", "Builders have demos, but few have billing, wallet policy, monitoring and execution control."],
@@ -254,6 +289,9 @@ const suiteFit = [
 ]
 
 const closestReferences = [
+  ["Wirex One", "Card-linked USDC/EURC settlement makes reconciliation and pending-versus-settled state part of the core product architecture."],
+  ["Cycles", "The strongest B2B settlement reference: net obligations first, then settle residual USDC on Arc."],
+  ["Pulsar", "The closest consumer money-movement reference across balances, FX, cards and Arc-native settlement."],
   ["NexusYield", "Closest privacy reference. Different stack via TEE; complementary to Fairblock-style private payments."],
   ["AuraGate", "Closest agentic x402 reference. Public marketplace today; private receipts could be the upgrade path."],
   ["Arclet / ArcPay", "Closest payment UX templates. They can become private checkout and private invoice references."],
@@ -278,7 +316,7 @@ export function RadarClient() {
     })
   }, [])
 
-  const primitives = ["CCTP", "x402", "Wallets", "App Kit", "Nanopayments", "StableFX", "Paymaster", "Indexing"]
+  const primitives = ["App Kit", "Gateway webhooks", "USDC/EURC", "Card settlement", "CCTP", "x402", "StableFX", "Paymaster"]
 
   return (
     <section className="radar-shell">
@@ -287,7 +325,8 @@ export function RadarClient() {
           <p className="kicker">Arc builder intelligence</p>
           <h1>Where Arc builders are active, and where the gap is still open.</h1>
           <p>
-            Kestrel Radar turns ecosystem research into a product map: builder categories,
+            Updated 26 July 2026. Kestrel Radar turns official Arc releases and public builder
+            signals into a product map: builder categories,
             primitives, traction signals, opportunity gaps and the exact place Kestrel can
             become the operating layer for payment, agent and stablecoin apps.
           </p>
@@ -321,10 +360,10 @@ export function RadarClient() {
       <section className="radar-section" id="builder-map">
         <div className="section-heading compact">
           <p className="kicker">Builder map</p>
-          <h2>Payments and DeFi are active. Privacy remains sparse.</h2>
+          <h2>Settlement is becoming the product, not the back-office layer.</h2>
           <p>
-            The map is intentionally practical: every builder is mapped to both an ecosystem
-            category and the Kestrel products that could serve them.
+            Wirex, Cycles and Pulsar move the signal from one-off transfers toward card volume,
+            recurring obligations, USDC/EURC balances and operational reconciliation.
           </p>
         </div>
 
@@ -387,11 +426,11 @@ export function RadarClient() {
       <section className="radar-section radar-split" id="gaps">
         <div>
           <p className="kicker">Opportunity gaps</p>
-          <h2>The strongest wedge is private, compliant stablecoin flow.</h2>
+          <h2>The strongest wedge is controlled settlement operations.</h2>
           <p>
-            Arc builders are shipping payments, DeFi, FX and infrastructure quickly. The
-            underbuilt space is selective disclosure: private invoices, private receipts,
-            auditor view keys and policy-gated settlement.
+            Arc builders are shipping payment and FX rails quickly. The underbuilt layer is
+            what happens around settlement: policy, pending state, reconciliation, netting,
+            private receipts and operational recovery.
           </p>
           <div className="radar-gap-list">
             {opportunityGaps.map(([title, state, text]) => (
@@ -416,8 +455,8 @@ export function RadarClient() {
             <LockKeyhole size={18} />
             <div>
               <span>Next flagship layer</span>
-              <strong>Kestrel Private</strong>
-              <p>Private invoices, private x402 receipts, auditor view keys and policy-aware disclosure.</p>
+              <strong>Settlement Control</strong>
+              <p>Card reconciliation, Gateway lifecycle events, obligation netting and policy-aware proof.</p>
             </div>
           </div>
         </div>

@@ -46,6 +46,7 @@ export function readCircleProviderFields(envelope: CircleWebhookEnvelope) {
   const payload = envelope.notification
   const transaction = objectValue(payload.transaction)
   const providerOperationId = stringValue(payload.id)
+    ?? stringValue(payload.transferId)
     ?? stringValue(payload.transactionId)
     ?? stringValue(payload.contractExecutionId)
     ?? stringValue(transaction?.id)
@@ -53,10 +54,18 @@ export function readCircleProviderFields(envelope: CircleWebhookEnvelope) {
     ?? stringValue(payload.status)
     ?? stringValue(transaction?.state)
     ?? stringValue(transaction?.status)
+    ?? gatewayLifecycleState(envelope.notificationType)
   const txHash = stringValue(payload.txHash)
     ?? stringValue(payload.transactionHash)
     ?? stringValue(transaction?.txHash)
   return { providerOperationId, providerState, txHash }
+}
+
+function gatewayLifecycleState(notificationType: string) {
+  if (notificationType === "gateway.deposit.finalized") return "CONFIRMED"
+  if (notificationType === "gateway.mint.forwarded") return "CONFIRMED"
+  if (notificationType === "gateway.mint.finalized") return "CONFIRMED"
+  return null
 }
 
 async function getCircleWebhookPublicKey(keyId: string) {

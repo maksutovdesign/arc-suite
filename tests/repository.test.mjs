@@ -92,3 +92,33 @@ test("Money Movement is present in every product navigation", async () => {
     assert.match(source, /\/money/)
   }
 })
+
+test("Gateway lifecycle webhooks reconcile transfer IDs and final states", async () => {
+  const webhook = await read("landing/src/lib/backend/circle-webhook.ts")
+  for (const event of ["gateway.deposit.finalized", "gateway.mint.forwarded", "gateway.mint.finalized"]) {
+    assert.ok(webhook.includes(event), `Gateway webhook mapping is missing ${event}`)
+  }
+  assert.match(webhook, /payload\.transferId/)
+  assert.match(webhook, /"CONFIRMED"/)
+})
+
+test("browser Money Movement never exposes an App Kit secret", async () => {
+  const client = await read("landing/src/app/money/MoneyMovementClient.tsx")
+  assert.doesNotMatch(client, /NEXT_PUBLIC_CIRCLE_APP_KIT_KEY/)
+  assert.match(client, /Swap is fail-closed/)
+  assert.match(client, /server-side Circle Wallets or Turnkey adapter/)
+})
+
+test("ecosystem audit and Radar include the new settlement direction", async () => {
+  const [audit, radar, money] = await Promise.all([
+    read("docs/ARC_ECOSYSTEM_AUDIT_2026-07-26.md"),
+    read("landing/src/app/radar/RadarClient.tsx"),
+    read("landing/src/app/money/MoneyMovementClient.tsx"),
+  ])
+  for (const signal of ["Wirex", "Cycles", "Pulsar"]) {
+    assert.ok(audit.includes(signal), `audit is missing ${signal}`)
+    assert.ok(radar.includes(signal), `Radar is missing ${signal}`)
+  }
+  assert.match(money, /Card settlement control plane/)
+  assert.match(money, /USDC · EURC/)
+})

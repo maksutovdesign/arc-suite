@@ -59,3 +59,9 @@ Source: [Circle Developer Grants](https://community.arc.io/en/public/blogs/circl
 9. Pilot onboarding, measured transaction volume and revenue validation.
 
 The repository currently completes items 1–3 at integration-code level. Items 4–9 require provider credentials, funded testnet wallets or external pilot participation and remain measurable production milestones.
+
+## 6. Ecosystem update — 26 July
+
+The Wirex, Cycles and Pulsar announcements make settlement operations the next product layer: card-linked USDC/EURC activity, multilateral obligation netting, pending-versus-settled state and reconciliation. The first implementation adds Gateway lifecycle mapping, a card-settlement adapter boundary and updated Radar intelligence.
+
+Full audit: [Arc ecosystem audit — 26 July 2026](./ARC_ECOSYSTEM_AUDIT_2026-07-26.md).

@@ -2,7 +2,7 @@
 
 import { AppKit, KitError } from "@circle-fin/app-kit"
 import { createViemAdapterFromProvider, type CreateViemAdapterFromProviderParams } from "@circle-fin/adapter-viem-v2"
-import { ArrowRight, BadgeDollarSign, CheckCircle2, CircleDollarSign, ExternalLink, RefreshCw, Route, ShieldCheck, WalletCards } from "lucide-react"
+import { ArrowRight, BadgeDollarSign, CheckCircle2, CircleDollarSign, CreditCard, ExternalLink, RefreshCw, Route, ShieldCheck, WalletCards } from "lucide-react"
 import { useEffect, useMemo, useRef, useState } from "react"
 
 type BrowserProvider = CreateViemAdapterFromProviderParams["provider"]
@@ -47,7 +47,6 @@ const kit = new AppKit({ disableErrorReporting: true })
 const chains: Chain[] = ["Arc_Testnet", "Base_Sepolia", "Ethereum_Sepolia", "Arbitrum_Sepolia"]
 const feeBps = 75
 const configuredFeeRecipient = process.env.NEXT_PUBLIC_KESTREL_FEE_RECIPIENT?.trim() ?? ""
-const appKitKey = process.env.NEXT_PUBLIC_CIRCLE_APP_KIT_KEY?.trim() ?? ""
 
 const operationCopy: Record<Operation, { title: string; description: string }> = {
   spend: { title: "Unified Balance", description: "Source available USDC across Gateway balances and mint it on Arc." },
@@ -55,6 +54,13 @@ const operationCopy: Record<Operation, { title: string; description: string }> =
   swap: { title: "Swap", description: "Price and execute USDC/EURC conversion with a stop-limit and developer fee." },
   send: { title: "Send", description: "Transfer USDC on one chain and preserve the resulting transaction proof." },
 }
+
+const cardSettlementStages = [
+  ["Authorization", "Card event is linked to customer, currency, merchant and an idempotent payment reference."],
+  ["Clearing", "Eligible activity is grouped by asset, region and settlement window without exposing chain mechanics."],
+  ["Arc settlement", "Net USDC or EURC obligations move through the controlled Arc settlement path."],
+  ["Reconciliation", "Gateway events, transaction proof and provider records close the operational ledger."],
+] as const
 
 export function MoneyMovementClient() {
   const adapterRef = useRef<AppAdapter | null>(null)
@@ -77,7 +83,7 @@ export function MoneyMovementClient() {
   const developerFee = Number.isFinite(amountNumber) ? amountNumber * feeBps / 10_000 : 0
   const appRevenue = developerFee * 0.9
   const arcShare = developerFee * 0.1
-  const canExecute = Boolean(wallet && recipient && amountNumber > 0 && feeRecipient && policyConfiguration?.enabled)
+  const canExecute = Boolean(operation !== "swap" && wallet && recipient && amountNumber > 0 && feeRecipient && policyConfiguration?.enabled)
   const estimateRows = useMemo(() => flattenEstimate(estimate), [estimate])
 
   useEffect(() => {
@@ -122,6 +128,7 @@ export function MoneyMovementClient() {
   }
 
   async function requestQuote() {
+    if (operation === "swap") return setError("Swap is fail-closed until a server-side Circle Wallets or Turnkey adapter is configured. The Kit Key is never exposed to the browser.")
     const adapter = adapterRef.current
     if (!adapter || !wallet) return setError("Connect an EVM wallet first.")
     if (!recipient || !feeRecipient || !(amountNumber > 0)) return setError("Enter valid amount, recipient and fee wallet.")
@@ -226,6 +233,7 @@ export function MoneyMovementClient() {
             <button className="button primary" disabled={!canExecute || busy !== null || !estimate} onClick={() => void execute()} type="button"><ArrowRight size={16} />{busy === "execute" ? "Executing…" : "Confirm & execute"}</button>
           </div>
           {policyConfiguration && !policyConfiguration.enabled && <div className="analytics-error">Execution is fail-closed: {policyConfiguration.missing.join(", ") || "policy configuration is incomplete"}.</div>}
+          {operation === "swap" && <div className="money-security-note"><ShieldCheck size={15} /><span><strong>Server execution required</strong><small>Arc App Kit currently supports Swap server-side only. Kestrel will enable it after a policy-controlled Circle Wallets or Turnkey signer is configured.</small></span></div>}
           {policyConfiguration?.enabled && <p className="money-fee-note">Execution guard: wallet-signed intent · Circle screening · {policyConfiguration.maxAmountUsdc} USDC cap{policyConfiguration.allowlistRequired ? " · recipient allowlist" : ""}.</p>}
           {error && <div className="analytics-error">{error}</div>}
         </section>
@@ -251,6 +259,38 @@ export function MoneyMovementClient() {
           {proof ? <><div className="money-proof-grid"><div><span>State</span><strong>{proof.state}</strong></div><div><span>Trace</span><strong>{shortHash(proof.traceId)}</strong></div><div><span>Policy</span><strong>{proof.policy?.decision ?? "unknown"}</strong></div><div><span>Transactions</span><strong>{proof.txHashes.length}</strong></div></div>{proof.explorerUrls.map((url) => <a href={url} key={url} rel="noreferrer" target="_blank">Open transaction <ExternalLink size={13} /></a>)}<pre>{JSON.stringify(proof, null, 2)}</pre></> : <div className="money-proof-empty"><CircleDollarSign size={28} /><strong>No settlement proof yet</strong><span>The completed App Kit result, policy decision, hashes, explorer links and trace ID will appear here.</span></div>}
         </section>
       </div>
+
+      <section className="money-panel money-card-settlement">
+        <div className="money-card-intro">
+          <div>
+            <p className="kicker">New Arc ecosystem direction</p>
+            <h2>Card settlement control plane</h2>
+            <p>
+              Kestrel now models the operational path highlighted by the Arc × Wirex announcement:
+              card activity maps to USDC or EURC settlement on Arc, with pending state, compliance,
+              reconciliation and proof treated as one lifecycle.
+            </p>
+          </div>
+          <div className="money-card-status">
+            <CreditCard size={20} />
+            <span><strong>Provider-ready boundary</strong><small>Partner onboarding required · no public Wirex API is claimed</small></span>
+          </div>
+        </div>
+        <div className="money-card-stages">
+          {cardSettlementStages.map(([title, detail], index) => (
+            <article key={title}>
+              <span>{String(index + 1).padStart(2, "0")}</span>
+              <strong>{title}</strong>
+              <p>{detail}</p>
+            </article>
+          ))}
+        </div>
+        <div className="money-card-assets">
+          <div><span>Settlement assets</span><strong>USDC · EURC</strong></div>
+          <div><span>Ledger states</span><strong>authorized · pending · settled · exception</strong></div>
+          <div><span>Evidence</span><strong>provider reference · transfer ID · tx hash · memo</strong></div>
+        </div>
+      </section>
     </section>
   )
 }
@@ -325,7 +365,7 @@ function paramsFor(input: OperationInput) {
   const customFeeValue = (Number(input.amount) * feeBps / 10_000).toFixed(6)
   if (input.operation === "spend") return { from: { adapter: input.adapter }, to: { adapter: input.adapter, chain: input.destinationChain, recipientAddress: input.recipient, useForwarder: true }, token: "USDC" as const, amountIn: input.amount, config: { customFee: { value: customFeeValue, recipientAddress: input.feeRecipient } } }
   if (input.operation === "bridge") return { from: { adapter: input.adapter, chain: input.sourceChain }, to: { adapter: input.adapter, chain: input.destinationChain, recipientAddress: input.recipient }, amount: input.amount, token: "USDC" as const, config: { customFee: { value: customFeeValue, recipientAddress: input.feeRecipient } } }
-  if (input.operation === "swap") return { from: { adapter: input.adapter, chain: input.sourceChain }, tokenIn: "USDC", tokenOut: "EURC", amountIn: input.amount, config: { allowanceStrategy: "approve" as const, slippageBps: 100, customFee: { percentageBps: feeBps, recipientAddress: input.feeRecipient }, ...(appKitKey ? { kitKey: appKitKey } : {}) } }
+  if (input.operation === "swap") return { from: { adapter: input.adapter, chain: input.sourceChain }, tokenIn: "USDC", tokenOut: "EURC", amountIn: input.amount, config: { allowanceStrategy: "approve" as const, slippageBps: 100, customFee: { percentageBps: feeBps, recipientAddress: input.feeRecipient } } }
   return { from: { adapter: input.adapter, chain: input.sourceChain }, to: input.recipient, amount: input.amount, token: "USDC" }
 }
 

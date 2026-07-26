@@ -3,7 +3,7 @@ import { getMoneyPolicyConfiguration } from "./money-policy"
 export type IntegrationState = "configured" | "partial" | "missing"
 
 export type ExternalIntegration = {
-  id: "app-kit" | "money-policy" | "turnkey" | "risk" | "goldsky" | "pyth" | "chainlink" | "lifi"
+  id: "app-kit" | "money-policy" | "gateway-webhooks" | "card-settlement" | "turnkey" | "risk" | "goldsky" | "pyth" | "chainlink" | "lifi"
   name: string
   state: IntegrationState
   capabilities: string[]
@@ -39,6 +39,20 @@ export function getExternalIntegrationReadiness(): ExternalIntegration[] {
         ? `Fail-closed execution is enabled with a ${moneyPolicy.maxAmountUsdc} USDC cap.`
         : "Quotes remain available, but execution is blocked until every server policy requirement is configured.",
     },
+    integration({
+      id: "gateway-webhooks",
+      name: "Gateway lifecycle webhooks",
+      requirements: ["CIRCLE_API_KEY", "SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"],
+      capabilities: ["deposit finalized", "mint forwarded", "mint finalized", "deduplication", "settlement reconciliation"],
+      detail: "The signed Circle webhook inbox now maps Gateway transfer IDs and final lifecycle events into Kestrel execution state.",
+    }),
+    integration({
+      id: "card-settlement",
+      name: "Card settlement provider",
+      requirements: ["KESTREL_CARD_SETTLEMENT_PROVIDER", "KESTREL_CARD_SETTLEMENT_WEBHOOK_SECRET"],
+      capabilities: ["USDC settlement", "EURC settlement", "authorization-to-clearing mapping", "reconciliation"],
+      detail: "Provider-neutral adapter boundary for eligible non-U.S. card flows. Wirex remains a planned ecosystem integration, not a public API dependency.",
+    }),
     integration({
       id: "turnkey",
       name: "Turnkey policy signing",
