@@ -27,6 +27,7 @@ import {
   shortHash,
   type AgenticWorkflowProof,
 } from "@/lib/agentic-demo-proof"
+import { PaidProviderPilot } from "./PaidProviderPilot"
 
 const workflowStages = [
   { key: "intent", label: "Agent intent", detail: "DataHarvester-Pro asks for paid market data.", icon: Workflow },
@@ -141,6 +142,8 @@ export function AgenticWorkflowClient() {
           <small>{liveSettlementLabel(liveSettlement)}</small>
         </div>
       </div>
+
+      <PaidProviderPilot />
 
       <div className="agentic-grid">
         <section className="agentic-runner" aria-label="Agentic payment pipeline">

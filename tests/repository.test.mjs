@@ -162,3 +162,27 @@ test("ecosystem audit and Radar include the new settlement direction", async () 
   assert.match(money, /Card settlement control plane/)
   assert.match(money, /USDC · EURC/)
 })
+
+test("paid provider pilot is fixed-origin, capped, operator-gated and proof-complete", async () => {
+  const [service, route, runner, ui] = await Promise.all([
+    read("landing/src/lib/backend/paid-provider-service.ts"),
+    read("landing/src/app/api/procurement/batch/route.ts"),
+    read("scripts/paid-provider-batch.mjs"),
+    read("landing/src/app/agentic-workflow/PaidProviderPilot.tsx"),
+  ])
+  assert.match(service, /https:\/\/api\.aisa\.one\/apis\/v2\/coingecko\/simple\/price/)
+  assert.match(service, /DEFAULT_MAX_UNIT_PRICE_USDC = 0\.01/)
+  assert.match(service, /MAX_BATCH_SIZE = 25/)
+  assert.match(service, /timingSafeEqual/)
+  assert.match(service, /paymentRequiredHash/)
+  assert.match(service, /paymentSignatureHash/)
+  assert.match(service, /paymentResponseHash/)
+  assert.match(service, /dataHash/)
+  assert.match(service, /status: "accrued"/)
+  assert.match(route, /authorizePaidProviderBatch/)
+  assert.match(route, /procurement_batch/)
+  assert.match(runner, /proofCompletenessPct !== 100/)
+  assert.match(runner, /!batch\.stored/)
+  assert.match(ui, /25-operation evidence gate/)
+  assert.match(ui, /Fee is shown as accrued until a separate settlement receipt exists/)
+})

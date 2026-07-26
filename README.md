@@ -446,6 +446,44 @@ read from Supabase. If Supabase is unavailable, the API falls back to demo seed 
 Protected `/api/ops/rate-limits/cleanup` removes old rate-limit buckets; Vercel
 Cron runs it daily when `CRON_SECRET` is configured.
 
+### Paid provider pilot
+
+Kestrel's first real procurement adapter uses the allowlisted AIsa CoinGecko
+Simple Price endpoint. `GET /api/procurement/readiness` performs a non-paying
+HTTP 402 inspection and exposes the current quote. `POST /api/procurement/batch`
+is operator-only and runs at most 25 sequential Circle Gateway x402 payments.
+
+Every operation records hashes for the payment requirement, payment
+authorization, payment response and delivered payload. A run reaches 100% proof
+completeness only when the full `402 -> authorization -> delivered response`
+chain is present. Kestrel's 75 bps fee is reported as accrued until a distinct
+fee-settlement receipt exists; accrued fees are never labelled as realized
+revenue.
+
+Configure a dedicated mainnet signer. The Arc Testnet settlement wallet is not
+reused implicitly:
+
+```env
+KESTREL_X402_EXECUTION_ENABLED=true
+KESTREL_X402_WALLET_ADDRESS=0x...
+KESTREL_X402_BATCH_SECRET=...
+KESTREL_X402_MAX_UNIT_PRICE_USDC=0.01
+```
+
+Circle Wallets credentials (`CIRCLE_API_KEY` and `CIRCLE_ENTITY_SECRET`) are
+used with `KESTREL_X402_WALLET_ADDRESS`. A separate
+`KESTREL_X402_PRIVATE_KEY` signer is supported for controlled environments.
+The signer must have an available Circle Gateway balance on Base.
+
+Run the evidence batch after inspecting readiness:
+
+```bash
+KESTREL_X402_BATCH_SECRET=... npm run pilot:paid-provider
+```
+
+The runner exits unsuccessfully unless all requested operations succeed, proof
+completeness is 100%, and the evidence batch is persisted in Supabase.
+
 Conversion analytics are captured through `/api/analytics/events` and summarized
 through protected `/api/analytics/summary`. The tracked funnel events are demo,
 investor page, GitHub, X, and Treasury access-check interactions.
