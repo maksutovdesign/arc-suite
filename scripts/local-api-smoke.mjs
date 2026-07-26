@@ -17,16 +17,23 @@ try {
   await checkHtml("/", ["Kestrel", "Built on Arc"])
   await checkHtml("/proof", ["Settlement proof", "Settlement evidence", "Policy chain"])
   await checkHtml("/money", ["Money Movement", "controlled flow", "Built on Arc"])
+  await checkHtml("/dashboard", ["One surface for money, policy and proof", "Execution cockpit"])
+  await checkHtml("/proof-center", ["One operation. One evidence envelope", "Integrity rules"])
+  await checkHtml("/pilots", ["Three workflows designed to produce evidence", "B2B controlled payout"])
   await checkJson("/api/health", 200, (payload) => payload?.ok === true && payload?.service === "kestrel-pilot-api")
   await checkJson("/api/money/preflight", 200, (payload) => typeof payload?.enabled === "boolean"
     && Array.isArray(payload?.missing))
+  await checkJson("/api/money/execute", 200, (payload) => typeof payload?.enabled === "boolean"
+    && typeof payload?.swapEnabled === "boolean")
+  await checkJson("/api/grant/evidence", 200, (payload) => typeof payload?.metrics?.kestrelFeeRevenueUsdc === "number"
+    && Array.isArray(payload?.milestones))
   await checkStatus("/api/readiness", 401)
   await checkStatus("/api/webhooks/circle", 401, { method: "POST" })
   await checkStatus("/api/analytics/events", 204, {
     headers: { Origin: "http://localhost:3000" },
     method: "OPTIONS",
   })
-  console.log("Local API smoke checks passed (8)")
+  console.log("Local API smoke checks passed (13)")
 } finally {
   server.kill("SIGTERM")
   await Promise.race([

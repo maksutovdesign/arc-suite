@@ -34,6 +34,40 @@ const targets = [
     url: `${landingBase}/money`,
   },
   {
+    kind: "json",
+    name: "server money execution boundary",
+    url: `${landingBase}/api/money/execute`,
+    validate: (payload) => typeof payload?.enabled === "boolean"
+      && typeof payload?.swapEnabled === "boolean"
+      && Array.isArray(payload?.missing),
+  },
+  {
+    expectedText: ["One surface for money, policy and proof", "Execution cockpit", "Production boundaries"],
+    kind: "html",
+    name: "Kestrel Control Center",
+    url: `${landingBase}/dashboard`,
+  },
+  {
+    expectedText: ["One operation. One evidence envelope", "Latest money proof", "Integrity rules"],
+    kind: "html",
+    name: "Kestrel Proof Center",
+    url: `${landingBase}/proof-center`,
+  },
+  {
+    expectedText: ["Three workflows designed to produce evidence", "Agent buys an API", "B2B controlled payout"],
+    kind: "html",
+    name: "Kestrel pilot catalog",
+    url: `${landingBase}/pilots`,
+  },
+  {
+    kind: "json",
+    name: "public grant evidence",
+    url: `${landingBase}/api/grant/evidence`,
+    validate: (payload) => typeof payload?.generatedAt === "string"
+      && typeof payload?.metrics?.kestrelFeeRevenueUsdc === "number"
+      && Array.isArray(payload?.milestones),
+  },
+  {
     expectedText: ["Kestrel Shield", "Demo workspace"],
     kind: "html",
     name: "Kestrel Shield console",

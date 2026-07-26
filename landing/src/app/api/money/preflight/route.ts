@@ -9,6 +9,7 @@ import {
   moneyAuthorizationMessage,
   validateMoneyAuthorization,
 } from "@/lib/backend/money-policy"
+import { getServerMoneyExecutionConfiguration, signMoneyExecutionGrant } from "@/lib/backend/money-execution"
 import { createRequestId, logOperationalEvent, requestIdHeaders } from "@/lib/backend/observability"
 import { enforceRateLimit, rateLimitHeaders, rateLimitResponse } from "@/lib/backend/rate-limit"
 
@@ -18,6 +19,7 @@ export const maxDuration = 30
 export function GET(request: NextRequest) {
   const requestId = createRequestId(request)
   const configuration = getMoneyPolicyConfiguration()
+  const serverExecution = getServerMoneyExecutionConfiguration()
   return NextResponse.json({
     enabled: configuration.enabled,
     feeBps: configuration.feeBps,
@@ -26,6 +28,10 @@ export function GET(request: NextRequest) {
     allowlistRequired: configuration.allowlistRequired,
     complianceConfigured: configuration.complianceConfigured,
     signatureTtlSeconds: configuration.signatureTtlSeconds,
+    serverExecutionEnabled: serverExecution.enabled,
+    swapExecutionEnabled: serverExecution.swapEnabled,
+    serverExecutionMissing: serverExecution.missing,
+    swapExecutionMissing: serverExecution.swapMissing,
     missing: configuration.missing,
   }, { headers: { "Cache-Control": "no-store", ...requestIdHeaders(requestId) } })
 }
@@ -129,20 +135,30 @@ export async function POST(request: NextRequest) {
       riskScore: policy.riskScore,
     }, requestId)
 
+    const policyProof = {
+      decision: policy.decision,
+      reason: policy.decisionReason,
+      riskScore: policy.riskScore,
+      riskCategories: policy.riskCategories,
+      ruleName: policy.ruleName,
+      provider: "circle_compliance_engine",
+      screeningChain: screeningTarget.chain,
+      screeningBasis: screeningTarget.basis,
+    }
+    const expiresAt = new Date(Date.parse(input.issuedAt) + configuration.signatureTtlSeconds * 1000).toISOString()
+    const executionGrant = authorized ? signMoneyExecutionGrant({
+      authorization: input,
+      expiresAt,
+      policy: policyProof,
+      traceId: requestId,
+    }) : null
+
     return NextResponse.json({
       authorized,
       traceId: requestId,
-      expiresAt: new Date(Date.parse(input.issuedAt) + configuration.signatureTtlSeconds * 1000).toISOString(),
-      policy: {
-        decision: policy.decision,
-        reason: policy.decisionReason,
-        riskScore: policy.riskScore,
-        riskCategories: policy.riskCategories,
-        ruleName: policy.ruleName,
-        provider: "circle_compliance_engine",
-        screeningChain: screeningTarget.chain,
-        screeningBasis: screeningTarget.basis,
-      },
+      expiresAt,
+      executionGrant,
+      policy: policyProof,
     }, {
       headers: { ...rateLimitHeaders(rateLimit), ...requestIdHeaders(requestId) },
       status: authorized ? 200 : 403,
@@ -170,6 +186,7 @@ function policyValidationError(
   if (input.feeRecipient.toLowerCase() !== configuration.feeRecipient?.toLowerCase()) return "The fee recipient does not match server policy."
   if (configuration.allowlistRequired && !configuration.allowedRecipients.includes(input.recipient.toLowerCase())) return "Recipient is not in the production allowlist."
   if (input.operation === "send" && input.sourceChain !== input.destinationChain) return "Send must use the same source and destination chain."
+  if (input.operation === "swap" && (input.sourceChain !== "Arc_Testnet" || input.destinationChain !== "Arc_Testnet")) return "Testnet Swap is restricted to Arc Testnet."
   if ((input.operation === "bridge" || input.operation === "spend") && input.sourceChain === input.destinationChain) return "Cross-chain movement requires different source and destination chains."
   return null
 }

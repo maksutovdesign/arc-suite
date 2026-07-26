@@ -55,3 +55,16 @@ Planned:
 
 The proposal now targets design partners, testnet operations and volume, terminal execution success, quote latency, proof completeness and fee revenue rather than additional disconnected demo surfaces.
 
+## 26 July product delivery addendum
+
+The repository now includes the product surfaces needed to collect those milestones:
+
+- a server-side App Kit execution boundary with short-lived signed execution grants;
+- Arc Testnet Swap with the Kit Key kept outside the browser;
+- a complete Kestrel / Arc / provider / Gateway / forwarding / gas fee ledger;
+- a unified Proof Center;
+- a production Control Center;
+- three end-to-end pilot scenarios;
+- a public `/grant-evidence` page and `/api/grant/evidence` endpoint.
+
+The evidence API explicitly separates implemented, configured and measured state. Demo fallback data is not counted as live operation volume or fee revenue.

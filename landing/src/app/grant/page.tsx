@@ -28,7 +28,7 @@ export const metadata = {
 }
 
 const latestProofUrl = "/proof?id=flow_agentic_01a50e12e6c4"
-const demoUrl = "https://arcsuite-app.vercel.app/judge"
+const demoUrl = "https://arcsuite-app.vercel.app/dashboard"
 const releaseUrl = "https://github.com/maksutovdesign/arc-suite/releases/tag/v2026.07.22-kestrel-app-kit"
 const videoUrl = "https://drive.google.com/file/d/1TpkfepfGCEXDfh-YWIfGLRGuohHAJmjP/view?usp=sharing"
 
@@ -48,8 +48,8 @@ const integrationMatrix = [
   },
   {
     name: "Circle Wallets",
-    status: "Demo-ready",
-    detail: "Developer-controlled wallet path prepared for real agent wallet creation, read-only balance checks and settlement evidence.",
+    status: "Configuration-ready",
+    detail: "Server execution boundary, one-time policy grants and developer-controlled signer adapter are implemented and fail closed without production credentials.",
     icon: WalletCards,
   },
   {
@@ -73,7 +73,7 @@ const integrationMatrix = [
   {
     name: "Swap Kit / liquidity",
     status: "Integrated",
-    detail: "The App Kit adapter estimates and executes USDC/EURC swaps with slippage, approve strategy and a disclosed developer fee.",
+    detail: "Arc Testnet USDC/EURC Swap executes behind a server-only signer and Kit Key, with slippage, approve strategy and a disclosed developer fee.",
     icon: Network,
   },
   {
@@ -224,16 +224,16 @@ const reviewerConsole = [
   },
   {
     title: "Latest proof",
-    detail: "Review x402 offer, policy chain, receipt and settlement evidence.",
-    href: latestProofUrl,
+    detail: "Review money intent, policy, fee, receipt and settlement evidence in one envelope.",
+    href: "/proof-center",
     icon: FileCheck2,
     external: false,
   },
   {
-    title: "Circle products",
-    detail: "USDC is implemented; Wallets, x402/Gateway, Chainlink on Arc, CCTP, Paymaster and Contracts are staged by scope.",
-    href: "#circle-fit",
-    icon: CircleDollarSign,
+    title: "Public evidence",
+    detail: "Inspect live operation, volume, success, proof and fee-revenue metrics.",
+    href: "/grant-evidence",
+    icon: Gauge,
     external: false,
   },
   {
@@ -282,7 +282,7 @@ const roadmap = [
 
 const knownLimits = [
   "Arc mainnet deployment is pending external availability and grant scope.",
-  "Some payment rails are settlement-ready demo paths until production Circle credentials are fully configured.",
+  "Server App Kit execution remains fail-closed until the production signer, execution secret and provider keys are configured.",
   "Provider receipts include a demo provider signature for review until external providers onboard.",
 ] as const
 
@@ -471,6 +471,8 @@ export default function GrantPage() {
             ))}
           </div>
           <div className="grant-proof-links">
+            <a href="/grant-evidence">Live grant evidence <ArrowRight size={15} /></a>
+            <a href="/pilots">Pilot scenarios <ArrowRight size={15} /></a>
             <a href="https://docs.arc.io/app-kit" target="_blank" rel="noreferrer">App Kit docs <ArrowRight size={15} /></a>
             <a href="https://docs.arc.io/app-kit/concepts/unified-balance-fees" target="_blank" rel="noreferrer">Unified Balance fees <ArrowRight size={15} /></a>
             <a href="https://community.arc.io/en/public/blogs/circle-developer-grants-program-relaunches-2026-05-14" target="_blank" rel="noreferrer">Circle Developer Grants <ArrowRight size={15} /></a>

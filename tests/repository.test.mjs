@@ -103,10 +103,34 @@ test("Gateway lifecycle webhooks reconcile transfer IDs and final states", async
 })
 
 test("browser Money Movement never exposes an App Kit secret", async () => {
-  const client = await read("landing/src/app/money/MoneyMovementClient.tsx")
+  const [client, serverExecution, executeRoute] = await Promise.all([
+    read("landing/src/app/money/MoneyMovementClient.tsx"),
+    read("landing/src/lib/backend/money-execution.ts"),
+    read("landing/src/app/api/money/execute/route.ts"),
+  ])
   assert.doesNotMatch(client, /NEXT_PUBLIC_CIRCLE_APP_KIT_KEY/)
-  assert.match(client, /Swap is fail-closed/)
-  assert.match(client, /server-side Circle Wallets or Turnkey adapter/)
+  assert.doesNotMatch(client, /ARC_APP_KIT_KEY/)
+  assert.match(client, /executionGrant/)
+  assert.match(serverExecution, /ARC_APP_KIT_KEY/)
+  assert.match(serverExecution, /timingSafeEqual/)
+  assert.match(executeRoute, /verifyMoneyExecutionGrant/)
+  assert.match(executeRoute, /money_execute/)
+})
+
+test("control center exposes proof, pilots and public grant evidence", async () => {
+  const [dashboard, proofCenter, pilots, evidence] = await Promise.all([
+    read("landing/src/app/dashboard/page.tsx"),
+    read("landing/src/app/proof-center/ProofCenterClient.tsx"),
+    read("landing/src/app/pilots/page.tsx"),
+    read("landing/src/lib/backend/grant-evidence.ts"),
+  ])
+  assert.match(dashboard, /One surface for money, policy and proof/)
+  assert.match(proofCenter, /No hash, no settlement claim/)
+  assert.match(pilots, /Agent buys an API/)
+  assert.match(pilots, /Treasury moves USDC/)
+  assert.match(pilots, /B2B controlled payout/)
+  assert.match(evidence, /kestrelFeeRevenueUsdc/)
+  assert.match(evidence, /demo_fallback/)
 })
 
 test("ecosystem audit and Radar include the new settlement direction", async () => {

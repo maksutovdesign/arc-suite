@@ -4,7 +4,7 @@ import Link from "next/link"
 
 import { BrandMark } from "./BrandMark"
 
-const liveDemoUrl = "/treasury"
+const liveDemoUrl = "/dashboard"
 
 export type SiteHeaderVariant = "marketing" | "review" | "console"
 
@@ -17,25 +17,24 @@ export type SiteHeaderLink = {
 const variantLinks: Record<SiteHeaderVariant, SiteHeaderLink[]> = {
   marketing: [
     { href: "#system", label: "Product" },
-    { href: "#loop", label: "Loop" },
-    { href: "/proofs", label: "Proof" },
+    { href: "/dashboard", label: "Dashboard" },
+    { href: "/proof-center", label: "Proof" },
+    { href: "/pilots", label: "Pilots" },
     { href: "/grant", label: "Grant" },
-    { href: "/investors", label: "Investors" },
   ],
   review: [
     { href: "/", label: "Product" },
+    { href: "/dashboard", label: "Dashboard" },
+    { href: "/proof-center", label: "Proof" },
+    { href: "/grant-evidence", label: "Evidence" },
     { href: "/grant", label: "Grant" },
-    { href: "/investors#roadmap", label: "Roadmap" },
-    { href: "/investors#ask", label: "Funding ask" },
-    { href: "/analytics", label: "Analytics" },
-    { href: "/ops", label: "Ops" },
   ],
   console: [
-    { href: "/", label: "Product" },
-    { href: "/wallets", label: "Wallet OS" },
-    { href: "/gas", label: "Gas" },
-    { href: "/escrow", label: "Escrow" },
-    { href: "/billing", label: "Billing" },
+    { href: "/dashboard", label: "Dashboard" },
+    { href: "/money", label: "Money" },
+    { href: "/proof-center", label: "Proof" },
+    { href: "/pilots", label: "Pilots" },
+    { href: "/grant-evidence", label: "Evidence" },
     { href: "/ops", label: "Ops Health" },
   ],
 }

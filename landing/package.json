@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@circle-fin/adapter-circle-wallets": "^1.4.3",
     "@circle-fin/adapter-viem-v2": "^1.14.0",
     "@circle-fin/app-kit": "^1.10.0",
     "@circle-fin/developer-controlled-wallets": "^9.6.0",
