@@ -895,7 +895,7 @@ h3 {
 
 .product-tabs {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 8px;
   padding: 8px;
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -955,9 +955,13 @@ h3 {
 
 .product-tabs span span {
   color: var(--cyan);
-  font-size: 11px;
+  font-size: 9px;
   font-weight: 800;
-  letter-spacing: 0.12em;
+  line-height: 1.2;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  word-break: normal;
+  overflow-wrap: normal;
   text-transform: uppercase;
 }
 
