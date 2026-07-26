@@ -3675,7 +3675,7 @@ h3 {
   display: block;
   margin-bottom: 10px;
   color: var(--cyan);
-  font-size: clamp(28px, 2.2vw, 36px);
+  font-size: clamp(20px, 1.65vw, 28px);
   line-height: 1;
   white-space: nowrap;
   overflow-wrap: normal !important;
@@ -3877,9 +3877,12 @@ h3 {
 }
 
 .endpoint-row code {
+  min-width: 0;
   color: var(--cyan);
   font-family: "Space Mono", "SFMono-Regular", "Roboto Mono", monospace;
   font-size: 12px;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
 .endpoint-row small {
