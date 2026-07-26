@@ -54,7 +54,7 @@ const targets = [
     url: `${landingBase}/proof-center`,
   },
   {
-    expectedText: ["Three workflows designed to produce evidence", "Agent buys an API", "B2B controlled payout"],
+    expectedText: ["Three workflows designed to produce evidence", "Agent procures a paid API", "B2B controlled payout"],
     kind: "html",
     name: "Kestrel pilot catalog",
     url: `${landingBase}/pilots`,
