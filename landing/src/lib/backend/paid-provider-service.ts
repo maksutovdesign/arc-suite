@@ -17,6 +17,7 @@ const MONITOR_NAME = "Kestrel Paid Provider Pilot"
 const DEFAULT_BATCH_SIZE = 25
 const MAX_BATCH_SIZE = 25
 const DEFAULT_MAX_UNIT_PRICE_USDC = 0.01
+const DEFAULT_MAX_BATCH_SPEND_USDC = 0.2
 const KESTREL_FEE_BPS = 75
 const PROOF_ARTIFACT_COUNT = 6
 
@@ -96,6 +97,10 @@ export function getPaidProviderConfiguration() {
     executionMode: circleWalletsConfigured ? "circle_wallets" : privateKeyConfigured ? "private_key" : "missing",
     feeBps: KESTREL_FEE_BPS,
     maxBatchSize: MAX_BATCH_SIZE,
+    maxBatchSpendUsdc: configuredPositiveNumber(
+      "KESTREL_X402_MAX_BATCH_SPEND_USDC",
+      DEFAULT_MAX_BATCH_SPEND_USDC,
+    ),
     maxUnitPriceUsdc: configuredPositiveNumber("KESTREL_X402_MAX_UNIT_PRICE_USDC", DEFAULT_MAX_UNIT_PRICE_USDC),
     missing: [
       ...(!explicitlyEnabled ? ["KESTREL_X402_EXECUTION_ENABLED=true"] : []),
@@ -158,13 +163,23 @@ export async function executePaidProviderBatch(count = DEFAULT_BATCH_SIZE): Prom
   const startedAt = Date.now()
   const signer = createProviderSigner()
   const operations: PaidProviderOperation[] = []
+  let authorizedSpendUsdc = 0
 
   for (let index = 0; index < requestedOperations; index += 1) {
-    operations.push(await executePaidProviderOperation({ batchId, index: index + 1, signer }))
+    const operation = await executePaidProviderOperation({
+      batchId,
+      index: index + 1,
+      maxSpendRemainingUsdc: round6(configuration.maxBatchSpendUsdc - authorizedSpendUsdc),
+      signer,
+    })
+    operations.push(operation)
+    if (operation.paymentSignatureHash) {
+      authorizedSpendUsdc = round6(authorizedSpendUsdc + operation.priceUsdc)
+    }
   }
 
   const successful = operations.filter((operation) => operation.status === "completed")
-  const providerSpendUsdc = round6(successful.reduce((sum, operation) => sum + operation.priceUsdc, 0))
+  const providerSpendUsdc = authorizedSpendUsdc
   const accruedUsdc = round6(successful.reduce((sum, operation) => sum + operation.fee.kestrelFeeUsdc, 0))
   const proofCompletenessPct = successful.length
     ? round2(successful.reduce((sum, operation) => sum + operation.proofCompletenessPct, 0) / successful.length)
@@ -229,7 +244,9 @@ export async function getPaidProviderEvidence() {
   )
   const successful = operations.filter((operation) => operation.status === "completed")
   const proofComplete = successful.filter((operation) => operation.proofCompletenessPct === 100)
-  const providerSpendUsdc = round6(successful.reduce((sum, operation) => sum + operation.priceUsdc, 0))
+  const providerSpendUsdc = round6(operations
+    .filter((operation) => Boolean(operation.paymentSignatureHash))
+    .reduce((sum, operation) => sum + operation.priceUsdc, 0))
   const accruedFeeUsdc = round6(successful.reduce((sum, operation) => sum + operation.fee.kestrelFeeUsdc, 0))
   const settledFeeUsdc = round6(successful
     .filter((operation) => operation.fee.status === "settled")
@@ -254,6 +271,7 @@ export async function getPaidProviderEvidence() {
 async function executePaidProviderOperation(input: {
   batchId: string
   index: number
+  maxSpendRemainingUsdc: number
   signer: BatchEvmSigner
 }): Promise<PaidProviderOperation> {
   const id = `${input.batchId}_${String(input.index).padStart(2, "0")}`
@@ -283,6 +301,11 @@ async function executePaidProviderOperation(input: {
     priceUsdc = atomicUsdc(requirements.amount)
     const maxUnitPrice = getPaidProviderConfiguration().maxUnitPriceUsdc
     if (priceUsdc > maxUnitPrice) throw new Error(`Provider price ${priceUsdc} exceeds ${maxUnitPrice} USDC policy cap`)
+    if (priceUsdc > input.maxSpendRemainingUsdc) {
+      throw new Error(
+        `Provider price ${priceUsdc} exceeds remaining batch budget ${input.maxSpendRemainingUsdc} USDC`,
+      )
+    }
 
     const scheme = new BatchEvmScheme(input.signer)
     const paymentPayload = await scheme.createPaymentPayload(paymentRequired.x402Version, requirements)

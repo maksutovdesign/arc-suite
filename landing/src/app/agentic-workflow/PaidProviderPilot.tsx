@@ -8,6 +8,7 @@ type ReadinessPayload = {
     batchSize: number
     enabled: boolean
     feeBps: number
+    maxBatchSpendUsdc: number
     maxUnitPriceUsdc: number
     missing: string[]
     network: string
@@ -84,8 +85,9 @@ export function PaidProviderPilot() {
           <span>Real provider pilot</span>
           <h2>AIsa paid market data · 25-operation evidence gate</h2>
           <p>
-            A fixed, allowlisted x402 resource with a $0.01 unit cap, sequential execution,
-            Circle Gateway authorization and hashed delivery evidence.
+            A fixed, allowlisted x402 resource with a $0.01 unit cap, a{" "}
+            {(payload?.configuration.maxBatchSpendUsdc ?? 0.2).toFixed(2)} USDC batch cap,
+            sequential execution, Circle Gateway authorization and hashed delivery evidence.
           </p>
         </div>
         <div className={`paid-provider-state ${targetReached ? "is-complete" : ""}`}>
