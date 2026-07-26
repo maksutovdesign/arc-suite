@@ -50,6 +50,83 @@ const categoryMeta: Record<BuilderCategory, { label: string; tone: string; icon:
 
 const builders: Builder[] = [
   {
+    handle: "@circle",
+    project: "Circle Agent Stack",
+    description: "Agent Wallets, Marketplace, CLI, Skills and Gateway Nanopayments form the native economic loop for USDC-powered agents.",
+    category: "agentic",
+    stack: ["Agent Wallets", "x402", "Gateway", "CLI", "Marketplace"],
+    traction: "Official Circle product · immediately available",
+    signal: "high",
+    amplifiedBy: "Circle",
+    suiteFit: ["Money Movement", "Marketplace", "Shield", "Proof Center"],
+  },
+  {
+    handle: "@agentcash",
+    project: "AgentCash / Merit",
+    description: "Agent discovery and payment across x402 and MPP, with open provider tooling and wallet-based buyer identity.",
+    category: "agentic",
+    stack: ["x402", "MPP", "OpenAPI", "llms.txt", "USDC"],
+    traction: "Reports 765K transactions and ~$40K 2026 revenue",
+    signal: "high",
+    amplifiedBy: "Circle ecosystem event",
+    suiteFit: ["Marketplace", "Billing", "Shield", "Proof Center"],
+  },
+  {
+    handle: "@AIsa_AI",
+    project: "AIsa",
+    description: "Unified model, data and API gateway where agents discover resources and pay per call through Nanopayments or MPP.",
+    category: "agentic",
+    stack: ["Nanopayments", "MPP", "Models", "Data APIs"],
+    traction: "100+ paid endpoints · 1M+ reported calls",
+    signal: "high",
+    amplifiedBy: "@Arc, Circle Agent Stack",
+    suiteFit: ["Marketplace", "Billing", "Shield", "Proof Center"],
+  },
+  {
+    handle: "@crossmint",
+    project: "Crossmint Agent Payments",
+    description: "User-owned wallets delegate scoped spend, counterparties and time windows to agents, with stablecoin and card execution.",
+    category: "infra",
+    stack: ["Agent wallets", "Onchain policy", "x402", "Cards"],
+    traction: "Production agent-payment infrastructure",
+    signal: "high",
+    amplifiedBy: "External market",
+    suiteFit: ["Wallets", "Shield", "Money Movement", "Proof Center"],
+  },
+  {
+    handle: "@Cobo_Global",
+    project: "Cobo Agentic Wallet",
+    description: "Cryptographically enforced transaction controls for autonomous agents across a broad multichain wallet surface.",
+    category: "infra",
+    stack: ["Agent wallet", "Policy enforcement", "MCP", "Multichain"],
+    traction: "Public product and open SDK positioning",
+    signal: "medium",
+    amplifiedBy: "External market",
+    suiteFit: ["Wallets", "Shield", "Execution Control"],
+  },
+  {
+    handle: "@vyperlang",
+    project: "Vyper Agentic Payments",
+    description: "Open ERC-8004 identity and x402 workflows with escrow, subscriptions, split payments and spending limits on Arc.",
+    category: "agentic",
+    stack: ["ERC-8004", "x402", "Escrow", "Subscriptions"],
+    traction: "Official Arc technical spotlight · open source",
+    signal: "high",
+    amplifiedBy: "@Arc",
+    suiteFit: ["Reputation", "Escrow", "Billing", "Proof Center"],
+  },
+  {
+    handle: "@BlockradarHQ",
+    project: "Blockradar",
+    description: "Wallet-as-a-Service for fintechs with AML, gasless transactions, treasury sweeps and multichain payment orchestration.",
+    category: "infra",
+    stack: ["WaaS", "AML", "Sweeps", "Gateway", "USDC/EURC"],
+    traction: "Reports $600M volume · 150K wallets · 700K transactions",
+    signal: "high",
+    amplifiedBy: "Circle grant recipient",
+    suiteFit: ["Treasury", "Shield", "Flow", "Proof Center"],
+  },
+  {
     handle: "@wirexapp",
     project: "Wirex One",
     description: "Planned non-U.S. card settlement on Arc with USDC and EURC underneath consumer and BaaS payment flows.",
@@ -72,7 +149,7 @@ const builders: Builder[] = [
     suiteFit: ["Treasury", "Billing", "Flow", "Escrow"],
   },
   {
-    handle: "@pulsar",
+    handle: "@pulsarmoney",
     project: "Pulsar",
     description: "Consumer stablecoin money movement across balances, payments, cards and FX with Arc-native settlement.",
     category: "payments",
@@ -272,6 +349,9 @@ const builders: Builder[] = [
 ]
 
 const opportunityGaps = [
+  ["Agent mandate proof", "High priority", "Wallet caps exist, but organizations still need portable evidence connecting intent, policy, approval, execution and delivered result."],
+  ["Nanopayment operations", "New", "High-frequency authorizations need session budgets, replay controls, batch reconciliation and provider-level exception metrics."],
+  ["Machine-readable distribution", "New", "OpenAPI, llms.txt, MCP and payment metadata are becoming the storefront agents use to discover and buy services."],
   ["Card settlement operations", "New", "Authorization, clearing, Arc settlement and reconciliation need one observable state machine for card-linked USDC/EURC flows."],
   ["B2B obligation netting", "New", "Recurring invoices and supplier payments can settle only residual obligations instead of moving every gross leg."],
   ["Private payments", "Nearly empty", "Selective disclosure, private invoices and auditor view keys are the clearest wedge."],
@@ -289,6 +369,9 @@ const suiteFit = [
 ]
 
 const closestReferences = [
+  ["Circle Agent Stack", "The native platform Kestrel should extend: use its wallets and payment rails, then add organizational policy, reconciliation and portable proof."],
+  ["AgentCash / AIsa", "The strongest evidence that paid API discovery and per-call agent commerce can produce real transaction counts and revenue."],
+  ["Crossmint / Cobo", "The wallet-control benchmark: bounded delegation must be enforced below the prompt and revocable by the owner."],
   ["Wirex One", "Card-linked USDC/EURC settlement makes reconciliation and pending-versus-settled state part of the core product architecture."],
   ["Cycles", "The strongest B2B settlement reference: net obligations first, then settle residual USDC on Arc."],
   ["Pulsar", "The closest consumer money-movement reference across balances, FX, cards and Arc-native settlement."],
@@ -316,7 +399,7 @@ export function RadarClient() {
     })
   }, [])
 
-  const primitives = ["App Kit", "Gateway webhooks", "USDC/EURC", "Card settlement", "CCTP", "x402", "StableFX", "Paymaster"]
+  const primitives = ["App Kit", "Agent Stack", "x402 / MPP", "Gateway webhooks", "USDC/EURC", "Nanopayments", "CCTP", "StableFX"]
 
   return (
     <section className="radar-shell">
@@ -325,8 +408,8 @@ export function RadarClient() {
           <p className="kicker">Arc builder intelligence</p>
           <h1>Where Arc builders are active, and where the gap is still open.</h1>
           <p>
-            Updated 26 July 2026. Kestrel Radar turns official Arc releases and public builder
-            signals into a product map: builder categories,
+            Updated 26 July 2026. Kestrel Radar combines official Arc and Circle releases,
+            public builder signals, competing agent-payment products and grant traction into a product map: builder categories,
             primitives, traction signals, opportunity gaps and the exact place Kestrel can
             become the operating layer for payment, agent and stablecoin apps.
           </p>
@@ -352,7 +435,7 @@ export function RadarClient() {
       </div>
 
       <div className="radar-method">
-        <div><Search size={18} /><span>Source scope</span><strong>Public Arc spotlights, Builder Fund, Office Hours, regional chapters</strong></div>
+        <div><Search size={18} /><span>Source scope</span><strong>Arc/Circle releases, grants, builders, X signals and competing payment platforms</strong></div>
         <div><BadgeCheck size={18} /><span>Signal model</span><strong>Visibility, amplification, primitives, demo quality, strategic fit</strong></div>
         <div><Eye size={18} /><span>Research stance</span><strong>Public visibility only; low-signal builders are marked, not hidden</strong></div>
       </div>
@@ -362,8 +445,9 @@ export function RadarClient() {
           <p className="kicker">Builder map</p>
           <h2>Settlement is becoming the product, not the back-office layer.</h2>
           <p>
-            Wirex, Cycles and Pulsar move the signal from one-off transfers toward card volume,
-            recurring obligations, USDC/EURC balances and operational reconciliation.
+            Agent Stack, AgentCash, AIsa, Wirex, Cycles and Pulsar move the signal from one-off
+            transfers toward repeated API purchases, card volume, recurring obligations,
+            USDC/EURC balances and operational reconciliation.
           </p>
         </div>
 
@@ -426,11 +510,11 @@ export function RadarClient() {
       <section className="radar-section radar-split" id="gaps">
         <div>
           <p className="kicker">Opportunity gaps</p>
-          <h2>The strongest wedge is controlled settlement operations.</h2>
+          <h2>The strongest wedge is mandate-to-proof settlement control.</h2>
           <p>
-            Arc builders are shipping payment and FX rails quickly. The underbuilt layer is
-            what happens around settlement: policy, pending state, reconciliation, netting,
-            private receipts and operational recovery.
+            Wallets, payment protocols and FX rails are shipping quickly. The underbuilt layer is
+            what happens around settlement: organizational mandate, approval, provider trust,
+            pending state, reconciliation, netting, private receipts and operational recovery.
           </p>
           <div className="radar-gap-list">
             {opportunityGaps.map(([title, state, text]) => (
@@ -455,8 +539,8 @@ export function RadarClient() {
             <LockKeyhole size={18} />
             <div>
               <span>Next flagship layer</span>
-              <strong>Settlement Control</strong>
-              <p>Card reconciliation, Gateway lifecycle events, obligation netting and policy-aware proof.</p>
+              <strong>Mandate → Settlement → Proof</strong>
+              <p>Agent budgets, provider trust, Gateway lifecycle events, reconciliation and portable evidence.</p>
             </div>
           </div>
         </div>
@@ -482,7 +566,7 @@ export function RadarClient() {
         <article className="radar-research-card">
           <Building2 size={22} />
           <p className="kicker">Closest references</p>
-          <h2>Three projects define the strategic neighborhood.</h2>
+          <h2>The products defining Kestrel&apos;s strategic neighborhood.</h2>
           {closestReferences.map(([name, text]) => (
             <div className="radar-reference" key={name}>
               <strong>{name}</strong>

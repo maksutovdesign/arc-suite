@@ -11,11 +11,11 @@ const scenarios = [
   {
     id: "x402-api",
     icon: Code2,
-    label: "Agent buys an API",
+    label: "Agent procures a paid API",
     audience: "AI agent platforms and API providers",
     action: "/agentic-workflow",
-    steps: ["Discover priced x402 offer", "Check budget and reputation", "Screen recipient risk", "Settle USDC on Arc", "Sign provider receipt", "Publish proof envelope"],
-    evidence: ["offer digest", "policy decision", "receipt signature", "settlement reference"],
+    steps: ["Discover provider through OpenAPI, llms.txt or marketplace metadata", "Inspect x402, MPP or Nanopayment price before execution", "Enforce provider, session and cumulative budget policy", "Escalate the first provider or smallest policy exception", "Pay only after policy and counterparty checks pass", "Verify the delivered result and provider receipt", "Reconcile authorization with the settlement batch", "Publish a portable proof envelope"],
+    evidence: ["provider identity", "offer digest", "signed mandate", "policy decision", "delivered-work hash", "receipt signature", "settlement reference"],
   },
   {
     id: "treasury",
@@ -48,7 +48,7 @@ export default function PilotsPage() {
             <h1>Three workflows designed to produce evidence.</h1>
             <p>Each pilot begins with a real money action and ends with a measurable terminal state. Demo data is labeled; onchain claims require a transaction artifact.</p>
           </div>
-          <div className="control-readiness"><PlayCircle size={20} /><span><strong>3 scenarios ready</strong><small>x402 · treasury · B2B settlement</small></span></div>
+          <div className="control-readiness"><PlayCircle size={20} /><span><strong>3 scenarios ready</strong><small>agent procurement · treasury · B2B settlement</small></span></div>
         </header>
 
         <section className="pilot-grid">
@@ -70,7 +70,7 @@ export default function PilotsPage() {
         <section className="control-panel pilot-success">
           <div className="control-panel-head"><div><span>Shared success criteria</span><h2>What every pilot must measure</h2></div><PlayCircle size={20} /></div>
           <div>
-            <span>terminal success rate</span><span>USDC volume</span><span>quote latency</span><span>policy denials</span><span>proof completeness</span><span>Kestrel fee revenue</span>
+            <span>terminal success rate</span><span>USDC volume</span><span>quote latency</span><span>policy denials</span><span>provider success</span><span>proof completeness</span><span>Kestrel fee revenue</span>
           </div>
         </section>
       </section>

@@ -126,11 +126,27 @@ test("control center exposes proof, pilots and public grant evidence", async () 
   ])
   assert.match(dashboard, /One surface for money, policy and proof/)
   assert.match(proofCenter, /No hash, no settlement claim/)
-  assert.match(pilots, /Agent buys an API/)
+  assert.match(pilots, /Agent procures a paid API/)
+  assert.match(pilots, /session and cumulative budget policy/)
   assert.match(pilots, /Treasury moves USDC/)
   assert.match(pilots, /B2B controlled payout/)
   assert.match(evidence, /kestrelFeeRevenueUsdc/)
   assert.match(evidence, /demo_fallback/)
+})
+
+test("market intelligence expands Radar beyond the Arc builder list", async () => {
+  const [intelligence, radar] = await Promise.all([
+    read("docs/MARKET_INTELLIGENCE_2026-07-26.md"),
+    read("landing/src/app/radar/RadarClient.tsx"),
+  ])
+  assert.match(intelligence, /Circle Agent Stack/)
+  assert.match(intelligence, /AgentCash/)
+  assert.match(intelligence, /Crossmint/)
+  assert.match(intelligence, /Agent Procurement Control/)
+  assert.match(radar, /Circle Agent Stack/)
+  assert.match(radar, /AgentCash \/ Merit/)
+  assert.match(radar, /AIsa/)
+  assert.match(radar, /Mandate → Settlement → Proof/)
 })
 
 test("ecosystem audit and Radar include the new settlement direction", async () => {
