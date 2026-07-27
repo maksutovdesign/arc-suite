@@ -34,6 +34,7 @@ for (const requiredName of [
   "disputeMilestone",
   "releaseMilestone",
   "refundMilestone",
+  "claimRefund",
   "MilestoneFunded",
   "MilestoneReleased",
   "MilestoneRefunded",
