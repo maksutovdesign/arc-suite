@@ -22,6 +22,7 @@ const apiHeaders = [
 const basePath = "/marketplace";
 
 const nextConfig: NextConfig = {
+  transpilePackages: ["@arc/ui"],
   basePath,
   env: { NEXT_PUBLIC_BASE_PATH: basePath },
   poweredByHeader: false,

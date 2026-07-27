@@ -81,10 +81,10 @@ test("Kestrel publishing metadata includes app and social assets", async () => {
 
 test("Money Movement is present in every product navigation", async () => {
   const files = [
+    // Landing keeps its own (divergent) nav; the three product apps now share one
+    // source via the @arc/ui workspace package.
     "landing/src/app/EcosystemNav.tsx",
-    "treasury/src/components/dashboard/EcosystemNav.tsx",
-    "reputation/src/components/dashboard/EcosystemNav.tsx",
-    "marketplace/src/components/dashboard/EcosystemNav.tsx",
+    "packages/arc-ui/src/EcosystemNav.tsx",
   ]
   for (const file of files) {
     const source = await read(file)

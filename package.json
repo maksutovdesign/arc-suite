@@ -5,7 +5,8 @@
     "landing",
     "treasury",
     "reputation",
-    "marketplace"
+    "marketplace",
+    "packages/*"
   ],
   "scripts": {
     "landing": "npm run dev --workspace=landing",
