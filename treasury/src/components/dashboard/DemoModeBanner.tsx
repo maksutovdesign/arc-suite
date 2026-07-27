@@ -20,7 +20,7 @@ export function DemoModeBanner() {
         <div className="min-w-0">
           <p className="text-sm font-semibold text-white">Demo workspace</p>
           <p className="text-[11px] leading-snug" style={{ color: "#a9b8c9" }}>
-            Live pilot data is connected. Budget edits, agent changes, and key rotation are read-only in this session.
+            Read-only pilot walkthrough. Budget edits, agent changes, and key rotation are disabled in this session.
           </p>
         </div>
       </div>

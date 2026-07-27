@@ -38,12 +38,12 @@ export default function SubmitPage() {
               style={{ background: "rgba(52,211,153,0.15)", border: "1px solid rgba(52,211,153,0.3)" }}>
               <PartyPopper className="size-7" style={{ color: "#34d399" }} />
             </div>
-            <h2 className="text-xl font-bold text-white mb-2">Submitted for Review!</h2>
+            <h2 className="text-xl font-bold text-white mb-2">Demo submission received</h2>
             <p className="text-sm mb-1" style={{ color: "#94a3b8" }}>
-              <span className="font-semibold text-white">{form.name}</span> by {form.provider} is now in the review queue.
+              <span className="font-semibold text-white">{form.name}</span> by {form.provider} — this is a preview of the listing flow.
             </p>
             <p className="text-sm mb-6" style={{ color: "#7a8fa8" }}>
-              Verification takes 24–48h. You&apos;ll receive a notification at your wallet address when approved.
+              Nothing was sent or stored: API submission is not yet wired to a backend. Live verification and wallet notifications land in a later milestone.
             </p>
 
             <div className="rounded-xl p-4 mb-6 text-left space-y-2"
@@ -67,11 +67,10 @@ export default function SubmitPage() {
                 style={{ background: "rgba(255,255,255,0.05)", color: "#7a8fa8", border: "1px solid rgba(255,255,255,0.08)" }}>
                 Submit another
               </button>
-              <Link href="/" className="flex-1">
-                <button className="w-full h-9 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90"
-                  style={{ background: "linear-gradient(135deg,#4d8ee9,#5FBFFF)", boxShadow: "0 0 16px rgba(77,142,233,0.3)" }}>
-                  Browse APIs →
-                </button>
+              <Link href="/"
+                className="flex-1 flex items-center justify-center h-9 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90"
+                style={{ background: "linear-gradient(135deg,#4d8ee9,#5FBFFF)", boxShadow: "0 0 16px rgba(77,142,233,0.3)" }}>
+                Browse APIs →
               </Link>
             </div>
           </div>

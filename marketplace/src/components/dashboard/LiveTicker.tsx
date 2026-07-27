@@ -45,7 +45,7 @@ export function LiveTicker() {
           style={{ background: "#34d399", boxShadow: "0 0 6px rgba(52,211,153,0.8)" }} />
         <Zap className="size-3" style={{ color: "#5FBFFF" }} />
         <span className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: "#5FBFFF" }}>
-          Live
+          Sample
         </span>
       </div>
       <span className="text-[11px] font-medium" style={{ color: event.color }}>{event.agent}</span>

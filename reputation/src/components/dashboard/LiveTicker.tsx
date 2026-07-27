@@ -45,7 +45,7 @@ export function LiveTicker() {
           style={{ background: "#a78bfa", boxShadow: "0 0 6px rgba(167,139,250,0.8)" }} />
         <ShieldCheck className="size-3" style={{ color: "#a78bfa" }} />
         <span className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: "#a78bfa" }}>
-          Live
+          Sample
         </span>
       </div>
       <span className="text-[11px] font-medium" style={{ color: event.color }}>{event.agent}</span>
