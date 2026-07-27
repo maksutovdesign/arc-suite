@@ -394,7 +394,7 @@ const readinessSignals = [
   },
 ] as const
 
-const liveDemoUrl = "/dashboard"
+const liveDemoUrl = "/treasury"
 const latestProofUrl = "/proof?id=flow_agentic_01a50e12e6c4"
 
 // The first four products have their own internal system. Their switcher CTA

@@ -14,7 +14,7 @@ export default async function GrantEvidencePage() {
   const evidence = await getGrantEvidence()
   return (
     <main>
-      <SiteHeader demoHref="/dashboard" idPrefix="grant-evidence-brand" variant="review" />
+      <SiteHeader demoHref="/treasury" idPrefix="grant-evidence-brand" variant="review" />
       <section className="control-shell">
         <header className="control-hero">
           <div>

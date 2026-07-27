@@ -40,7 +40,7 @@ const scenarios = [
 export default function PilotsPage() {
   return (
     <main>
-      <SiteHeader demoHref="/dashboard" idPrefix="pilots-brand" variant="console" />
+      <SiteHeader demoHref="/treasury" idPrefix="pilots-brand" variant="console" />
       <section className="control-shell">
         <header className="control-hero">
           <div>

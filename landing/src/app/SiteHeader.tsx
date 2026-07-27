@@ -4,7 +4,7 @@ import Link from "next/link"
 
 import { BrandMark } from "./BrandMark"
 
-const liveDemoUrl = "/dashboard"
+const liveDemoUrl = "/treasury"
 
 export type SiteHeaderVariant = "marketing" | "review" | "console"
 

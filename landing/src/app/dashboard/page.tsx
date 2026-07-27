@@ -23,7 +23,7 @@ export default async function DashboardPage() {
 
   return (
     <main>
-      <SiteHeader demoHref="/dashboard" idPrefix="dashboard-brand" variant="console" />
+      <SiteHeader demoHref="/treasury" idPrefix="dashboard-brand" variant="console" />
       <section className="control-shell">
         <header className="control-hero">
           <div>

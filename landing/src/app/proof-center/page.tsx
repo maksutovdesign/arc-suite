@@ -9,7 +9,7 @@ export const metadata = {
 export default function ProofCenterPage() {
   return (
     <main>
-      <SiteHeader demoHref="/dashboard" idPrefix="proof-center-brand" variant="console" />
+      <SiteHeader demoHref="/treasury" idPrefix="proof-center-brand" variant="console" />
       <ProofCenterClient />
     </main>
   )
