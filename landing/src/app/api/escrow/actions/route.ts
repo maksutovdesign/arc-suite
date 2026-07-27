@@ -1,7 +1,7 @@
-import { randomUUID } from "crypto"
 import { NextRequest, NextResponse } from "next/server"
 
 import { EscrowContractError, executeArcEscrowAction } from "@/lib/backend/arc-escrow"
+import { deterministicIdempotencyKey } from "@/lib/backend/idempotency"
 import { requireArcApiKey } from "@/lib/backend/auth"
 import { createRequestId, logOperationalEvent, requestIdHeaders } from "@/lib/backend/observability"
 import { applySupabaseEscrowAction, enqueueSupabaseExecutionJob } from "@/lib/backend/supabase"
@@ -24,7 +24,9 @@ export async function POST(request: NextRequest) {
       receipt = await executeArcEscrowAction({
         action: body.action,
         milestoneId: body.milestoneId,
-        providerIdempotencyKey: randomUUID(),
+        // Deterministic per (milestone, action): retries and double-clicks dedupe
+        // at Circle instead of submitting a second on-chain release/refund.
+        providerIdempotencyKey: deterministicIdempotencyKey(`escrow:${body.milestoneId}:${body.action}`),
       })
     }
     const deal = await applySupabaseEscrowAction({

@@ -234,10 +234,22 @@ export function normalizeMoneyProof(input: {
   }
 }
 
+let warnedSigningFallback = false
+
 function executionSigningSecret() {
-  return readEnv("KESTREL_EXECUTION_SIGNING_SECRET")
-    ?? readEnv("ARC_ANALYTICS_SALT")
-    ?? readEnv("SUPABASE_SERVICE_ROLE_KEY")
+  const dedicated = readEnv("KESTREL_EXECUTION_SIGNING_SECRET")
+  if (dedicated) return dedicated
+  // The analytics salt is deliberately NOT reused here: it is also the IP-hashing salt
+  // on public/low-trust paths, so sharing it with the money-grant HMAC would let a
+  // low-sensitivity value forge fund-moving grants. The service-role key is a genuine
+  // secret and is kept only as a stopgap so an unconfigured deploy still functions —
+  // a dedicated KESTREL_EXECUTION_SIGNING_SECRET should always be set.
+  const fallback = readEnv("SUPABASE_SERVICE_ROLE_KEY")
+  if (fallback && !warnedSigningFallback && process.env.NODE_ENV === "production") {
+    warnedSigningFallback = true
+    console.warn("[money-execution] KESTREL_EXECUTION_SIGNING_SECRET is not set; falling back to SUPABASE_SERVICE_ROLE_KEY. Set a dedicated secret.")
+  }
+  return fallback
 }
 
 function configuredNumber(name: string, fallback: number) {

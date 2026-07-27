@@ -1,5 +1,6 @@
 import { randomUUID } from "crypto"
 import { ArcTransferError, getArcSettlementConfiguration, resumeArcTestnetUsdc, sendArcTestnetUsdc } from "./arc-settlement"
+import { deterministicIdempotencyKey } from "./idempotency"
 import { checkAccess } from "./service"
 import {
   finalizeSupabaseArcSettlement,
@@ -97,7 +98,10 @@ export async function executeArcSettlement(input: {
     const receipt = await sendArcTestnetUsdc({
       amountUsdc: decision.amountUsdc,
       recipientAddress: input.recipientAddress,
-      providerIdempotencyKey: settlement.id.replace(/^set_/, ""),
+      // Derived from the caller idempotency key (not the random row id) so that two
+      // concurrent inserts racing past the find/insert check still dedupe to a single
+      // on-chain transfer at Circle instead of double-sending.
+      providerIdempotencyKey: deterministicIdempotencyKey(input.idempotencyKey),
     })
     await updateSupabaseArcSettlement(settlement.id, {
       status: "submitted",
@@ -242,6 +246,52 @@ async function resumeExistingSettlement(existing: ArcSettlement): Promise<Execut
 
   if (existing.status === "policy_denied") {
     return { ok: false, idempotent: true, decision, settlement: existing }
+  }
+
+  // `approved` means the audit row was written but the process died before/while the
+  // transfer was issued. Re-run the send with the deterministic provider key: Circle
+  // dedupes if the transfer already reached it, otherwise it is issued exactly once.
+  // Without this branch the key is permanently poisoned (falls through to conflict).
+  if (existing.status === "approved") {
+    try {
+      const receipt = await sendArcTestnetUsdc({
+        amountUsdc: existing.amountUsdc,
+        recipientAddress: existing.recipientAddress,
+        providerIdempotencyKey: deterministicIdempotencyKey(existing.idempotencyKey),
+      })
+      await updateSupabaseArcSettlement(existing.id, {
+        status: "submitted",
+        txHash: receipt.txHash,
+        explorerUrl: receipt.explorerUrl,
+        gasEstimate: receipt.gasEstimate,
+        providerReceipt: receipt.providerReceipt,
+        errorCode: null,
+        errorMessage: null,
+      })
+      const result = await finalizeSupabaseArcSettlement({
+        settlementId: existing.id,
+        transactionId: transactionIdForSettlement(existing.id),
+        txHash: receipt.txHash,
+        explorerUrl: receipt.explorerUrl,
+        gasEstimate: receipt.gasEstimate,
+        providerReceipt: receipt.providerReceipt,
+        occurredAt: new Date().toISOString(),
+      })
+      if (!result) throw new SettlementExecutionError("persistence_failed", "Recovered Arc transfer could not be finalized", 503)
+      return { ok: true, idempotent: true, decision, result }
+    } catch (error) {
+      if (error instanceof SettlementExecutionError) throw error
+      const code = error instanceof ArcTransferError ? error.code : "arc_transfer_failed"
+      const message = error instanceof Error ? error.message : "Arc transfer failed"
+      const details = error instanceof ArcTransferError ? error.details : {}
+      await updateSupabaseArcSettlement(existing.id, {
+        status: code === "circle_confirmation_timeout" ? "submitted" : "failed",
+        errorCode: code,
+        errorMessage: message.slice(0, 500),
+        providerReceipt: details,
+      })
+      throw new SettlementExecutionError(code, message, 502, details)
+    }
   }
 
   throw new SettlementExecutionError(

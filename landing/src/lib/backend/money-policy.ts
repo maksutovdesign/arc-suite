@@ -80,6 +80,22 @@ export function validateMoneyAuthorization(value: unknown): { input: MoneyAuthor
   }
 }
 
+export function policyValidationError(
+  input: MoneyAuthorization,
+  configuration: ReturnType<typeof getMoneyPolicyConfiguration>,
+): string | null {
+  const issuedAt = Date.parse(input.issuedAt)
+  const ageMs = Date.now() - issuedAt
+  if (ageMs < -30_000 || ageMs > configuration.signatureTtlSeconds * 1000) return "The wallet authorization has expired."
+  if (Number(input.amount) > configuration.maxAmountUsdc) return `Amount exceeds the ${configuration.maxAmountUsdc} USDC execution limit.`
+  if (input.feeRecipient.toLowerCase() !== configuration.feeRecipient?.toLowerCase()) return "The fee recipient does not match server policy."
+  if (configuration.allowlistRequired && !configuration.allowedRecipients.includes(input.recipient.toLowerCase())) return "Recipient is not in the production allowlist."
+  if (input.operation === "send" && input.sourceChain !== input.destinationChain) return "Send must use the same source and destination chain."
+  if (input.operation === "swap" && (input.sourceChain !== "Arc_Testnet" || input.destinationChain !== "Arc_Testnet")) return "Testnet Swap is restricted to Arc Testnet."
+  if ((input.operation === "bridge" || input.operation === "spend") && input.sourceChain === input.destinationChain) return "Cross-chain movement requires different source and destination chains."
+  return null
+}
+
 export function moneyAuthorizationMessage(input: MoneyAuthorization) {
   return [
     "Kestrel Money Movement Authorization",

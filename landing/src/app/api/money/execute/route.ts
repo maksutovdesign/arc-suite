@@ -7,7 +7,7 @@ import {
   normalizeMoneyProof,
   verifyMoneyExecutionGrant,
 } from "@/lib/backend/money-execution"
-import { getMoneyPolicyConfiguration, validateMoneyAuthorization } from "@/lib/backend/money-policy"
+import { getMoneyPolicyConfiguration, policyValidationError, validateMoneyAuthorization } from "@/lib/backend/money-policy"
 import { createRequestId, logOperationalEvent, requestIdHeaders } from "@/lib/backend/observability"
 import { enforceRateLimit, rateLimitHeaders, rateLimitResponse } from "@/lib/backend/rate-limit"
 
@@ -60,6 +60,18 @@ export async function POST(request: NextRequest) {
     )
   }
 
+  // Re-validate the grant against live server policy at execution time. The grant is
+  // HMAC-signed, but the amount/recipient/allowlist/fee-recipient caps must be enforced
+  // where funds actually move — not only in preflight — so a stale or replayed grant
+  // (or a policy that tightened after issuance) cannot move funds outside current limits.
+  const policyError = policyValidationError(grant.authorization, getMoneyPolicyConfiguration())
+  if (policyError) {
+    return NextResponse.json(
+      { error: "policy_violation", message: policyError },
+      { headers: requestIdHeaders(requestId), status: 403 },
+    )
+  }
+
   const rateLimit = await enforceRateLimit({
     bucketKey: grant.authorization.nonce,
     max: 1,
@@ -70,6 +82,23 @@ export async function POST(request: NextRequest) {
     const response = rateLimitResponse(rateLimit)
     response.headers.set("X-Request-Id", requestId)
     return response
+  }
+  // Money movement has no provider-level idempotency key, so this nonce bucket is the
+  // only replay guard. If it could not be enforced atomically (Supabase RPC degraded →
+  // TOCTOU-prone legacy or per-instance in-memory fallback), fail closed rather than
+  // risk a double-spend from a concurrent replay of the same signed grant.
+  if (!rateLimit.durable) {
+    logOperationalEvent({
+      details: { operation: grant.authorization.operation, traceId: grant.traceId },
+      event: "money.execute.replay_guard_unavailable",
+      level: "error",
+      requestId,
+      route: "/api/money/execute",
+    })
+    return NextResponse.json(
+      { error: "replay_guard_unavailable", message: "The durable idempotency store is unavailable; execution is blocked to prevent a double-spend." },
+      { headers: { ...rateLimitHeaders(rateLimit), ...requestIdHeaders(requestId) }, status: 503 },
+    )
   }
 
   const feeBreakdown = createMoneyFeeBreakdown(grant.authorization)

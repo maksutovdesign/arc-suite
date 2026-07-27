@@ -1,3 +1,4 @@
+import { timingSafeEqual } from "crypto"
 import { NextRequest, NextResponse } from "next/server"
 
 import { requireArcApiKey } from "@/lib/backend/auth"
@@ -27,6 +28,14 @@ export async function GET(request: NextRequest) {
 
 async function authorizeWorker(request: NextRequest) {
   const bearer = request.headers.get("authorization")?.replace(/^Bearer\s+/i, "")
-  if (process.env.CRON_SECRET && bearer === process.env.CRON_SECRET) return null
+  const cronSecret = process.env.CRON_SECRET
+  if (cronSecret && bearer && constantTimeEqual(bearer, cronSecret)) return null
   return requireArcApiKey(request, ["admin"])
+}
+
+function constantTimeEqual(a: string, b: string) {
+  const bufferA = Buffer.from(a)
+  const bufferB = Buffer.from(b)
+  if (bufferA.length !== bufferB.length) return false
+  return timingSafeEqual(bufferA, bufferB)
 }

@@ -14,6 +14,10 @@ type RateLimitDecision = {
   limit: number
   remaining: number
   resetAt: string
+  /** True only when the decision came from the atomic Supabase RPC — i.e. safe to
+   * rely on as a single-use / idempotency guard for money movement. In-memory and
+   * legacy compatibility paths set this false. */
+  durable: boolean
 }
 
 const localBuckets = new Map<string, { count: number; resetAt: number }>()
@@ -41,6 +45,7 @@ export async function enforceRateLimit(input: RateLimitInput): Promise<RateLimit
       limit: input.max,
       remaining: Math.max(0, input.max - supabaseDecision.count),
       resetAt,
+      durable: supabaseDecision.durable,
     }
   }
 
@@ -87,6 +92,7 @@ function enforceLocalRateLimit(input: RateLimitInput & { bucketKey: string }, no
       limit: input.max,
       remaining: 0,
       resetAt: new Date(next.resetAt).toISOString(),
+      durable: false,
     }
   }
 
@@ -98,6 +104,7 @@ function enforceLocalRateLimit(input: RateLimitInput & { bucketKey: string }, no
     limit: input.max,
     remaining: Math.max(0, input.max - next.count),
     resetAt: new Date(next.resetAt).toISOString(),
+    durable: false,
   }
 }
 

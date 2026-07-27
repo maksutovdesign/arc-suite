@@ -2198,7 +2198,7 @@ export async function consumeSupabaseRateLimit(input: {
   max: number
   route: string
   sinceIso: string
-}): Promise<{ allowed: boolean; count: number } | null> {
+}): Promise<{ allowed: boolean; count: number; durable: boolean } | null> {
   if (!isSupabaseConfigured()) return null
 
   try {
@@ -2212,7 +2212,8 @@ export async function consumeSupabaseRateLimit(input: {
     })
     const decision = rows[0]
     if (!decision) throw new Error("Rate limit RPC returned no decision")
-    return { allowed: decision.allowed, count: decision.event_count }
+    // Atomic RPC path: safe to rely on for idempotency / replay protection.
+    return { allowed: decision.allowed, count: decision.event_count, durable: true }
   } catch (error) {
     logSupabaseError("atomic rate limit unavailable; using compatibility path", error)
     return consumeLegacySupabaseRateLimit(input)
@@ -2225,13 +2226,15 @@ async function consumeLegacySupabaseRateLimit(input: {
   max: number
   route: string
   sinceIso: string
-}): Promise<{ allowed: boolean; count: number } | null> {
+}): Promise<{ allowed: boolean; count: number; durable: boolean } | null> {
   try {
     const rows = await getRows<{ id: string }>(
       "rate_limit_events",
       `select=id&workspace_id=eq.${encodeURIComponent(WORKSPACE_ID)}&route=eq.${encodeURIComponent(input.route)}&bucket_key=eq.${encodeURIComponent(input.bucketKey)}&created_at=gte.${encodeURIComponent(input.sinceIso)}&limit=1000`,
     )
-    if (rows.length >= input.max) return { allowed: false, count: rows.length }
+    // Non-atomic SELECT-then-INSERT: a TOCTOU race can let concurrent callers both
+    // pass, so this path is not trustworthy for money-movement replay protection.
+    if (rows.length >= input.max) return { allowed: false, count: rows.length, durable: false }
 
     await postRows("rate_limit_events", [
       {
@@ -2242,7 +2245,7 @@ async function consumeLegacySupabaseRateLimit(input: {
         workspace_id: WORKSPACE_ID,
       },
     ])
-    return { allowed: true, count: rows.length + 1 }
+    return { allowed: true, count: rows.length + 1, durable: false }
   } catch (error) {
     logSupabaseError("rate limit compatibility path", error)
     return null
