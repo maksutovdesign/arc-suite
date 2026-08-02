@@ -15,6 +15,7 @@
     "@circle-fin/developer-controlled-wallets": "^9.6.0",
     "@circle-fin/x402-batching": "^3.2.0",
     "@sentry/nextjs": "^10.59.0",
+    "@x402/evm": "2.3.0",
     "lucide-react": "^1.17.0",
     "next": "^16.2.11",
     "react": "19.2.4",

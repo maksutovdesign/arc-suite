@@ -1,9 +1,10 @@
+import { getGatewaySellerConfiguration } from "./gateway-seller"
 import { getMoneyPolicyConfiguration } from "./money-policy"
 
 export type IntegrationState = "configured" | "partial" | "missing"
 
 export type ExternalIntegration = {
-  id: "app-kit" | "money-policy" | "gateway-webhooks" | "card-settlement" | "turnkey" | "risk" | "goldsky" | "pyth" | "chainlink" | "lifi"
+  id: "app-kit" | "money-policy" | "gateway-webhooks" | "gateway-nanopayments-seller" | "card-settlement" | "turnkey" | "risk" | "goldsky" | "pyth" | "chainlink" | "lifi"
   name: string
   state: IntegrationState
   capabilities: string[]
@@ -45,6 +46,15 @@ export function getExternalIntegrationReadiness(): ExternalIntegration[] {
       requirements: ["CIRCLE_API_KEY", "SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"],
       capabilities: ["deposit finalized", "mint forwarded", "mint finalized", "deduplication", "settlement reconciliation"],
       detail: "The signed Circle webhook inbox now maps Gateway transfer IDs and final lifecycle events into Kestrel execution state.",
+    }),
+    integration({
+      id: "gateway-nanopayments-seller",
+      name: "Gateway Nanopayments seller",
+      requirements: ["KESTREL_GATEWAY_SELLER_ENABLED", "KESTREL_GATEWAY_SELLER_ADDRESS"],
+      capabilities: ["real x402 402 challenge", "gas-free Gateway settlement", "per-listing paid-call endpoint"],
+      detail: getGatewaySellerConfiguration().enabled
+        ? "Marketplace listings can be called through a real Circle Gateway Nanopayments 402 flow at /api/marketplace/:apiId/call."
+        : "Not yet configured — the marketplace demo proof still uses a simulated provider signature, not a live paid endpoint.",
     }),
     integration({
       id: "card-settlement",
