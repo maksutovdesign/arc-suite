@@ -309,7 +309,15 @@ async function executePaidProviderOperation(input: {
 
     const scheme = new BatchEvmScheme(input.signer)
     const paymentPayload = await scheme.createPaymentPayload(paymentRequired.x402Version, requirements)
-    const paymentSignatureHeader = Buffer.from(JSON.stringify(paymentPayload)).toString("base64")
+    // @circle-fin/x402-batching's BatchEvmScheme.createPaymentPayload() omits `accepted`,
+    // which the x402 v2 PaymentPayload schema requires (@x402/core's
+    // PaymentPayloadV2Schema: accepted is non-optional). A spec-compliant seller
+    // validates against that schema and rejects the payload with HTTP 400 before
+    // ever attempting settlement — verified against AIsa's real endpoint, which
+    // returns exactly that. No money moves during this step; this only backfills
+    // a field the SDK's own payload builder should have included.
+    const paymentPayloadWithAccepted = { ...paymentPayload, accepted: requirements }
+    const paymentSignatureHeader = Buffer.from(JSON.stringify(paymentPayloadWithAccepted)).toString("base64")
     paymentSignatureHash = digest(paymentSignatureHeader)
     const paid = await fetchProvider({ "payment-signature": paymentSignatureHeader })
     responseStatus = paid.status
