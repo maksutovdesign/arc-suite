@@ -21,6 +21,13 @@ const defaultDestination = "0x55e0dd25cd5f917e24de571d98d97c3b243709b2"
 
 type OverviewPayload = { configured: boolean; overview: GasOverview | null }
 
+const hardforkReadiness = [
+  { label: "Activation", value: "Sep 3, 2026 · 15:00 UTC", detail: "Testnet v0.8.0 becomes a release-window checkpoint for sponsorship checks." },
+  { label: "RPC", value: "HTTP + WSS", detail: "Smoke tests should validate both polling and subscription paths after the fork." },
+  { label: "Trace", value: "Debug / trace", detail: "Failed sponsored calls need trace evidence before they affect reputation or access." },
+  { label: "Retries", value: "Fail closed", detail: "Temporary network failures stay retryable instead of becoming false settlement claims." },
+] as const
+
 export function GasDashboardClient() {
   const [apiKey, setApiKey] = useState("")
   const [overview, setOverview] = useState<GasOverview | null>(demoGasOverview)
@@ -145,7 +152,7 @@ export function GasDashboardClient() {
         </div>
         <div className="gas-protocol">
           <Fuel size={23} />
-          <div><span>Arc Testnet</span><strong>Gas denominated in USDC</strong><small>Policy first · receipt after execution</small></div>
+          <div><span>Arc Testnet v0.8.0</span><strong>Gas denominated in USDC</strong><small>Hardfork-aware · policy first · receipt after execution</small></div>
         </div>
       </div>
 
@@ -164,6 +171,24 @@ export function GasDashboardClient() {
         <Metric icon={<Ban size={18} />} label="Denied tx" value={String(summary.deniedTransactions)} />
         <Metric icon={<ShieldCheck size={18} />} label="Active policies" value={String(summary.activePolicies)} />
       </div>
+
+      <section className="gas-panel">
+        <PanelHead eyebrow="Testnet release gate" title="v0.8.0 hardfork readiness" icon={<Activity size={20} />} />
+        <p>
+          Sponsorship and paymaster flows treat the Arc Testnet v0.8.0 hardfork as an operations checkpoint:
+          validate RPC, WSS, trace capture and retry behavior before recording production-style proof.
+        </p>
+        <div className="wallet-unified-grid" aria-label="Arc Testnet v0.8.0 hardfork readiness">
+          {hardforkReadiness.map((item) => (
+            <article key={item.label}>
+              <span>{item.label}</span>
+              <strong>{item.value}</strong>
+              <em>check</em>
+              <small>{item.detail}</small>
+            </article>
+          ))}
+        </div>
+      </section>
 
       <div className="gas-grid">
         <section className="gas-panel">

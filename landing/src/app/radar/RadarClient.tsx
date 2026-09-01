@@ -160,6 +160,50 @@ const builders: Builder[] = [
     suiteFit: ["Money Movement", "Wallets", "Gas", "Shield"],
   },
   {
+    handle: "@getliquidfi",
+    project: "GetLiquid",
+    description: "Private credit marketplace infrastructure using Arc, Circle Wallets and Digital Assets Accounts for borrower, lender and repayment workflows.",
+    category: "defi",
+    stack: ["Private credit", "Circle Wallets", "Digital Assets Accounts", "USDC"],
+    traction: "Official guest post · August 2026",
+    signal: "high",
+    amplifiedBy: "Arc House",
+    suiteFit: ["Credit", "Escrow", "Shield", "Flow"],
+  },
+  {
+    handle: "@hibachi_xyz",
+    project: "Hibachi",
+    description: "FX perpetuals on Arc with zk-verified settlement for liquidations, margin changes and withdrawals.",
+    category: "fx",
+    stack: ["FX perps", "zk proofs", "REST/WebSocket", "USDC collateral"],
+    traction: "Arc Builders Fund spotlight",
+    signal: "high",
+    amplifiedBy: "Arc House",
+    suiteFit: ["Shield", "Flow", "Gas", "Proof Center"],
+  },
+  {
+    handle: "@QuickNode",
+    project: "QuickNode Arc RPC",
+    description: "Managed Arc RPC with HTTP, WSS, archive reads, debug/trace APIs and Streams for production-grade builder connectivity.",
+    category: "infra",
+    stack: ["JSON-RPC", "WSS", "Debug API", "Trace API", "Streams"],
+    traction: "Arc infrastructure spotlight · 99.99% SLA positioning",
+    signal: "high",
+    amplifiedBy: "Arc House",
+    suiteFit: ["Ops Health", "Interop", "Proof Center", "Radar"],
+  },
+  {
+    handle: "@Ledger",
+    project: "Ledger Wallet on Arc",
+    description: "Hardware-backed self-custody path for sending and receiving USDC and supported Arc assets with transaction verification on-device.",
+    category: "infra",
+    stack: ["Hardware wallet", "Clear signing", "USDC", "Wallet UX"],
+    traction: "Arc partner update · August 26, 2026",
+    signal: "high",
+    amplifiedBy: "Arc House",
+    suiteFit: ["Wallets", "Shield", "Money Movement", "Proof Center"],
+  },
+  {
     handle: "@Torin_559",
     project: "NexusYield Protocol",
     description: "Confidential yield and RWA liquidity with TEE-shielded payments.",
@@ -399,7 +443,7 @@ export function RadarClient() {
     })
   }, [])
 
-  const primitives = ["App Kit", "Agent Stack", "x402 / MPP", "Gateway webhooks", "USDC/EURC", "Nanopayments", "CCTP", "StableFX"]
+  const primitives = ["App Kit", "Agent Stack", "x402 / MPP", "Gateway webhooks", "USDC/EURC", "Nanopayments", "Ledger", "QuickNode", "CCTP", "StableFX"]
 
   return (
     <section className="radar-shell">
@@ -408,7 +452,7 @@ export function RadarClient() {
           <p className="kicker">Arc builder intelligence</p>
           <h1>Where Arc builders are active, and where the gap is still open.</h1>
           <p>
-            Updated 26 July 2026. Kestrel Radar combines official Arc and Circle releases,
+            Updated 1 September 2026. Kestrel Radar combines official Arc and Circle releases,
             public builder signals, competing agent-payment products and grant traction into a product map: builder categories,
             primitives, traction signals, opportunity gaps and the exact place Kestrel can
             become the operating layer for payment, agent and stablecoin apps.
@@ -445,9 +489,9 @@ export function RadarClient() {
           <p className="kicker">Builder map</p>
           <h2>Settlement is becoming the product, not the back-office layer.</h2>
           <p>
-            Agent Stack, AgentCash, AIsa, Wirex, Cycles and Pulsar move the signal from one-off
-            transfers toward repeated API purchases, card volume, recurring obligations,
-            USDC/EURC balances and operational reconciliation.
+            Agent Stack, TLAY, GetLiquid, Hibachi, Ledger and QuickNode move the signal from one-off
+            transfers toward repeated machine payments, private credit workflows, FX settlement,
+            hardware-backed custody and production RPC observability.
           </p>
         </div>
 

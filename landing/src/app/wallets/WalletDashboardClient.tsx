@@ -56,6 +56,14 @@ const unifiedBalanceReadiness = [
   { step: "Trace", method: "onBroadcast tx hash", status: "captured", detail: "Latest transaction hash is retained for support and proof." },
 ] as const
 
+const hardwareWalletReadiness = [
+  { step: "Asset", method: "USDC / supported Arc asset", status: "required", detail: "The approval screen must make the transferred asset unmistakable." },
+  { step: "Amount", method: "Policy limit + display amount", status: "required", detail: "Wallet OS checks limits before the user sees a hardware-signing prompt." },
+  { step: "Network", method: "Arc Testnet / Mainnet gate", status: "guarded", detail: "The app should block ambiguous or mismatched network approvals." },
+  { step: "Recipient", method: "Allowlist + label", status: "guarded", detail: "Known counterparties, providers and escrow contracts need readable labels." },
+  { step: "Action", method: "Send / approve / contract call", status: "clear", detail: "Kestrel stores the operator intent that explains why signing was requested." },
+] as const
+
 const gatewayDecisionMap = [
   ["Raw Gateway", "custom attestation, x402 debugging, provider-level settlement control"],
   ["Unified Balance Kit", "one spendable balance, estimateSpend, forwarding and operator UX"],
@@ -184,7 +192,7 @@ export function WalletDashboardClient() {
           <h1>Kestrel Wallets</h1>
           <p>Operate team and client wallets across developer-controlled, user-controlled and modular custody models.</p>
         </div>
-        <div className="wallet-protocol"><WalletCards size={24} /><div><span>Arc Testnet</span><strong>One lifecycle, three custody models</strong><small>Circle receipt required for provider completion</small></div></div>
+        <div className="wallet-protocol"><WalletCards size={24} /><div><span>Arc Testnet</span><strong>One lifecycle, four wallet paths</strong><small>Circle + Ledger-ready transaction review</small></div></div>
       </div>
 
       <div className="shield-authbar">
@@ -259,6 +267,25 @@ export function WalletDashboardClient() {
               <small>{detail}</small>
             </article>
           ))}
+        </div>
+        <div className="wallet-live-adapter" aria-label="Ledger clear signing adapter">
+          <div>
+            <span>Ledger hardware-backed path</span>
+            <strong>Asset {"->"} Amount {"->"} Network {"->"} Recipient {"->"} Action</strong>
+            <small>
+              Maps the Ledger update into concrete wallet UX requirements:
+              every approval must be legible before it reaches a hardware device.
+            </small>
+          </div>
+          <div className="wallet-live-adapter-grid">
+            {hardwareWalletReadiness.map((item) => (
+              <article className={item.status === "clear" ? "is-ok" : "is-neutral"} key={item.step}>
+                <span>{item.step}</span>
+                <strong>{item.method}</strong>
+                <small>{item.detail}</small>
+              </article>
+            ))}
+          </div>
         </div>
         <div className="wallet-live-adapter" aria-label="Gateway execution adapter">
           <div>

@@ -223,16 +223,16 @@ const productDetails = [
     name: "Kestrel Wallets",
     eyebrow: "Wallet lifecycle",
     icon: WalletCards,
-    title: "One operating system for team, client and agent wallets.",
-    text: "Manage developer-controlled, user-controlled and modular Circle wallets with custody-aware roles, recovery paths, signing policies and an auditable lifecycle.",
+    title: "One operating system for team, client, Ledger and agent wallets.",
+    text: "Manage developer-controlled, user-controlled, modular and hardware-backed wallet paths with custody-aware roles, recovery paths, clear signing policies and an auditable lifecycle.",
     image: "",
     imageAlt: "Kestrel Wallets dashboard with custody models, signing policy, roles and lifecycle events",
     stats: [
-      ["3", "custody models"],
+      ["4", "wallet paths"],
       ["4", "workspace roles"],
       ["100%", "lifecycle-audited"],
     ],
-    bullets: ["Circle wallet registry", "Roles, recovery and signing policy", "Provider-confirmed lifecycle"],
+    bullets: ["Circle wallet registry", "Ledger-ready transaction review", "Roles, recovery and signing policy"],
   },
   {
     key: "radar",
@@ -244,7 +244,7 @@ const productDetails = [
     image: "",
     imageAlt: "Radar dashboard showing Arc builder categories, primitives, opportunity gaps and Kestrel fit",
     stats: [
-      ["17", "mapped builders"],
+      ["30", "mapped builders"],
       ["9", "categories"],
       ["1", "privacy wedge"],
     ],
@@ -384,8 +384,28 @@ const readinessSignals = [
   },
   {
     title: "Private credit rails",
-    text: "Credit jobs combine KYB/KYT gates, escrow schedules, repayment references and artifact review before a facility leaves review.",
+    text: "GetLiquid-style credit jobs combine borrower and lender onboarding, KYB/KYT gates, escrow schedules, repayment references and artifact review before a facility leaves review.",
     status: "review-gated",
+  },
+  {
+    title: "Ledger signing path",
+    text: "Wallet OS now treats hardware-backed custody as a product requirement: asset, amount, network, recipient and action stay legible before approval.",
+    status: "clear-signing",
+  },
+  {
+    title: "RPC observability",
+    text: "QuickNode-style HTTP, WSS, archive, debug and trace support become operational checks before Kestrel claims a workflow is production-ready.",
+    status: "trace-ready",
+  },
+  {
+    title: "FX settlement proof",
+    text: "Hibachi-style FX perpetual workflows make risk checks, collateral moves, zk verification and post-trade proof first-class Flow states.",
+    status: "zk-aware",
+  },
+  {
+    title: "Testnet v0.8.0",
+    text: "The September 3 hardfork becomes a release gate for smoke transfers, proof capture and retry behavior around Arc Testnet execution.",
+    status: "fork-aware",
   },
   {
     title: "Network resilience",
@@ -973,7 +993,7 @@ export function ProductLandingClient({ initialApiStatus, initialPilotSummary }: 
                 <div className="radar-product-preview" aria-label={activeProduct.imageAlt}>
                   <div className="shield-preview-top"><span>ARC RADAR / RESEARCH</span><strong>BUILDER MAP</strong></div>
                   <div className="radar-preview-grid">
-                    <div><span>Builders</span><strong>17</strong></div>
+                    <div><span>Builders</span><strong>30</strong></div>
                     <div><span>Categories</span><strong>9</strong></div>
                     <div><span>Privacy refs</span><strong>1</strong></div>
                   </div>
