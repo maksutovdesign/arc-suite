@@ -189,12 +189,12 @@ export async function executeServerMoneyMovement(grant: MoneyExecutionGrant) {
   if (input.operation === "bridge") {
     const params = {
       amount: input.amount,
-      config: { customFee: { value: customFeeValue, recipientAddress: feeRecipient } },
+      config: { customFee: { value: customFeeValue, recipientAddress: feeRecipient }, transferSpeed: "FAST" },
       from: sourceContext(input.sourceChain),
       to: useCircleWallets
         ? { adapter, address: input.recipient, chain: input.destinationChain }
         : { adapter, chain: input.destinationChain, recipientAddress: input.recipient },
-      token: "USDC",
+      token: input.token,
     }
     return kit.bridge(params as unknown as Parameters<typeof kit.bridge>[0])
   }

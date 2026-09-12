@@ -9,6 +9,7 @@ type BrowserProvider = CreateViemAdapterFromProviderParams["provider"]
 type AppAdapter = Awaited<ReturnType<typeof createViemAdapterFromProvider>>
 type Operation = "spend" | "bridge" | "swap" | "send"
 type Chain = "Arc_Testnet" | "Base_Sepolia" | "Ethereum_Sepolia" | "Arbitrum_Sepolia"
+type Token = "USDC" | "EURC"
 type TimelineItem = { label: string; state: "pending" | "active" | "done" | "error"; detail: string }
 type PolicyProof = {
   decision: string
@@ -98,6 +99,7 @@ export function MoneyMovementClient() {
   const [sourceChain, setSourceChain] = useState<Chain>("Base_Sepolia")
   const [destinationChain, setDestinationChain] = useState<Chain>("Arc_Testnet")
   const [amount, setAmount] = useState("1.00")
+  const [token, setToken] = useState<Token>("USDC")
   const [recipient, setRecipient] = useState("")
   const [feeRecipient, setFeeRecipient] = useState(configuredFeeRecipient)
   const [policyConfiguration, setPolicyConfiguration] = useState<MoneyPolicyConfiguration | null>(null)
@@ -175,6 +177,7 @@ export function MoneyMovementClient() {
         operation,
         recipient,
         sourceChain,
+        token,
         walletAddress: wallet.address,
       })
       setFeeQuote(quote.feeBreakdown)
@@ -184,7 +187,7 @@ export function MoneyMovementClient() {
         }
         setEstimate({ execution: "server", pair: "USDC → EURC", route: "Arc App Kit Swap", slippageBps: 100 })
       } else {
-        const result = await estimateOperation({ adapter, operation, sourceChain, destinationChain, amount, recipient, feeRecipient })
+        const result = await estimateOperation({ adapter, operation, sourceChain, destinationChain, amount, token, recipient, feeRecipient })
         setEstimate(toJsonSafe(result))
       }
       void recordMoneyAnalytics("money_quote_created", { amount: amountNumber, destinationChain, operation, sourceChain })
@@ -212,6 +215,7 @@ export function MoneyMovementClient() {
         sourceChain,
         destinationChain: operation === "send" ? sourceChain : destinationChain,
         amount,
+        token,
         recipient,
         feeRecipient,
       })
@@ -224,7 +228,7 @@ export function MoneyMovementClient() {
         ? await executeServerOperation(policyResult.executionGrant ?? "")
         : buildProof(
           operation,
-          toJsonSafe(await executeOperation({ adapter, operation, sourceChain, destinationChain, amount, recipient, feeRecipient })),
+          toJsonSafe(await executeOperation({ adapter, operation, sourceChain, destinationChain, amount, token, recipient, feeRecipient })),
           policyResult.policy,
           policyResult.traceId,
           feeQuote ?? undefined,
@@ -269,7 +273,7 @@ export function MoneyMovementClient() {
         <section className="money-panel money-builder">
           <div className="money-panel-head"><span>01</span><div><p>Execution intent</p><h2>Choose the movement</h2></div></div>
           <div className="money-operation-tabs">
-            {(Object.keys(operationCopy) as Operation[]).map((item) => <button className={operation === item ? "is-active" : ""} key={item} onClick={() => { setOperation(item); setEstimate(null); setFeeQuote(null); setProof(null); if (item === "swap") { setSourceChain("Arc_Testnet"); setDestinationChain("Arc_Testnet") } }} type="button"><strong>{operationCopy[item].title}</strong><small>{operationCopy[item].description}</small></button>)}
+            {(Object.keys(operationCopy) as Operation[]).map((item) => <button className={operation === item ? "is-active" : ""} key={item} onClick={() => { setOperation(item); setEstimate(null); setFeeQuote(null); setProof(null); if (item === "swap") { setSourceChain("Arc_Testnet"); setDestinationChain("Arc_Testnet") }; if (item !== "bridge") setToken("USDC") }} type="button"><strong>{operationCopy[item].title}</strong><small>{operationCopy[item].description}</small></button>)}
           </div>
 
           <div className="money-wallet-row">
@@ -280,7 +284,7 @@ export function MoneyMovementClient() {
           <div className="money-form">
             <label><span>Source chain</span><select disabled={operation === "swap" || (operation === "send" && destinationChain === sourceChain)} value={sourceChain} onChange={(event) => setSourceChain(event.target.value as Chain)}>{chains.map((chain) => <option key={chain}>{chain}</option>)}</select></label>
             <label><span>Destination chain</span><select value={operation === "send" ? sourceChain : destinationChain} onChange={(event) => setDestinationChain(event.target.value as Chain)} disabled={operation === "send" || operation === "swap"}>{chains.map((chain) => <option key={chain}>{chain}</option>)}</select></label>
-            <label><span>Amount</span><div className="money-amount"><input inputMode="decimal" value={amount} onChange={(event) => setAmount(event.target.value)} /><em>USDC</em></div></label>
+            <label><span>Amount</span><div className="money-amount"><input inputMode="decimal" value={amount} onChange={(event) => setAmount(event.target.value)} />{operation === "bridge" ? <select value={token} onChange={(event) => setToken(event.target.value as Token)}><option value="USDC">USDC</option><option value="EURC">EURC</option></select> : <em>USDC</em>}</div></label>
             <label><span>Recipient</span><input value={recipient} onChange={(event) => setRecipient(event.target.value)} placeholder="0x…" /></label>
             <label className="money-wide"><span>Kestrel fee wallet · enforced by server policy</span><input value={feeRecipient} readOnly placeholder="Waiting for production configuration" /></label>
           </div>
@@ -372,7 +376,7 @@ async function discoverWallets() {
   return [...providers.values()]
 }
 
-type OperationInput = { adapter: AppAdapter; operation: Operation; sourceChain: Chain; destinationChain: Chain; amount: string; recipient: string; feeRecipient: string }
+type OperationInput = { adapter: AppAdapter; operation: Operation; sourceChain: Chain; destinationChain: Chain; amount: string; token: Token; recipient: string; feeRecipient: string }
 type AuthorizationInput = Omit<OperationInput, "adapter"> & { provider: BrowserProvider; walletAddress: string }
 
 async function authorizeMoneyMovement(input: AuthorizationInput): Promise<{ authorized: true; executionGrant: string | null; traceId: string; policy: PolicyProof }> {
@@ -382,6 +386,7 @@ async function authorizeMoneyMovement(input: AuthorizationInput): Promise<{ auth
     sourceChain: input.sourceChain,
     destinationChain: input.destinationChain,
     amount: input.amount,
+    token: input.token,
     recipient: input.recipient,
     feeRecipient: input.feeRecipient,
     issuedAt: new Date().toISOString(),
@@ -419,7 +424,7 @@ function moneyAuthorizationMessage(input: Omit<AuthorizationInput, "provider"> &
     `Operation: ${input.operation}`,
     `Source chain: ${input.sourceChain}`,
     `Destination chain: ${input.destinationChain}`,
-    `Amount: ${input.amount} USDC`,
+    `Amount: ${input.amount} ${input.token}`,
     `Recipient: ${input.recipient.toLowerCase()}`,
     `Fee recipient: ${input.feeRecipient.toLowerCase()}`,
     `Issued at: ${input.issuedAt}`,
@@ -430,7 +435,7 @@ function moneyAuthorizationMessage(input: Omit<AuthorizationInput, "provider"> &
 function paramsFor(input: OperationInput) {
   const customFeeValue = (Number(input.amount) * feeBps / 10_000).toFixed(6)
   if (input.operation === "spend") return { from: { adapter: input.adapter }, to: { adapter: input.adapter, chain: input.destinationChain, recipientAddress: input.recipient, useForwarder: true }, token: "USDC" as const, amountIn: input.amount, config: { customFee: { value: customFeeValue, recipientAddress: input.feeRecipient } } }
-  if (input.operation === "bridge") return { from: { adapter: input.adapter, chain: input.sourceChain }, to: { adapter: input.adapter, chain: input.destinationChain, recipientAddress: input.recipient }, amount: input.amount, token: "USDC" as const, config: { customFee: { value: customFeeValue, recipientAddress: input.feeRecipient } } }
+  if (input.operation === "bridge") return { from: { adapter: input.adapter, chain: input.sourceChain }, to: { adapter: input.adapter, chain: input.destinationChain, recipientAddress: input.recipient }, amount: input.amount, token: input.token, config: { customFee: { value: customFeeValue, recipientAddress: input.feeRecipient }, transferSpeed: "FAST" as const } }
   if (input.operation === "swap") return { from: { adapter: input.adapter, chain: input.sourceChain }, tokenIn: "USDC", tokenOut: "EURC", amountIn: input.amount, config: { allowanceStrategy: "approve" as const, slippageBps: 100, customFee: { percentageBps: feeBps, recipientAddress: input.feeRecipient } } }
   return { from: { adapter: input.adapter, chain: input.sourceChain }, to: input.recipient, amount: input.amount, token: "USDC" }
 }
@@ -481,6 +486,7 @@ async function requestServerFeeQuote(input: {
   operation: Operation
   recipient: string
   sourceChain: Chain
+  token: Token
   walletAddress: string
 }) {
   const response = await fetch("/api/money/execute", {

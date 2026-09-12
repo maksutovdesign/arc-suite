@@ -2,9 +2,11 @@ import { isAddress } from "viem"
 
 export const MONEY_OPERATIONS = ["spend", "bridge", "swap", "send"] as const
 export const MONEY_CHAINS = ["Arc_Testnet", "Base_Sepolia", "Ethereum_Sepolia", "Arbitrum_Sepolia"] as const
+export const MONEY_TOKENS = ["USDC", "EURC"] as const
 
 export type MoneyOperation = (typeof MONEY_OPERATIONS)[number]
 export type MoneyChain = (typeof MONEY_CHAINS)[number]
+export type MoneyToken = (typeof MONEY_TOKENS)[number]
 
 export type MoneyAuthorization = {
   walletAddress: string
@@ -12,6 +14,7 @@ export type MoneyAuthorization = {
   sourceChain: MoneyChain
   destinationChain: MoneyChain
   amount: string
+  token: MoneyToken
   recipient: string
   feeRecipient: string
   issuedAt: string
@@ -63,6 +66,9 @@ export function validateMoneyAuthorization(value: unknown): { input: MoneyAuthor
   if (typeof input.nonce !== "string" || !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(input.nonce)) {
     return invalid("nonce must be a UUID v4")
   }
+  const token = input.token === undefined ? "USDC" : (input.token as MoneyToken)
+  if (!MONEY_TOKENS.includes(token)) return invalid("token is not supported")
+  if (token !== "USDC" && input.operation !== "bridge") return invalid("Only USDC is supported for this operation; EURC is bridge-only.")
 
   return {
     input: {
@@ -71,6 +77,7 @@ export function validateMoneyAuthorization(value: unknown): { input: MoneyAuthor
       sourceChain: input.sourceChain as MoneyChain,
       destinationChain: input.destinationChain as MoneyChain,
       amount: input.amount,
+      token,
       recipient: input.recipient,
       feeRecipient: input.feeRecipient,
       issuedAt: input.issuedAt,
@@ -104,7 +111,7 @@ export function moneyAuthorizationMessage(input: MoneyAuthorization) {
     `Operation: ${input.operation}`,
     `Source chain: ${input.sourceChain}`,
     `Destination chain: ${input.destinationChain}`,
-    `Amount: ${input.amount} USDC`,
+    `Amount: ${input.amount} ${input.token}`,
     `Recipient: ${input.recipient.toLowerCase()}`,
     `Fee recipient: ${input.feeRecipient.toLowerCase()}`,
     `Issued at: ${input.issuedAt}`,

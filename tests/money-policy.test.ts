@@ -3,6 +3,7 @@ import test from "node:test"
 
 import {
   getMoneyPolicyConfiguration,
+  moneyAuthorizationMessage,
   policyValidationError,
   validateMoneyAuthorization,
   type MoneyAuthorization,
@@ -34,6 +35,7 @@ function authorization(overrides: Partial<MoneyAuthorization> = {}): MoneyAuthor
     sourceChain: "Arc_Testnet",
     destinationChain: "Arc_Testnet",
     amount: "10",
+    token: "USDC",
     recipient: ALLOWED,
     feeRecipient: FEE_RECIPIENT,
     issuedAt: new Date().toISOString(),
@@ -105,6 +107,32 @@ test("policyValidationError enforces chain rules per operation", () => {
     policyValidationError(authorization({ operation: "swap", sourceChain: "Base_Sepolia", destinationChain: "Base_Sepolia" }), config) ?? "",
     /Arc Testnet/i,
   )
+})
+
+test("validateMoneyAuthorization defaults token to USDC when omitted", () => {
+  const raw = authorization()
+  const { token: _omit, ...withoutToken } = raw as MoneyAuthorization & { token?: string }
+  const { input, error } = validateMoneyAuthorization(withoutToken)
+  assert.equal(error, null)
+  assert.equal(input!.token, "USDC")
+})
+
+test("validateMoneyAuthorization allows EURC only for bridge", () => {
+  assert.equal(validateMoneyAuthorization(authorization({ operation: "bridge", sourceChain: "Arc_Testnet", destinationChain: "Base_Sepolia", token: "EURC" })).error, null)
+  assert.match(validateMoneyAuthorization(authorization({ operation: "send", token: "EURC" })).error ?? "", /bridge-only/i)
+  assert.match(validateMoneyAuthorization(authorization({ operation: "spend", token: "EURC" })).error ?? "", /bridge-only/i)
+  assert.match(validateMoneyAuthorization(authorization({ operation: "swap", token: "EURC" })).error ?? "", /bridge-only/i)
+})
+
+test("validateMoneyAuthorization rejects unsupported tokens", () => {
+  assert.ok(validateMoneyAuthorization(authorization({ token: "DAI" as never })).error)
+})
+
+test("moneyAuthorizationMessage reflects the authorized token", () => {
+  const usdcMessage = moneyAuthorizationMessage(authorization({ token: "USDC" }))
+  const eurcMessage = moneyAuthorizationMessage(authorization({ operation: "bridge", sourceChain: "Arc_Testnet", destinationChain: "Base_Sepolia", token: "EURC" }))
+  assert.match(usdcMessage, /Amount: 10 USDC/)
+  assert.match(eurcMessage, /Amount: 10 EURC/)
 })
 
 test("deterministicIdempotencyKey is stable and UUID-v4 shaped", () => {
