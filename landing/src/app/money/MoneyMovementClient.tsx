@@ -5,10 +5,14 @@ import { createViemAdapterFromProvider, type CreateViemAdapterFromProviderParams
 import { ArrowRight, BadgeDollarSign, CheckCircle2, CircleDollarSign, CreditCard, ExternalLink, RefreshCw, Route, ShieldCheck, WalletCards } from "lucide-react"
 import { useEffect, useMemo, useRef, useState } from "react"
 
+import { moneyProofNetworks, type MoneyNetworkChain } from "@/lib/money-networks"
+import { downloadMoneyProof, type MoneyProofIntent } from "@/lib/money-proof-export"
+import { assertMoneyWalletContext, readArcWalletReadiness, selectArcMainnet, type ArcWalletReadiness } from "@/lib/arc-wallet-readiness"
+
 type BrowserProvider = CreateViemAdapterFromProviderParams["provider"]
 type AppAdapter = Awaited<ReturnType<typeof createViemAdapterFromProvider>>
 type Operation = "spend" | "bridge" | "swap" | "send"
-type Chain = "Arc_Testnet" | "Base_Sepolia" | "Ethereum_Sepolia" | "Arbitrum_Sepolia"
+type Chain = MoneyNetworkChain
 type Token = "USDC" | "EURC"
 type TimelineItem = { label: string; state: "pending" | "active" | "done" | "error"; detail: string }
 type PolicyProof = {
@@ -37,9 +41,11 @@ type FeeBreakdown = {
 type Proof = {
   id?: string
   operation: Operation
+  networks: ReturnType<typeof moneyProofNetworks>
   state: string
   traceId: string
   recordedAt: string
+  intent?: MoneyProofIntent
   txHashes: string[]
   explorerUrls: string[]
   policy: PolicyProof | null
@@ -47,6 +53,9 @@ type Proof = {
   raw: unknown
 }
 type MoneyPolicyConfiguration = {
+  network: string
+  allowedChains: Chain[]
+  allowedOperations: Operation[]
   enabled: boolean
   feeBps: number
   feeRecipient: string | null
@@ -73,7 +82,7 @@ declare global {
 }
 
 const kit = new AppKit({ disableErrorReporting: true })
-const chains: Chain[] = ["Arc_Testnet", "Base_Sepolia", "Ethereum_Sepolia", "Arbitrum_Sepolia"]
+const testnetChains: Chain[] = ["Arc_Testnet", "Base_Sepolia", "Ethereum_Sepolia", "Arbitrum_Sepolia"]
 const feeBps = 75
 const configuredFeeRecipient = process.env.NEXT_PUBLIC_KESTREL_FEE_RECIPIENT?.trim() ?? ""
 
@@ -94,7 +103,10 @@ const cardSettlementStages = [
 export function MoneyMovementClient() {
   const adapterRef = useRef<AppAdapter | null>(null)
   const providerRef = useRef<BrowserProvider | null>(null)
+  const walletSessionRef = useRef(0)
+  const walletListenerCleanupRef = useRef<(() => void) | null>(null)
   const [wallet, setWallet] = useState<{ address: string; name: string } | null>(null)
+  const [walletReadiness, setWalletReadiness] = useState<ArcWalletReadiness | null>(null)
   const [operation, setOperation] = useState<Operation>("spend")
   const [sourceChain, setSourceChain] = useState<Chain>("Base_Sepolia")
   const [destinationChain, setDestinationChain] = useState<Chain>("Arc_Testnet")
@@ -103,21 +115,25 @@ export function MoneyMovementClient() {
   const [recipient, setRecipient] = useState("")
   const [feeRecipient, setFeeRecipient] = useState(configuredFeeRecipient)
   const [policyConfiguration, setPolicyConfiguration] = useState<MoneyPolicyConfiguration | null>(null)
-  const [busy, setBusy] = useState<"connect" | "quote" | "execute" | null>(null)
+  const [busy, setBusy] = useState<"connect" | "wallet" | "quote" | "execute" | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [estimate, setEstimate] = useState<unknown>(null)
   const [feeQuote, setFeeQuote] = useState<FeeBreakdown | null>(null)
   const [proof, setProof] = useState<Proof | null>(null)
+  const [proofStorageWarning, setProofStorageWarning] = useState<string | null>(null)
   const [events, setEvents] = useState<TimelineItem[]>(initialTimeline())
 
+  const chains = policyConfiguration?.allowedChains ?? testnetChains
+  const mainnet = policyConfiguration?.network === "mainnet"
   const amountNumber = Number(amount)
-  const developerFee = feeQuote ? feeQuote.kestrelRevenueUsdc + feeQuote.arcShareUsdc : Number.isFinite(amountNumber) ? amountNumber * feeBps / 10_000 : 0
+  const developerFee = feeQuote ? feeQuote.kestrelRevenueUsdc + feeQuote.arcShareUsdc : operation !== "send" && Number.isFinite(amountNumber) ? amountNumber * feeBps / 10_000 : 0
   const appRevenue = feeQuote?.kestrelRevenueUsdc ?? developerFee * 0.9
   const arcShare = feeQuote?.arcShareUsdc ?? developerFee * 0.1
   const operationExecutionReady = operation === "swap"
     ? policyConfiguration?.swapExecutionEnabled
     : true
-  const canExecute = Boolean(operationExecutionReady && wallet && recipient && amountNumber > 0 && feeRecipient && policyConfiguration?.enabled)
+  const walletNetworkReady = !mainnet || (walletReadiness?.onArcMainnet && walletReadiness.hasGasBalance)
+  const canExecute = Boolean(operationExecutionReady && walletNetworkReady && wallet && recipient && amountNumber > 0 && feeRecipient && policyConfiguration?.enabled)
   const estimateRows = useMemo(() => flattenEstimate(estimate), [estimate])
 
   useEffect(() => {
@@ -130,6 +146,12 @@ export function MoneyMovementClient() {
       .then((configuration) => {
         if (cancelled) return
         setPolicyConfiguration(configuration)
+        if (configuration.network === "mainnet") {
+          setOperation("send")
+          setSourceChain("Arc")
+          setDestinationChain("Arc")
+          setAmount("")
+        }
         if (configuration.feeRecipient) setFeeRecipient(configuration.feeRecipient)
       })
       .catch((reason) => {
@@ -138,7 +160,71 @@ export function MoneyMovementClient() {
     return () => { cancelled = true }
   }, [])
 
+  useEffect(() => () => {
+    walletListenerCleanupRef.current?.()
+    walletSessionRef.current++
+    providerRef.current = null
+    adapterRef.current = null
+  }, [])
+
+  function invalidateQuote() {
+    setEstimate(null)
+    setFeeQuote(null)
+    setProof(null)
+  }
+
+  function invalidateWalletContext() {
+    walletSessionRef.current++
+    adapterRef.current = null
+    setWalletReadiness(null)
+    setEstimate(null)
+    setFeeQuote(null)
+  }
+
+  async function updateWalletReadiness(provider: BrowserProvider, address: string) {
+    invalidateWalletContext()
+    const session = walletSessionRef.current
+    const readiness = await readArcWalletReadiness(provider, address)
+    const adapter = await createViemAdapterFromProvider({ provider })
+    const chainId = await assertMoneyWalletContext(provider, address)
+    assertWalletSession(session, provider)
+    if (chainId !== readiness.chainId) throw new Error("The wallet network changed. Check the wallet again.")
+    adapterRef.current = adapter
+    setWalletReadiness(readiness)
+  }
+
+  function assertWalletSession(session: number, provider: BrowserProvider) {
+    if (session !== walletSessionRef.current || providerRef.current !== provider) {
+      throw new Error("The wallet changed. Reconnect and review the operation again.")
+    }
+  }
+
+  async function prepareWallet(switchNetwork: boolean) {
+    const provider = providerRef.current
+    if (!provider || !wallet) return setError("Connect your browser wallet first.")
+    setBusy("wallet")
+    setError(null)
+    try {
+      invalidateWalletContext()
+      if (switchNetwork) await selectArcMainnet(provider)
+      if (providerRef.current !== provider) throw new Error("Reconnect the wallet to continue.")
+      await updateWalletReadiness(provider, wallet.address)
+      setError(null)
+    } catch (reason) {
+      setError(errorMessage(reason))
+    } finally {
+      setBusy(null)
+    }
+  }
+
   async function connectWallet() {
+    invalidateQuote()
+    walletListenerCleanupRef.current?.()
+    walletListenerCleanupRef.current = null
+    invalidateWalletContext()
+    const connectSession = walletSessionRef.current
+    providerRef.current = null
+    setWallet(null)
     setBusy("connect")
     setError(null)
     try {
@@ -148,11 +234,35 @@ export function MoneyMovementClient() {
       await selected.provider.request({ method: "eth_requestAccounts", params: undefined })
       const accounts = await selected.provider.request({ method: "eth_accounts", params: undefined }) as string[]
       const address = accounts[0]
-      if (!address) throw new Error("The wallet did not return an account.")
-      adapterRef.current = await createViemAdapterFromProvider({ provider: selected.provider })
+      if (!address || !/^0x[0-9a-f]{40}$/i.test(address)) throw new Error("The wallet did not return a valid account.")
+      if (connectSession !== walletSessionRef.current) throw new Error("The wallet connection changed. Try connecting again.")
       providerRef.current = selected.provider
       setWallet({ address, name: selected.info.name })
-      setRecipient((value) => value || address)
+      const provider = selected.provider
+      const disconnectWallet = () => {
+        invalidateWalletContext()
+        providerRef.current = null
+        setWallet(null)
+        walletListenerCleanupRef.current?.()
+        walletListenerCleanupRef.current = null
+        setError("The wallet account or connection changed. Reconnect and review the operation again.")
+      }
+      const networkChanged = () => {
+        invalidateWalletContext()
+        setError("The wallet network changed. Check the wallet again before estimating or executing.")
+      }
+      if (typeof provider.on === "function" && typeof provider.removeListener === "function") {
+        provider.on("accountsChanged", disconnectWallet)
+        provider.on("disconnect", disconnectWallet)
+        provider.on("chainChanged", networkChanged)
+        walletListenerCleanupRef.current = () => {
+          provider.removeListener("accountsChanged", disconnectWallet)
+          provider.removeListener("disconnect", disconnectWallet)
+          provider.removeListener("chainChanged", networkChanged)
+        }
+      }
+      await updateWalletReadiness(provider, address)
+      setError(null)
       setEvents(markTimeline("Wallet connected", "done", `${selected.info.name} · ${shortHash(address)}`))
     } catch (reason) {
       setError(errorMessage(reason))
@@ -163,13 +273,17 @@ export function MoneyMovementClient() {
 
   async function requestQuote() {
     const adapter = adapterRef.current
-    if (!adapter || !wallet) return setError("Connect an EVM wallet first.")
+    const provider = providerRef.current
+    const session = walletSessionRef.current
+    if (!adapter || !provider || !wallet) return setError("Connect and check your browser wallet first.")
     if (!recipient || !feeRecipient || !(amountNumber > 0)) return setError("Enter valid amount, recipient and fee wallet.")
     setBusy("quote")
     setError(null)
     setProof(null)
     setEvents(markTimeline("Preflight estimate", "active", "App Kit is validating route capability and fees."))
     try {
+      await assertMoneyWalletContext(provider, wallet.address, mainnet ? 5042 : undefined)
+      assertWalletSession(session, provider)
       const quote = await requestServerFeeQuote({
         amount,
         destinationChain: operation === "send" ? sourceChain : destinationChain,
@@ -180,7 +294,7 @@ export function MoneyMovementClient() {
         token,
         walletAddress: wallet.address,
       })
-      setFeeQuote(quote.feeBreakdown)
+      assertWalletSession(session, provider)
       if (operation === "swap") {
         if (!quote.serverExecution.swapEnabled) {
           throw new Error(`Server Swap is fail-closed: ${quote.serverExecution.swapMissing.join(", ") || "App Kit signer is unavailable"}.`)
@@ -188,8 +302,10 @@ export function MoneyMovementClient() {
         setEstimate({ execution: "server", pair: "USDC → EURC", route: "Arc App Kit Swap", slippageBps: 100 })
       } else {
         const result = await estimateOperation({ adapter, operation, sourceChain, destinationChain, amount, token, recipient, feeRecipient })
+        assertWalletSession(session, provider)
         setEstimate(toJsonSafe(result))
       }
+      setFeeQuote(quote.feeBreakdown)
       void recordMoneyAnalytics("money_quote_created", { amount: amountNumber, destinationChain, operation, sourceChain })
       setEvents(markTimeline("Preflight estimate", "done", "Route, fees and recipient outcome are available."))
     } catch (reason) {
@@ -203,11 +319,14 @@ export function MoneyMovementClient() {
   async function execute() {
     const adapter = adapterRef.current
     const provider = providerRef.current
+    const session = walletSessionRef.current
     if (!adapter || !provider || !wallet || !canExecute) return setError("Execution is blocked until wallet and server policy are ready.")
     setBusy("execute")
     setError(null)
     setEvents(markTimeline("Policy & compliance", "active", "Sign the exact intent for server-side policy and Circle screening."))
     try {
+      await assertMoneyWalletContext(provider, wallet.address, mainnet ? 5042 : undefined)
+      assertWalletSession(session, provider)
       const policyResult = await authorizeMoneyMovement({
         provider,
         walletAddress: wallet.address,
@@ -219,6 +338,8 @@ export function MoneyMovementClient() {
         recipient,
         feeRecipient,
       })
+      await assertMoneyWalletContext(provider, wallet.address, mainnet ? 5042 : undefined)
+      assertWalletSession(session, provider)
       setEvents(markTimeline("Policy & compliance", "done", `${policyResult.policy.provider} · ${policyResult.policy.decision} · ${policyResult.traceId.slice(0, 8)}`))
       void recordMoneyAnalytics("money_preflight_authorized", { amount: amountNumber, destinationChain, operation, traceId: policyResult.traceId })
       setEvents(markTimeline("Wallet signature", "active", operation === "swap"
@@ -231,10 +352,17 @@ export function MoneyMovementClient() {
           toJsonSafe(await executeOperation({ adapter, operation, sourceChain, destinationChain, amount, token, recipient, feeRecipient })),
           policyResult.policy,
           policyResult.traceId,
+          moneyProofNetworks(sourceChain, operation === "send" ? sourceChain : destinationChain),
           feeQuote ?? undefined,
+          { walletAddress: wallet.address, recipient, amount, token },
         )
       setProof(nextProof)
-      window.localStorage.setItem("kestrel:last-money-proof", JSON.stringify(nextProof))
+      setProofStorageWarning(null)
+      try {
+        window.localStorage.setItem("kestrel:last-money-proof", JSON.stringify(nextProof))
+      } catch {
+        setProofStorageWarning("The wallet operation returned a result, but this browser could not save it. Download the proof now and check its transaction before retrying.")
+      }
       void recordMoneyAnalytics("money_execution_completed", { amount: amountNumber, destinationChain, operation, traceId: policyResult.traceId, txCount: nextProof.txHashes.length })
       setEvents((current) => current.map((item) => item.label === "Wallet signature"
           ? { ...item, state: "done", detail: operation === "swap" ? "Executed by the policy-controlled server signer." : "Signed and broadcast through App Kit." }
@@ -266,34 +394,50 @@ export function MoneyMovementClient() {
           <h1>Kestrel Money Movement</h1>
           <p>Kestrel turns Send, Bridge, Swap and Unified Balance into one controlled flow with transparent fees and Arc settlement.</p>
         </div>
-        <div className="money-hero-badge"><Route size={22} /><span><strong>Production adapter</strong><small>Browser wallet · App Kit · Arc Testnet</small></span></div>
+        <div className="money-hero-badge"><Route size={22} /><span><strong>Browser wallet adapter</strong><small>App Kit · {policyConfiguration ? mainnet ? "Arc Mainnet" : "Arc Testnet" : "Loading network configuration"}</small></span></div>
       </header>
 
       <div className="money-grid">
         <section className="money-panel money-builder">
           <div className="money-panel-head"><span>01</span><div><p>Execution intent</p><h2>Choose the movement</h2></div></div>
           <div className="money-operation-tabs">
-            {(Object.keys(operationCopy) as Operation[]).map((item) => <button className={operation === item ? "is-active" : ""} key={item} onClick={() => { setOperation(item); setEstimate(null); setFeeQuote(null); setProof(null); if (item === "swap") { setSourceChain("Arc_Testnet"); setDestinationChain("Arc_Testnet") }; if (item !== "bridge") setToken("USDC") }} type="button"><strong>{operationCopy[item].title}</strong><small>{operationCopy[item].description}</small></button>)}
+            {(Object.keys(operationCopy) as Operation[]).map((item) => <button className={operation === item ? "is-active" : ""} key={item} disabled={busy !== null || (mainnet && item !== "send")} onClick={() => { setOperation(item); setEstimate(null); setFeeQuote(null); setProof(null); if (item === "swap") { setSourceChain("Arc_Testnet"); setDestinationChain("Arc_Testnet") }; if (item !== "bridge") setToken("USDC") }} type="button"><strong>{operationCopy[item].title}</strong><small>{operationCopy[item].description}</small></button>)}
           </div>
 
           <div className="money-wallet-row">
             <div><WalletCards size={18} /><span><strong>{wallet ? wallet.name : "Wallet not connected"}</strong><small>{wallet ? shortHash(wallet.address) : "EIP-6963 · user-controlled"}</small></span></div>
-            <button className="button secondary" disabled={busy === "connect"} onClick={() => void connectWallet()} type="button">{busy === "connect" ? <RefreshCw className="is-spinning" size={15} /> : <WalletCards size={15} />}{wallet ? "Reconnect" : "Connect wallet"}</button>
+            <button className="button secondary" disabled={busy !== null} onClick={() => void connectWallet()} type="button">{busy === "connect" ? <RefreshCw className="is-spinning" size={15} /> : <WalletCards size={15} />}{wallet ? "Reconnect" : "Connect wallet"}</button>
           </div>
 
+          {mainnet && <section className="money-wallet-setup" aria-label="Arc wallet preparation">
+            <h3>Prepare your Arc wallet</h3>
+            <p>Connect your wallet, select Arc mainnet and check your USDC balance. These steps do not sign a payment.</p>
+            <dl>
+              <div><dt>Wallet network</dt><dd>{!wallet ? "Connect wallet first" : walletReadiness ? walletReadiness.onArcMainnet ? "Arc mainnet · 5042" : `Other network · ${walletReadiness.chainId}` : "Check wallet network"}</dd></div>
+              <div><dt>USDC balance on Arc</dt><dd>{walletReadiness?.onArcMainnet ? `${walletReadiness.balanceUsdc} USDC` : "Select Arc to read balance"}</dd></div>
+            </dl>
+            <div className="money-wallet-setup-actions">
+              <button className="button secondary" type="button" disabled={!wallet || walletReadiness?.onArcMainnet || busy !== null} onClick={() => void prepareWallet(true)}>Set up Arc mainnet</button>
+              <button className="button secondary" type="button" disabled={!wallet || busy !== null} onClick={() => void prepareWallet(false)}>{busy === "wallet" ? "Checking…" : "Check wallet"}</button>
+              <a href="https://docs.arc.io/arc/references/connect-to-arc" target="_blank" rel="noreferrer">Wallet setup guide <ExternalLink size={13} /></a>
+            </div>
+            {walletReadiness?.onArcMainnet && <p>{walletReadiness.hasGasBalance ? "Balance includes USDC used for gas. Review the amount and gas estimate before any transfer." : "This wallet has no USDC on Arc. It needs USDC for both the transfer and gas."}</p>}
+            <p>Wallet setup does not authorize a payment. Enter a separate recipient explicitly when preparing your first pilot.</p>
+          </section>}
+
           <div className="money-form">
-            <label><span>Source chain</span><select disabled={operation === "swap" || (operation === "send" && destinationChain === sourceChain)} value={sourceChain} onChange={(event) => setSourceChain(event.target.value as Chain)}>{chains.map((chain) => <option key={chain}>{chain}</option>)}</select></label>
-            <label><span>Destination chain</span><select value={operation === "send" ? sourceChain : destinationChain} onChange={(event) => setDestinationChain(event.target.value as Chain)} disabled={operation === "send" || operation === "swap"}>{chains.map((chain) => <option key={chain}>{chain}</option>)}</select></label>
-            <label><span>Amount</span><div className="money-amount"><input inputMode="decimal" value={amount} onChange={(event) => setAmount(event.target.value)} />{operation === "bridge" ? <select value={token} onChange={(event) => setToken(event.target.value as Token)}><option value="USDC">USDC</option><option value="EURC">EURC</option></select> : <em>USDC</em>}</div></label>
-            <label><span>Recipient</span><input value={recipient} onChange={(event) => setRecipient(event.target.value)} placeholder="0x…" /></label>
+            <label><span>Source chain</span><select disabled={operation === "swap" || busy !== null} value={sourceChain} onChange={(event) => { invalidateQuote(); setSourceChain(event.target.value as Chain) }}>{chains.map((chain) => <option key={chain}>{chain}</option>)}</select></label>
+            <label><span>Destination chain</span><select value={operation === "send" ? sourceChain : destinationChain} onChange={(event) => { invalidateQuote(); setDestinationChain(event.target.value as Chain) }} disabled={operation === "send" || operation === "swap" || busy !== null}>{chains.map((chain) => <option key={chain}>{chain}</option>)}</select></label>
+            <label><span>Amount</span><div className="money-amount"><input inputMode="decimal" value={amount} disabled={busy !== null} onChange={(event) => { invalidateQuote(); setAmount(event.target.value) }} />{operation === "bridge" ? <select disabled={busy !== null} value={token} onChange={(event) => { invalidateQuote(); setToken(event.target.value as Token) }}><option value="USDC">USDC</option><option value="EURC">EURC</option></select> : <em>USDC</em>}</div></label>
+            <label><span>Recipient</span><input value={recipient} disabled={busy !== null} onChange={(event) => { invalidateQuote(); setRecipient(event.target.value) }} placeholder="0x…" /></label>
             <label className="money-wide"><span>Kestrel fee wallet · enforced by server policy</span><input value={feeRecipient} readOnly placeholder="Waiting for production configuration" /></label>
           </div>
 
           <div className="money-actions">
-            <button className="button secondary" disabled={!wallet || busy !== null} onClick={() => void requestQuote()} type="button"><BadgeDollarSign size={16} />{busy === "quote" ? "Estimating…" : "Estimate route"}</button>
+            <button className="button secondary" disabled={!wallet || !walletReadiness || busy !== null} onClick={() => void requestQuote()} type="button"><BadgeDollarSign size={16} />{busy === "quote" ? "Estimating…" : "Estimate route"}</button>
             <button className="button primary" disabled={!canExecute || busy !== null || !estimate} onClick={() => void execute()} type="button"><ArrowRight size={16} />{busy === "execute" ? "Executing…" : "Confirm & execute"}</button>
           </div>
-          {policyConfiguration && !policyConfiguration.enabled && <div className="analytics-error">Execution is fail-closed: {policyConfiguration.missing.join(", ") || "policy configuration is incomplete"}.</div>}
+          {policyConfiguration && !policyConfiguration.enabled && <div className="analytics-error">Transfers are disabled for this deployment. Wallet connection does not enable payments.</div>}
           {operation === "swap" && <div className="money-security-note"><ShieldCheck size={15} /><span><strong>Server execution boundary</strong><small>{policyConfiguration?.swapExecutionEnabled ? "Ready: the Kit Key and signer remain server-side; the browser receives only a signed policy grant and final proof." : `Fail-closed until configured: ${policyConfiguration?.swapExecutionMissing.join(", ") || "server signer and Kit Key"}.`}</small></span></div>}
           {policyConfiguration?.enabled && <p className="money-fee-note">Execution guard: wallet-signed intent · Circle screening · {policyConfiguration.maxAmountUsdc} USDC cap{policyConfiguration.allowlistRequired ? " · recipient allowlist" : ""}.</p>}
           {error && <div className="analytics-error">{error}</div>}
@@ -301,9 +445,9 @@ export function MoneyMovementClient() {
 
         <aside className="money-panel money-fees">
           <div className="money-panel-head"><span>02</span><div><p>Monetization</p><h2>Fee breakdown</h2></div></div>
-          <div className="money-fee-total"><span>Developer fee</span><strong>{developerFee.toFixed(6)} USDC</strong><small>{feeBps} bps · shown before signature</small></div>
-          <div className="money-fee-split"><div><span>Kestrel revenue · 90%</span><strong>{appRevenue.toFixed(6)}</strong></div><div><span>Arc share · 10%</span><strong>{arcShare.toFixed(6)}</strong></div></div>
-          <p className="money-fee-note">Unified Balance fees are carved from the spend amount. Bridge fees are added on top. Swap fees are percentage-based and collected before execution.</p>
+          <div className="money-fee-total"><span>Developer fee estimate</span><strong>{developerFee.toFixed(6)} USDC</strong><small>{operation === "send" ? "Send has no Kestrel developer fee; network gas still applies" : `${feeBps} bps · shown before signature`}</small></div>
+          <div className="money-fee-split"><div><span>Estimated Kestrel fee · 90%</span><strong>{appRevenue.toFixed(6)}</strong></div><div><span>Estimated Arc share · 10%</span><strong>{arcShare.toFixed(6)}</strong></div></div>
+          <p className="money-fee-note">{operation === "send" ? "Send transfers the entered USDC amount. Gas is paid separately in USDC on Arc; the displayed gas figure is an estimate." : "Unified Balance fees are carved from the spend amount. Bridge fees are added on top. Swap fees are percentage-based and collected before execution."}</p>
           {feeQuote && <div className="money-fee-ledger">
             <div><span>Source debit</span><strong>{feeQuote.sourceDebitUsdc.toFixed(6)}</strong></div>
             <div><span>Destination amount</span><strong>{feeQuote.destinationAmountUsdc.toFixed(6)}</strong></div>
@@ -325,7 +469,7 @@ export function MoneyMovementClient() {
         </section>
         <section className="money-panel money-proof">
           <div className="money-panel-head"><span>04</span><div><p>Transaction proof</p><h2>Verifiable outcome</h2></div></div>
-          {proof ? <><div className="money-proof-grid"><div><span>State</span><strong>{proof.state}</strong></div><div><span>Trace</span><strong>{shortHash(proof.traceId)}</strong></div><div><span>Policy</span><strong>{proof.policy?.decision ?? "unknown"}</strong></div><div><span>Transactions</span><strong>{proof.txHashes.length}</strong></div></div>{proof.explorerUrls.map((url) => <a href={url} key={url} rel="noreferrer" target="_blank">Open transaction <ExternalLink size={13} /></a>)}<a href="/proof-center">Open Proof Center <ExternalLink size={13} /></a><pre>{JSON.stringify(proof, null, 2)}</pre></> : <div className="money-proof-empty"><CircleDollarSign size={28} /><strong>No settlement proof yet</strong><span>The completed App Kit result, policy decision, hashes, explorer links and trace ID will appear here.</span></div>}
+          {proof ? <><div className="money-proof-grid"><div><span>State</span><strong>{proof.state}</strong></div><div><span>Trace</span><strong>{shortHash(proof.traceId)}</strong></div><div><span>Policy</span><strong>{proof.policy?.decision ?? "unknown"}</strong></div><div><span>Transactions</span><strong>{proof.txHashes.length}</strong></div></div>{proof.explorerUrls.map((url) => <a href={url} key={url} rel="noreferrer" target="_blank">Open transaction <ExternalLink size={13} /></a>)}<button className="button secondary" type="button" onClick={() => downloadMoneyProof(proof)}>Download proof JSON</button><p className="money-fee-note">Saved in this browser only. The export includes public addresses and does not independently verify settlement or API fulfillment.</p>{proofStorageWarning && <p className="analytics-error" role="status">{proofStorageWarning}</p>}<a href="/proof-center">Open Proof Center <ExternalLink size={13} /></a><pre>{JSON.stringify(proof, null, 2)}</pre></> : <div className="money-proof-empty"><CircleDollarSign size={28} /><strong>No settlement proof yet</strong><span>The completed App Kit result, policy decision, hashes, explorer links and trace ID will appear here.</span></div>}
         </section>
       </div>
 
@@ -471,12 +615,12 @@ function markTimeline(label: string, state: TimelineItem["state"], detail: strin
   return (current: TimelineItem[]) => current.map((item) => item.label === label ? { ...item, state, detail } : item)
 }
 
-function buildProof(operation: Operation, raw: unknown, policy: PolicyProof, policyTraceId: string, feeBreakdown?: FeeBreakdown): Proof {
+function buildProof(operation: Operation, raw: unknown, policy: PolicyProof, policyTraceId: string, networks: ReturnType<typeof moneyProofNetworks>, feeBreakdown?: FeeBreakdown, intent?: MoneyProofIntent): Proof {
   const strings = collectStrings(raw)
-  const txHashes = [...new Set(strings.filter((value) => /^(0x[a-fA-F0-9]{40,}|[1-9A-HJ-NP-Za-km-z]{64,})$/.test(value)))]
+  const txHashes = [...new Set(strings.filter((value) => /^(0x[a-fA-F0-9]{64}|[1-9A-HJ-NP-Za-km-z]{64,})$/.test(value)))]
   const explorerUrls = [...new Set(strings.filter((value) => /^https:\/\/.+\/(tx|transaction)\//.test(value)))]
   const record = isRecord(raw) ? raw : {}
-  return { id: `money_${policyTraceId}`, operation, state: String(record.state ?? record.status ?? "submitted"), traceId: String(record.traceId ?? policyTraceId), recordedAt: new Date().toISOString(), txHashes, explorerUrls, policy, feeBreakdown, raw }
+  return { id: `money_${policyTraceId}`, operation, intent, networks, state: String(record.state ?? record.status ?? "submitted"), traceId: String(record.traceId ?? policyTraceId), recordedAt: new Date().toISOString(), txHashes, explorerUrls, policy, feeBreakdown, raw }
 }
 
 async function requestServerFeeQuote(input: {

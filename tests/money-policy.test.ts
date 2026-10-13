@@ -3,12 +3,14 @@ import test from "node:test"
 
 import {
   getMoneyPolicyConfiguration,
+  complianceChainFor,
   moneyAuthorizationMessage,
   policyValidationError,
   validateMoneyAuthorization,
   type MoneyAuthorization,
 } from "../landing/src/lib/backend/money-policy.ts"
 import { deterministicIdempotencyKey } from "../landing/src/lib/backend/idempotency.ts"
+import { moneyProofNetworks } from "../landing/src/lib/money-networks.ts"
 
 const FEE_RECIPIENT = "0x1111111111111111111111111111111111111111"
 const ALLOWED = "0x2222222222222222222222222222222222222222"
@@ -17,6 +19,8 @@ const OTHER = "0x3333333333333333333333333333333333333333"
 function configureEnv(overrides: Record<string, string | undefined> = {}) {
   const base: Record<string, string | undefined> = {
     KESTREL_MONEY_EXECUTION_ENABLED: "true",
+    KESTREL_MONEY_NETWORK: undefined,
+    KESTREL_MAINNET_EXECUTION_ENABLED: undefined,
     CIRCLE_API_KEY: "test-key",
     KESTREL_FEE_RECIPIENT: FEE_RECIPIENT,
     KESTREL_MAX_MONEY_MOVEMENT_USDC: "100",
@@ -144,4 +148,43 @@ test("deterministicIdempotencyKey is stable and UUID-v4 shaped", () => {
   assert.notEqual(a, c, "different seed → different key")
   assert.match(a, uuidV4)
   assert.match(c, uuidV4)
+})
+
+test("mainnet pilot requires explicit activation and a recipient allowlist", () => {
+  configureEnv({ KESTREL_MONEY_NETWORK: "mainnet" })
+  assert.equal(getMoneyPolicyConfiguration().enabled, false)
+  configureEnv({ KESTREL_MONEY_NETWORK: "mainnet", KESTREL_MAINNET_EXECUTION_ENABLED: "true", KESTREL_MONEY_ALLOWED_RECIPIENTS: undefined })
+  assert.equal(getMoneyPolicyConfiguration().enabled, false)
+  configureEnv({ KESTREL_MONEY_NETWORK: "mainnet", KESTREL_MAINNET_EXECUTION_ENABLED: "true" })
+  const config = getMoneyPolicyConfiguration()
+  assert.equal(config.enabled, true)
+  assert.equal(policyValidationError(authorization({ sourceChain: "Arc", destinationChain: "Arc" }), config), null)
+  assert.match(policyValidationError(authorization(), config) ?? "", /configured network/i)
+  assert.match(policyValidationError(authorization({ sourceChain: "Arc", destinationChain: "Arc_Testnet" }), config) ?? "", /cannot be mixed/i)
+  assert.match(policyValidationError(authorization({ operation: "swap", sourceChain: "Arc", destinationChain: "Arc" }), config) ?? "", /only permits USDC Send/i)
+  assert.match(policyValidationError(authorization({ recipient: OTHER, sourceChain: "Arc", destinationChain: "Arc" }), config) ?? "", /allowlist/i)
+})
+
+test("network changes and emergency disable invalidate previous authorizations", () => {
+  configureEnv()
+  const mainnetIntent = authorization({ sourceChain: "Arc", destinationChain: "Arc" })
+  assert.match(policyValidationError(mainnetIntent, getMoneyPolicyConfiguration()) ?? "", /configured network/i)
+  configureEnv({ KESTREL_MONEY_EXECUTION_ENABLED: "false" })
+  assert.match(policyValidationError(authorization(), getMoneyPolicyConfiguration()) ?? "", /disabled/i)
+  configureEnv({ KESTREL_MONEY_NETWORK: "typo" })
+  assert.equal(getMoneyPolicyConfiguration().enabled, false)
+})
+
+test("signed intents and proof metadata distinguish Arc mainnet from testnet", () => {
+  const mainnet = authorization({ sourceChain: "Arc", destinationChain: "Arc" })
+  assert.equal(validateMoneyAuthorization(mainnet).error, null)
+  assert.notEqual(moneyAuthorizationMessage(mainnet), moneyAuthorizationMessage(authorization()))
+  const mainnetProof = moneyProofNetworks("Arc", "Arc")
+  const testnetProof = moneyProofNetworks("Arc_Testnet", "Arc_Testnet")
+  assert.equal(mainnetProof.source.chainId, 5042)
+  assert.equal(mainnetProof.destination.environment, "mainnet")
+  assert.equal(testnetProof.source.chainId, 5042002)
+  assert.equal(testnetProof.destination.environment, "testnet")
+  assert.equal(complianceChainFor("Arc").chain, "ETH")
+  assert.equal(complianceChainFor("Arc").basis, "cross-chain-evm-identity")
 })

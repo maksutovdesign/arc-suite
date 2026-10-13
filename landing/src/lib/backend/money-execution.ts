@@ -4,6 +4,8 @@ import { createCircleWalletsAdapter } from "@circle-fin/adapter-circle-wallets"
 import { createViemAdapterFromPrivateKey } from "@circle-fin/adapter-viem-v2"
 
 import type { MoneyAuthorization, MoneyChain, MoneyOperation } from "./money-policy"
+import { getMoneyPolicyConfiguration, policyValidationError } from "./money-policy"
+import { moneyProofNetworks } from "../money-networks"
 
 export type MoneyPolicyProof = {
   decision: string
@@ -71,7 +73,7 @@ export function createMoneyFeeBreakdown(input: {
   sourceChain: MoneyChain
 }): MoneyFeeBreakdown {
   const amount = round6(Number(input.amount))
-  const customFee = round6(amount * FEE_BPS / 10_000)
+  const customFee = input.operation === "send" ? 0 : round6(amount * FEE_BPS / 10_000)
   const arcShare = round6(customFee * 0.1)
   const kestrelRevenue = round6(customFee - arcShare)
   const crossChain = input.sourceChain !== input.destinationChain
@@ -135,6 +137,8 @@ export function verifyMoneyExecutionGrant(value: unknown): MoneyExecutionGrant |
 }
 
 export async function executeServerMoneyMovement(grant: MoneyExecutionGrant) {
+  const policyError = policyValidationError(grant.authorization, getMoneyPolicyConfiguration())
+  if (policyError) throw new Error(policyError)
   const privateKey = readEnv("KESTREL_APP_KIT_PRIVATE_KEY")
   const circleApiKey = readEnv("CIRCLE_API_KEY")
   const circleEntitySecret = readEnv("CIRCLE_ENTITY_SECRET")
@@ -215,7 +219,7 @@ export function normalizeMoneyProof(input: {
 }) {
   const safeRaw = toJsonSafe(input.raw)
   const strings = collectStrings(safeRaw)
-  const txHashes = [...new Set(strings.filter((value) => /^(0x[a-fA-F0-9]{40,}|[1-9A-HJ-NP-Za-km-z]{64,})$/.test(value)))]
+  const txHashes = [...new Set(strings.filter((value) => /^(0x[a-fA-F0-9]{64}|[1-9A-HJ-NP-Za-km-z]{64,})$/.test(value)))]
   const explorerUrls = [...new Set(strings.filter((value) => /^https:\/\/.+\/(tx|transaction)\//.test(value)))]
   const record = isRecord(safeRaw) ? safeRaw : {}
   return {
@@ -226,6 +230,13 @@ export function normalizeMoneyProof(input: {
     traceId: input.grant.traceId,
     recordedAt: new Date().toISOString(),
     authorization: input.grant.authorization,
+    intent: {
+      walletAddress: input.grant.authorization.walletAddress,
+      recipient: input.grant.authorization.recipient,
+      amount: input.grant.authorization.amount,
+      token: input.grant.authorization.token,
+    },
+    networks: moneyProofNetworks(input.grant.authorization.sourceChain, input.grant.authorization.destinationChain),
     feeBreakdown: input.feeBreakdown,
     policy: input.grant.policy,
     txHashes,

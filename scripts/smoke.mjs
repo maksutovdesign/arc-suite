@@ -64,7 +64,9 @@ const targets = [
     name: "public grant evidence",
     url: `${landingBase}/api/grant/evidence`,
     validate: (payload) => typeof payload?.generatedAt === "string"
-      && typeof payload?.metrics?.kestrelFeeRevenueUsdc === "number"
+      && payload?.metrics?.kestrelFeeRevenueUsdc === null
+      && typeof payload?.metrics?.estimatedKestrelFeesUsdc === "number"
+      && payload?.measurement?.feeRevenueStatus === "unverified"
       && Array.isArray(payload?.milestones),
   },
   {

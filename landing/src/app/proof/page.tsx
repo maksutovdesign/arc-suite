@@ -25,7 +25,7 @@ export const metadata = {
 export const dynamic = "force-dynamic"
 
 type ProofPageProps = {
-  searchParams?: Promise<{ id?: string }> | { id?: string }
+  searchParams?: Promise<{ id?: string }>
 }
 
 export default async function ProofPage({ searchParams }: ProofPageProps) {

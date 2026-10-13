@@ -1,7 +1,7 @@
 import { isAddress } from "viem"
 
 export const MONEY_OPERATIONS = ["spend", "bridge", "swap", "send"] as const
-export const MONEY_CHAINS = ["Arc_Testnet", "Base_Sepolia", "Ethereum_Sepolia", "Arbitrum_Sepolia"] as const
+export const MONEY_CHAINS = ["Arc", "Arc_Testnet", "Base_Sepolia", "Ethereum_Sepolia", "Arbitrum_Sepolia"] as const
 export const MONEY_TOKENS = ["USDC", "EURC"] as const
 
 export type MoneyOperation = (typeof MONEY_OPERATIONS)[number]
@@ -32,9 +32,16 @@ export function getMoneyPolicyConfiguration() {
   )
   const complianceConfigured = Boolean(process.env.CIRCLE_API_KEY)
   const explicitlyEnabled = readEnv("KESTREL_MONEY_EXECUTION_ENABLED") === "true"
+  const network = readEnv("KESTREL_MONEY_NETWORK") ?? "testnet"
+  const networkValid = network === "testnet" || network === "mainnet"
+  const mainnetEnabled = readEnv("KESTREL_MAINNET_EXECUTION_ENABLED") === "true"
+  const mainnetReady = network !== "mainnet" || (mainnetEnabled && allowedRecipients.length > 0)
 
   return {
-    enabled: explicitlyEnabled && Boolean(feeRecipient) && complianceConfigured,
+    enabled: explicitlyEnabled && Boolean(feeRecipient) && complianceConfigured && networkValid && mainnetReady,
+    network,
+    allowedChains: network === "mainnet" ? ["Arc"] as MoneyChain[] : MONEY_CHAINS.filter((chain) => chain !== "Arc"),
+    allowedOperations: network === "mainnet" ? ["send"] as MoneyOperation[] : [...MONEY_OPERATIONS],
     feeBps: 75,
     feeRecipient,
     maxAmountUsdc,
@@ -43,6 +50,9 @@ export function getMoneyPolicyConfiguration() {
     complianceConfigured,
     signatureTtlSeconds: 300,
     missing: [
+      ...(!networkValid ? ["KESTREL_MONEY_NETWORK must be testnet or mainnet"] : []),
+      ...(network === "mainnet" && !mainnetEnabled ? ["KESTREL_MAINNET_EXECUTION_ENABLED=true"] : []),
+      ...(network === "mainnet" && allowedRecipients.length === 0 ? ["KESTREL_MONEY_ALLOWED_RECIPIENTS (mainnet requires an allowlist)"] : []),
       ...(!explicitlyEnabled ? ["KESTREL_MONEY_EXECUTION_ENABLED=true"] : []),
       ...(!feeRecipient ? ["KESTREL_FEE_RECIPIENT or ARC_SOURCE_WALLET_ADDRESS"] : []),
       ...(!complianceConfigured ? ["CIRCLE_API_KEY"] : []),
@@ -91,6 +101,9 @@ export function policyValidationError(
   input: MoneyAuthorization,
   configuration: ReturnType<typeof getMoneyPolicyConfiguration>,
 ): string | null {
+  if (!configuration.enabled) return "Money Movement execution is disabled by current policy."
+  if (!configuration.allowedChains.includes(input.sourceChain) || !configuration.allowedChains.includes(input.destinationChain)) return "Source and destination must use the configured network; mainnet and testnet cannot be mixed."
+  if (!configuration.allowedOperations.includes(input.operation)) return "The configured network only permits USDC Send for the mainnet pilot."
   const issuedAt = Date.parse(input.issuedAt)
   const ageMs = Date.now() - issuedAt
   if (ageMs < -30_000 || ageMs > configuration.signatureTtlSeconds * 1000) return "The wallet authorization has expired."
@@ -120,6 +133,7 @@ export function moneyAuthorizationMessage(input: MoneyAuthorization) {
 }
 
 export function complianceChainFor(chain: MoneyChain) {
+  if (chain === "Arc") return { chain: "ETH", basis: "cross-chain-evm-identity" as const }
   if (chain === "Arbitrum_Sepolia") return { chain: "ARB-SEPOLIA", basis: "native-chain" as const }
   if (chain === "Ethereum_Sepolia") return { chain: "ETH-SEPOLIA", basis: "native-chain" as const }
   return { chain: "ETH-SEPOLIA", basis: "cross-chain-evm-identity" as const }

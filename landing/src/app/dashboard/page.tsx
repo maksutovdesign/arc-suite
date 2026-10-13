@@ -14,11 +14,11 @@ export default async function DashboardPage() {
   const evidence = await getGrantEvidence()
   const metrics = [
     ["Managed USDC", money(evidence.metrics.managedUsdc), "Treasury balance under policy", WalletCards],
-    ["Measured volume", money(evidence.metrics.operationVolumeUsdc), "Completed App Kit and Arc operations", CircleDollarSign],
+    ["Sampled volume", money(evidence.metrics.operationVolumeUsdc), "Recent operations; not lifetime volume", CircleDollarSign],
     ["Executions", String(evidence.metrics.moneyExecutions), `${evidence.metrics.executionSuccessRatePct}% terminal success`, Activity],
     ["Proofs", String(evidence.metrics.indexedProofs), "Stored reviewer-verifiable envelopes", FileCheck2],
     ["Agents", String(evidence.metrics.activeAgents), "Wallet and reputation profiles", Users],
-    ["Fee revenue", money(evidence.metrics.kestrelFeeRevenueUsdc), "Measured 90% Kestrel share", Gauge],
+    ["Collected fee revenue", "Unverified", "Fee collection evidence required", Gauge],
   ] as const
 
   return (

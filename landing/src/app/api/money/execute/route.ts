@@ -150,6 +150,12 @@ function quoteResponse(body: Record<string, unknown>, requestId: string) {
     )
   }
   const policy = getMoneyPolicyConfiguration()
+  const policyError = policyValidationError(validation.input, policy)
+  if (policyError) {
+    return NextResponse.json({ error: "policy_violation", message: policyError }, {
+      headers: requestIdHeaders(requestId), status: 403,
+    })
+  }
   if (!policy.feeRecipient || validation.input.feeRecipient.toLowerCase() !== policy.feeRecipient.toLowerCase()) {
     return NextResponse.json(
       { error: "fee_policy_mismatch", message: "The fee recipient does not match Kestrel policy." },

@@ -1,4 +1,5 @@
 import { appendFile } from "node:fs/promises"
+import { assertEmbeddingPolicy } from "./embedding-policy.mjs"
 
 const DEFAULTS = {
   landing: "https://arcsuite-app.vercel.app",
@@ -361,8 +362,9 @@ async function fetchWithRetry(url, options = {}, attempts = 3) {
 }
 
 function assertSecurityHeaders(response) {
-  assertHeaderIncludes(response, "content-security-policy", "frame-ancestors 'none'")
-  assertHeaderEquals(response, "x-frame-options", "DENY")
+  const url = new URL(response.url)
+  const landing = url.origin === new URL(bases.landing).origin && !/^\/(treasury|reputation|marketplace)(\/|$)/.test(url.pathname)
+  assertEmbeddingPolicy(response.headers, landing)
   assertHeaderEquals(response, "x-content-type-options", "nosniff")
   assertHeaderEquals(response, "referrer-policy", "strict-origin-when-cross-origin")
   assertHeaderIncludes(response, "strict-transport-security", "max-age=63072000")
