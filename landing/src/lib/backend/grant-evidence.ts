@@ -32,6 +32,7 @@ export async function getGrantEvidence() {
       apiListings: pilot.marketplace.apisListed,
     },
     measurement: {
+      pilotDataSource: pilot.dataSource,
       scope: "recent_sample" as const,
       settlementLimit: 12,
       proofLimit: 12,

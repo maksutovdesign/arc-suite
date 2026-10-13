@@ -455,7 +455,8 @@ export async function getOpsHealthHistory(limit = 50): Promise<OpsHealthHistory>
 }
 
 export async function getPilotSummary(): Promise<PilotSummary> {
-  const dataset = await getDataset()
+  const storedDataset = await loadSupabaseDataset()
+  const dataset = storedDataset ?? getSeedDataset()
   const activeAlerts = dataset.alerts.filter((alert) => !alert.resolvedAt)
   const completedTx = dataset.transactions.filter((transaction) => transaction.status === "completed")
   const avgTxCostUsdc = completedTx.reduce((sum, tx) => sum + tx.amountUsdc, 0) / completedTx.length
@@ -483,6 +484,7 @@ export async function getPilotSummary(): Promise<PilotSummary> {
   ]
 
   return {
+    dataSource: storedDataset ? "supabase" : "seed",
     workspace: {
       ...dataset.workspace,
     },
@@ -509,9 +511,9 @@ export async function getPilotSummary(): Promise<PilotSummary> {
       leaderboard,
     },
     marketplace: {
-      apisListed: Math.max(dataset.apiListings.length, 143),
-      providers: Math.max(dataset.providers.length, 58),
-      requests: Math.max(dataset.apiListings.reduce((sum, api) => sum + api.requestCount, 0), 24800000),
+      apisListed: dataset.apiListings.length,
+      providers: dataset.providers.length,
+      requests: dataset.apiListings.reduce((sum, api) => sum + api.requestCount, 0),
       avgUptimePct: round2(
         dataset.apiListings.length > 0 ? dataset.apiListings.reduce((sum, api) => sum + api.uptimePct, 0) / dataset.apiListings.length : 0,
       ),

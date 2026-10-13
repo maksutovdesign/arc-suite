@@ -1,5 +1,6 @@
 import { createHash, randomBytes, randomUUID } from "crypto"
 import { logOperationalEvent } from "./observability"
+import { withSupabaseReadDeadline } from "./supabase-read-deadline"
 import type {
   AccessDecisionLog,
   Agent,
@@ -2373,13 +2374,16 @@ export async function checkSupabaseReadiness() {
 }
 
 async function getRows<T>(table: string, query: string): Promise<T[]> {
-  const response = await fetch(`${restBaseUrl()}/${table}?${query}`, {
-    cache: "no-store",
-    headers: supabaseHeaders(),
-  })
+  return withSupabaseReadDeadline(async (signal) => {
+    const response = await fetch(`${restBaseUrl()}/${table}?${query}`, {
+      cache: "no-store",
+      headers: supabaseHeaders(),
+      signal,
+    })
 
-  if (!response.ok) throw await createSupabaseRestError(response, `Supabase read failed for ${table}`)
-  return response.json() as Promise<T[]>
+    if (!response.ok) throw await createSupabaseRestError(response, `Supabase read failed for ${table}`)
+    return response.json() as Promise<T[]>
+  })
 }
 
 async function getOptionalRows<T>(table: string, query: string, scope: string): Promise<T[]> {

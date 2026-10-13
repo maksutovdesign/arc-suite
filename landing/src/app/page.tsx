@@ -9,7 +9,7 @@ export default async function ProductLanding() {
 async function loadInitialLandingData() {
   try {
     const pilotSummary = await getPilotSummary()
-    return { initialApiStatus: "live" as const, initialPilotSummary: pilotSummary }
+    return { initialApiStatus: pilotSummary.dataSource === "supabase" ? "live" as const : "fallback" as const, initialPilotSummary: pilotSummary }
   } catch {
     return { initialApiStatus: "fallback" as const, initialPilotSummary: null }
   }

@@ -757,6 +757,7 @@ export type EscrowOverview = {
 }
 
 export type PilotSummary = {
+  dataSource: "supabase" | "seed"
   workspace: {
     id: string
     name: string
