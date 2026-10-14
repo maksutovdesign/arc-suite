@@ -23,6 +23,9 @@ export function GET(request: NextRequest) {
   const serverExecution = getServerMoneyExecutionConfiguration()
   return NextResponse.json({
     enabled: configuration.enabled,
+    network: configuration.network,
+    allowedChains: configuration.allowedChains,
+    allowedOperations: configuration.allowedOperations,
     feeBps: configuration.feeBps,
     feeRecipient: configuration.feeRecipient,
     maxAmountUsdc: configuration.maxAmountUsdc,

@@ -522,6 +522,17 @@ body:has(.ecosystem-nav.is-collapsed) {
 .money-panel-head { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }.money-panel-head > span { display: grid; width: 32px; height: 32px; place-items: center; border: 1px solid rgba(125,211,252,.25); border-radius: 9px; color: #7dd3fc; font: 700 11px/1 monospace; }.money-panel-head p { margin: 0 0 3px; color: #7f94aa; font-size: 10px; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; }.money-panel-head h2 { margin: 0; font-size: 20px; letter-spacing: -.025em; }
 .money-operation-tabs { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }.money-operation-tabs button { display: grid; gap: 5px; min-height: 100px; padding: 13px; border: 1px solid var(--line); border-radius: 8px; background: rgba(255,255,255,.018); color: #e6edf5; text-align: left; cursor: pointer; }.money-operation-tabs button.is-active { border-color: rgba(125,211,252,.48); background: rgba(125,211,252,.09); box-shadow: inset 0 0 0 1px rgba(125,211,252,.08); }.money-operation-tabs small { color: var(--muted); font-size: 10px; line-height: 1.35; }
 .money-wallet-row { display: flex; align-items: center; justify-content: space-between; gap: 15px; margin: 16px 0; padding: 14px; border: 1px solid var(--line); border-radius: 8px; background: rgba(255,255,255,.025); }.money-wallet-row > div { display: flex; align-items: center; gap: 10px; }.money-wallet-row span { display: grid; gap: 3px; }.money-wallet-row small { color: var(--muted); font-family: monospace; }
+.money-wallet-setup { margin: 16px 0; padding: 16px; border: 1px solid var(--line); border-radius: 8px; background: rgba(115,185,255,.035); }
+.money-wallet-setup h3 { margin: 0 0 8px; font-size: 15px; }
+.money-wallet-setup p { margin: 8px 0; color: var(--muted); font-size: 12px; line-height: 1.6; }
+.money-wallet-setup dl { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; margin: 16px 0; }
+.money-wallet-setup dt { color: var(--muted); font-size: 11px; }
+.money-wallet-setup dd { margin: 5px 0 0; font-size: 13px; overflow-wrap: anywhere; }
+.money-wallet-setup-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+.money-wallet-setup-actions .button { font-size: 11px; }
+.money-wallet-setup-actions a { display: inline-flex; align-items: center; gap: 5px; color: var(--cyan); font-size: 12px; }
+.money-shell .button:disabled { opacity: .45; cursor: not-allowed; }
+@media (max-width: 620px) { .money-wallet-setup dl { grid-template-columns: 1fr; }.money-wallet-setup-actions { align-items: stretch; flex-direction: column; } }
 .money-form { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }.money-form label { display: grid; gap: 7px; }.money-form label > span { color: #8fa3b7; font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }.money-form input,.money-form select { width: 100%; min-height: 44px; padding: 0 12px; border: 1px solid var(--line); border-radius: 8px; background: #0a111b; color: #edf5fc; outline: 0; }.money-form input:focus,.money-form select:focus { border-color: rgba(125,211,252,.48); }.money-form .money-wide { grid-column: 1/-1; }.money-amount { position: relative; }.money-amount input { padding-right: 58px; }.money-amount em { position: absolute; right: 12px; top: 15px; color: #7dd3fc; font: 700 10px/1 monospace; }.money-amount select { position: absolute; right: 8px; top: 8px; height: 28px; min-height: 28px; width: auto; padding: 0 6px; border: 1px solid var(--line); border-radius: 6px; background: #0f1c2b; color: #7dd3fc; font: 700 10px/1 monospace; }
 .money-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; }.money-actions .button { display: inline-flex; align-items: center; gap: 7px; }
 .money-security-note { display:flex; gap:9px; margin-top:14px; padding:12px; border:1px solid rgba(251,191,36,.25); border-radius:8px; background:rgba(251,191,36,.055); color:#fbbf24; }.money-security-note span { display:grid; gap:3px; }.money-security-note strong { color:#f8e7b0; font-size:11px; }.money-security-note small { color:#a99d7c; line-height:1.45; }
@@ -7507,6 +7518,27 @@ a.ops-history-run:hover {
   font-style: normal;
   font-weight: 900;
   letter-spacing: 0.08em;
+}
+
+.grant-reviewer-grid a {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  width: fit-content;
+  padding: 7px 0;
+  color: var(--cyan);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.grant-status-unverified,
+.grant-status-configuration-ready {
+  color: var(--yellow);
+}
+
+.grant-status-gated-pilot,
+.grant-status-testnet-demo {
+  color: var(--cyan);
 }
 
 .grant-reviewer-grid strong,

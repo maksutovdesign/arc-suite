@@ -1,4 +1,5 @@
 import { spawn } from "node:child_process"
+import { assertEmbeddingPolicy } from "./embedding-policy.mjs"
 
 const port = Number(process.env.ARC_LOCAL_SMOKE_PORT ?? "3210")
 const baseUrl = `http://127.0.0.1:${port}`
@@ -20,12 +21,18 @@ try {
   await checkHtml("/dashboard", ["One surface for money, policy and proof", "Execution cockpit"])
   await checkHtml("/proof-center", ["One operation. One evidence envelope", "Integrity rules"])
   await checkHtml("/pilots", ["Three workflows designed to produce evidence", "B2B controlled payout"])
+  await checkHtml("/grant", ["Grant review package", "Spending controls for agents paying with USDC.", "Integration status matrix", "Wallet readiness", "Known limits"])
   await checkJson("/api/health", 200, (payload) => payload?.ok === true && payload?.service === "kestrel-pilot-api")
   await checkJson("/api/money/preflight", 200, (payload) => typeof payload?.enabled === "boolean"
+    && payload?.network === (process.env.KESTREL_MONEY_NETWORK ?? "testnet")
+    && Array.isArray(payload?.allowedChains)
+    && Array.isArray(payload?.allowedOperations)
     && Array.isArray(payload?.missing))
   await checkJson("/api/money/execute", 200, (payload) => typeof payload?.enabled === "boolean"
     && typeof payload?.swapEnabled === "boolean")
-  await checkJson("/api/grant/evidence", 200, (payload) => typeof payload?.metrics?.kestrelFeeRevenueUsdc === "number"
+  await checkJson("/api/grant/evidence", 200, (payload) => payload?.metrics?.kestrelFeeRevenueUsdc === null
+    && typeof payload?.metrics?.estimatedKestrelFeesUsdc === "number"
+    && payload?.measurement?.feeRevenueStatus === "unverified"
     && Array.isArray(payload?.milestones))
   await checkStatus("/api/readiness", 401)
   await checkStatus("/api/webhooks/circle", 401, { method: "POST" })
@@ -33,7 +40,7 @@ try {
     headers: { Origin: "http://localhost:3000" },
     method: "OPTIONS",
   })
-  console.log("Local API smoke checks passed (13)")
+  console.log("Local API smoke checks passed (14)")
 } finally {
   server.kill("SIGTERM")
   await Promise.race([
@@ -81,8 +88,7 @@ async function checkStatus(path, expectedStatus, options = {}) {
 }
 
 function assertSecurityHeaders(response, path) {
-  const csp = response.headers.get("content-security-policy") ?? ""
-  if (!csp.includes("frame-ancestors 'none'")) throw new Error(`${path} is missing the CSP frame-ancestors policy`)
+  assertEmbeddingPolicy(response.headers, true)
   if (response.headers.get("x-content-type-options") !== "nosniff") throw new Error(`${path} is missing nosniff`)
   if (response.headers.has("x-powered-by")) throw new Error(`${path} exposes x-powered-by`)
 }

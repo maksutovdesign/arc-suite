@@ -111,7 +111,7 @@ export function EcosystemNav({ current }: { current: ArcProductId }) {
           )
         })}
       </div>
-      <span className="ecosystem-network">Arc Testnet · USDC by Circle</span>
+      <span className="ecosystem-network">{current === "money" ? "USDC · Network shown in operation" : "Arc Testnet · USDC by Circle"}</span>
     </aside>
   )
 }

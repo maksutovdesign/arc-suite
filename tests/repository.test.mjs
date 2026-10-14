@@ -34,7 +34,9 @@ test("all Next.js apps define the baseline CSP", async () => {
   ]) {
     const source = await read(file)
     assert.match(source, /Content-Security-Policy/)
-    assert.match(source, /frame-ancestors 'none'/)
+    assert.match(source, file === "landing/next.config.ts"
+      ? /frame-ancestors 'self' https:\/\/maksutovdesign\.ru;/
+      : /frame-ancestors 'none'/)
     assert.match(source, /object-src 'none'/)
   }
 })

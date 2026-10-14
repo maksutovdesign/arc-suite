@@ -27,8 +27,8 @@ export default async function GrantEvidencePage() {
 
         <section className="grant-evidence-metrics">
           <Metric label="Money executions" value={evidence.metrics.moneyExecutions} />
-          <Metric label="Measured volume" value={`${evidence.metrics.operationVolumeUsdc} USDC`} />
-          <Metric label="Fee revenue" value={`${evidence.metrics.kestrelFeeRevenueUsdc} USDC`} />
+          <Metric label="Sampled volume" value={`${evidence.metrics.operationVolumeUsdc} USDC`} />
+          <Metric label="Collected fee revenue" value="Unverified" />
           <Metric label="Success rate" value={`${evidence.metrics.executionSuccessRatePct}%`} />
           <Metric label="Confirmed settlements" value={evidence.metrics.confirmedArcSettlements} />
           <Metric label="Indexed proofs" value={evidence.metrics.indexedProofs} />
@@ -47,7 +47,7 @@ export default async function GrantEvidencePage() {
           </div>
         </section>
 
-        <p className="grant-evidence-note">Evidence generated {new Date(evidence.generatedAt).toISOString()}. Demo fallback values are never counted as completed money operations or fee revenue.</p>
+        <p className="grant-evidence-note">Evidence generated {new Date(evidence.generatedAt).toISOString()}. Metrics use up to 12 recent settlements, 12 proofs and 500 analytics events; they are not lifetime totals. Modeled fees are not collected revenue. Fee collection has not been verified.</p>
       </section>
     </main>
   )
