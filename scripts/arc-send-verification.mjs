@@ -2,6 +2,7 @@
 // RPC observations verify chain inclusion and transfer facts, not policy signatures
 // or provider fulfillment. Never import a signer or broadcast a transaction here.
 export const ARC_RPC_URL = "https://rpc.mainnet.arc.io"
+export const ARC_FALLBACK_RPC_URL = "https://rpc.drpc.mainnet.arc.io"
 export const ARC_CHAIN_ID = 5042n
 export const USDC_ERC20 = "0x3600000000000000000000000000000000000000"
 export const USDC_SYSTEM_EMITTER = "0xfffffffffffffffffffffffffffffffffffffffe"
@@ -67,29 +68,53 @@ export function parseArcSendProof(proof, selectedHash) {
   return { sender, recipient, amount: intent.amount, amountNative, amountErc20, txHash }
 }
 
-export function createArcReadRpc(fetchImpl = fetch) {
+export function createArcReadRpc(fetchImpl = fetch, { signal, rpcUrl = ARC_RPC_URL } = {}) {
+  if (![ARC_RPC_URL, ARC_FALLBACK_RPC_URL].includes(rpcUrl)) throw new Error("Only fixed Arc mainnet read endpoints are permitted.")
   let nextId = 0
-  return async (method, params = []) => {
+  const rpc = async (method, params = []) => {
     if (!readMethods.has(method)) throw new Error("Only allowlisted read-only RPC methods are permitted.")
     const id = ++nextId
-    const response = await fetchImpl(ARC_RPC_URL, {
-      method: "POST", redirect: "error", signal: AbortSignal.timeout(15_000),
+    const requestSignal = signal ? AbortSignal.any([signal, AbortSignal.timeout(15_000)]) : AbortSignal.timeout(15_000)
+    const response = await fetchImpl(rpcUrl, {
+      method: "POST", redirect: "error", cache: "no-store",
+      signal: requestSignal,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ jsonrpc: "2.0", id, method, params }),
     })
     if (!response.ok) throw new Error(`Arc RPC returned HTTP ${response.status}.`)
-    const payload = await response.json()
+    const payload = await readRpcJson(response, requestSignal)
     if (payload?.jsonrpc !== "2.0" || payload.id !== id || payload.error || !("result" in payload)) {
       throw new Error(`Arc RPC could not complete ${method}.`)
     }
     return payload.result
   }
+  return Object.assign(rpc, { rpcUrl })
+}
+
+async function readRpcJson(response, signal) {
+  const limit = 2 * 1024 * 1024
+  if (Number(response.headers.get("content-length")) > limit) throw new Error("Arc RPC response exceeded the read limit.")
+  if (!response.body) throw new Error("Arc RPC returned an empty body.")
+  const reader = response.body.getReader(), decoder = new TextDecoder()
+  let bytes = 0, text = ""
+  try {
+    while (true) {
+      signal.throwIfAborted()
+      const { done, value } = await reader.read()
+      if (done) break
+      bytes += value.byteLength
+      if (bytes > limit) { await reader.cancel(); throw new Error("Arc RPC response exceeded the read limit.") }
+      text += decoder.decode(value, { stream: true })
+    }
+    signal.throwIfAborted()
+    return JSON.parse(text + decoder.decode())
+  } finally { reader.releaseLock() }
 }
 
 export async function probeArcMainnet(rpc) {
   const chainId = quantity(await rpc("eth_chainId"))
   if (chainId !== ARC_CHAIN_ID) throw new Error("RPC does not report Arc mainnet chain ID 5042.")
-  return { rpcUrl: ARC_RPC_URL, chainId: Number(chainId), readOnly: true, transactionVerified: false }
+  return { rpcUrl: rpc.rpcUrl ?? ARC_RPC_URL, chainId: Number(chainId), readOnly: true, transactionVerified: false }
 }
 
 function systemTransfer(log) {
@@ -114,9 +139,13 @@ export async function verifyArcSend(proof, { rpc, txHash: selectedHash, checkedA
     rpc("eth_getTransactionByHash", [intent.txHash]),
     rpc("eth_getTransactionReceipt", [intent.txHash]),
   ])
+  return verifyObservedSend(intent, tx, receipt, { rpc, checkedAt })
+}
+
+async function verifyObservedSend(intent, tx, receipt, { rpc, checkedAt }) {
   const report = {
     schemaVersion: "kestrel-arc-send-verification/1", checkedAt,
-    verificationMethod: "rpc-observation", rpcUrl: ARC_RPC_URL,
+    verificationMethod: "rpc-observation", rpcUrl: rpc.rpcUrl ?? ARC_RPC_URL,
     verified: false, status: "pending_or_not_found",
     network: { chain: "Arc", chainId: Number(ARC_CHAIN_ID), environment: "mainnet" },
     transactionHash: intent.txHash, explorerUrl: `https://explorer.arc.io/tx/${intent.txHash}`,
@@ -159,5 +188,50 @@ export async function verifyArcSend(proof, { rpc, txHash: selectedHash, checkedA
       actualGasUsdc: gasUsed !== null && gasPrice !== null ? formatUnits(gasUsed * gasPrice, 18) : null,
       matchingSystemTransfers: outgoing.filter((transfer) => transfer.recipient === intent.recipient && transfer.amount === intent.amountNative).length,
     },
+  }
+}
+
+
+// Hash-only inspection derives transfer facts from calldata/value. It does not
+// compare a user-supplied intent or establish who initiated the transaction.
+export async function inspectArcTransaction(txHash, { rpc, checkedAt = new Date().toISOString() }) {
+  if (typeof txHash !== "string" || !hashPattern.test(txHash)) throw new Error("Enter a 0x-prefixed transaction hash with 64 hexadecimal characters.")
+  txHash = lower(txHash)
+  await probeArcMainnet(rpc)
+  const [tx, receipt] = await Promise.all([
+    rpc("eth_getTransactionByHash", [txHash]), rpc("eth_getTransactionReceipt", [txHash]),
+  ])
+  const base = {
+    schemaVersion: "kestrel-arc-transaction-inspection/1", checkedAt,
+    verificationMethod: "rpc-observation", rpcUrl: rpc.rpcUrl ?? ARC_RPC_URL, readOnly: true,
+    verified: false, status: "pending_or_not_found",
+    network: { chain: "Arc", chainId: Number(ARC_CHAIN_ID), environment: "mainnet" },
+    transactionHash: txHash, explorerUrl: `https://explorer.arc.io/tx/${txHash}`,
+    transfer: null, checks: {}, observation: null,
+    intentCompared: false, kestrelProvenanceVerified: false,
+    policySignatureVerified: false, providerFulfillmentVerified: false,
+    limitations: "One RPC's observation of a direct USDC transfer. No independently supplied intent, wallet ownership, Kestrel origin, policy approval, API fulfillment or revenue is verified. Canonical inclusion is checked at the time of this request; this is not an independent consensus proof.",
+  }
+  if (!tx || !receipt) return base
+  const value = quantity(tx.value)
+  const input = lower(tx.input)
+  let recipient = lower(tx.to), amountNative = value, amountErc20 = null
+  if (recipient === USDC_ERC20 && value === 0n && /^0xa9059cbb0{24}[0-9a-f]{40}[0-9a-f]{64}$/.test(input)) {
+    recipient = `0x${input.slice(34, 74)}`
+    amountErc20 = BigInt(`0x${input.slice(74)}`)
+    amountNative = amountErc20 * 10n ** 12n
+  } else if (input !== "0x") {
+    return { ...base, status: "unsupported_transfer" }
+  }
+  const sender = lower(tx.from), zero = `0x${"0".repeat(40)}`
+  if (!addressPattern.test(sender) || !addressPattern.test(recipient) || sender === recipient || [sender, recipient].includes(zero) || amountNative === null || amountNative <= 0n) {
+    return { ...base, status: "unsupported_transfer" }
+  }
+  const amount = formatUnits(amountNative, 18)
+  const intent = { sender, recipient, amount, amountNative, amountErc20: amountErc20 ?? amountNative / 10n ** 12n, txHash }
+  const report = await verifyObservedSend(intent, tx, receipt, { rpc, checkedAt })
+  return {
+    ...base, verified: report.verified, status: report.status, checks: report.checks,
+    transfer: { sender, recipient, amountUsdc: amount }, observation: report.observation,
   }
 }
