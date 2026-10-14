@@ -7520,6 +7520,27 @@ a.ops-history-run:hover {
   letter-spacing: 0.08em;
 }
 
+.grant-reviewer-grid a {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  width: fit-content;
+  padding: 7px 0;
+  color: var(--cyan);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.grant-status-unverified,
+.grant-status-configuration-ready {
+  color: var(--yellow);
+}
+
+.grant-status-gated-pilot,
+.grant-status-testnet-demo {
+  color: var(--cyan);
+}
+
 .grant-reviewer-grid strong,
 .grant-status-grid strong,
 .grant-matrix strong {

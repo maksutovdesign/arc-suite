@@ -21,6 +21,7 @@ try {
   await checkHtml("/dashboard", ["One surface for money, policy and proof", "Execution cockpit"])
   await checkHtml("/proof-center", ["One operation. One evidence envelope", "Integrity rules"])
   await checkHtml("/pilots", ["Three workflows designed to produce evidence", "B2B controlled payout"])
+  await checkHtml("/grant", ["Grant review package", "Spending controls for agents paying with USDC.", "Integration status matrix", "Wallet readiness", "Known limits"])
   await checkJson("/api/health", 200, (payload) => payload?.ok === true && payload?.service === "kestrel-pilot-api")
   await checkJson("/api/money/preflight", 200, (payload) => typeof payload?.enabled === "boolean"
     && payload?.network === (process.env.KESTREL_MONEY_NETWORK ?? "testnet")
@@ -39,7 +40,7 @@ try {
     headers: { Origin: "http://localhost:3000" },
     method: "OPTIONS",
   })
-  console.log("Local API smoke checks passed (13)")
+  console.log("Local API smoke checks passed (14)")
 } finally {
   server.kill("SIGTERM")
   await Promise.race([
