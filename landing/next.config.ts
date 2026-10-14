@@ -17,6 +17,15 @@ const apiHeaders = [
   { key: "Cache-Control", value: "no-store, no-cache, must-revalidate" },
 ]
 
+// The outer Multi-Zones host also sets response headers. Preserve each product's
+// no-embedding policy instead of overwriting it with the portfolio allowance.
+const productSecurityHeaders = [
+  ...securityHeaders.map((header) => header.key === "Content-Security-Policy"
+    ? { ...header, value: header.value.replace("frame-ancestors 'self' https://maksutovdesign.ru;", "frame-ancestors 'none';") }
+    : header),
+  { key: "X-Frame-Options", value: "DENY" },
+]
+
 // Standalone deployments backing the single Kestrel domain via Multi-Zones.
 // Each product app sets basePath: "/<product>", so we proxy both the pages and
 // their basePath-scoped assets/API under one origin (arcsuite-app.vercel.app).
@@ -54,6 +63,10 @@ const nextConfig: NextConfig = {
         source: "/api/:path*",
         headers: apiHeaders,
       },
+      ...Object.keys(zoneTargets).map((product) => ({
+        source: `/${product}/:path*`,
+        headers: productSecurityHeaders,
+      })),
     ]
   },
 }
