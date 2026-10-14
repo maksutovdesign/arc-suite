@@ -9,7 +9,7 @@ export const metadata = {
   description: "Review Kestrel's USDC spending controls, testnet demo, Arc Send pilot, evidence and proposed next steps.",
 }
 
-const sourceUrl = "https://github.com/maksutovdesign/arc-suite/pull/1"
+const sourceUrl = "https://github.com/maksutovdesign/arc-suite"
 const feedbackUrl = "https://x.com/maksutovdesign/status/2110120548806398299"
 const ciUrl = "https://github.com/maksutovdesign/arc-suite/actions/runs/38471776141"
 const snapshotRevision = "fb7bd63"
@@ -24,7 +24,7 @@ const reviewerSteps = [
 
 const integrationMatrix = [
   { name: "USDC spending policy", status: "Implemented", detail: "Amount caps, recipient allowlists and wallet-signed authorization before supported execution paths.", icon: CircleDollarSign },
-  { name: "Arc mainnet Send", status: "Gated pilot", detail: "A narrow Arc-to-Arc USDC Send path in review. Mainnet requires explicit execution flags and a recipient allowlist. No mainnet payment has been independently verified.", icon: HandCoins },
+  { name: "Arc mainnet Send", status: "Gated pilot", detail: "A narrow Arc-to-Arc USDC Send path, disabled in the production configuration. Mainnet requires explicit execution flags and a recipient allowlist. No Kestrel-initiated mainnet payment has been verified.", icon: HandCoins },
   { name: "Circle Wallets", status: "Configuration-ready", detail: "The existing server-controlled settlement path targets Arc Testnet. Credentials and operator configuration are required for execution.", icon: WalletCards },
   { name: "Bridge / Unified Balance", status: "Testnet demo", detail: "App Kit route and recovery surfaces are implemented for the existing testnet workflow. Completed mainnet integrations are not claimed.", icon: Network },
   { name: "Swap", status: "Configuration-ready", detail: "Server-only signer and Kit Key support is implemented. Execution stays blocked when the required configuration is missing.", icon: Network },
@@ -35,10 +35,10 @@ const integrationMatrix = [
 
 const reviewerConsole = [
   { title: "Money Movement", detail: "Inspect the bounded Send workflow and its spending controls.", href: "/money", icon: HandCoins, external: false },
-  { title: "Proof Center", detail: "Review intent, network and transaction references without treating every record as a verified payment.", href: "/proof-center", icon: FileCheck2, external: false },
+  { title: "Arc mainnet verifier", detail: "Inspect a public direct USDC transfer without connecting a wallet. Third-party examples are not Kestrel payments.", href: "/verify", icon: FileCheck2, external: false },
   { title: "Public evidence", detail: "Read sampled figures, data sources and unverified revenue status.", href: "/grant-evidence", icon: Gauge, external: false },
   { title: "Wallet readiness", detail: "Inspect the existing Circle Wallet configuration and transfer guardrails.", href: "/wallets", icon: WalletCards, external: false },
-  { title: "Code in review", detail: "Inspect the current draft PR and the exact changes under review.", href: sourceUrl, icon: ListChecks, external: true },
+  { title: "Source code", detail: "Inspect the public repository and documented verification scope.", href: sourceUrl, icon: ListChecks, external: true },
   { title: "Builder feedback", detail: "Compare notes on budgets, retries and receipts in the public discussion.", href: feedbackUrl, icon: MessageSquare, external: true },
 ] as const
 
@@ -50,7 +50,7 @@ const roadmap = [
 
 const knownLimits = [
   "The existing demo uses Arc Testnet. A production web deployment does not establish mainnet payment activity.",
-  "No real Arc mainnet payment, external provider fulfillment or collected Kestrel fee revenue has been independently verified in this review snapshot.",
+  "The read-only verifier can inspect existing third-party mainnet transfers. No Kestrel-initiated mainnet payment, external provider fulfillment or collected Kestrel fee revenue is claimed.",
   "Money proof exports are browser records, not a durable public archive. RPC verification does not establish policy signatures, Kestrel provenance or API fulfillment.",
   "Mainnet compliance uses a labeled Ethereum identity signal; native Arc screening is not claimed.",
   "Workspace catalog counters and seed data are not independently verified adoption. Local timeout tests do not establish that the production database or alert delivery has recovered.",
@@ -68,19 +68,19 @@ export default function GrantPage() {
             <h1>Spending controls for agents paying with USDC.</h1>
             <p>
               Kestrel helps teams set spending limits and review what happened to a payment.
-              Start with the testnet demo, inspect the narrow Arc mainnet Send pilot in review,
+              Start with the testnet demo or inspect an existing transfer with the read-only Arc mainnet verifier,
               and help us test the failure cases that matter to your application.
             </p>
             <div className="agentic-actions">
               <a className="button primary" href="#reviewer-console">Start the review <ArrowRight size={17} /></a>
-              <a className="button secondary" href={sourceUrl} target="_blank" rel="noreferrer">Code in review</a>
+              <a className="button secondary" href={sourceUrl} target="_blank" rel="noreferrer">Source code</a>
               <a className="button secondary" href={feedbackUrl} target="_blank" rel="noreferrer">Share feedback <MessageSquare size={16} /></a>
             </div>
           </div>
           <aside className="grant-summary-card" aria-label="Product stage">
             <span><ShieldCheck size={16} /> Product stage</span>
-            <strong>Testnet demo. Mainnet Send in review.</strong>
-            <p>No verified mainnet payment yet. This review does not require a payment.</p>
+            <strong>Testnet payments. Read-only mainnet verifier.</strong>
+            <p>No Kestrel-initiated mainnet payment is claimed. Verification does not require a wallet.</p>
             <a href="#known-limits">Read the current limits <ArrowRight size={15} /></a>
           </aside>
         </section>

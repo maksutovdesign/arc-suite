@@ -1,0 +1,47 @@
+{
+  "sampleContext": "Existing third-party public transaction; not initiated by Kestrel or claimed as product usage.",
+  "report": {
+    "schemaVersion": "kestrel-arc-transaction-inspection/1",
+    "checkedAt": "2026-10-14T10:53:45.571Z",
+    "verificationMethod": "rpc-observation",
+    "rpcUrl": "https://rpc.mainnet.arc.io",
+    "readOnly": true,
+    "verified": true,
+    "status": "confirmed_send",
+    "network": {
+      "chain": "Arc",
+      "chainId": 5042,
+      "environment": "mainnet"
+    },
+    "transactionHash": "0x53d435334ec0422c11865e9e6bc4f413cfdcb03aefcb2ce718ebce2bb556349d",
+    "explorerUrl": "https://explorer.arc.io/tx/0x53d435334ec0422c11865e9e6bc4f413cfdcb03aefcb2ce718ebce2bb556349d",
+    "transfer": {
+      "sender": "0xa08d6fc6fcc11156f293911938550fff30f2dafa",
+      "recipient": "0x15cf921c3ca6cba664555f691d6adf773ad8d7f1",
+      "amountUsdc": "2.01"
+    },
+    "checks": {
+      "transactionHash": true,
+      "transactionChain": true,
+      "receiptSucceeded": true,
+      "sender": true,
+      "receiptTarget": true,
+      "directSendRoute": true,
+      "includedInCanonicalBlock": true,
+      "exactUsdcTransfer": true
+    },
+    "observation": {
+      "route": "native",
+      "blockNumber": "25910191",
+      "blockHash": "0xe73daf8730f304b9c96e30dcf12e1171dc900ac8f416bb647abf6b915c486c88",
+      "receiptStatus": "0x1",
+      "actualGasUsdc": "0.00042",
+      "matchingSystemTransfers": 1
+    },
+    "intentCompared": false,
+    "kestrelProvenanceVerified": false,
+    "policySignatureVerified": false,
+    "providerFulfillmentVerified": false,
+    "limitations": "One RPC's observation of a direct USDC transfer. No independently supplied intent, wallet ownership, Kestrel origin, policy approval, API fulfillment or revenue is verified. Canonical inclusion is checked at the time of this request; this is not an independent consensus proof."
+  }
+}

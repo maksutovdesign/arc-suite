@@ -22,6 +22,8 @@ try {
   await checkHtml("/proof-center", ["One operation. One evidence envelope", "Integrity rules"])
   await checkHtml("/pilots", ["Three workflows designed to produce evidence", "B2B controlled payout"])
   await checkHtml("/grant", ["Grant review package", "Spending controls for agents paying with USDC.", "Integration status matrix", "Wallet readiness", "Known limits"])
+  await checkHtml("/verify", ["Check the transfer.", "Arc mainnet", "What remains unverified", "Verify public example"])
+  await checkStatus("/api/verify/arc?tx=invalid", 400)
   await checkJson("/api/health", 200, (payload) => payload?.ok === true && payload?.service === "kestrel-pilot-api")
   await checkJson("/api/money/preflight", 200, (payload) => typeof payload?.enabled === "boolean"
     && payload?.network === (process.env.KESTREL_MONEY_NETWORK ?? "testnet")
@@ -40,7 +42,7 @@ try {
     headers: { Origin: "http://localhost:3000" },
     method: "OPTIONS",
   })
-  console.log("Local API smoke checks passed (14)")
+  console.log("Local API smoke checks passed (16)")
 } finally {
   server.kill("SIGTERM")
   await Promise.race([
